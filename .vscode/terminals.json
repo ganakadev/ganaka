@@ -1,0 +1,10 @@
+{
+  "autorun": false,
+  "terminals": [
+    {
+      "name": "Momentum Scalping",
+      "focus": true,
+      "command": "nvm use 22 && pnpm --filter @ganaka-algos/momentum-scalping dev"
+    }
+  ]
+}
