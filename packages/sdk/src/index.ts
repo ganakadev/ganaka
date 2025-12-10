@@ -12,7 +12,7 @@ export interface RunContext {
   stop: () => void;
   placeOrder: (data: MarketDepthData) => void;
   getGrowwQuote: (symbol: string) => Promise<GrowwQuote>;
-  getGrowwTopGainers: (index?: string) => Promise<GrowwTopGainer[]>;
+  getGrowwTopGainers: () => Promise<GrowwTopGainer[]>;
 }
 
 export async function ganaka<T>({
