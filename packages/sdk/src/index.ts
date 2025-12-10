@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { logger } from "./utils/logger";
 import { MarketDepthWriter, MarketDepthData } from "./utils/writer";
+import { GrowwQuote, getGrowwQuote } from "./groww/get-quote";
 dotenv.config();
 
 export type { MarketDepthData } from "./utils/writer";
@@ -8,6 +9,7 @@ export type { MarketDepthData } from "./utils/writer";
 export interface RunContext {
   stop: () => void;
   placeOrder: (data: MarketDepthData) => void;
+  getGrowwQuote: (symbol: string) => Promise<GrowwQuote>;
 }
 
 export async function ganaka<T>({
@@ -60,6 +62,7 @@ export async function ganaka<T>({
     await fn({
       stop: stop("strategy"),
       placeOrder,
+      getGrowwQuote,
     });
   } catch (error) {
     logger.error("Error running function for the first time");
@@ -85,6 +88,7 @@ export async function ganaka<T>({
       await fn({
         stop: stop("strategy"),
         placeOrder,
+        getGrowwQuote,
       });
     } catch (error) {
       logger.error("Error running function in interval");
