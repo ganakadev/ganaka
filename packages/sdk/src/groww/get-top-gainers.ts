@@ -5,7 +5,7 @@ import { logger } from "../utils/logger";
 export interface GrowwTopGainer {
   name: string;
   price: number;
-  volume?: string | number;
+  href: string;
 }
 
 export const getGrowwTopGainers = async (
@@ -36,52 +36,25 @@ export const getGrowwTopGainers = async (
 
       if (cells.length >= 2) {
         // Extract company name (first column)
-        const name = $row.find("td").first().text().trim();
+        const firstCell = $row.find("td").first();
+        const name = firstCell.text().trim();
+
+        // Extract href from anchor tag in the first cell
+        const href = firstCell.find("a").attr("href") || "";
 
         // Extract market price (second column, remove ₹ symbol and commas)
         const priceText = cells.eq(1).text().trim().replace(/₹|,/g, "");
         const price = parseFloat(priceText);
 
-        // Extract volume if available (third column)
-        const volumeText = cells.eq(2)?.text().trim();
-
         if (name && !isNaN(price)) {
           gainers.push({
             name,
             price,
-            volume:
-              volumeText && volumeText !== "Loading..."
-                ? volumeText
-                : undefined,
+            href,
           });
         }
       }
     });
-
-    // If table structure is different, try alternative selectors
-    if (gainers.length === 0) {
-      // Try finding by data attributes or other selectors
-      $("[data-testid*='gainer'], .gainer-row, tr[class*='gainer']").each(
-        (_, element) => {
-          const $row = $(element);
-          const name = $row.find("td, th").first().text().trim();
-          const priceText = $row
-            .find("td")
-            .eq(1)
-            .text()
-            .trim()
-            .replace(/₹|,/g, "");
-          const price = parseFloat(priceText);
-
-          if (name && !isNaN(price)) {
-            gainers.push({
-              name,
-              price,
-            });
-          }
-        }
-      );
-    }
 
     logger.debug(`Found ${gainers.length} top gainers`);
     return gainers;
