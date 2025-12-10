@@ -1,0 +1,49 @@
+{
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "angular",
+        "releaseRules": [
+          { "scope": "sdk", "release": "patch" },
+          { "scope": "sdk", "type": "feat", "release": "minor" },
+          { "scope": "sdk", "breaking": true, "release": "major" },
+          { "scope": "!sdk", "release": false }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "writerOpts": {
+          "headerPartial": "## [@ganaka/sdk v{{version}}](https://www.npmjs.com/package/@ganaka/sdk/v/{{version}})\n\n[![npm version](https://badge.fury.io/js/%40workingsignature%2Fganaka.svg)](https://www.npmjs.com/package/@ganaka/sdk)\n\n"
+        }
+      }
+    ],
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ],
+    [
+      "@semantic-release/npm",
+      {
+        "npmPublish": true,
+        "tarballDir": "dist"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["package.json", "CHANGELOG.md"],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ]
+  ],
+  "preset": "angular",
+  "tagFormat": "v${version}",
+  "release": {
+    "branches": ["main"]
+  }
+}

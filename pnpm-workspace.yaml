@@ -1,2 +1,5 @@
 packages:
-  - "strategies/*"
+  - packages/*
+
+onlyBuiltDependencies:
+  - esbuild
