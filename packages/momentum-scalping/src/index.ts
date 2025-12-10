@@ -1,5 +1,6 @@
 import { ganaka } from "@ganaka-algos/sdk";
 import dotenv from "dotenv";
+import { chunk } from "lodash";
 dotenv.config();
 
 const GROWW_API_KEY = process.env.GROWW_API_KEY;
@@ -22,7 +23,44 @@ async function main() {
   await ganaka({
     fn: async ({ getGrowwTopGainers, getGrowwQuote }) => {
       const topGainers = await getGrowwTopGainers();
-      console.log(topGainers);
+
+      const topGainersChunk = chunk(topGainers, 5);
+
+      const quotesData: (Awaited<ReturnType<typeof getGrowwQuote>> & {
+        buyerControlOfStockPercentage: number;
+      })[] = [];
+
+      for await (const chunk of topGainersChunk) {
+        const quotes: typeof quotesData = [];
+        for await (const gainer of chunk) {
+          const quote = await getGrowwQuote(gainer.nseSymbol);
+          const totalDepthBuy = quote.payload.depth.buy.reduce(
+            (acc, curr) => acc + curr.quantity,
+            0
+          );
+          const totalDepthSell = quote.payload.depth.sell.reduce(
+            (acc, curr) => acc + curr.quantity,
+            0
+          );
+          const buyerControlOfStockPercentage =
+            totalDepthBuy + totalDepthSell === 0
+              ? 0
+              : (totalDepthBuy / (totalDepthBuy + totalDepthSell)) * 100;
+          quotes.push({
+            ...quote,
+            buyerControlOfStockPercentage,
+          });
+        }
+        quotesData.push(...quotes);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+
+      const sortedQuotes = quotesData.sort(
+        (a, b) =>
+          b.buyerControlOfStockPercentage - a.buyerControlOfStockPercentage
+      );
+
+      console.log(sortedQuotes);
     },
     settings: {
       loopIntervalSeconds: 5,
