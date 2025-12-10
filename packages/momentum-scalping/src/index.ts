@@ -1,4 +1,4 @@
-import axios from "axios";
+import { ganaka } from "@ganaka-algos/sdk";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -10,16 +10,15 @@ if (!GROWW_API_KEY || !GROWW_API_SECRET) {
 }
 
 async function main() {
-  console.log("Hello from TypeScript Node.js app!");
-
-  try {
-    const response = await axios.get(
-      "https://jsonplaceholder.typicode.com/posts/1"
-    );
-    console.log("Sample API response:", response.data);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
+  await ganaka({
+    fn: async ({ stop }) => {
+      console.log("Running function");
+      return "Hello, world!";
+    },
+    settings: {
+      loopIntervalSeconds: 5,
+    },
+  });
 }
 
 main();
