@@ -2,9 +2,14 @@
   "autorun": false,
   "terminals": [
     {
-      "name": "Momentum Scalping",
+      "name": "Momentum Scalping: Dev",
       "focus": true,
       "command": "nvm use 22 && pnpm --filter @ganaka-algos/momentum-scalping dev"
+    },
+    {
+      "name": "SDK: Build",
+      "focus": false,
+      "command": "nvm use 22 && pnpm --filter @ganaka-algos/sdk build"
     }
   ]
 }
