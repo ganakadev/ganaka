@@ -1,9 +1,13 @@
 import dotenv from "dotenv";
 import { logger } from "./utils/logger";
+import { MarketDepthWriter, MarketDepthData } from "./utils/writer";
 dotenv.config();
+
+export type { MarketDepthData } from "./utils/writer";
 
 export interface RunContext {
   stop: () => void;
+  placeOrder: (data: MarketDepthData) => void;
 }
 
 export async function ganaka<T>({
@@ -18,6 +22,19 @@ export async function ganaka<T>({
   // VARIABLES
   let stopped = false;
   let intervalId: NodeJS.Timeout | null = null;
+
+  // Initialize market depth writer
+  const projectRoot = process.cwd();
+  const marketDepthWriter = new MarketDepthWriter(projectRoot);
+  await marketDepthWriter.initialize();
+
+  // Create logMarketDepth function that writes asynchronously
+  const placeOrder = (data: MarketDepthData) => {
+    // Fire and forget - don't await to avoid blocking
+    marketDepthWriter.write(data).catch((error) => {
+      logger.error(`Failed to write market depth data: ${error}`);
+    });
+  };
 
   // HANDLERS
   const stop =
@@ -42,6 +59,7 @@ export async function ganaka<T>({
     logger.debug("Running function for the first time");
     await fn({
       stop: stop("strategy"),
+      placeOrder,
     });
   } catch (error) {
     logger.error("Error running function for the first time");
@@ -66,6 +84,7 @@ export async function ganaka<T>({
       logger.debug("Running function in interval");
       await fn({
         stop: stop("strategy"),
+        placeOrder,
       });
     } catch (error) {
       logger.error("Error running function in interval");
