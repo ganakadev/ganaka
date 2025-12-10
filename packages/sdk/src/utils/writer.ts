@@ -3,9 +3,13 @@ import { join } from "path";
 import { logger } from "./logger";
 
 export interface MarketDepthData {
+  nseSymbol: string;
+  instrument: string;
   buyDepth: Array<{ price: number; quantity: number }>;
   sellDepth: Array<{ price: number; quantity: number }>;
-  orderPrice: number;
+  stopLossPrice: number;
+  takeProfitPrice: number;
+  targetPrice: number;
   timestamp: number | string | Date;
 }
 
