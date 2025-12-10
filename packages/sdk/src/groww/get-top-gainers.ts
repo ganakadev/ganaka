@@ -5,7 +5,7 @@ import { logger } from "../utils/logger";
 export interface GrowwTopGainer {
   name: string;
   price: number;
-  href: string;
+  nseSymbol: string;
 }
 
 export const getGrowwTopGainers = async (
@@ -23,38 +23,30 @@ export const getGrowwTopGainers = async (
       },
     });
 
-    // Parse HTML with cheerio
+    // Parse HTML with cheerio to find __NEXT_DATA__ script tag
     const $ = cheerio.load(response.data);
+    const nextDataScript = $("#__NEXT_DATA__").html();
 
-    const gainers: GrowwTopGainer[] = [];
+    if (!nextDataScript) {
+      throw new Error("__NEXT_DATA__ script tag not found");
+    }
 
-    // Find the table with top gainers
-    // Based on the page structure, we need to find the table rows
-    $("table tbody tr").each((_, element) => {
-      const $row = $(element);
-      const cells = $row.find("td");
+    // Parse the JSON data
+    const nextData = JSON.parse(nextDataScript);
+    const stocks = nextData?.props?.pageProps?.stocks;
 
-      if (cells.length >= 2) {
-        // Extract company name (first column)
-        const firstCell = $row.find("td").first();
-        const name = firstCell.text().trim();
+    if (!Array.isArray(stocks)) {
+      throw new Error("Stocks array not found in __NEXT_DATA__");
+    }
 
-        // Extract href from anchor tag in the first cell
-        const href = firstCell.find("a").attr("href") || "";
-
-        // Extract market price (second column, remove ₹ symbol and commas)
-        const priceText = cells.eq(1).text().trim().replace(/₹|,/g, "");
-        const price = parseFloat(priceText);
-
-        if (name && !isNaN(price)) {
-          gainers.push({
-            name,
-            price,
-            href,
-          });
-        }
-      }
-    });
+    // Map stocks to GrowwTopGainer format
+    const gainers: GrowwTopGainer[] = stocks
+      .map((stock: any) => ({
+        name: stock.companyName || stock.companyShortName || "",
+        price: stock.ltp || 0,
+        nseSymbol: stock.nseScriptCode || "",
+      }))
+      .filter((gainer: GrowwTopGainer) => gainer.name && gainer.nseSymbol);
 
     logger.debug(`Found ${gainers.length} top gainers`);
     return gainers;
