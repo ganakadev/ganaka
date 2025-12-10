@@ -11,8 +11,9 @@ if (!GROWW_API_KEY || !GROWW_API_SECRET) {
 
 async function main() {
   await ganaka({
-    fn: async ({ stop }) => {
-      console.log("Running function");
+    fn: async ({ getGrowwTopGainers }) => {
+      const topGainers = await getGrowwTopGainers();
+      console.log(topGainers);
       return "Hello, world!";
     },
     settings: {
