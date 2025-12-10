@@ -10,26 +10,19 @@ if (!GROWW_API_KEY || !GROWW_API_SECRET) {
   throw new Error("GROWW_API_KEY and GROWW_API_SECRET are required");
 }
 
-interface GainerWithDepth {
-  name: string;
-  price: number;
-  groww_symbol: string;
-  buyDepth: number;
-  sellDepth: number;
-  depthDifference: number;
-}
-
 async function main() {
   await ganaka({
-    fn: async ({ getGrowwTopGainers, getGrowwQuote }) => {
+    fn: async ({ getGrowwTopGainers, getGrowwQuote, placeOrder }) => {
+      // GET TOP GAINERS
       const topGainers = await getGrowwTopGainers();
-
       const topGainersChunk = chunk(topGainers, 5);
 
+      // GET QUOTES FOR EACH TOP GAINER
       const quotesData: (Awaited<ReturnType<typeof getGrowwQuote>> & {
         buyerControlOfStockPercentage: number;
+        instrument: string;
+        nseSymbol: string;
       })[] = [];
-
       for await (const chunk of topGainersChunk) {
         const quotes: typeof quotesData = [];
         for await (const gainer of chunk) {
@@ -49,21 +42,51 @@ async function main() {
           quotes.push({
             ...quote,
             buyerControlOfStockPercentage,
+            instrument: gainer.name,
+            nseSymbol: gainer.nseSymbol,
           });
         }
         quotesData.push(...quotes);
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
-
       const sortedQuotes = quotesData.sort(
         (a, b) =>
           b.buyerControlOfStockPercentage - a.buyerControlOfStockPercentage
       );
 
-      console.log(sortedQuotes);
-    },
-    settings: {
-      loopIntervalSeconds: 5,
+      // FILTER STOCKS WITH BUYER CONTROL > 70%
+      const highBuyerControlStocks = sortedQuotes.filter(
+        (quote) => quote.buyerControlOfStockPercentage > 70
+      );
+
+      // PROCESS EACH QUALIFYING STOCK AND PLACE ORDERS
+      for (const quote of highBuyerControlStocks) {
+        const entryPrice = quote.payload.last_price;
+        const targetPrice = entryPrice * 1.02; // 2% gain
+        const stopLossPrice = quote.payload.ohlc.low; // Support level (day's low)
+        const takeProfitPrice = targetPrice; // Same as target
+
+        // CALL placeOrder WITH MarketDepthData STRUCTURE
+        placeOrder({
+          nseSymbol: quote.nseSymbol,
+          instrument: quote.instrument,
+          buyDepth: quote.payload.depth.buy,
+          sellDepth: quote.payload.depth.sell,
+          targetPrice,
+          stopLossPrice,
+          takeProfitPrice,
+          timestamp: new Date(),
+        });
+      }
+
+      // LOG RESULT
+      if (highBuyerControlStocks.length === 0) {
+        console.log("No stocks found with buyer control > 70%");
+      } else {
+        console.log(
+          `Found ${highBuyerControlStocks.length} stock(s) with buyer control > 70%`
+        );
+      }
     },
   });
 }
