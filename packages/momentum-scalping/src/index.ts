@@ -62,9 +62,9 @@ async function main() {
       // PROCESS EACH QUALIFYING STOCK AND PLACE ORDERS
       for (const quote of highBuyerControlStocks) {
         const entryPrice = quote.payload.last_price;
-        const targetPrice = entryPrice * 1.02; // 2% gain
+        const takeProfitTarget = entryPrice * 1.02; // 2% gain
         const stopLossPrice = quote.payload.ohlc.low; // Support level (day's low)
-        const takeProfitPrice = targetPrice; // Same as target
+        const takeProfitPrice = takeProfitTarget; // Same as target
 
         // CALL placeOrder WITH MarketDepthData STRUCTURE
         placeOrder({
@@ -72,7 +72,8 @@ async function main() {
           instrument: quote.instrument,
           buyDepth: quote.payload.depth.buy,
           sellDepth: quote.payload.depth.sell,
-          targetPrice,
+          entryPrice,
+          currentPrice: quote.payload.last_price,
           stopLossPrice,
           takeProfitPrice,
           timestamp: new Date(),

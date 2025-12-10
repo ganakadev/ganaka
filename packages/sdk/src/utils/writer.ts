@@ -9,13 +9,15 @@ export interface MarketDepthData {
   sellDepth: Array<{ price: number; quantity: number }>;
   stopLossPrice: number;
   takeProfitPrice: number;
-  targetPrice: number;
+  entryPrice: number;
+  currentPrice: number;
   timestamp: number | string | Date;
 }
 
 export class MarketDepthWriter {
   private filePath: string;
   private initialized: boolean = false;
+  private writeQueue: Promise<void> = Promise.resolve();
 
   constructor(projectRoot: string) {
     const activityDir = join(projectRoot, "activity");
@@ -45,39 +47,45 @@ export class MarketDepthWriter {
   }
 
   async write(data: MarketDepthData): Promise<void> {
-    if (!this.initialized) {
-      await this.initialize();
-    }
+    // Chain this write operation to the queue to ensure sequential execution
+    this.writeQueue = this.writeQueue.then(async () => {
+      if (!this.initialized) {
+        await this.initialize();
+      }
 
-    try {
-      // Read existing file
-      const fileContent = await fs.readFile(this.filePath, "utf-8");
-      const entries: MarketDepthData[] = JSON.parse(fileContent);
+      try {
+        // Read existing file
+        const fileContent = await fs.readFile(this.filePath, "utf-8");
+        const entries: MarketDepthData[] = JSON.parse(fileContent);
 
-      // Normalize timestamp to ISO string
-      const normalizedData: MarketDepthData = {
-        ...data,
-        timestamp:
-          data.timestamp instanceof Date
-            ? data.timestamp.toISOString()
-            : typeof data.timestamp === "number"
-            ? new Date(data.timestamp).toISOString()
-            : data.timestamp,
-      };
+        // Normalize timestamp to ISO string
+        const normalizedData: MarketDepthData = {
+          ...data,
+          timestamp:
+            data.timestamp instanceof Date
+              ? data.timestamp.toISOString()
+              : typeof data.timestamp === "number"
+              ? new Date(data.timestamp).toISOString()
+              : data.timestamp,
+        };
 
-      // Append new entry
-      entries.push(normalizedData);
+        // Append new entry
+        entries.push(normalizedData);
 
-      // Write back to file
-      await fs.writeFile(
-        this.filePath,
-        JSON.stringify(entries, null, 2),
-        "utf-8"
-      );
-      logger.debug(`Market depth data written to ${this.filePath}`);
-    } catch (error) {
-      logger.error(`Failed to write market depth data: ${error}`);
-      throw error;
-    }
+        // Write back to file
+        await fs.writeFile(
+          this.filePath,
+          JSON.stringify(entries, null, 2),
+          "utf-8"
+        );
+        logger.debug(`Market depth data written to ${this.filePath}`);
+      } catch (error) {
+        logger.error(`Failed to write market depth data: ${error}`);
+        throw error;
+      }
+    });
+
+    // Wait for this write operation to complete
+    await this.writeQueue;
   }
 }
