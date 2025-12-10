@@ -8,7 +8,7 @@
     },
     {
       "name": "SDK: Build",
-      "focus": false,
+      "focus": true,
       "command": "nvm use 22 && pnpm --filter @ganaka-algos/sdk build"
     }
   ]

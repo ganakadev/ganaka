@@ -31,7 +31,15 @@ export default defineConfig({
         commonjs(),
       ],
       // Externalize dependencies that should not be bundled
-      external: ["dotenv", "path", "worker_threads", "url", "module", "fs"],
+      external: [
+        "dotenv",
+        "path",
+        "worker_threads",
+        "url",
+        "module",
+        "fs",
+        "stream",
+      ],
     },
     // Generate sourcemaps
     sourcemap: true,
