@@ -8,12 +8,10 @@ export interface GrowwTopGainer {
   nseSymbol: string;
 }
 
-export const getGrowwTopGainers = async (
-  index: string = "GIDXNIFTYTOTALMCAP"
-): Promise<GrowwTopGainer[]> => {
+export const getGrowwTopGainers = async (): Promise<GrowwTopGainer[]> => {
   try {
-    logger.debug(`Fetching top gainers for index: ${index}`);
-    const url = `https://groww.in/markets/top-gainers?index=${index}`;
+    logger.debug(`Fetching top gainers for index: GIDXNIFTYTOTALMCAP`);
+    const url = `https://groww.in/markets/top-gainers?index=GIDXNIFTYTOTALMCAP`;
 
     // Fetch the HTML page
     const response = await axios.get(url, {
