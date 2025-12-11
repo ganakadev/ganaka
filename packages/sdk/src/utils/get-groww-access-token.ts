@@ -13,10 +13,13 @@ export const getGrowwAccessToken = async () => {
 
   try {
     logger.debug("Getting access token");
-    const response = (await axios.post("http://0.0.0.0:10000", {
-      api_key: process.env.GROWW_API_KEY!,
-      api_secret: process.env.GROWW_API_SECRET,
-    })) as AxiosResponse<{ access_token: string }>;
+    const response = (await axios.post(
+      "https://groww-access-token-generator.onrender.com",
+      {
+        api_key: process.env.GROWW_API_KEY!,
+        api_secret: process.env.GROWW_API_SECRET,
+      }
+    )) as AxiosResponse<{ access_token: string }>;
 
     // Cache the token
     cachedToken = response.data.access_token;
