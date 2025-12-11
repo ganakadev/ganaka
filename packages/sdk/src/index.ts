@@ -21,20 +21,27 @@ export interface RunContext {
 
 export async function ganaka<T>({
   fn,
+  disableActivityFiles,
 }: {
   fn: (context: RunContext) => Promise<T>;
+  disableActivityFiles?: boolean;
 }) {
-  // Initialize market depth writer
-  const projectRoot = process.cwd();
-  const marketDepthWriter = new MarketDepthWriter(projectRoot);
-  await marketDepthWriter.initialize();
+  // Initialize market depth writer only if activity files are not disabled
+  let marketDepthWriter: MarketDepthWriter | null = null;
+  if (!disableActivityFiles) {
+    const projectRoot = process.cwd();
+    marketDepthWriter = new MarketDepthWriter(projectRoot);
+    await marketDepthWriter.initialize();
+  }
 
   // Create logMarketDepth function that writes asynchronously
   const placeOrder = (data: PlaceOrderData) => {
-    // Fire and forget - don't await to avoid blocking
-    marketDepthWriter.write(data).catch((error) => {
-      logger.error(`Failed to write market depth data: ${error}`);
-    });
+    if (marketDepthWriter) {
+      // Fire and forget - don't await to avoid blocking
+      marketDepthWriter.write(data).catch((error) => {
+        logger.error(`Failed to write market depth data: ${error}`);
+      });
+    }
   };
 
   // Run the function immediately on first call
