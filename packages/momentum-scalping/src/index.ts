@@ -49,14 +49,10 @@ async function main() {
         quotesData.push(...quotes);
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
-      const sortedQuotes = quotesData.sort(
-        (a, b) =>
-          b.buyerControlOfStockPercentage - a.buyerControlOfStockPercentage
-      );
 
       // FILTER STOCKS WITH BUYER CONTROL > 70%
-      const highBuyerControlStocks = sortedQuotes.filter(
-        (quote) => quote.buyerControlOfStockPercentage > 70
+      const highBuyerControlStocks = quotesData.filter(
+        (quote) => quote.buyerControlOfStockPercentage > 80
       );
 
       // PROCESS EACH QUALIFYING STOCK AND PLACE ORDERS
@@ -77,6 +73,7 @@ async function main() {
           stopLossPrice,
           takeProfitPrice,
           timestamp: new Date(),
+          buyerControlOfStockPercentage: quote.buyerControlOfStockPercentage,
         });
       }
 
