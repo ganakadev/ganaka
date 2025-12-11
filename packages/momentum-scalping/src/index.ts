@@ -11,7 +11,7 @@ if (!GROWW_API_KEY || !GROWW_API_SECRET) {
 }
 
 // Configuration thresholds
-const MIN_SCORE_THRESHOLD = 70;
+const MIN_SCORE_THRESHOLD = 80;
 const MIN_VOLUME = 100000;
 const STOP_LOSS_PERCENTAGE = 0.02; // 2%
 const CIRCUIT_BUFFER_PERCENTAGE = 0.02; // 2% buffer
@@ -165,7 +165,7 @@ async function main() {
   await ganaka({
     fn: async ({ getGrowwShortlist, getGrowwQuote, placeOrder }) => {
       // GET TOP GAINERS
-      const shortlist = await getGrowwShortlist("volume-shockers");
+      const shortlist = await getGrowwShortlist("top-gainers");
       const shortlistChunk = chunk(shortlist, 5);
 
       // GET QUOTES FOR EACH TOP GAINER
