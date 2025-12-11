@@ -165,7 +165,7 @@ async function main() {
   await ganaka({
     fn: async ({ getGrowwShortlist, getGrowwQuote, placeOrder }) => {
       // GET TOP GAINERS
-      const shortlist = await getGrowwShortlist("top-gainers");
+      const shortlist = await getGrowwShortlist("volume-shockers");
       const shortlistChunk = chunk(shortlist, 5);
 
       // GET QUOTES FOR EACH TOP GAINER
