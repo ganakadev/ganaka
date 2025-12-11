@@ -16,6 +16,21 @@
       "name": "SDK: Dev",
       "focus": true,
       "command": "nvm use 22 && pnpm --filter @ganaka-algos/sdk dev"
+    },
+    {
+      "name": "Market Data Collector: Dev",
+      "focus": true,
+      "command": "nvm use 22 && pnpm --filter @ganaka-algos/market-data-collector dev"
+    },
+    {
+      "name": "Market Data Collector: Prisma Migrate",
+      "focus": true,
+      "command": "nvm use 22 && pnpm --filter @ganaka-algos/market-data-collector prisma:migrate"
+    },
+    {
+      "name": "Market Data Collector: Prisma Generate",
+      "focus": true,
+      "command": "nvm use 22 && pnpm --filter @ganaka-algos/market-data-collector prisma:generate"
     }
   ]
 }
