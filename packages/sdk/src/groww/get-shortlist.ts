@@ -2,16 +2,21 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import { logger } from "../utils/logger";
 
-export interface GrowwTopGainer {
+export interface GrowwShortlistItem {
   name: string;
   price: number;
   nseSymbol: string;
 }
 
-export const getGrowwTopGainers = async (): Promise<GrowwTopGainer[]> => {
+export const getGrowwShortlist = async (
+  type: "volume-shockers" | "top-gainers"
+): Promise<GrowwShortlistItem[]> => {
   try {
-    logger.debug(`Fetching top gainers for index: GIDXNIFTYTOTALMCAP`);
-    const url = `https://groww.in/markets/top-gainers?index=GIDXNIFTYTOTALMCAP`;
+    logger.debug(`Fetching shortlist`);
+    const url =
+      type === "volume-shockers"
+        ? `https://groww.in/markets/volume-shockers`
+        : `https://groww.in/markets/top-gainers?index=GIDXNIFTYTOTALMCAP`;
 
     // Fetch the HTML page
     const response = await axios.get(url, {
@@ -38,18 +43,21 @@ export const getGrowwTopGainers = async (): Promise<GrowwTopGainer[]> => {
     }
 
     // Map stocks to GrowwTopGainer format
-    const gainers: GrowwTopGainer[] = stocks
+    const shortlist: GrowwShortlistItem[] = stocks
       .map((stock: any) => ({
         name: stock.companyName || stock.companyShortName || "",
         price: stock.ltp || 0,
         nseSymbol: stock.nseScriptCode || "",
       }))
-      .filter((gainer: GrowwTopGainer) => gainer.name && gainer.nseSymbol);
+      .filter(
+        (shortlistItem: GrowwShortlistItem) =>
+          shortlistItem.name && shortlistItem.nseSymbol
+      );
 
-    logger.debug(`Found ${gainers.length} top gainers`);
-    return gainers;
+    logger.debug(`Found ${shortlist.length} shortlist items`);
+    return shortlist;
   } catch (error) {
-    logger.error(`Failed to fetch top gainers: ${error}`);
+    logger.error(`Failed to fetch shortlist: ${error}`);
     throw error;
   }
 };
