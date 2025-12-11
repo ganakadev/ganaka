@@ -2,16 +2,16 @@ import dotenv from "dotenv";
 import { getGrowwQuote } from "./groww/get-quote";
 import { getGrowwTopGainers } from "./groww/get-top-gainers";
 import { logger } from "./utils/logger";
-import { MarketDepthData, MarketDepthWriter } from "./utils/writer";
+import { PlaceOrderData, MarketDepthWriter } from "./utils/writer";
 dotenv.config();
 
 export type { GrowwTopGainer } from "./groww/get-top-gainers";
-export type { MarketDepthData } from "./utils/writer";
+export type { PlaceOrderData } from "./utils/writer";
 
 export interface RunContext {
   getGrowwQuote: typeof getGrowwQuote;
   getGrowwTopGainers: typeof getGrowwTopGainers;
-  placeOrder: (data: MarketDepthData) => void;
+  placeOrder: (data: PlaceOrderData) => void;
 }
 
 export async function ganaka<T>({
@@ -25,7 +25,7 @@ export async function ganaka<T>({
   await marketDepthWriter.initialize();
 
   // Create logMarketDepth function that writes asynchronously
-  const placeOrder = (data: MarketDepthData) => {
+  const placeOrder = (data: PlaceOrderData) => {
     // Fire and forget - don't await to avoid blocking
     marketDepthWriter.write(data).catch((error) => {
       logger.error(`Failed to write market depth data: ${error}`);

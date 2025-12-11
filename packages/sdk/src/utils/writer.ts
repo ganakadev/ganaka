@@ -1,8 +1,9 @@
 import { promises as fs } from "fs";
 import { join } from "path";
 import { logger } from "./logger";
+import { generateDashboardHTML } from "./dashboard-generator";
 
-export interface MarketDepthData {
+export interface PlaceOrderData {
   nseSymbol: string;
   instrument: string;
   buyDepth: Array<{ price: number; quantity: number }>;
@@ -11,6 +12,7 @@ export interface MarketDepthData {
   takeProfitPrice: number;
   entryPrice: number;
   currentPrice: number;
+  buyerControlOfStockPercentage: number;
   timestamp: number | string | Date;
 }
 
@@ -18,11 +20,12 @@ export class MarketDepthWriter {
   private filePath: string;
   private initialized: boolean = false;
   private writeQueue: Promise<void> = Promise.resolve();
+  private entries: PlaceOrderData[] = [];
 
   constructor(projectRoot: string) {
     const activityDir = join(projectRoot, "activity");
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const fileName = `activity-${timestamp}.json`;
+    const fileName = `activity-${timestamp}.html`;
     this.filePath = join(activityDir, fileName);
   }
 
@@ -36,8 +39,9 @@ export class MarketDepthWriter {
       const activityDir = join(this.filePath, "..");
       await fs.mkdir(activityDir, { recursive: true });
 
-      // Initialize file with empty array
-      await fs.writeFile(this.filePath, JSON.stringify([], null, 2), "utf-8");
+      // Initialize with empty dashboard
+      const html = generateDashboardHTML([]);
+      await fs.writeFile(this.filePath, html, "utf-8");
       this.initialized = true;
       logger.debug(`Market depth writer initialized at ${this.filePath}`);
     } catch (error) {
@@ -46,7 +50,7 @@ export class MarketDepthWriter {
     }
   }
 
-  async write(data: MarketDepthData): Promise<void> {
+  async write(data: PlaceOrderData): Promise<void> {
     // Chain this write operation to the queue to ensure sequential execution
     this.writeQueue = this.writeQueue.then(async () => {
       if (!this.initialized) {
@@ -54,12 +58,8 @@ export class MarketDepthWriter {
       }
 
       try {
-        // Read existing file
-        const fileContent = await fs.readFile(this.filePath, "utf-8");
-        const entries: MarketDepthData[] = JSON.parse(fileContent);
-
         // Normalize timestamp to ISO string
-        const normalizedData: MarketDepthData = {
+        const normalizedData: PlaceOrderData = {
           ...data,
           timestamp:
             data.timestamp instanceof Date
@@ -69,16 +69,15 @@ export class MarketDepthWriter {
               : data.timestamp,
         };
 
-        // Append new entry
-        entries.push(normalizedData);
+        // Append new entry to in-memory array
+        this.entries.push(normalizedData);
 
-        // Write back to file
-        await fs.writeFile(
-          this.filePath,
-          JSON.stringify(entries, null, 2),
-          "utf-8"
-        );
-        logger.debug(`Market depth data written to ${this.filePath}`);
+        // Generate HTML dashboard with all entries
+        const html = generateDashboardHTML(this.entries);
+
+        // Write HTML dashboard to file
+        await fs.writeFile(this.filePath, html, "utf-8");
+        logger.debug(`Market depth dashboard written to ${this.filePath}`);
       } catch (error) {
         logger.error(`Failed to write market depth data: ${error}`);
         throw error;
