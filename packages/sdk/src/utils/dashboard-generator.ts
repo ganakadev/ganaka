@@ -446,3 +446,4 @@ export function generateDashboardHTML(data: PlaceOrderData[]): string {
 </body>
 </html>`;
 }
+
