@@ -29,3 +29,11 @@ async def generate_groww_token(body: TOTPRequestBody):
         return {"access_token": access_token}
     except Exception as e:
         return {"error": str(e)}
+
+
+@app.get("/health")
+async def health_check():
+    try:
+        return {"status": "healthy"}
+    except Exception as e:
+        return {"error": str(e)}
