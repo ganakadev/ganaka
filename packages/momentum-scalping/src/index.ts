@@ -163,20 +163,20 @@ function calculateScore(
 
 async function main() {
   await ganaka({
-    fn: async ({ getGrowwTopGainers, getGrowwQuote, placeOrder }) => {
+    fn: async ({ getGrowwShortlist, getGrowwQuote, placeOrder }) => {
       // GET TOP GAINERS
-      const topGainers = await getGrowwTopGainers();
-      const topGainersChunk = chunk(topGainers, 5);
+      const shortlist = await getGrowwShortlist("top-gainers");
+      const shortlistChunk = chunk(shortlist, 5);
 
       // GET QUOTES FOR EACH TOP GAINER
       const quotesData: Omit<
         ScoredQuote,
         "score" | "scoreBreakdown" | "rejectionReason"
       >[] = [];
-      for await (const chunk of topGainersChunk) {
+      for await (const chunk of shortlistChunk) {
         const quotes: typeof quotesData = [];
-        for await (const gainer of chunk) {
-          const quote = await getGrowwQuote(gainer.nseSymbol);
+        for await (const shortlistItem of chunk) {
+          const quote = await getGrowwQuote(shortlistItem.nseSymbol);
           const totalDepthBuy = quote.payload.depth.buy.reduce(
             (acc, curr) => acc + curr.quantity,
             0
@@ -192,8 +192,8 @@ async function main() {
           quotes.push({
             ...quote,
             buyerControlOfStockPercentage,
-            instrument: gainer.name,
-            nseSymbol: gainer.nseSymbol,
+            instrument: shortlistItem.name,
+            nseSymbol: shortlistItem.nseSymbol,
           });
         }
         quotesData.push(...quotes);

@@ -1,16 +1,16 @@
 import dotenv from "dotenv";
 import { getGrowwQuote } from "./groww/get-quote";
-import { getGrowwTopGainers } from "./groww/get-top-gainers";
+import { getGrowwShortlist } from "./groww/get-shortlist";
 import { logger } from "./utils/logger";
 import { PlaceOrderData, MarketDepthWriter } from "./utils/writer";
 dotenv.config();
 
-export type { GrowwTopGainer } from "./groww/get-top-gainers";
+export type { GrowwShortlistItem } from "./groww/get-shortlist";
 export type { PlaceOrderData } from "./utils/writer";
 
 export interface RunContext {
   getGrowwQuote: typeof getGrowwQuote;
-  getGrowwTopGainers: typeof getGrowwTopGainers;
+  getGrowwShortlist: typeof getGrowwShortlist;
   placeOrder: (data: PlaceOrderData) => void;
 }
 
@@ -38,7 +38,7 @@ export async function ganaka<T>({
     await fn({
       placeOrder,
       getGrowwQuote,
-      getGrowwTopGainers,
+      getGrowwShortlist,
     });
   } catch (error) {
     logger.error("Error running function for the first time");
