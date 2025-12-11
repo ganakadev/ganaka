@@ -21,8 +21,10 @@ export class MarketDepthWriter {
   private initialized: boolean = false;
   private writeQueue: Promise<void> = Promise.resolve();
   private entries: PlaceOrderData[] = [];
+  private disabled: boolean;
 
-  constructor(projectRoot: string) {
+  constructor(projectRoot: string, disabled?: boolean) {
+    this.disabled = disabled ?? false;
     const activityDir = join(projectRoot, "activity");
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const fileName = `activity-${timestamp}.html`;
@@ -30,6 +32,10 @@ export class MarketDepthWriter {
   }
 
   async initialize(): Promise<void> {
+    if (this.disabled) {
+      return;
+    }
+
     if (this.initialized) {
       return;
     }
@@ -51,6 +57,10 @@ export class MarketDepthWriter {
   }
 
   async write(data: PlaceOrderData): Promise<void> {
+    if (this.disabled) {
+      return;
+    }
+
     // Chain this write operation to the queue to ensure sequential execution
     this.writeQueue = this.writeQueue.then(async () => {
       if (!this.initialized) {
