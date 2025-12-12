@@ -1,9 +1,7 @@
 "use client";
 
-import { DatePickerInput } from "@mantine/dates";
-import { Select } from "@mantine/core";
-import { useState, useEffect } from "react";
-import dayjs from "dayjs";
+import { DateTimePicker, getTimeRange } from "@mantine/dates";
+import { useEffect } from "react";
 
 interface DateTimeSelectorProps {
   selectedDate: Date | null;
@@ -20,72 +18,35 @@ export function DateTimeSelector({
   onTimeChange,
   latestDate,
 }: DateTimeSelectorProps) {
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Reset time selection when date changes
-    setSelectedTime(null);
-    onTimeChange(null);
-  }, [selectedDate, onTimeChange]);
-
-  useEffect(() => {
-    if (availableTimestamps.length > 0 && !selectedTime) {
-      // Default to latest timestamp
-      const latestRaw = availableTimestamps[availableTimestamps.length - 1];
-      const latest =
-        latestRaw instanceof Date ? latestRaw : new Date(latestRaw);
-      if (!isNaN(latest.getTime())) {
-        setSelectedTime(latest.toISOString());
-        onTimeChange(latest);
-      }
-    }
-  }, [availableTimestamps, selectedTime, onTimeChange]);
-
-  const timeOptions = availableTimestamps
-    .map((ts) => {
-      // Ensure ts is a Date object
-      const date = ts instanceof Date ? ts : new Date(ts);
-      return {
-        value: date.toISOString(),
-        label: dayjs(date).format("HH:mm:ss"),
-      };
-    })
-    .filter((opt) => !isNaN(new Date(opt.value).getTime())); // Filter out invalid dates
-
-  const handleTimeChange = (value: string | null) => {
-    setSelectedTime(value);
-    if (value) {
-      onTimeChange(new Date(value));
-    } else {
-      onTimeChange(null);
-    }
-  };
-
+  // DRAW
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: "1rem",
-        alignItems: "flex-end",
-        marginBottom: "2rem",
-      }}
-    >
-      <DatePickerInput
-        label="Select Date"
-        placeholder="Pick a date"
+    <div className="flex gap-4 items-end mb-4 max-w-sm">
+      <DateTimePicker
+        label="Pick date and time"
+        placeholder="Pick date and time"
         value={selectedDate}
-        onChange={onDateChange}
+        dropdownType="modal"
+        valueFormat="DD MMM YYYY hh:mm A"
+        className="w-full"
+        onChange={(date) => {
+          // onDateChange(date);
+          // if (date) {
+          //   onTimeChange(date);
+          // }
+        }}
         maxDate={latestDate ? new Date(latestDate) : undefined}
-        style={{ flex: 1 }}
-      />
-      <Select
-        label="Select Time"
-        placeholder="Pick a time"
-        data={timeOptions}
-        value={selectedTime}
-        onChange={handleTimeChange}
-        disabled={availableTimestamps.length === 0}
-        style={{ flex: 1 }}
+        excludeDate={(date) =>
+          new Date(date).getDay() === 6 || new Date(date).getDay() === 0
+        }
+        timePickerProps={{
+          withDropdown: true,
+          format: "12h",
+          presets: getTimeRange({
+            startTime: "09:15:00",
+            endTime: "15:30:00",
+            interval: "0:1:0",
+          }),
+        }}
       />
     </div>
   );
