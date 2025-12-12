@@ -24,7 +24,7 @@ export function DateTimeSelector({ onDateChange }: DateTimeSelectorProps) {
     const dateKey = dayjs(date).format("YYYY-MM-DD");
     const dateData = availableDatetimes.dates.find((d) => d.date === dateKey);
     if (!dateData) return [];
-    return dateData.timestamps.map((ts) => dayjs(ts).format("hh:mm"));
+    return dateData.timestamps.map((ts) => dayjs(ts).format("HH:mm"));
   };
 
   // Check if a date has any available data
