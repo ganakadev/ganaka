@@ -27,6 +27,12 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    if (shortlists.length === 0) {
+      return NextResponse.json({
+        shortlist: null,
+      });
+    }
+
     return NextResponse.json({
       shortlist: shortlists[0],
     });
