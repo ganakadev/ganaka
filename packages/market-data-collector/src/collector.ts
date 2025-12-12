@@ -228,7 +228,7 @@ export async function collectMarketData(
     }
 
     // Use transaction for atomicity
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       if (shortlistData.length > 0) {
         await tx.shortlistSnapshot.createMany({ data: shortlistData });
       }
