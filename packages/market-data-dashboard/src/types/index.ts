@@ -1,4 +1,4 @@
-import { ShortlistType } from '@prisma/client';
+import { ShortlistType } from "@prisma/client";
 
 export interface ShortlistEntry {
   nseSymbol: string;
@@ -37,10 +37,16 @@ export interface QuoteSnapshotData {
 }
 
 export interface ApiShortlistsResponse {
-  groupedShortlists: GroupedShortlist[];
-  latestDate: string | null;
+  shortlist: ShortlistSnapshotData | null;
 }
 
 export interface ApiQuotesResponse {
   quote: QuoteSnapshotData | null;
+}
+
+export interface AvailableDatetimesResponse {
+  dates: {
+    date: string;
+    timestamps: string[];
+  }[];
 }

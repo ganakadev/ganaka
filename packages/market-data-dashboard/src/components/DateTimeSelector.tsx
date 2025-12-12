@@ -1,52 +1,103 @@
 "use client";
 
-import { DateTimePicker, getTimeRange } from "@mantine/dates";
-import { useEffect } from "react";
+import { AvailableDatetimesResponse } from "@/types";
+import { DateTimePicker } from "@mantine/dates";
+import axios from "axios";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 
 interface DateTimeSelectorProps {
-  selectedDate: Date | null;
-  availableTimestamps: Date[];
-  onDateChange: (date: Date | null) => void;
-  onTimeChange: (timestamp: Date | null) => void;
-  latestDate: string | null;
+  onDateChange: (date: Date) => void;
 }
 
-export function DateTimeSelector({
-  selectedDate,
-  availableTimestamps,
-  onDateChange,
-  onTimeChange,
-  latestDate,
-}: DateTimeSelectorProps) {
+export function DateTimeSelector({ onDateChange }: DateTimeSelectorProps) {
+  // STATE
+  const [availableDatetimes, setAvailableDatetimes] =
+    useState<AvailableDatetimesResponse | null>(null);
+  const [timePresets, setTimePresets] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // HANDLERS
+  // Get available times for a specific date
+  const getAvailableTimesForDate = (date: string | null): string[] => {
+    if (!date || !availableDatetimes) return [];
+    const dateKey = dayjs(date).format("YYYY-MM-DD");
+    const dateData = availableDatetimes.dates.find((d) => d.date === dateKey);
+    if (!dateData) return [];
+    return dateData.timestamps.map((ts) => dayjs(ts).format("hh:mm"));
+  };
+
+  // Check if a date has any available data
+  const isDateAvailable = (date: Date): boolean => {
+    const dateKey = dayjs(date).format("YYYY-MM-DD");
+    return availableDatetimes?.dates.some((d) => d.date === dateKey) ?? false;
+  };
+
+  // Handle date/time change with validation
+  const handleChange = (value: string | null) => {
+    if (value) {
+      const selectedDate = dayjs(value);
+      setTimePresets(
+        getAvailableTimesForDate(dayjs(selectedDate).format("YYYY-MM-DD"))
+      );
+
+      // only update state if the time is not at default (00:00)
+      if (selectedDate.format("HH:mm") !== "00:00") {
+        onDateChange(selectedDate.toDate());
+      }
+    }
+  };
+
+  const excludeDate = (date: string): boolean => {
+    const dateDayjs = dayjs(date);
+    // Exclude weekends
+    const day = dateDayjs.day();
+    if (day === 6 || day === 0) return true;
+
+    // Exclude dates without data
+    if (availableDatetimes && !isDateAvailable(dateDayjs.toDate())) {
+      return true;
+    }
+    return false;
+  };
+
+  // EFFECTS
+  // Fetch available datetimes on mount
+  useEffect(() => {
+    const fetchAvailableDatetimes = async () => {
+      try {
+        const { data } = await axios.get<AvailableDatetimesResponse>(
+          "/api/available-datetimes"
+        );
+        setAvailableDatetimes(data);
+      } catch (error) {
+        console.error("Error fetching available datetimes:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAvailableDatetimes();
+  }, []);
+
   // DRAW
   return (
-    <div className="flex gap-4 items-end mb-4 max-w-sm">
+    <div className="flex gap-4 items-end mb-4 max-w-xs">
       <DateTimePicker
         label="Pick date and time"
         placeholder="Pick date and time"
-        value={selectedDate}
-        dropdownType="modal"
         valueFormat="DD MMM YYYY hh:mm A"
         className="w-full"
-        onChange={(date) => {
-          // onDateChange(date);
-          // if (date) {
-          //   onTimeChange(date);
-          // }
-        }}
-        maxDate={latestDate ? new Date(latestDate) : undefined}
-        excludeDate={(date) =>
-          new Date(date).getDay() === 6 || new Date(date).getDay() === 0
-        }
+        onChange={handleChange}
+        excludeDate={excludeDate}
+        hideOutsideDates={true}
+        highlightToday
         timePickerProps={{
           withDropdown: true,
           format: "12h",
-          presets: getTimeRange({
-            startTime: "09:15:00",
-            endTime: "15:30:00",
-            interval: "0:1:0",
-          }),
+          presets: timePresets,
         }}
+        disabled={loading}
       />
     </div>
   );
