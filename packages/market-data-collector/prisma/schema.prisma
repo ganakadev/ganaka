@@ -8,7 +8,7 @@ datasource db {
 }
 
 model ShortlistSnapshot {
-  id            BigInt        @id @default(autoincrement())
+  id            String        @id @default(uuid())
   timestamp     DateTime      @db.Timestamptz(6)
   shortlistType ShortlistType
   entries       Json // Array of shortlist items with nseSymbol, name, price
@@ -19,7 +19,7 @@ model ShortlistSnapshot {
 }
 
 model QuoteSnapshot {
-  id                     BigInt        @id @default(autoincrement())
+  id                     String        @id @default(uuid())
   timestamp              DateTime      @db.Timestamptz(6)
   nseSymbol              String
   shortlistType          ShortlistType // Which shortlist this quote belongs to
@@ -34,7 +34,7 @@ model QuoteSnapshot {
 }
 
 model NiftyQuote {
-  id            BigInt   @id @default(autoincrement())
+  id            String   @id @default(uuid())
   timestamp     DateTime @db.Timestamptz(6)
   quoteData     Json // Full NIFTY quote payload
   dayChangePerc Decimal  @db.Decimal(10, 4)
