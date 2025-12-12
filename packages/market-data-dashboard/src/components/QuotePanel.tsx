@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Text, Card, Stack, Badge, Loader, Center } from "@mantine/core";
-import { QuoteSnapshotData } from "@/types";
+import axios from "axios";
+import { Badge, Loader } from "@mantine/core";
+import { QuoteSnapshotData, ApiQuotesResponse } from "@/types";
 
 interface QuotePanelProps {
   nseSymbol: string;
@@ -34,15 +35,19 @@ export function QuotePanel({
           shortlistType,
         });
 
-        const response = await fetch(`/api/quotes?${params.toString()}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch quote");
-        }
-
-        const data = await response.json();
+        const { data } = await axios.get<ApiQuotesResponse>(
+          `/api/quotes?${params.toString()}`
+        );
         setQuote(data.quote);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Unknown error");
+        let errorMessage = "Unknown error";
+        if (axios.isAxiosError(err)) {
+          errorMessage =
+            err.response?.data?.error || err.message || "Failed to fetch quote";
+        } else if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+        setError(errorMessage);
       } finally {
         setLoading(false);
         onLoadingChange?.(false);
@@ -54,59 +59,50 @@ export function QuotePanel({
 
   if (loading) {
     return (
-      <Center p="xl">
+      <div className="flex items-center justify-center p-8">
         <Loader size="md" />
-      </Center>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Card padding="md" radius="md" withBorder>
-        <Text c="red">Error: {error}</Text>
-      </Card>
+      <div className="border rounded-md p-4 bg-[var(--mantine-color-body)]">
+        <p className="text-red-500">Error: {error}</p>
+      </div>
     );
   }
 
   if (!quote) {
     return (
-      <Card padding="md" radius="md" withBorder>
-        <Text c="dimmed">No quote data available</Text>
-      </Card>
+      <div className="border rounded-md p-4 bg-[var(--mantine-color-body)]">
+        <p className="text-sm text-gray-500">No quote data available</p>
+      </div>
     );
   }
 
   const quoteData = quote.quoteData;
 
   return (
-    <Card padding="md" radius="md" withBorder>
-      <Stack gap="sm">
-        <div>
-          <Text size="sm" c="dimmed">
-            Quote Data
-          </Text>
-          {quote.buyerControlPercentage !== null && (
-            <Badge
-              color={quote.buyerControlPercentage > 50 ? "green" : "red"}
-              mt="xs"
-            >
-              Buyer Control: {quote.buyerControlPercentage.toFixed(2)}%
-            </Badge>
-          )}
-        </div>
-        <div style={{ maxHeight: "400px", overflow: "auto" }}>
-          <pre
-            style={{
-              fontSize: "0.75rem",
-              background: "#f5f5f5",
-              padding: "1rem",
-              borderRadius: "4px",
-            }}
+    <div className="flex flex-col gap-4">
+      <div>
+        <p className="text-sm text-gray-500 mb-2">Quote Data</p>
+        {quote.buyerControlPercentage !== null && (
+          <Badge
+            color={quote.buyerControlPercentage > 50 ? "green" : "red"}
+            size="lg"
           >
+            Buyer Control: {quote.buyerControlPercentage.toFixed(2)}%
+          </Badge>
+        )}
+      </div>
+      <div className="border rounded-md p-4 bg-[var(--mantine-color-body)]">
+        <div className="max-h-[60vh] overflow-auto">
+          <pre className="text-xs bg-gray-100 p-4 rounded m-0">
             {JSON.stringify(quoteData, null, 2)}
           </pre>
         </div>
-      </Stack>
-    </Card>
+      </div>
+    </div>
   );
 }

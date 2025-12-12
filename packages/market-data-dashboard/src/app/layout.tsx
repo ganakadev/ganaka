@@ -1,15 +1,18 @@
+import { MantineProvider, createTheme } from "@mantine/core";
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
-import { MantineProvider, createTheme } from "@mantine/core";
+import "@/app/globals.css";
 import { ReactNode } from "react";
 
 const theme = createTheme({});
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" data-mantine-color-scheme="dark">
       <body>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <MantineProvider theme={theme} defaultColorScheme="dark">
+          {children}
+        </MantineProvider>
       </body>
     </html>
   );

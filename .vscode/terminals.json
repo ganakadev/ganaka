@@ -23,6 +23,11 @@
       "command": "nvm use 22 && pnpm --filter @ganaka-algos/market-data-collector dev"
     },
     {
+      "name": "Market Data Dashboard: Dev",
+      "focus": true,
+      "command": "nvm use 22 && pnpm --filter @ganaka-algos/market-data-dashboard dev"
+    },
+    {
       "name": "Market Data Collector: Prisma Migrate",
       "focus": true,
       "command": "nvm use 22 && pnpm --filter @ganaka-algos/market-data-collector prisma:migrate"

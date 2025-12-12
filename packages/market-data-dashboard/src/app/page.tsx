@@ -1,12 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Container, Title, Tabs, Loader, Center, Text } from "@mantine/core";
+import axios from "axios";
+import { Tabs, Loader } from "@mantine/core";
 import { DateTimeSelector } from "@/components/DateTimeSelector";
-import { ShortlistCard } from "@/components/ShortlistCard";
-import { GroupedShortlist, ApiShortlistsResponse } from "@/types";
+import { ShortlistTable } from "@/components/ShortlistTable";
+import { QuoteDrawer } from "@/components/QuoteDrawer";
+import {
+  GroupedShortlist,
+  ApiShortlistsResponse,
+  ShortlistEntry,
+} from "@/types";
 
 export default function DashboardPage() {
+  // STATE
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTimestamp, setSelectedTimestamp] = useState<Date | null>(null);
   const [groupedShortlists, setGroupedShortlists] = useState<
@@ -17,7 +24,18 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [availableTimestamps, setAvailableTimestamps] = useState<Date[]>([]);
   const [activeTab, setActiveTab] = useState<string | null>("all");
+  // Drawer state
+  const [drawerOpened, setDrawerOpened] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState<ShortlistEntry | null>(
+    null
+  );
+  const [selectedEntryTimestamp, setSelectedEntryTimestamp] =
+    useState<Date | null>(null);
+  const [selectedEntryShortlistType, setSelectedEntryShortlistType] = useState<
+    string | null
+  >(null);
 
+  // EFFECTS
   // Fetch shortlists when date changes
   useEffect(() => {
     const fetchShortlists = async () => {
@@ -32,33 +50,9 @@ export default function DashboardPage() {
           params.set("type", activeTab);
         }
 
-        let response: Response;
-        try {
-          response = await fetch(`/api/shortlists?${params.toString()}`);
-        } catch (fetchError) {
-          throw new Error(
-            `Network error: ${
-              fetchError instanceof Error
-                ? fetchError.message
-                : "Failed to connect to API"
-            }`
-          );
-        }
-
-        if (!response.ok) {
-          let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-          try {
-            const errorData = await response.json();
-            if (errorData.error) {
-              errorMessage = errorData.error;
-            }
-          } catch {
-            // If response is not JSON, use the status text
-          }
-          throw new Error(errorMessage);
-        }
-
-        const data: ApiShortlistsResponse = await response.json();
+        const { data } = await axios.get<ApiShortlistsResponse>(
+          `/api/shortlists?${params.toString()}`
+        );
 
         // Convert timestamp strings to Date objects
         const processedGroupedShortlists: GroupedShortlist[] =
@@ -98,8 +92,15 @@ export default function DashboardPage() {
         }
       } catch (error) {
         console.error("Error fetching shortlists:", error);
-        const errorMessage =
-          error instanceof Error ? error.message : "An unknown error occurred";
+        let errorMessage = "An unknown error occurred";
+        if (axios.isAxiosError(error)) {
+          errorMessage =
+            error.response?.data?.error ||
+            error.message ||
+            `HTTP ${error.response?.status}: ${error.response?.statusText}`;
+        } else if (error instanceof Error) {
+          errorMessage = error.message;
+        }
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -140,12 +141,26 @@ export default function DashboardPage() {
     (s) => s.shortlistType === "VOLUME_SHOCKERS"
   );
 
-  return (
-    <Container size="xl" py="xl">
-      <Title order={1} mb="xl">
-        Market Data Dashboard
-      </Title>
+  const handleRowClick = (
+    entry: ShortlistEntry,
+    timestamp: Date,
+    shortlistType: string
+  ) => {
+    setSelectedEntry(entry);
+    setSelectedEntryTimestamp(timestamp);
+    setSelectedEntryShortlistType(shortlistType);
+    setDrawerOpened(true);
+  };
 
+  const handleDrawerClose = () => {
+    setDrawerOpened(false);
+    setSelectedEntry(null);
+    setSelectedEntryTimestamp(null);
+    setSelectedEntryShortlistType(null);
+  };
+
+  return (
+    <div className="max-w-5xl mx-auto py-8 px-4">
       <DateTimeSelector
         selectedDate={selectedDate}
         availableTimestamps={availableTimestamps}
@@ -154,111 +169,111 @@ export default function DashboardPage() {
         latestDate={latestDate}
       />
 
-      {error && (
-        <div
-          style={{
-            padding: "1rem",
-            marginBottom: "1rem",
-            backgroundColor: "#fee",
-            border: "1px solid #fcc",
-            borderRadius: "4px",
-            color: "#c33",
-          }}
-        >
-          <Text fw={500} c="red">
-            Error: {error}
-          </Text>
-          <Text size="sm" c="red" mt="xs">
-            Please ensure:
-            <br />
-            1. Prisma client is generated: <code>pnpm prisma:generate</code>
-            <br />
-            2. DATABASE_URL is set in .env.local
-            <br />
-            3. Database is accessible
-          </Text>
-        </div>
-      )}
-
-      <Tabs value={activeTab} onChange={setActiveTab}>
+      {/* <Tabs value={activeTab} onChange={setActiveTab}>
         <Tabs.List>
           <Tabs.Tab value="all">All</Tabs.Tab>
           <Tabs.Tab value="TOP_GAINERS">Top Gainers</Tabs.Tab>
           <Tabs.Tab value="VOLUME_SHOCKERS">Volume Shockers</Tabs.Tab>
         </Tabs.List>
 
-        <Tabs.Panel value="all" pt="xl">
+        <Tabs.Panel value="all" className="pt-8">
           {loading ? (
-            <Center p="xl">
+            <div className="flex items-center justify-center p-8">
               <Loader size="lg" />
-            </Center>
+            </div>
           ) : (
             <>
               {topGainers.length > 0 && (
-                <div style={{ marginBottom: "2rem" }}>
-                  <Title order={2} mb="md">
-                    Top Gainers
-                  </Title>
+                <div className="mb-8">
+                  <h2 className="text-2xl font-semibold mb-4">Top Gainers</h2>
                   {topGainers.map((shortlist) => (
-                    <ShortlistCard key={shortlist.id} shortlist={shortlist} />
+                    <ShortlistTable
+                      key={shortlist.id}
+                      shortlist={shortlist}
+                      onRowClick={handleRowClick}
+                    />
                   ))}
                 </div>
               )}
 
               {volumeShockers.length > 0 && (
                 <div>
-                  <Title order={2} mb="md">
+                  <h2 className="text-2xl font-semibold mb-4">
                     Volume Shockers
-                  </Title>
+                  </h2>
                   {volumeShockers.map((shortlist) => (
-                    <ShortlistCard key={shortlist.id} shortlist={shortlist} />
+                    <ShortlistTable
+                      key={shortlist.id}
+                      shortlist={shortlist}
+                      onRowClick={handleRowClick}
+                    />
                   ))}
                 </div>
               )}
 
               {filteredShortlists.length === 0 && !loading && (
-                <Center p="xl">
-                  <Text c="dimmed">
+                <div className="flex items-center justify-center p-8">
+                  <p className="text-sm text-gray-500">
                     No shortlist data available for the selected date/time
-                  </Text>
-                </Center>
+                  </p>
+                </div>
               )}
             </>
           )}
         </Tabs.Panel>
 
-        <Tabs.Panel value="TOP_GAINERS" pt="xl">
+        <Tabs.Panel value="TOP_GAINERS" className="pt-8">
           {loading ? (
-            <Center p="xl">
+            <div className="flex items-center justify-center p-8">
               <Loader size="lg" />
-            </Center>
+            </div>
           ) : topGainers.length > 0 ? (
             topGainers.map((shortlist) => (
-              <ShortlistCard key={shortlist.id} shortlist={shortlist} />
+              <ShortlistTable
+                key={shortlist.id}
+                shortlist={shortlist}
+                onRowClick={handleRowClick}
+              />
             ))
           ) : (
-            <Center p="xl">
-              <Text c="dimmed">No top gainers data available</Text>
-            </Center>
+            <div className="flex items-center justify-center p-8">
+              <p className="text-sm text-gray-500">
+                No top gainers data available
+              </p>
+            </div>
           )}
         </Tabs.Panel>
 
-        <Tabs.Panel value="VOLUME_SHOCKERS" pt="xl">
+        <Tabs.Panel value="VOLUME_SHOCKERS" className="pt-8">
           {loading ? (
-            <Center p="xl">
+            <div className="flex items-center justify-center p-8">
               <Loader size="lg" />
-            </Center>
+            </div>
           ) : volumeShockers.length > 0 ? (
             volumeShockers.map((shortlist) => (
-              <ShortlistCard key={shortlist.id} shortlist={shortlist} />
+              <ShortlistTable
+                key={shortlist.id}
+                shortlist={shortlist}
+                onRowClick={handleRowClick}
+              />
             ))
           ) : (
-            <Center p="xl">
-              <Text c="dimmed">No volume shockers data available</Text>
-            </Center>
+            <div className="flex items-center justify-center p-8">
+              <p className="text-sm text-gray-500">
+                No volume shockers data available
+              </p>
+            </div>
           )}
         </Tabs.Panel>
-      </Tabs>
-    </Container>
+      </Tabs> */}
+
+      {/* <QuoteDrawer
+        opened={drawerOpened}
+        onClose={handleDrawerClose}
+        selectedEntry={selectedEntry}
+        timestamp={selectedEntryTimestamp}
+        shortlistType={selectedEntryShortlistType}
+      /> */}
+    </div>
   );
 }
