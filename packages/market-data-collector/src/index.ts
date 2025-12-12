@@ -1,44 +1,40 @@
 import dotenv from "dotenv";
 import { Cron } from "croner";
 import { ganaka } from "@ganaka-algos/sdk";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { isWithinCollectionWindow } from "./utils/time";
 import { collectMarketData } from "./collector";
 import { prisma } from "./utils/prisma";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 dotenv.config();
 
 async function runCollection(): Promise<void> {
   // Check if we're within the collection window (8:45 AM - 3:30 PM IST, weekdays only)
   if (!isWithinCollectionWindow()) {
-    const now = new Date();
+    const nowIST = dayjs().tz("Asia/Kolkata");
     console.log(
-      `Outside collection window. Current time: ${now.toLocaleString("en-US", {
-        timeZone: "Asia/Kolkata",
-      })} IST`
+      `Outside collection window. Current time: ${nowIST.format(
+        "YYYY-MM-DD HH:mm:ss"
+      )} IST`
     );
-    console.log(`   Collection window: 8:45 AM - 3:30 PM IST, Monday-Friday`);
+    console.log(`Collection window: 8:45 AM - 3:30 PM IST, Monday-Friday`);
     return;
   }
 
   // Log current time in UTC and IST
-  const now = new Date();
+  const now = dayjs();
+  const nowIST = dayjs().tz("Asia/Kolkata");
 
   // Format UTC time: YYYY-MM-DD HH:mm:ss UTC
-  const utcTime = now.toISOString().replace("T", " ").slice(0, 19) + " UTC";
+  const utcTime = now.utc().format("YYYY-MM-DD HH:mm:ss") + " UTC";
 
   // Format IST time: YYYY-MM-DD HH:mm:ss
-  const istFormatter = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Kolkata",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
-
-  const istTime = istFormatter.format(now).replace("T", " ");
+  const istTime = nowIST.format("YYYY-MM-DD HH:mm:ss");
   console.log(`\nCron job triggered - UTC: ${utcTime}, IST: ${istTime} IST`);
 
   // Run within ganaka SDK to access SDK functions
