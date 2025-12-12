@@ -93,9 +93,9 @@ export function QuotePanel({
           </Badge>
         )}
       </div>
-      <div className="border rounded-md p-4 bg-(--mantine-color-body)">
+      <div className="border rounded-md p-4">
         <div className="max-h-[60vh] overflow-auto">
-          <pre className="text-xs bg-gray-100 p-4 rounded m-0">
+          <pre className="text-xs  p-4 rounded m-0">
             {JSON.stringify(quote.quoteData, null, 2)}
           </pre>
         </div>
