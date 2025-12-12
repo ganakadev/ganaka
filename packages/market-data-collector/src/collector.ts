@@ -1,7 +1,8 @@
 import { chunk } from "lodash";
 import { GrowwShortlistItem } from "@ganaka-algos/sdk";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { getCurrentISTTime } from "./utils/time";
+import { prisma } from "./utils/prisma";
 
 // Enum matching Prisma schema (will be available from @prisma/client after generation)
 enum ShortlistType {
@@ -46,8 +47,6 @@ type GetGrowwQuote = (symbol: string) => Promise<GrowwQuote>;
 type GetGrowwShortlist = (
   type: "volume-shockers" | "top-gainers"
 ) => Promise<GrowwShortlistItem[]>;
-
-const prisma = new PrismaClient();
 
 const NIFTYBANK_SYMBOL = "NIFTY";
 const TOP_STOCKS_LIMIT = 10;
@@ -245,8 +244,5 @@ export async function collectMarketData(
   } catch (error) {
     console.error("Error during market data collection:", error);
     throw error;
-  } finally {
-    // Disconnect Prisma client to ensure proper cleanup
-    await prisma.$disconnect();
   }
 }

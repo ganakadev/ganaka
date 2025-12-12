@@ -1,12 +1,14 @@
 import dotenv from "dotenv";
+import { Cron } from "croner";
 import { ganaka } from "@ganaka-algos/sdk";
 import { isWithinCollectionWindow } from "./utils/time";
 import { collectMarketData } from "./collector";
+import { prisma } from "./utils/prisma";
 
 dotenv.config();
 
-async function main() {
-  // Check if we're within the collection window (8:45 AM - 3:30 PM IST)
+async function runCollection(): Promise<void> {
+  // // Check if we're within the collection window (8:45 AM - 3:30 PM IST, weekdays only)
   // if (!isWithinCollectionWindow()) {
   //   const now = new Date();
   //   console.log(
@@ -14,8 +16,8 @@ async function main() {
   //       timeZone: "Asia/Kolkata",
   //     })} IST`
   //   );
-  //   console.log(`   Collection window: 8:45 AM - 3:30 PM IST`);
-  //   process.exit(0);
+  //   console.log(`   Collection window: 8:45 AM - 3:30 PM IST, Monday-Friday`);
+  //   return;
   // }
 
   // Run within ganaka SDK to access SDK functions
@@ -24,17 +26,47 @@ async function main() {
       try {
         await collectMarketData(getGrowwShortlist, getGrowwQuote);
         console.log("Market data collection completed successfully");
-        process.exit(0);
       } catch (error) {
         console.error("Failed to collect market data:", error);
-        process.exit(1);
+        // Don't throw - let the cron job continue running
       }
     },
     disableActivityFiles: true,
   });
 }
 
-main().catch((error) => {
-  console.error("Fatal error:", error);
-  process.exit(1);
-});
+function main() {
+  // Set up cron job: every minute on weekdays (Monday-Friday)
+  // Cron expression: * * * * 1-5 (every minute, Monday through Friday)
+  const job = new Cron(
+    "* * * * 1-5",
+    {
+      timezone: "Asia/Kolkata",
+    },
+    async () => {
+      await runCollection();
+    }
+  );
+
+  console.log(
+    "Market data collector started. Running every minute on weekdays (8:45 AM - 3:30 PM IST)"
+  );
+  console.log("Cron schedule: * * * * 1-5 (every minute, Monday-Friday)");
+  console.log("Timezone: Asia/Kolkata (IST)");
+
+  // Set up graceful shutdown handlers
+  const shutdown = async (signal: string) => {
+    console.log(`Received ${signal}, shutting down gracefully...`);
+    job.stop();
+    await prisma.$disconnect();
+    process.exit(0);
+  };
+
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  process.on("SIGINT", () => shutdown("SIGINT"));
+
+  // Keep the process alive
+  // The cron job will continue running
+}
+
+main();
