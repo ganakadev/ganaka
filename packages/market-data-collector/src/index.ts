@@ -8,6 +8,18 @@ import { prisma } from "./utils/prisma";
 dotenv.config();
 
 async function runCollection(): Promise<void> {
+  // Check if we're within the collection window (8:45 AM - 3:30 PM IST, weekdays only)
+  if (!isWithinCollectionWindow()) {
+    const now = new Date();
+    console.log(
+      `Outside collection window. Current time: ${now.toLocaleString("en-US", {
+        timeZone: "Asia/Kolkata",
+      })} IST`
+    );
+    console.log(`   Collection window: 8:45 AM - 3:30 PM IST, Monday-Friday`);
+    return;
+  }
+
   // Log current time in UTC and IST
   const now = new Date();
 
@@ -28,18 +40,6 @@ async function runCollection(): Promise<void> {
 
   const istTime = istFormatter.format(now).replace("T", " ");
   console.log(`\nCron job triggered - UTC: ${utcTime}, IST: ${istTime} IST`);
-
-  // // Check if we're within the collection window (8:45 AM - 3:30 PM IST, weekdays only)
-  // if (!isWithinCollectionWindow()) {
-  //   const now = new Date();
-  //   console.log(
-  //     `Outside collection window. Current time: ${now.toLocaleString("en-US", {
-  //       timeZone: "Asia/Kolkata",
-  //     })} IST`
-  //   );
-  //   console.log(`   Collection window: 8:45 AM - 3:30 PM IST, Monday-Friday`);
-  //   return;
-  // }
 
   // Run within ganaka SDK to access SDK functions
   await ganaka({
