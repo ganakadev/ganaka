@@ -8,6 +8,14 @@ const nextConfig = {
         fs: false,
       };
     }
+    // Suppress webpack cache warnings about serializing big strings
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      {
+        module: /./,
+        message: /Serializing big strings.*impacts deserialization performance/,
+      },
+    ];
     return config;
   },
   // Exclude Prisma from client bundle to avoid webpack cache warnings
