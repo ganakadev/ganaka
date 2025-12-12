@@ -30,32 +30,19 @@ export default function DashboardPage() {
   const [selectedEntry, setSelectedEntry] = useState<ShortlistEntry | null>(
     null
   );
-  const [selectedEntryTimestamp, setSelectedEntryTimestamp] =
-    useState<Date | null>(null);
-  const [selectedEntryShortlistType, setSelectedEntryShortlistType] = useState<
-    string | null
-  >(null);
   const [topGainersShortlist, setTopGainersShortlist] =
     useState<ShortlistSnapshotData | null>(null);
   const [volumeShockersShortlist, setVolumeShockersShortlist] =
     useState<ShortlistSnapshotData | null>(null);
 
-  const handleRowClick = (
-    entry: ShortlistEntry,
-    timestamp: Date,
-    shortlistType: string
-  ) => {
+  const handleRowClick = (entry: ShortlistEntry) => {
     setSelectedEntry(entry);
-    setSelectedEntryTimestamp(timestamp);
-    setSelectedEntryShortlistType(shortlistType);
     setDrawerOpened(true);
   };
 
   const handleDrawerClose = () => {
     setDrawerOpened(false);
     setSelectedEntry(null);
-    setSelectedEntryTimestamp(null);
-    setSelectedEntryShortlistType(null);
   };
 
   // EFFECTS
@@ -120,8 +107,6 @@ export default function DashboardPage() {
             root: "h-full",
           }}
           onChange={(value) => {
-            setTopGainersShortlist(null);
-            setVolumeShockersShortlist(null);
             setActiveTab(value as "TOP_GAINERS" | "VOLUME_SHOCKERS");
             setLoading(true);
           }}
@@ -136,6 +121,7 @@ export default function DashboardPage() {
             {topGainersShortlist ? (
               <ShortlistTable
                 shortlist={topGainersShortlist}
+                loading={loading}
                 onRowClick={handleRowClick}
               />
             ) : (
@@ -150,6 +136,7 @@ export default function DashboardPage() {
               <ShortlistTable
                 shortlist={volumeShockersShortlist}
                 onRowClick={handleRowClick}
+                loading={loading}
               />
             ) : (
               <div className="flex items-center justify-center p-8 h-full">
@@ -158,13 +145,12 @@ export default function DashboardPage() {
             )}
           </Tabs.Panel>
         </Tabs>
-
         <QuoteDrawer
           opened={drawerOpened}
           onClose={handleDrawerClose}
           selectedEntry={selectedEntry}
-          timestamp={selectedEntryTimestamp}
-          shortlistType={selectedEntryShortlistType}
+          timestamp={selectedDate}
+          shortlistType={activeTab}
         />
       </div>
     </div>

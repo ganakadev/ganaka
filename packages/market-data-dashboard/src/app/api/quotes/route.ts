@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ShortlistType } from "@prisma/client";
 import { QuoteSnapshotData } from "@/types";
+import dayjs from "dayjs";
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,7 +28,10 @@ export async function GET(request: NextRequest) {
     const quoteSnapshot = await prisma.quoteSnapshot.findFirst({
       where: {
         nseSymbol,
-        timestamp,
+        timestamp: {
+          gte: dayjs(timestamp).toDate(),
+          lte: dayjs(timestamp).add(1, "s").toDate(),
+        },
         shortlistType,
       },
     });

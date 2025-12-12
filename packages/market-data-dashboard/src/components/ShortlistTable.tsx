@@ -1,26 +1,22 @@
 "use client";
 
-import { Table, Badge } from "@mantine/core";
-import { ShortlistSnapshotData, ShortlistEntry } from "@/types";
-import dayjs from "dayjs";
+import { ShortlistEntry, ShortlistSnapshotData } from "@/types";
+import { Skeleton, Table } from "@mantine/core";
+import { times } from "lodash";
 
-interface ShortlistTableProps {
+export const ShortlistTable = ({
+  shortlist,
+  onRowClick,
+  loading,
+}: {
   shortlist: ShortlistSnapshotData;
   onRowClick: (
     entry: ShortlistEntry,
     timestamp: Date,
     shortlistType: string
   ) => void;
-}
-
-export function ShortlistTable({ shortlist, onRowClick }: ShortlistTableProps) {
-  // VARIABLES
-  const shortlistTypeLabel =
-    shortlist.shortlistType === "TOP_GAINERS"
-      ? "Top Gainers"
-      : "Volume Shockers";
-  const color = shortlist.shortlistType === "TOP_GAINERS" ? "green" : "blue";
-
+  loading: boolean;
+}) => {
   // DRAW
   return (
     <div className="mb-8">
@@ -33,33 +29,51 @@ export function ShortlistTable({ shortlist, onRowClick }: ShortlistTableProps) {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {shortlist.entries.map((entry, index) => (
-            <Table.Tr
-              key={`${entry.nseSymbol}-${index}`}
-              className="cursor-pointer"
-              onClick={() =>
-                onRowClick(entry, shortlist.timestamp, shortlist.shortlistType)
-              }
-            >
-              <Table.Td>
-                <span className="font-medium">{entry.name}</span>
-              </Table.Td>
-              <Table.Td>
-                <span className="text-sm text-gray-500">{entry.nseSymbol}</span>
-              </Table.Td>
-              <Table.Td className="text-right">
-                <span className="font-bold">
-                  ₹
-                  {entry.price.toLocaleString("en-IN", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </span>
-              </Table.Td>
-            </Table.Tr>
-          ))}
+          {loading
+            ? times(10, (index) => (
+                <Table.Tr key={index}>
+                  <Table.Td>
+                    <Skeleton height={20} width="100%" />
+                  </Table.Td>
+                  <Table.Td>
+                    <Skeleton height={20} width="100%" />
+                  </Table.Td>
+                  <Table.Td>
+                    <Skeleton height={20} width="100%" />
+                  </Table.Td>
+                </Table.Tr>
+              ))
+            : shortlist.entries.map((entry, index) => (
+                <Table.Tr
+                  key={`${entry.nseSymbol}-${index}`}
+                  className="cursor-pointer"
+                  onClick={() =>
+                    onRowClick(
+                      entry,
+                      shortlist.timestamp,
+                      shortlist.shortlistType
+                    )
+                  }
+                >
+                  <Table.Td>
+                    <span className="font-medium">{entry.name}</span>
+                  </Table.Td>
+                  <Table.Td>
+                    <span className="text-sm">{entry.nseSymbol}</span>
+                  </Table.Td>
+                  <Table.Td className="text-right">
+                    <span className="font-bold">
+                      ₹
+                      {entry.price.toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                  </Table.Td>
+                </Table.Tr>
+              ))}
         </Table.Tbody>
       </Table>
     </div>
   );
-}
+};
