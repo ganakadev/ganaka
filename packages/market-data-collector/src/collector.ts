@@ -50,7 +50,7 @@ type GetGrowwShortlist = (
 
 const NIFTYBANK_SYMBOL = "NIFTY";
 const TOP_STOCKS_LIMIT = 10;
-const RATE_LIMIT_BATCH_SIZE = 9;
+const RATE_LIMIT_BATCH_SIZE = 5;
 const RATE_LIMIT_DELAY_MS = 1000; // 1 second
 
 interface SymbolWithSource {
