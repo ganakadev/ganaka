@@ -2,6 +2,7 @@
 
 import { Table, Badge } from "@mantine/core";
 import { ShortlistSnapshotData, ShortlistEntry } from "@/types";
+import dayjs from "dayjs";
 
 interface ShortlistTableProps {
   shortlist: ShortlistSnapshotData;
@@ -23,18 +24,6 @@ export function ShortlistTable({ shortlist, onRowClick }: ShortlistTableProps) {
   // DRAW
   return (
     <div className="mb-8">
-      <div className="flex justify-between items-center mb-4">
-        <Badge color={color} size="lg">
-          {shortlistTypeLabel}
-        </Badge>
-        <span className="text-sm text-gray-500">
-          {new Date(shortlist.timestamp).toLocaleTimeString("en-IN", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-          })}
-        </span>
-      </div>
       <Table striped highlightOnHover withTableBorder withColumnBorders>
         <Table.Thead>
           <Table.Tr>
