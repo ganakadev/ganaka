@@ -79,6 +79,9 @@ importers:
       dayjs:
         specifier: ^1.11.19
         version: 1.11.19
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       next:
         specifier: ^15.1.0
         version: 15.5.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -95,6 +98,9 @@ importers:
         specifier: ^4.1.18
         version: 4.1.18
     devDependencies:
+      '@types/lodash':
+        specifier: ^4.17.21
+        version: 4.17.21
       '@types/node':
         specifier: ^20.10.5
         version: 20.19.26
