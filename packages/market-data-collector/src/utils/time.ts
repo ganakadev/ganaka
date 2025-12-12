@@ -1,5 +1,19 @@
 export function isWithinCollectionWindow(): boolean {
   const now = new Date();
+
+  // Get current day of week in IST
+  const dayFormatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Kolkata",
+    weekday: "short",
+  });
+  const weekday = dayFormatter.format(now);
+
+  // Check if it's a weekday (Monday-Friday)
+  // weekday will be "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", or "Sun"
+  if (weekday === "Sat" || weekday === "Sun") {
+    return false;
+  }
+
   // Get current time in IST (UTC+5:30)
   const formatter = new Intl.DateTimeFormat("en-US", {
     timeZone: "Asia/Kolkata",
