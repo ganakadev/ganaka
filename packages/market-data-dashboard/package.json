@@ -1,0 +1,30 @@
+{
+  "name": "@ganaka-algos/market-data-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 8081",
+    "build": "next build",
+    "start": "next start -p 8081",
+    "lint": "next lint",
+    "prisma:generate": "prisma generate"
+  },
+  "dependencies": {
+    "@mantine/core": "^7.15.0",
+    "@mantine/dates": "^7.15.0",
+    "@mantine/hooks": "^7.15.0",
+    "@mantine/charts": "^7.15.0",
+    "@prisma/client": "^6.19.1",
+    "dayjs": "^1.11.10",
+    "next": "^15.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "prisma": "^6.19.1",
+    "typescript": "^5.3.3"
+  }
+}
