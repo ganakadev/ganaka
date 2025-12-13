@@ -4,7 +4,7 @@ export interface ShortlistEntry {
   nseSymbol: string;
   name: string;
   price: number;
-  quoteData?: QuoteData | null;
+  quoteData: QuoteData | null;
   buyerControlPercentage?: number | null;
 }
 
@@ -40,10 +40,6 @@ export interface QuoteSnapshotData {
 
 export interface ApiShortlistsResponse {
   shortlist: ShortlistSnapshotData | null;
-}
-
-export interface ApiQuotesResponse {
-  quote: QuoteSnapshotData | null;
 }
 
 export interface AvailableDatetimesResponse {
