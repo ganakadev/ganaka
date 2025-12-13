@@ -1,6 +1,6 @@
 "use client";
 
-import { ShortlistEntry, ShortlistSnapshotData } from "@/types";
+import { ShortlistEntry, ShortlistSnapshot } from "@/types";
 import { Skeleton, Table } from "@mantine/core";
 import { times } from "lodash";
 
@@ -61,7 +61,7 @@ export const ShortlistTable = ({
   onRowClick,
   loading,
 }: {
-  shortlist: ShortlistSnapshotData;
+  shortlist: ShortlistSnapshot;
   onRowClick: (entry: ShortlistEntry) => void;
   loading: boolean;
 }) => {
@@ -104,42 +104,44 @@ export const ShortlistTable = ({
                   </Table.Td>
                 </Table.Tr>
               ))
-            : shortlist.entries.map((entry, index) => (
-                <Table.Tr
-                  key={`${entry.nseSymbol}-${index}`}
-                  className="cursor-pointer"
-                  onClick={() => onRowClick(entry)}
-                >
-                  <Table.Td className="w-[55%]">
-                    <span className="font-medium">{entry.name}</span>
-                  </Table.Td>
-                  <Table.Td className="w-[20%]">
-                    <span className="text-sm">{entry.nseSymbol}</span>
-                  </Table.Td>
-                  <Table.Td className="w-[20%]">
-                    <span className="text-sm">
-                      {calculateOrderBookDominance(
-                        entry.quoteData?.payload.depth.buy ?? [],
+            : (shortlist.entries as unknown as ShortlistEntry[]).map(
+                (entry, index) => (
+                  <Table.Tr
+                    key={`${entry.nseSymbol}-${index}`}
+                    className="cursor-pointer"
+                    onClick={() => onRowClick(entry)}
+                  >
+                    <Table.Td className="w-[55%]">
+                      <span className="font-medium">{entry.name}</span>
+                    </Table.Td>
+                    <Table.Td className="w-[20%]">
+                      <span className="text-sm">{entry.nseSymbol}</span>
+                    </Table.Td>
+                    <Table.Td className="w-[20%]">
+                      <span className="text-sm">
+                        {/* {calculateOrderBookDominance(
+                        entry.quoteData?.depth.buy ?? [],
                         entry.quoteData?.payload.depth.sell ?? [],
                         entry.price
                       ).dominancePct.toLocaleString("en-IN", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                      })}
-                      %
-                    </span>
-                  </Table.Td>
-                  <Table.Td className="text-right w-[25%]">
-                    <span className="font-bold">
-                      ₹
-                      {entry.price.toLocaleString("en-IN", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </Table.Td>
-                </Table.Tr>
-              ))}
+                      })} */}
+                        %
+                      </span>
+                    </Table.Td>
+                    <Table.Td className="text-right w-[25%]">
+                      <span className="font-bold">
+                        ₹
+                        {entry.price.toLocaleString("en-IN", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
+                    </Table.Td>
+                  </Table.Tr>
+                )
+              )}
         </Table.Tbody>
       </Table>
     </div>

@@ -1,5 +1,14 @@
-import { ShortlistType } from "@prisma/client";
+import {
+  Prisma,
+  ShortlistSnapshot,
+  QuoteSnapshot,
+  ShortlistType,
+} from "@prisma/client";
 
+// Re-export Prisma types for convenience
+export type { ShortlistSnapshot, QuoteSnapshot, ShortlistType };
+
+// ShortlistEntry represents the structure of items in the entries JSON array
 export interface ShortlistEntry {
   nseSymbol: string;
   name: string;
@@ -8,38 +17,21 @@ export interface ShortlistEntry {
   buyerControlPercentage?: number | null;
 }
 
-export interface ShortlistSnapshotData {
-  id: string;
-  timestamp: Date;
-  shortlistType: ShortlistType;
-  entries: ShortlistEntry[];
-  createdAt: Date;
-}
+// QuoteData represents the JSON structure from Groww API
+export type QuoteData = Prisma.JsonValue;
 
+// GroupedShortlist is a derived/transformed type, not a database type
 export interface GroupedShortlist {
   date: string;
   timestamps: {
     timestamp: Date;
-    shortlists: ShortlistSnapshotData[];
+    shortlists: ShortlistSnapshot[];
   }[];
 }
 
-export interface QuoteData {
-  [key: string]: any; // Full quote payload from Groww API
-}
-
-export interface QuoteSnapshotData {
-  id: string;
-  timestamp: Date;
-  nseSymbol: string;
-  shortlistType: ShortlistType;
-  quoteData: QuoteData;
-  buyerControlPercentage: number | null;
-  createdAt: Date;
-}
-
+// API response types (not database types)
 export interface ApiShortlistsResponse {
-  shortlist: ShortlistSnapshotData | null;
+  shortlist: ShortlistSnapshot | null;
 }
 
 export interface AvailableDatetimesResponse {
