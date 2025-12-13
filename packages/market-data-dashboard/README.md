@@ -51,7 +51,6 @@ The app will be available at `http://localhost:3000`
 ## API Routes
 
 - `GET /api/shortlists?date=&type=` - Fetch shortlists by date and type
-- `GET /api/quotes?nseSymbol=&timestamp=&shortlistType=` - Fetch quote details
 
 ## Technologies
 

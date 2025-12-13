@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      shortlist: shortlists[0],
+      shortlist,
     });
   } catch (error) {
     console.error("Error fetching shortlists:", error);

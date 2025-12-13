@@ -95,6 +95,7 @@ export default function DashboardPage() {
 
     fetchShortlists();
   }, [selectedDate, activeTab]);
+  console.log("topGainersShortlist", topGainersShortlist);
 
   // DRAW
   return (
@@ -149,8 +150,6 @@ export default function DashboardPage() {
           opened={drawerOpened}
           onClose={handleDrawerClose}
           selectedEntry={selectedEntry}
-          timestamp={selectedDate}
-          shortlistType={activeTab}
         />
       </div>
     </div>
