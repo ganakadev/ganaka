@@ -4,6 +4,8 @@ export interface ShortlistEntry {
   nseSymbol: string;
   name: string;
   price: number;
+  quoteData?: QuoteData | null;
+  buyerControlPercentage?: number | null;
 }
 
 export interface ShortlistSnapshotData {
