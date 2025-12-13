@@ -6,7 +6,7 @@ import { ShortlistTable } from "@/components/ShortlistTable";
 import {
   ApiShortlistsResponse,
   ShortlistEntry,
-  ShortlistSnapshotData,
+  ShortlistSnapshot,
 } from "@/types";
 import { Loader, Tabs } from "@mantine/core";
 import axios from "axios";
@@ -31,9 +31,9 @@ export default function DashboardPage() {
     null
   );
   const [topGainersShortlist, setTopGainersShortlist] =
-    useState<ShortlistSnapshotData | null>(null);
+    useState<ShortlistSnapshot | null>(null);
   const [volumeShockersShortlist, setVolumeShockersShortlist] =
-    useState<ShortlistSnapshotData | null>(null);
+    useState<ShortlistSnapshot | null>(null);
 
   const handleRowClick = (entry: ShortlistEntry) => {
     setSelectedEntry(entry);

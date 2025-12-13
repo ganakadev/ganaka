@@ -4,11 +4,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { ShortlistType } from "@prisma/client";
-import {
-  GroupedShortlist,
-  ShortlistEntry,
-  ShortlistSnapshotData,
-} from "@/types";
+import { ShortlistEntry, ShortlistSnapshot } from "@/types";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
