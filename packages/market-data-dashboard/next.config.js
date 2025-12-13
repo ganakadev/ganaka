@@ -12,8 +12,7 @@ const nextConfig = {
     config.ignoreWarnings = [
       ...(config.ignoreWarnings || []),
       {
-        module: /./,
-        message: /Serializing big strings.*impacts deserialization performance/,
+        message: /Serializing big strings/,
       },
     ];
     return config;
