@@ -1,6 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    optimizePackageImports: [
+      "@mantine/core",
+      "@mantine/hooks",
+      "@mantine/charts",
+      "@mantine/dates",
+    ],
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -13,6 +21,12 @@ const nextConfig = {
       ...(config.ignoreWarnings || []),
       {
         message: /Serializing big strings/,
+      },
+      {
+        message: /webpack\.cache\.PackFileCacheStrategy/,
+      },
+      {
+        message: /impacts deserialization performance/,
       },
     ];
     return config;
