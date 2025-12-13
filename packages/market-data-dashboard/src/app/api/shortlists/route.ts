@@ -4,7 +4,11 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { ShortlistType } from "@prisma/client";
-import { GroupedShortlist, ShortlistSnapshotData } from "@/types";
+import {
+  GroupedShortlist,
+  ShortlistEntry,
+  ShortlistSnapshotData,
+} from "@/types";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -14,7 +18,6 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const dateParam = searchParams.get("date");
     const typeParam = searchParams.get("type");
-
     const selectedDateTime = dayjs(dateParam);
 
     const shortlists = await prisma.shortlistSnapshot.findMany({
@@ -26,11 +29,37 @@ export async function GET(request: NextRequest) {
         shortlistType: typeParam as ShortlistType,
       },
     });
+    const quoteSnapshots = await prisma.quoteSnapshot.findMany({
+      where: {
+        timestamp: {
+          gte: selectedDateTime.toDate(),
+          lte: selectedDateTime.add(1, "s").toDate(),
+        },
+      },
+    });
 
     if (shortlists.length === 0) {
       return NextResponse.json({
         shortlist: null,
       });
+    }
+
+    let shortlist = shortlists[0];
+    const shortlistEntries = shortlist.entries as ShortlistEntry[] | null;
+
+    if (shortlistEntries) {
+      shortlist = {
+        ...shortlist,
+        entries: shortlistEntries.map((entry) => {
+          const quoteSnapshot = quoteSnapshots.find(
+            (quoteSnapshot) => quoteSnapshot.nseSymbol === entry.nseSymbol
+          );
+          return {
+            ...entry,
+            quoteData: quoteSnapshot?.quoteData,
+          };
+        }),
+      };
     }
 
     return NextResponse.json({

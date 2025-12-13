@@ -20,25 +20,31 @@ export const ShortlistTable = ({
   // DRAW
   return (
     <div className="mb-8">
-      <Table striped highlightOnHover withTableBorder withColumnBorders>
+      <Table
+        striped
+        highlightOnHover
+        withTableBorder
+        withColumnBorders
+        style={{ tableLayout: "fixed" }}
+      >
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>Company Name</Table.Th>
-            <Table.Th>Symbol</Table.Th>
-            <Table.Th className="text-right">Price</Table.Th>
+            <Table.Th className="w-[55%]">Company Name</Table.Th>
+            <Table.Th className="w-[20%]">Symbol</Table.Th>
+            <Table.Th className="text-right w-[25%]">Price</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
           {loading
             ? times(10, (index) => (
                 <Table.Tr key={index}>
-                  <Table.Td>
+                  <Table.Td className="w-[55%]">
                     <Skeleton height={20} width="100%" />
                   </Table.Td>
-                  <Table.Td>
+                  <Table.Td className="w-[20%]">
                     <Skeleton height={20} width="100%" />
                   </Table.Td>
-                  <Table.Td>
+                  <Table.Td className="w-[25%]">
                     <Skeleton height={20} width="100%" />
                   </Table.Td>
                 </Table.Tr>
@@ -55,13 +61,13 @@ export const ShortlistTable = ({
                     )
                   }
                 >
-                  <Table.Td>
+                  <Table.Td className="w-[55%]">
                     <span className="font-medium">{entry.name}</span>
                   </Table.Td>
-                  <Table.Td>
+                  <Table.Td className="w-[20%]">
                     <span className="text-sm">{entry.nseSymbol}</span>
                   </Table.Td>
-                  <Table.Td className="text-right">
+                  <Table.Td className="text-right w-[25%]">
                     <span className="font-bold">
                       ₹
                       {entry.price.toLocaleString("en-IN", {
