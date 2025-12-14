@@ -4,7 +4,8 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { ShortlistType } from "@prisma/client";
-import { ShortlistEntry, ShortlistSnapshot } from "@/types";
+import { QuoteData, ShortlistEntry, ShortlistSnapshot } from "@/types";
+import { JsonValue } from "@prisma/client/runtime/library";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -50,10 +51,13 @@ export async function GET(request: NextRequest) {
           const quoteSnapshot = quoteSnapshots.find(
             (quoteSnapshot) => quoteSnapshot.nseSymbol === entry.nseSymbol
           );
-          return {
+          const data: ShortlistEntry = {
             ...entry,
-            quoteData: quoteSnapshot?.quoteData,
+            quoteData: quoteSnapshot?.quoteData as QuoteData | null,
+            buyerControlPercentage: 10,
           };
+
+          return data as unknown as JsonValue;
         }),
       };
     }

@@ -177,37 +177,36 @@ export default function DashboardPage() {
       />
       <div className="w-full">
         {activeTab === "TOP_GAINERS" && (
-          <div>
-            <>
-              <ShortlistTable
-                shortlist={topGainersShortlist}
-                loading={loading}
-                onRowClick={handleRowClick}
-              />
-              <PersistentCompaniesTable
-                companies={topGainersPersistentCompanies ?? []}
-                loading={loadingPersistentCompanies}
-                totalSnapshots={topGainersTotalSnapshots ?? undefined}
-              />
-            </>
-          </div>
+          <ShortlistTable
+            shortlist={topGainersShortlist}
+            loading={loading}
+            onRowClick={handleRowClick}
+            selectedDate={selectedDate}
+          />
         )}
 
         {activeTab === "VOLUME_SHOCKERS" && (
-          <div>
-            <ShortlistTable
-              shortlist={volumeShockersShortlist}
-              onRowClick={handleRowClick}
-              loading={loading}
-            />
-            <PersistentCompaniesTable
-              companies={volumeShockersPersistentCompanies ?? []}
-              loading={loadingPersistentCompanies}
-              totalSnapshots={volumeShockersTotalSnapshots ?? undefined}
-            />
-          </div>
+          <ShortlistTable
+            shortlist={volumeShockersShortlist}
+            onRowClick={handleRowClick}
+            loading={loading}
+            selectedDate={selectedDate}
+          />
         )}
-
+        <PersistentCompaniesTable
+          companies={
+            activeTab === "VOLUME_SHOCKERS"
+              ? volumeShockersPersistentCompanies ?? []
+              : topGainersPersistentCompanies ?? []
+          }
+          loading={loadingPersistentCompanies}
+          selectedDate={selectedDate}
+          totalSnapshots={
+            activeTab === "VOLUME_SHOCKERS"
+              ? volumeShockersTotalSnapshots ?? undefined
+              : topGainersTotalSnapshots ?? undefined
+          }
+        />
         <QuoteDrawer
           opened={drawerOpened}
           onClose={handleDrawerClose}
