@@ -97,6 +97,9 @@ importers:
       tailwindcss:
         specifier: ^4.1.18
         version: 4.1.18
+      zod:
+        specifier: ^4.1.13
+        version: 4.1.13
     devDependencies:
       '@types/lodash':
         specifier: ^4.17.21
@@ -2538,6 +2541,9 @@ packages:
     engines: {node: '>=8.0.0'}
     hasBin: true
 
+  zod@4.1.13:
+    resolution: {integrity: sha512-AvvthqfqrAhNH9dnfmrfKzX5upOdjUVJYFqNSlkmGf64gRaTzlPwz99IHYnVs28qYAybvAlBV+H7pn0saFY4Ig==}
+
 snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
@@ -4671,3 +4677,5 @@ snapshots:
       validator: 13.15.23
     optionalDependencies:
       commander: 9.5.0
+
+  zod@4.1.13: {}
