@@ -1,4 +1,4 @@
-import { growwApiRequest } from "../utils/api";
+import { growwApiRequest } from "@ganaka-algos/groww";
 
 export interface GrowwQuote {
   status: "SUCCESS" | "FAILURE";
