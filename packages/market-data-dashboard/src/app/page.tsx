@@ -8,7 +8,7 @@ import {
   ShortlistEntry,
   ShortlistSnapshot,
 } from "@/types";
-import { Loader, Tabs } from "@mantine/core";
+import { Loader, SegmentedControl } from "@mantine/core";
 import axios from "axios";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -101,23 +101,20 @@ export default function DashboardPage() {
     <div className="max-w-5xl mx-auto h-full py-8 px-4 grid grid-rows-[auto_1fr] gap-4">
       <DateTimeSelector onDateChange={setSelectedDate} />
       <div className="w-full h-full">
-        <Tabs
-          value={activeTab}
-          classNames={{
-            root: "h-full",
-          }}
+        <SegmentedControl
+          value={activeTab ?? undefined}
           onChange={(value) => {
             setActiveTab(value as "TOP_GAINERS" | "VOLUME_SHOCKERS");
             setLoading(true);
           }}
-          variant="default"
-        >
-          <Tabs.List>
-            <Tabs.Tab value="TOP_GAINERS">Top Gainers</Tabs.Tab>
-            <Tabs.Tab value="VOLUME_SHOCKERS">Volume Shockers</Tabs.Tab>
-          </Tabs.List>
+          data={[
+            { value: "TOP_GAINERS", label: "Top Gainers" },
+            { value: "VOLUME_SHOCKERS", label: "Volume Shockers" },
+          ]}
+        />
 
-          <Tabs.Panel value="TOP_GAINERS" className="pt-8 h-full">
+        {activeTab === "TOP_GAINERS" && (
+          <div className="pt-8 h-full">
             {topGainersShortlist ? (
               <ShortlistTable
                 shortlist={topGainersShortlist}
@@ -129,9 +126,11 @@ export default function DashboardPage() {
                 <p className="text-sm">No top gainers data available</p>
               </div>
             )}
-          </Tabs.Panel>
+          </div>
+        )}
 
-          <Tabs.Panel value="VOLUME_SHOCKERS" className="pt-8 h-full">
+        {activeTab === "VOLUME_SHOCKERS" && (
+          <div className="pt-8 h-full">
             {volumeShockersShortlist ? (
               <ShortlistTable
                 shortlist={volumeShockersShortlist}
@@ -143,8 +142,9 @@ export default function DashboardPage() {
                 <p className="text-sm">No volume shockers data available</p>
               </div>
             )}
-          </Tabs.Panel>
-        </Tabs>
+          </div>
+        )}
+
         <QuoteDrawer
           opened={drawerOpened}
           onClose={handleDrawerClose}
