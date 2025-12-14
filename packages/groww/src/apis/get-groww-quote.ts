@@ -1,6 +1,6 @@
-import { growwApiRequest } from "@ganaka-algos/groww";
+import { growwApiRequest } from "../api";
 
-export interface GrowwQuote {
+export interface GetGrowwQuoteResponse {
   status: "SUCCESS" | "FAILURE";
   payload: {
     average_price: number | null;
@@ -48,7 +48,7 @@ export interface GrowwQuote {
 }
 
 export const getGrowwQuote = async (symbol: string) => {
-  return growwApiRequest<GrowwQuote>({
+  return growwApiRequest<GetGrowwQuoteResponse>({
     method: "get",
     url: `https://api.groww.in/v1/live-data/quote?exchange=NSE&segment=CASH&trading_symbol=${encodeURIComponent(
       symbol

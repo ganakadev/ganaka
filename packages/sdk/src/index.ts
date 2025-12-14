@@ -1,20 +1,19 @@
 import dotenv from "dotenv";
-import { getGrowwQuote } from "./groww/get-quote";
-import { getGrowwShortlist } from "./groww/get-shortlist";
+import { getGrowwQuote, getGrowwHistoricalCandles } from "@ganaka-algos/groww";
+import { scrapeGrowwShortlist } from "./groww/scrape-shortlist";
 import { logger } from "./utils/logger";
 import { PlaceOrderData, MarketDepthWriter } from "./utils/writer";
-import { getGrowwCandles } from "./groww/get-candles";
 import { getNiftyTrend } from "./groww/get-nifty-trend";
 dotenv.config();
 
-export type { GrowwShortlistItem } from "./groww/get-shortlist";
+export type { GrowwShortlistItem } from "./groww/scrape-shortlist";
 export type { PlaceOrderData } from "./utils/writer";
 export type { NiftyTrend } from "./groww/get-nifty-trend";
 
 export interface RunContext {
   getGrowwQuote: typeof getGrowwQuote;
-  getGrowwShortlist: typeof getGrowwShortlist;
-  getGrowwCandles: typeof getGrowwCandles;
+  getGrowwHistoricalCandles: typeof getGrowwHistoricalCandles;
+  scrapeGrowwShortlist: typeof scrapeGrowwShortlist;
   getNiftyTrend: typeof getNiftyTrend;
   placeOrder: (data: PlaceOrderData) => void;
 }
@@ -50,8 +49,8 @@ export async function ganaka<T>({
     await fn({
       placeOrder,
       getGrowwQuote,
-      getGrowwShortlist,
-      getGrowwCandles,
+      getGrowwHistoricalCandles,
+      scrapeGrowwShortlist,
       getNiftyTrend,
     });
   } catch (error) {

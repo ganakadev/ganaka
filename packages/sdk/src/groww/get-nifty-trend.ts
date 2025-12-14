@@ -1,4 +1,4 @@
-import { getGrowwQuote } from "./get-quote";
+import { getGrowwQuote } from "@ganaka-algos/groww";
 
 export interface NiftyTrend {
   isBullish: boolean;
@@ -25,4 +25,3 @@ export const getNiftyTrend = async (): Promise<NiftyTrend> => {
     currentPrice: quote.payload.last_price,
   };
 };
-
