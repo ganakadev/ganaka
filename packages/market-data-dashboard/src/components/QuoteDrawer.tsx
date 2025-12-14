@@ -81,7 +81,11 @@ export function QuotePanel({
               </p>
             </div>
           )}
-          <CandleChart selectedDate={selectedDate} candleData={candleData} />
+          <CandleChart
+            selectedDate={selectedDate}
+            candleData={candleData}
+            buyerControlPercentage={selectedEntry.buyerControlPercentage}
+          />
         </>
       )}
       <QuoteDataTables quoteData={quoteData} selectedDate={selectedDate} />

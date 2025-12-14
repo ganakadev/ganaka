@@ -24,9 +24,11 @@ export type CandleData = CandlestickData<Time>;
 export function CandleChart({
   selectedDate,
   candleData,
+  buyerControlPercentage,
 }: {
   selectedDate: Date | null;
   candleData: CandleData[] | null;
+  buyerControlPercentage: number | null | undefined;
 }) {
   // HOOKS
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -155,21 +157,33 @@ export function CandleChart({
     }
 
     // Create marker at the selected time
-    // Time format should match the candle data format (Unix timestamp as number)
-    const marker: SeriesMarker<Time> = {
+    const selectedTimeMarker: SeriesMarker<Time> = {
       time: closestCandle.time,
-      position: "aboveBar",
+      position: "belowBar",
       color: "orange",
       size: 1,
       shape: "circle",
       text: `${dayjs(selectedTime).format("HH:mm")}`,
     };
+    const buyerControlMarker: SeriesMarker<Time> = {
+      time: closestCandle.time,
+      position: "aboveBar",
+      color:
+        buyerControlPercentage && buyerControlPercentage > 50
+          ? "lightGreen"
+          : "red",
+      size: 1,
+      shape: "circle",
+      text: `${
+        buyerControlPercentage ? buyerControlPercentage.toFixed(2) : "N/A"
+      }%`,
+    };
 
     // Set markers using the markers manager (v5 API)
     if (markersRef.current) {
-      markersRef.current.setMarkers([marker]);
+      markersRef.current.setMarkers([selectedTimeMarker, buyerControlMarker]);
     }
-  }, [selectedDate, candleData]);
+  }, [selectedDate, candleData, buyerControlPercentage]);
 
   // DRAW
   return (
