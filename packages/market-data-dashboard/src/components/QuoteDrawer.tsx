@@ -16,12 +16,10 @@ interface CandleApiResponse {
 
 export function QuotePanel({
   quoteData,
-  buyerControlPercentage,
   selectedEntry,
   selectedDate,
 }: {
   quoteData: QuoteData | null | undefined;
-  buyerControlPercentage: number | null | undefined;
   selectedEntry: ShortlistEntry | null;
   selectedDate: Date | null;
 }) {
@@ -98,7 +96,7 @@ export function QuotePanel({
           />
         </>
       )}
-      <QuoteDataTables quoteData={quoteData} />
+      <QuoteDataTables quoteData={quoteData} selectedDate={selectedDate} />
     </div>
   );
 }
@@ -137,7 +135,6 @@ export function QuoteDrawer({
       {selectedEntry && (
         <QuotePanel
           quoteData={selectedEntry.quoteData}
-          buyerControlPercentage={selectedEntry.buyerControlPercentage}
           selectedEntry={selectedEntry}
           selectedDate={selectedDate}
         />

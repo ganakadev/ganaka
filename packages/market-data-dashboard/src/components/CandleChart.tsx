@@ -73,9 +73,10 @@ export function CandleChart({
     const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: "#26a69a",
       downColor: "#ef5350",
-      borderVisible: false,
+      borderVisible: true,
       wickUpColor: "#26a69a",
       wickDownColor: "#ef5350",
+      priceLineVisible: false,
     } as CandlestickSeriesPartialOptions);
 
     seriesRef.current = candlestickSeries;

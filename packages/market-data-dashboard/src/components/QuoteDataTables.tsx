@@ -3,11 +3,14 @@
 import { Table } from "@mantine/core";
 import { QuoteData, isQuoteData } from "@/utils/buyerControl";
 import { QuoteData as QuoteDataType } from "@/types";
+import dayjs from "dayjs";
 
 export function QuoteDataTables({
   quoteData,
+  selectedDate,
 }: {
   quoteData: QuoteDataType | null | undefined;
+  selectedDate: Date | null;
 }) {
   // Validate and extract quote data
   if (!quoteData || !isQuoteData(quoteData)) {
@@ -28,6 +31,7 @@ export function QuoteDataTables({
     );
   }
 
+  // VARIABLES
   const payload = quoteData.payload;
   const {
     ohlc,
@@ -38,12 +42,16 @@ export function QuoteDataTables({
     total_buy_quantity,
     total_sell_quantity,
   } = payload;
+  const dateString = selectedDate
+    ? dayjs(selectedDate).format("DD MMM YYYY HH:mm")
+    : "Select a date";
 
+  // DRAW
   return (
     <div className="flex flex-col gap-6 mt-1">
       {/* OHLC Table */}
       <div>
-        <h3 className="text-lg font-semibold mb-2">OHLC</h3>
+        <h3 className="text-lg font-semibold mb-2">{`OHLC - ${dateString}`}</h3>
         <Table
           striped
           highlightOnHover
