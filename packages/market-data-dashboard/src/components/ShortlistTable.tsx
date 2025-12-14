@@ -76,7 +76,9 @@ export const ShortlistTable = ({
                   </Table.Td>
                   <Table.Td className="w-[20%]">
                     <span className="text-sm">
-                      {entry.buyerControlPercentage ?? "N/A"}%
+                      {entry.buyerControlPercentage
+                        ? `${entry.buyerControlPercentage.toFixed(2)}%`
+                        : "N/A"}
                     </span>
                   </Table.Td>
                   <Table.Td className="text-right w-[25%]">
