@@ -3,7 +3,7 @@ import {
   ShortlistSnapshot,
   QuoteSnapshot,
   ShortlistType,
-} from "@prisma/client";
+} from "@ganaka-algos/db";
 
 // Re-export Prisma types for convenience
 export type { ShortlistSnapshot, QuoteSnapshot, ShortlistType };
