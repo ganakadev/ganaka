@@ -1,8 +1,9 @@
 "use client";
 
-import { Badge, Drawer } from "@mantine/core";
+import { Drawer } from "@mantine/core";
 import { QuoteData, ShortlistEntry } from "@/types";
 import { CandleChart, CandleData } from "./CandleChart";
+import { QuoteDataTables } from "./QuoteDataTables";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -97,20 +98,7 @@ export function QuotePanel({
           />
         </>
       )}
-      {quoteData && (
-        <div className="border rounded-md p-4">
-          <div className="max-h-[60vh] overflow-auto">
-            <pre className="text-xs  p-4 rounded m-0">
-              {JSON.stringify(quoteData, null, 2)}
-            </pre>
-          </div>
-        </div>
-      )}
-      {!quoteData && (
-        <div className="border rounded-md p-4 bg-(--mantine-color-body)">
-          <p className="text-sm text-gray-500">No quote data available</p>
-        </div>
-      )}
+      <QuoteDataTables quoteData={quoteData} />
     </div>
   );
 }

@@ -1,21 +1,20 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import {
+  CandlestickData,
+  CandlestickSeries,
+  CandlestickSeriesPartialOptions,
   createChart,
+  createSeriesMarkers,
   IChartApi,
   ISeriesApi,
-  CandlestickSeriesPartialOptions,
   SeriesMarker,
   Time,
-  CandlestickSeries,
-  createSeriesMarkers,
-  CandlestickData,
-  CrosshairMode,
 } from "lightweight-charts";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
+import { useEffect, useRef } from "react";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -53,8 +52,7 @@ export function CandleChart({
         background: { color: "black" },
       },
       width: chartContainerRef.current.clientWidth,
-      height: 400,
-
+      height: 250,
       timeScale: {
         timeVisible: true,
         secondsVisible: false,
@@ -68,7 +66,6 @@ export function CandleChart({
         },
       },
     });
-    console.log("Chart created");
 
     chartRef.current = chart;
 
@@ -169,19 +166,7 @@ export function CandleChart({
   // DRAW
   return (
     <div className="border rounded-md p-4 pr-3 bg-black">
-      <div className="mb-2">
-        <h3 className="text-lg font-semibold">{symbol}</h3>
-        <p className="text-sm text-gray-500">
-          {selectedDate
-            ? dayjs(selectedDate).format("DD MMM YYYY HH:mm")
-            : "Select a date"}
-        </p>
-      </div>
-      <div
-        ref={chartContainerRef}
-        className="w-full"
-        style={{ minHeight: "400px" }}
-      />
+      <div ref={chartContainerRef} className="w-full min-h-[200px]" />
     </div>
   );
 }
