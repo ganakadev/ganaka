@@ -109,9 +109,6 @@ export async function GET(request: NextRequest) {
     const startOfDay = parsedDate.utc().startOf("day");
     const endOfDay = parsedDate.utc().endOf("day");
 
-    console.log("startOfDay", startOfDay.toDate());
-    console.log("endOfDay", endOfDay.toDate());
-
     // Fetch all snapshots for the requested list type for the entire day
     const snapshots = await prisma.shortlistSnapshot.findMany({
       where: {
