@@ -42,16 +42,13 @@ export function QuoteDataTables({
     total_buy_quantity,
     total_sell_quantity,
   } = payload;
-  const dateString = selectedDate
-    ? dayjs(selectedDate).format("DD MMM YYYY HH:mm")
-    : "Select a date";
 
   // DRAW
   return (
     <div className="flex flex-col gap-6 mt-1">
       {/* OHLC Table */}
       <div>
-        <h3 className="text-lg font-semibold mb-2">{`OHLC - ${dateString}`}</h3>
+        <h3 className="text-lg font-semibold mb-2">OHLC</h3>
         <Table
           striped
           highlightOnHover

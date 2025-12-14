@@ -21,19 +21,13 @@ dayjs.extend(timezone);
 
 export type CandleData = CandlestickData<Time>;
 
-interface CandleChartProps {
-  symbol: string;
-  selectedDate: Date | null;
-  candleData: CandleData[] | null;
-  loading?: boolean;
-}
-
 export function CandleChart({
-  symbol,
   selectedDate,
   candleData,
-  loading = false,
-}: CandleChartProps) {
+}: {
+  selectedDate: Date | null;
+  candleData: CandleData[] | null;
+}) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -106,8 +100,14 @@ export function CandleChart({
   useEffect(() => {
     if (!seriesRef.current || !candleData || candleData.length === 0) return;
 
+    // eliminate candles that have duplicate times
+    const uniqueCandles = candleData.filter(
+      (candle, index, self) =>
+        index === self.findIndex((t) => t.time === candle.time)
+    );
+
     // Set candle data
-    seriesRef.current.setData(candleData);
+    seriesRef.current.setData(uniqueCandles);
 
     // Fit content to show all candles
     if (chartRef.current) {
@@ -125,24 +125,27 @@ export function CandleChart({
       return;
     }
 
-    // Convert selectedDate to Unix timestamp
-    const selectedTimestamp = dayjs(selectedDate).unix();
-
-    // Find the closest candle to the selected time
-    // Our API returns Unix timestamps as numbers, so time is always a number
-    const getTimeAsNumber = (time: Time): number => {
-      return typeof time === "number" ? time : 0;
-    };
-
+    // Convert selectedDate to dayjs object
+    const selectedTime = dayjs(selectedDate).format("YYYY-MM-DDTHH:mm");
     let closestCandle = candleData[0];
-    const firstTime = getTimeAsNumber(candleData[0].time);
-    let minDiff = Math.abs(firstTime - selectedTimestamp);
+    const firstCandleTime = dayjs
+      .unix(candleData[30].time as number)
+      .utc()
+      .format("YYYY-MM-DDTHH:mm");
+    let minDiff = Math.abs(
+      dayjs(selectedTime).diff(dayjs(firstCandleTime), "minutes")
+    );
 
     for (const candle of candleData) {
-      const candleTime = getTimeAsNumber(candle.time);
-      const diff = Math.abs(candleTime - selectedTimestamp);
-      if (diff < minDiff) {
-        minDiff = diff;
+      const candleTime = dayjs
+        .unix(candle.time as number)
+        .utc()
+        .format("YYYY-MM-DDTHH:mm");
+      const diff = dayjs(selectedTime).diff(dayjs(candleTime), "minutes");
+      console.log("diff", diff);
+
+      if (Math.abs(diff) < minDiff) {
+        minDiff = Math.abs(diff);
         closestCandle = candle;
       }
     }
