@@ -61,7 +61,7 @@ export const ShortlistTable = ({
   onRowClick,
   loading,
 }: {
-  shortlist: ShortlistSnapshot;
+  shortlist: ShortlistSnapshot | null;
   onRowClick: (entry: ShortlistEntry) => void;
   loading: boolean;
 }) => {
@@ -87,7 +87,7 @@ export const ShortlistTable = ({
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {loading
+          {loading || !shortlist
             ? times(10, (index) => (
                 <Table.Tr key={index}>
                   <Table.Td className="w-[55%]">
