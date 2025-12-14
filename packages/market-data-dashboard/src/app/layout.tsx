@@ -9,6 +9,9 @@ const theme = createTheme({});
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" data-mantine-color-scheme="dark">
+      <head>
+        <title>Market Data Dashboard</title>
+      </head>
       <body>
         <MantineProvider theme={theme} defaultColorScheme="dark">
           {children}

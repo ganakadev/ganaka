@@ -3,7 +3,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { response } from "./dummyData";
+import { dummyCandleResponse } from "./dummyData";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -185,18 +185,21 @@ export async function GET(request: NextRequest) {
     const end_time = marketEnd.format("YYYY-MM-DDTHH:mm:ss");
 
     // Make API request
-    // const response = await growwApiRequest<GrowwCandles>({
-    //   method: "get",
-    //   url: "https://api.groww.in/v1/historical/candles",
-    //   params: {
-    //     candle_interval: interval,
-    //     start_time: start_time,
-    //     end_time: end_time,
-    //     exchange: "NSE",
-    //     segment: "CASH",
-    //     groww_symbol: encodeURIComponent(`NSE-${symbol}`),
-    //   },
-    // });
+    const response =
+      process.env.NODE_ENV === "development"
+        ? dummyCandleResponse
+        : await growwApiRequest<GrowwCandles>({
+            method: "get",
+            url: "https://api.groww.in/v1/historical/candles",
+            params: {
+              candle_interval: interval,
+              start_time: start_time,
+              end_time: end_time,
+              exchange: "NSE",
+              segment: "CASH",
+              groww_symbol: encodeURIComponent(`NSE-${symbol}`),
+            },
+          });
 
     // Convert candles to lightweight-charts format
     // TODO: Remove this once the API is working again
