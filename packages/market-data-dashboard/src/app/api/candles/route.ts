@@ -201,6 +201,7 @@ export async function GET(request: NextRequest) {
     // });
 
     // Convert candles to lightweight-charts format
+    // TODO: Remove this once the API is working again
     const candleData: CandleData[] = response.payload.candles.map(
       ([timestamp, open, high, low, close], index) => {
         // Convert timestamp string to Unix timestamp
