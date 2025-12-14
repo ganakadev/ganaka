@@ -39,10 +39,6 @@ export function QuotePanel({
       setCandleError(null);
 
       try {
-        console.log("Fetching candle data for:", {
-          symbol: selectedEntry.nseSymbol,
-          date: selectedDate.toISOString(),
-        });
         const { data } = await axios.get<CandleApiResponse>("/api/candles", {
           params: {
             symbol: selectedEntry.nseSymbol,
@@ -51,10 +47,6 @@ export function QuotePanel({
           },
         });
 
-        console.log("Candle data received:", {
-          count: data.candles?.length || 0,
-          candles: data.candles,
-        });
         setCandleData(data.candles);
       } catch (error) {
         console.error("Error fetching candle data:", error);
@@ -88,12 +80,7 @@ export function QuotePanel({
               </p>
             </div>
           )}
-          <CandleChart
-            symbol={selectedEntry.nseSymbol}
-            selectedDate={selectedDate}
-            candleData={candleData}
-            loading={loadingCandles}
-          />
+          <CandleChart selectedDate={selectedDate} candleData={candleData} />
         </>
       )}
       <QuoteDataTables quoteData={quoteData} selectedDate={selectedDate} />

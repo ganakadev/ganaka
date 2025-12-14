@@ -3,6 +3,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { response } from "./dummyData";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -42,6 +43,8 @@ async function getGrowwAccessToken(): Promise<string> {
   if (!apiKey || !apiSecret) {
     throw new Error("GROWW_API_KEY and GROWW_API_SECRET are required");
   }
+
+  console.log("provisioning new access token");
 
   try {
     const response = (await axios.post(
@@ -183,42 +186,29 @@ export async function GET(request: NextRequest) {
     const start_time = marketStart.format("YYYY-MM-DDTHH:mm:ss");
     const end_time = marketEnd.format("YYYY-MM-DDTHH:mm:ss");
 
-    // Debug logging
-    console.log("Candle API Request:", {
-      symbol,
-      interval,
-      dateParam,
-      start_time,
-      end_time,
-      groww_symbol: encodeURIComponent(`NSE-${symbol}`),
-    });
-
     // Make API request
-    const response = await growwApiRequest<GrowwCandles>({
-      method: "get",
-      url: "https://api.groww.in/v1/historical/candles",
-      params: {
-        candle_interval: interval,
-        start_time: start_time,
-        end_time: end_time,
-        exchange: "NSE",
-        segment: "CASH",
-        groww_symbol: encodeURIComponent(`NSE-${symbol}`),
-      },
-    });
-
-    if (response.status === "FAILURE") {
-      return NextResponse.json(
-        { error: "Failed to fetch candle data" },
-        { status: 500 }
-      );
-    }
+    // const response = await growwApiRequest<GrowwCandles>({
+    //   method: "get",
+    //   url: "https://api.groww.in/v1/historical/candles",
+    //   params: {
+    //     candle_interval: interval,
+    //     start_time: start_time,
+    //     end_time: end_time,
+    //     exchange: "NSE",
+    //     segment: "CASH",
+    //     groww_symbol: encodeURIComponent(`NSE-${symbol}`),
+    //   },
+    // });
 
     // Convert candles to lightweight-charts format
     const candleData: CandleData[] = response.payload.candles.map(
-      ([timestamp, open, high, low, close]) => {
+      ([timestamp, open, high, low, close], index) => {
         // Convert timestamp string to Unix timestamp
-        const time = dayjs.utc(timestamp).unix();
+        // const time = dayjs.utc(timestamp).unix();
+        const time = dayjs("2025-12-12T09:15:00")
+          .add(index * 5, "minutes")
+          .utc(true)
+          .unix();
         return {
           time,
           open,
