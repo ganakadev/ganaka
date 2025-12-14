@@ -169,56 +169,42 @@ export default function DashboardPage() {
 
   // DRAW
   return (
-    <div className="max-w-5xl mx-auto h-full py-8 px-4 grid grid-rows-[auto_1fr] gap-4">
+    <div className="max-w-5xl mx-auto min-h-full py-8 px-4 grid grid-rows-[auto_1fr] gap-4">
       <PageHeader
         onDateChange={setSelectedDate}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
       />
-      <div className="w-full h-full">
+      <div className="w-full">
         {activeTab === "TOP_GAINERS" && (
-          <div className="h-full">
-            {topGainersShortlist ? (
-              <>
-                <ShortlistTable
-                  shortlist={topGainersShortlist}
-                  loading={loading}
-                  onRowClick={handleRowClick}
-                />
-                <PersistentCompaniesTable
-                  companies={topGainersPersistentCompanies ?? []}
-                  loading={loadingPersistentCompanies}
-                  totalSnapshots={topGainersTotalSnapshots ?? undefined}
-                />
-              </>
-            ) : (
-              <div className="flex items-center justify-center p-8 h-full">
-                <p className="text-sm">No top gainers data available</p>
-              </div>
-            )}
+          <div>
+            <>
+              <ShortlistTable
+                shortlist={topGainersShortlist}
+                loading={loading}
+                onRowClick={handleRowClick}
+              />
+              <PersistentCompaniesTable
+                companies={topGainersPersistentCompanies ?? []}
+                loading={loadingPersistentCompanies}
+                totalSnapshots={topGainersTotalSnapshots ?? undefined}
+              />
+            </>
           </div>
         )}
 
         {activeTab === "VOLUME_SHOCKERS" && (
-          <div className="h-full">
-            {volumeShockersShortlist ? (
-              <>
-                <ShortlistTable
-                  shortlist={volumeShockersShortlist}
-                  onRowClick={handleRowClick}
-                  loading={loading}
-                />
-                <PersistentCompaniesTable
-                  companies={volumeShockersPersistentCompanies ?? []}
-                  loading={loadingPersistentCompanies}
-                  totalSnapshots={volumeShockersTotalSnapshots ?? undefined}
-                />
-              </>
-            ) : (
-              <div className="flex items-center justify-center p-8 h-full">
-                <p className="text-sm">No volume shockers data available</p>
-              </div>
-            )}
+          <div>
+            <ShortlistTable
+              shortlist={volumeShockersShortlist}
+              onRowClick={handleRowClick}
+              loading={loading}
+            />
+            <PersistentCompaniesTable
+              companies={volumeShockersPersistentCompanies ?? []}
+              loading={loadingPersistentCompanies}
+              totalSnapshots={volumeShockersTotalSnapshots ?? undefined}
+            />
           </div>
         )}
 
