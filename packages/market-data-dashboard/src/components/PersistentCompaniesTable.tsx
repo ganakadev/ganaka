@@ -15,9 +15,11 @@ export const PersistentCompaniesTable = ({
   loading,
   onRowClick,
   totalSnapshots,
+  selectedDate,
 }: {
   companies: PersistentCompany[];
   loading: boolean;
+  selectedDate: Date | null;
   onRowClick?: (company: PersistentCompany) => void;
   totalSnapshots?: number;
 }) => {
@@ -40,11 +42,17 @@ export const PersistentCompaniesTable = ({
             <Table.Th className="w-[40%]">Company Name</Table.Th>
             <Table.Th className="w-[25%]">Symbol</Table.Th>
             <Table.Th className="w-[15%]">Occurrences</Table.Th>
-            <Table.Th className="w-[20%]">Percentage</Table.Th>
+            <Table.Th className="w-[15%]">Occurrences %</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {loading ? (
+          {!selectedDate ? (
+            <Table.Tr>
+              <Table.Td colSpan={4} className="text-center py-8">
+                <p className="text-sm text-gray-500">No date selected</p>
+              </Table.Td>
+            </Table.Tr>
+          ) : loading ? (
             times(10, (index) => (
               <Table.Tr key={index}>
                 <Table.Td className="w-[40%]">
@@ -85,7 +93,7 @@ export const PersistentCompaniesTable = ({
                 <Table.Td className="w-[15%]">
                   <span className="text-sm">
                     {totalSnapshots
-                      ? `${company.count}/${totalSnapshots}`
+                      ? `${company.count} / ${totalSnapshots}`
                       : company.count}
                   </span>
                 </Table.Td>
