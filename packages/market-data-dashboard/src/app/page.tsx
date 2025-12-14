@@ -211,6 +211,7 @@ export default function DashboardPage() {
           opened={drawerOpened}
           onClose={handleDrawerClose}
           selectedEntry={selectedEntry}
+          selectedDate={selectedDate}
         />
       </div>
     </div>
