@@ -7,6 +7,7 @@ import {
   PersistentCompaniesTable,
   PersistentCompany,
 } from "@/components/PersistentCompaniesTable";
+import { UniqueCompaniesCard } from "@/components/UniqueCompaniesCard";
 import {
   ApiShortlistsResponse,
   ShortlistEntry,
@@ -193,6 +194,10 @@ export default function DashboardPage() {
             selectedDate={selectedDate}
           />
         )}
+        <UniqueCompaniesCard
+          selectedDate={selectedDate}
+          activeTab={activeTab}
+        />
         <PersistentCompaniesTable
           companies={
             activeTab === "VOLUME_SHOCKERS"
