@@ -142,7 +142,6 @@ export function CandleChart({
         .utc()
         .format("YYYY-MM-DDTHH:mm");
       const diff = dayjs(selectedTime).diff(dayjs(candleTime), "minutes");
-      console.log("diff", diff);
 
       if (Math.abs(diff) < minDiff) {
         minDiff = Math.abs(diff);

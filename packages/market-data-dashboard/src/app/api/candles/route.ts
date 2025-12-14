@@ -44,8 +44,6 @@ async function getGrowwAccessToken(): Promise<string> {
     throw new Error("GROWW_API_KEY and GROWW_API_SECRET are required");
   }
 
-  console.log("provisioning new access token");
-
   try {
     const response = (await axios.post(
       "https://groww-access-token-generator.onrender.com",
