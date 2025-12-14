@@ -8,7 +8,7 @@ export interface GrowwShortlistItem {
   nseSymbol: string;
 }
 
-export const getGrowwShortlist = async (
+export const scrapeGrowwShortlist = async (
   type: "volume-shockers" | "top-gainers"
 ): Promise<GrowwShortlistItem[]> => {
   try {

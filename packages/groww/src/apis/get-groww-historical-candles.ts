@@ -1,6 +1,6 @@
-import { growwApiRequest } from "@ganaka-algos/groww";
+import { growwApiRequest } from "../api";
 
-export interface GrowwCandles {
+export interface GetGrowwHistoricalCandlesResponse {
   status: "SUCCESS" | "FAILURE";
   payload: {
     // [timestamp, open, high, low, close, volume, turnover]
@@ -12,7 +12,7 @@ export interface GrowwCandles {
   };
 }
 
-export const getGrowwCandles = async ({
+export const getGrowwHistoricalCandles = async ({
   symbol,
   interval,
   start_time,
@@ -23,7 +23,7 @@ export const getGrowwCandles = async ({
   end_time: string;
   interval: "5minute" | "15minute" | "30minute" | "1hour" | "4hour";
 }) => {
-  return growwApiRequest<GrowwCandles>({
+  return growwApiRequest<GetGrowwHistoricalCandlesResponse>({
     method: "get",
     url: `https://api.groww.in/v1/historical/candles`,
     params: {
