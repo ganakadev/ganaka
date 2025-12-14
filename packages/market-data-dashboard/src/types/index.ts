@@ -40,3 +40,9 @@ export interface AvailableDatetimesResponse {
     timestamps: string[];
   }[];
 }
+
+export interface DailyPersistentCompaniesResponse {
+  date: string;
+  type: ShortlistType;
+  companies: Array<{ nseSymbol: string; name: string }>;
+}

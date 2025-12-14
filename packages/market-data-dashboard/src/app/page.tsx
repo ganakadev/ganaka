@@ -95,7 +95,6 @@ export default function DashboardPage() {
 
     fetchShortlists();
   }, [selectedDate, activeTab]);
-  console.log("topGainersShortlist", topGainersShortlist);
 
   // DRAW
   return (

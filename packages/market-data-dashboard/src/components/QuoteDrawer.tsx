@@ -50,8 +50,6 @@ export function QuoteDrawer({
   ) : (
     "Quote Details"
   );
-  console.log("selectedEntry", selectedEntry);
-  console.log("selectedEntry quoteData", selectedEntry?.quoteData);
 
   // DRAW
   return (
