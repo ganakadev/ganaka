@@ -1,0 +1,22 @@
+{
+  "name": "@ganaka-algos/db",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:studio": "prisma studio",
+    "prebuild": "prisma generate",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "prisma": "^6.19.1",
+    "typescript": "^5.3.3"
+  }
+}

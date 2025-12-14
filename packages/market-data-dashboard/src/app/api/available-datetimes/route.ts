@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { AvailableDatetimesResponse } from "@/types";
+import { prisma } from "@ganaka-algos/db";
 
 export async function GET() {
   try {

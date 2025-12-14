@@ -7,14 +7,15 @@
     "build": "next build",
     "start": "next start -p 8081",
     "lint": "next lint",
-    "prisma:generate": "prisma generate"
+    "prebuild": "pnpm --filter @ganaka-algos/db prisma:generate"
   },
   "dependencies": {
+    "@ganaka-algos/groww": "workspace:*",
+    "@ganaka-algos/db": "workspace:*",
     "@mantine/charts": "^8.3.10",
     "@mantine/core": "^8.3.10",
     "@mantine/dates": "^8.3.10",
     "@mantine/hooks": "^8.3.10",
-    "@prisma/client": "^6.19.1",
     "@tailwindcss/postcss": "^4.1.18",
     "axios": "^1.13.2",
     "dayjs": "^1.11.19",
@@ -32,7 +33,6 @@
     "@types/node": "^20.10.5",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "prisma": "^6.19.1",
     "typescript": "^5.3.3"
   }
 }

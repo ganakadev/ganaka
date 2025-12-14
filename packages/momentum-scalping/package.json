@@ -8,6 +8,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@ganaka-algos/db": "workspace:*",
     "@ganaka-algos/sdk": "workspace:*",
     "axios": "^1.13.2",
     "lodash": "^4.17.21"

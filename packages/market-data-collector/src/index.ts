@@ -6,7 +6,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { isWithinCollectionWindow } from "./utils/time";
 import { collectMarketData } from "./collector";
-import { prisma } from "./utils/prisma";
+import { prisma } from "@ganaka-algos/db";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

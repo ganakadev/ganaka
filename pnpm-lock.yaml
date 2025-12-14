@@ -16,14 +16,43 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
 
-  packages/market-data-collector:
+  packages/db:
     dependencies:
-      '@ganaka-algos/sdk':
-        specifier: workspace:*
-        version: link:../sdk
       '@prisma/client':
         specifier: ^6.19.1
         version: 6.19.1(prisma@6.19.1(typescript@5.9.3))(typescript@5.9.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^20.10.5
+        version: 20.19.26
+      prisma:
+        specifier: ^6.19.1
+        version: 6.19.1(typescript@5.9.3)
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
+
+  packages/groww:
+    dependencies:
+      axios:
+        specifier: ^1.13.2
+        version: 1.13.2
+    devDependencies:
+      '@types/node':
+        specifier: ^20.10.5
+        version: 20.19.26
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
+
+  packages/market-data-collector:
+    dependencies:
+      '@ganaka-algos/db':
+        specifier: workspace:*
+        version: link:../db
+      '@ganaka-algos/sdk':
+        specifier: workspace:*
+        version: link:../sdk
       croner:
         specifier: 9.1.0
         version: 9.1.0
@@ -43,9 +72,6 @@ importers:
       '@types/node':
         specifier: ^20.10.5
         version: 20.19.26
-      prisma:
-        specifier: ^6.19.1
-        version: 6.19.1(typescript@5.9.3)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.19.26)(typescript@5.9.3)
@@ -55,6 +81,12 @@ importers:
 
   packages/market-data-dashboard:
     dependencies:
+      '@ganaka-algos/db':
+        specifier: workspace:*
+        version: link:../db
+      '@ganaka-algos/groww':
+        specifier: workspace:*
+        version: link:../groww
       '@mantine/charts':
         specifier: ^8.3.10
         version: 8.3.10(@mantine/core@8.3.10(@mantine/hooks@8.3.10(react@18.3.1))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@8.3.10(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(recharts@2.15.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
@@ -67,9 +99,6 @@ importers:
       '@mantine/hooks':
         specifier: ^8.3.10
         version: 8.3.10(react@18.3.1)
-      '@prisma/client':
-        specifier: ^6.19.1
-        version: 6.19.1(prisma@6.19.1(typescript@5.9.3))(typescript@5.9.3)
       '@tailwindcss/postcss':
         specifier: ^4.1.18
         version: 4.1.18
@@ -116,15 +145,15 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.1
         version: 18.3.7(@types/react@18.3.27)
-      prisma:
-        specifier: ^6.19.1
-        version: 6.19.1(typescript@5.9.3)
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
 
   packages/momentum-scalping:
     dependencies:
+      '@ganaka-algos/db':
+        specifier: workspace:*
+        version: link:../db
       '@ganaka-algos/sdk':
         specifier: workspace:*
         version: link:../sdk

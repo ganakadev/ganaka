@@ -1,8 +1,7 @@
 import { chunk } from "lodash";
 import { GrowwShortlistItem } from "@ganaka-algos/sdk";
-import { Prisma } from "@prisma/client";
+import { Prisma, prisma } from "@ganaka-algos/db";
 import { getCurrentISTTime } from "./utils/time";
-import { prisma } from "./utils/prisma";
 
 // Enum matching Prisma schema (will be available from @prisma/client after generation)
 enum ShortlistType {

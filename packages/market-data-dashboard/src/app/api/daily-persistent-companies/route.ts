@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { prisma } from "@ganaka-algos/db";
 import timezone from "dayjs/plugin/timezone";
-import { ShortlistSnapshot, ShortlistType } from "@prisma/client";
-import { ShortlistEntry, DailyPersistentCompaniesResponse } from "@/types";
+import {
+  ShortlistEntry,
+  DailyPersistentCompaniesResponse,
+  ShortlistSnapshot,
+} from "@/types";
 import {
   dailyPersistentCompaniesQuerySchema,
   formatZodError,
