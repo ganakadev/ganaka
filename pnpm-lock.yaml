@@ -182,6 +182,9 @@ importers:
 
   packages/sdk:
     dependencies:
+      '@ganaka-algos/groww':
+        specifier: workspace:*
+        version: link:../groww
       axios:
         specifier: ^1.12.2
         version: 1.13.2
