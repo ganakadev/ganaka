@@ -28,6 +28,7 @@ export function CandleChart({
   selectedDate: Date | null;
   candleData: CandleData[] | null;
 }) {
+  // HOOKS
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -35,6 +36,8 @@ export function CandleChart({
     typeof createSeriesMarkers<Time>
   > | null>(null);
 
+  // EFFECTS
+  // creates the chart
   useEffect(() => {
     if (!chartContainerRef.current || chartRef.current) return;
 
@@ -97,6 +100,7 @@ export function CandleChart({
     };
   }, []);
 
+  // sets the candle data
   useEffect(() => {
     if (!seriesRef.current || !candleData || candleData.length === 0) return;
 
@@ -115,6 +119,7 @@ export function CandleChart({
     }
   }, [candleData]);
 
+  // adds a marker at the selected time
   useEffect(() => {
     if (
       !seriesRef.current ||
@@ -153,11 +158,11 @@ export function CandleChart({
     // Time format should match the candle data format (Unix timestamp as number)
     const marker: SeriesMarker<Time> = {
       time: closestCandle.time,
-      position: "belowBar",
+      position: "aboveBar",
       color: "orange",
       size: 1,
       shape: "circle",
-      text: "Selected Time",
+      text: `${dayjs(selectedTime).format("HH:mm")}`,
     };
 
     // Set markers using the markers manager (v5 API)
