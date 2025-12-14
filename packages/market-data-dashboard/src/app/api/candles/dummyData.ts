@@ -1,4 +1,4 @@
-export const response = {
+export const dummyCandleResponse = {
   status: "SUCCESS",
   payload: {
     candles: [
