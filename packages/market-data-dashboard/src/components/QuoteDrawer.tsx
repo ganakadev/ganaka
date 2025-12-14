@@ -6,6 +6,7 @@ import { CandleChart, CandleData } from "./CandleChart";
 import { QuoteDataTables } from "./QuoteDataTables";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import dayjs from "dayjs";
 
 interface CandleApiResponse {
   candles: CandleData[];
@@ -103,7 +104,9 @@ export function QuoteDrawer({
   const drawerTitle = selectedEntry ? (
     <div className="flex flex-col gap-1">
       <h4 className="text-lg font-semibold">{selectedEntry.name}</h4>
-      <span className="text-sm text-gray-500">{selectedEntry.nseSymbol}</span>
+      <span className="text-sm text-gray-500">{`${
+        selectedEntry.nseSymbol
+      } at ${dayjs(selectedDate).format("DD-MM-YYYY HH:mm")}`}</span>
     </div>
   ) : (
     "Quote Details"

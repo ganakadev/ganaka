@@ -153,11 +153,11 @@ export function CandleChart({
     // Time format should match the candle data format (Unix timestamp as number)
     const marker: SeriesMarker<Time> = {
       time: closestCandle.time,
-      position: "inBar",
-      color: "#2196F3",
+      position: "belowBar",
+      color: "orange",
       size: 1,
       shape: "circle",
-      text: dayjs(selectedDate).format("HH:mm"),
+      text: "Selected Time",
     };
 
     // Set markers using the markers manager (v5 API)
