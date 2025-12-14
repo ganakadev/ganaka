@@ -44,5 +44,11 @@ export interface AvailableDatetimesResponse {
 export interface DailyPersistentCompaniesResponse {
   date: string;
   type: ShortlistType;
-  companies: Array<{ nseSymbol: string; name: string }>;
+  totalSnapshots: number;
+  companies: Array<{
+    nseSymbol: string;
+    name: string;
+    count: number;
+    percentage: number;
+  }>;
 }

@@ -3,67 +3,78 @@ import { prisma } from "@/lib/prisma";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { ShortlistType } from "@prisma/client";
+import { ShortlistSnapshot, ShortlistType } from "@prisma/client";
 import { ShortlistEntry, DailyPersistentCompaniesResponse } from "@/types";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 /**
- * Finds companies that appeared in ALL snapshots for a given list type on a given date
+ * Finds companies that appeared in at least 80% of snapshots for a given list type on a given date
  */
 function findPersistentCompanies(
-  snapshots: Array<{ entries: unknown }>
-): Array<{ nseSymbol: string; name: string }> {
-  if (snapshots.length === 0) {
-    return [];
-  }
-
-  // Extract nseSymbol sets from each snapshot
-  const symbolSets: Set<string>[] = [];
+  snapshots: Array<ShortlistSnapshot>,
+  totalSnapshots: number
+): Array<{
+  nseSymbol: string;
+  name: string;
+  count: number;
+  percentage: number;
+}> {
+  // Count occurrences of each symbol across all snapshots
+  const symbolCounts = new Map<string, number>();
   const symbolToNameMap = new Map<string, string>();
 
   for (const snapshot of snapshots) {
     const entries = snapshot.entries as ShortlistEntry[] | null;
     if (!entries || entries.length === 0) {
-      // If any snapshot is empty, no company can be in all snapshots
-      return [];
+      // Skip empty snapshots - they just reduce the total count
+      continue;
     }
 
-    const symbolSet = new Set<string>();
+    const seenInThisSnapshot = new Set<string>();
     for (const entry of entries) {
-      symbolSet.add(entry.nseSymbol);
+      // Only count each symbol once per snapshot
+      if (!seenInThisSnapshot.has(entry.nseSymbol)) {
+        symbolCounts.set(
+          entry.nseSymbol,
+          (symbolCounts.get(entry.nseSymbol) || 0) + 1
+        );
+        seenInThisSnapshot.add(entry.nseSymbol);
+      }
       // Store name from first occurrence
       if (!symbolToNameMap.has(entry.nseSymbol)) {
         symbolToNameMap.set(entry.nseSymbol, entry.name);
       }
     }
-    symbolSets.push(symbolSet);
   }
 
-  // Find intersection: companies that appear in ALL snapshots
-  if (symbolSets.length === 0) {
+  // Count occurrences and filter by 80% threshold
+  if (totalSnapshots === 0) {
     return [];
   }
 
-  // Start with the first set
-  const intersection = new Set(symbolSets[0]);
+  const threshold = Math.ceil(totalSnapshots * 0.8);
+  const persistentCompanies: Array<{
+    nseSymbol: string;
+    name: string;
+    count: number;
+    percentage: number;
+  }> = [];
 
-  // Intersect with all other sets
-  for (let i = 1; i < symbolSets.length; i++) {
-    const currentSet = symbolSets[i];
-    for (const symbol of intersection) {
-      if (!currentSet.has(symbol)) {
-        intersection.delete(symbol);
-      }
+  for (const [symbol, count] of symbolCounts.entries()) {
+    if (count >= threshold) {
+      const percentage = (count / totalSnapshots) * 100;
+      persistentCompanies.push({
+        nseSymbol: symbol,
+        name: symbolToNameMap.get(symbol) || symbol,
+        count,
+        percentage: Math.round(percentage * 10) / 10, // Round to 1 decimal place
+      });
     }
   }
 
-  // Convert to array with names
-  return Array.from(intersection).map((nseSymbol) => ({
-    nseSymbol,
-    name: symbolToNameMap.get(nseSymbol) || nseSymbol,
-  }));
+  return persistentCompanies;
 }
 
 export async function GET(request: NextRequest) {
@@ -110,15 +121,18 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate start and end of day (in UTC to match database timestamps)
-    const startOfDay = parsedDate.startOf("day").toDate();
-    const endOfDay = parsedDate.endOf("day").toDate();
+    const startOfDay = parsedDate.utc().startOf("day");
+    const endOfDay = parsedDate.utc().endOf("day");
+
+    console.log("startOfDay", startOfDay.toDate());
+    console.log("endOfDay", endOfDay.toDate());
 
     // Fetch all snapshots for the requested list type for the entire day
     const snapshots = await prisma.shortlistSnapshot.findMany({
       where: {
         timestamp: {
-          gte: startOfDay,
-          lte: endOfDay,
+          gte: startOfDay.toDate(),
+          lte: endOfDay.toDate(),
         },
         shortlistType: shortlistType,
       },
@@ -127,12 +141,13 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Find companies that appeared in ALL snapshots
-    const companies = findPersistentCompanies(snapshots);
+    // Find companies that appeared in at least 80% of snapshots
+    const companies = findPersistentCompanies(snapshots, snapshots.length);
 
     const response: DailyPersistentCompaniesResponse = {
       date: parsedDate.format("YYYY-MM-DD"),
       type: shortlistType,
+      totalSnapshots: snapshots.length,
       companies,
     };
 
