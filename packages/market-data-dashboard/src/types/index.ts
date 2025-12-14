@@ -52,3 +52,9 @@ export interface DailyPersistentCompaniesResponse {
     percentage: number;
   }>;
 }
+
+export interface DailyUniqueCompaniesResponse {
+  date: string;
+  type: ShortlistType;
+  uniqueCount: number;
+}
