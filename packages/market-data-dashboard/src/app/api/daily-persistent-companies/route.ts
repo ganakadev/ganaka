@@ -5,6 +5,10 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { ShortlistSnapshot, ShortlistType } from "@prisma/client";
 import { ShortlistEntry, DailyPersistentCompaniesResponse } from "@/types";
+import {
+  dailyPersistentCompaniesQuerySchema,
+  formatZodError,
+} from "@/lib/validation";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -80,45 +84,26 @@ function findPersistentCompanies(
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const dateParam = searchParams.get("date");
-    const typeParam = searchParams.get("type");
 
-    if (!dateParam) {
-      return NextResponse.json(
-        { error: "Date parameter is required" },
-        { status: 400 }
-      );
+    // Build query object from search params
+    const queryParams = {
+      date: searchParams.get("date") || undefined,
+      type: searchParams.get("type") || undefined,
+    };
+
+    // Validate query parameters using Zod
+    const validationResult =
+      dailyPersistentCompaniesQuerySchema.safeParse(queryParams);
+
+    if (!validationResult.success) {
+      const errorResponse = formatZodError(validationResult.error);
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
-    if (!typeParam) {
-      return NextResponse.json(
-        {
-          error: "Type parameter is required (TOP_GAINERS or VOLUME_SHOCKERS)",
-        },
-        { status: 400 }
-      );
-    }
-
-    // Validate the type parameter
-    const shortlistType = typeParam as ShortlistType;
-    if (
-      shortlistType !== ShortlistType.TOP_GAINERS &&
-      shortlistType !== ShortlistType.VOLUME_SHOCKERS
-    ) {
-      return NextResponse.json(
-        { error: "Invalid type. Must be TOP_GAINERS or VOLUME_SHOCKERS" },
-        { status: 400 }
-      );
-    }
+    const { date: dateParam, type: shortlistType } = validationResult.data;
 
     // Parse the date (expecting format like "2024-01-15" or ISO string)
     const parsedDate = dayjs(dateParam);
-    if (!parsedDate.isValid()) {
-      return NextResponse.json(
-        { error: "Invalid date format" },
-        { status: 400 }
-      );
-    }
 
     // Calculate start and end of day (in UTC to match database timestamps)
     const startOfDay = parsedDate.utc().startOf("day");
