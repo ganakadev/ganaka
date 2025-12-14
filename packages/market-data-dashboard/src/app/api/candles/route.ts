@@ -200,20 +200,28 @@ export async function GET(request: NextRequest) {
 
     // Convert candles to lightweight-charts format
     // TODO: Remove this once the API is working again
-    const candleData: CandleData[] = response.payload.candles.map(
-      ([timestamp, open, high, low, close], index) => {
+    const candleData: CandleData[] = response.payload.candles.flatMap(
+      ([timestamp, open, high, low, close]) => {
         // Convert timestamp string to Unix timestamp
-        // const time = dayjs.utc(timestamp).unix();
-        const time = dayjs("2025-12-12T09:15:00")
-          .add(index * 5, "minutes")
-          .utc(true)
-          .unix();
+        const time = dayjs.utc(timestamp).unix() as number;
+        if (
+          !open ||
+          !high ||
+          !low ||
+          !close ||
+          typeof open !== "number" ||
+          typeof high !== "number" ||
+          typeof low !== "number" ||
+          typeof close !== "number"
+        ) {
+          return [];
+        }
         return {
           time,
-          open,
-          high,
-          low,
-          close,
+          open: open,
+          high: high,
+          low: low,
+          close: close,
         };
       }
     );
