@@ -9,7 +9,6 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@ganaka/db": "workspace:*",
     "@ganaka/sdk": "workspace:*",
     "axios": "^1.13.2",
     "lodash": "^4.17.21"
