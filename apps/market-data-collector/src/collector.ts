@@ -1,6 +1,13 @@
-import { chunk } from "lodash";
+import {
+  InputJsonValue,
+  NiftyQuote,
+  QuoteSnapshot,
+  ShortlistSnapshot,
+} from "@ganaka/db";
+import { Decimal } from "@ganaka/db/src/generated/prisma/runtime/library";
 import { GrowwShortlistItem } from "@ganaka/sdk";
-import { Prisma, prisma, QuoteSnapshot } from "@ganaka/db";
+import { chunk } from "lodash";
+import { prisma } from "./utils/prisma";
 import { getCurrentISTTime } from "./utils/time";
 
 // Enum matching Prisma schema (will be available from @prisma/client after generation)
@@ -160,51 +167,57 @@ export async function collectMarketData(
     console.log("Storing data in database...");
 
     // Prepare shortlist data array
-    const shortlistData: Prisma.ShortlistSnapshotCreateManyInput[] = [];
+    const shortlistData: (Omit<
+      ShortlistSnapshot,
+      "id" | "createdAt" | "entries"
+    > & { entries: InputJsonValue })[] = [];
     if (topGainersLimited.length > 0) {
       shortlistData.push({
         timestamp,
         shortlistType: ShortlistType.TOP_GAINERS,
-        entries: topGainersLimited as unknown as Prisma.InputJsonValue,
+        entries: topGainersLimited as unknown as InputJsonValue,
       });
     }
     if (volumeShockersLimited.length > 0) {
       shortlistData.push({
         timestamp,
         shortlistType: ShortlistType.VOLUME_SHOCKERS,
-        entries: volumeShockersLimited as unknown as Prisma.InputJsonValue,
+        entries: volumeShockersLimited as unknown as InputJsonValue,
       });
     }
 
     // Prepare quote snapshot data array
-    const quoteData: Prisma.QuoteSnapshotCreateManyInput[] = [];
+    const quoteData: (Omit<QuoteSnapshot, "id" | "createdAt" | "quoteData"> & {
+      quoteData: InputJsonValue;
+    })[] = [];
     for (const [symbol, quote] of quotesMap.entries()) {
       const shortlistTypes = Array.from(symbolMap.get(symbol) || []);
 
       for (const shortlistType of shortlistTypes) {
-        const dataToPush: QuoteSnapshot = {
+        const dataToPush = {
           timestamp,
           nseSymbol: symbol,
           shortlistType,
-          quoteData: quote as unknown as Prisma.InputJsonValue,
+          quoteData: quote as unknown as InputJsonValue,
         };
         quoteData.push(dataToPush);
       }
     }
 
     // Prepare NIFTY quote data array
-    const niftyData: Prisma.NiftyQuoteCreateManyInput[] = [];
+    const niftyData: (Omit<NiftyQuote, "id" | "createdAt" | "quoteData"> & {
+      quoteData: InputJsonValue;
+    })[] = [];
     if (niftybankQuote && niftybankQuote.status === "SUCCESS") {
       niftyData.push({
         timestamp,
-        quoteData: niftybankQuote as unknown as Prisma.InputJsonValue,
-        dayChangePerc: niftybankQuote.payload.day_change_perc,
-        isBullish: niftybankQuote.payload.day_change_perc > 0.5,
+        quoteData: niftybankQuote as unknown as InputJsonValue,
+        dayChangePerc: new Decimal(niftybankQuote.payload.day_change_perc),
       });
     }
 
     // Use transaction for atomicity
-    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    await prisma.$transaction(async (tx) => {
       if (shortlistData.length > 0) {
         await tx.shortlistSnapshot.createMany({ data: shortlistData });
       }

@@ -3079,7 +3079,6 @@ export namespace Prisma {
     id: string | null
     timestamp: Date | null
     dayChangePerc: Decimal | null
-    isBullish: boolean | null
     createdAt: Date | null
   }
 
@@ -3087,7 +3086,6 @@ export namespace Prisma {
     id: string | null
     timestamp: Date | null
     dayChangePerc: Decimal | null
-    isBullish: boolean | null
     createdAt: Date | null
   }
 
@@ -3096,7 +3094,6 @@ export namespace Prisma {
     timestamp: number
     quoteData: number
     dayChangePerc: number
-    isBullish: number
     createdAt: number
     _all: number
   }
@@ -3114,7 +3111,6 @@ export namespace Prisma {
     id?: true
     timestamp?: true
     dayChangePerc?: true
-    isBullish?: true
     createdAt?: true
   }
 
@@ -3122,7 +3118,6 @@ export namespace Prisma {
     id?: true
     timestamp?: true
     dayChangePerc?: true
-    isBullish?: true
     createdAt?: true
   }
 
@@ -3131,7 +3126,6 @@ export namespace Prisma {
     timestamp?: true
     quoteData?: true
     dayChangePerc?: true
-    isBullish?: true
     createdAt?: true
     _all?: true
   }
@@ -3227,7 +3221,6 @@ export namespace Prisma {
     timestamp: Date
     quoteData: JsonValue
     dayChangePerc: Decimal
-    isBullish: boolean
     createdAt: Date
     _count: NiftyQuoteCountAggregateOutputType | null
     _avg: NiftyQuoteAvgAggregateOutputType | null
@@ -3255,7 +3248,6 @@ export namespace Prisma {
     timestamp?: boolean
     quoteData?: boolean
     dayChangePerc?: boolean
-    isBullish?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["niftyQuote"]>
 
@@ -3264,7 +3256,6 @@ export namespace Prisma {
     timestamp?: boolean
     quoteData?: boolean
     dayChangePerc?: boolean
-    isBullish?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["niftyQuote"]>
 
@@ -3273,7 +3264,6 @@ export namespace Prisma {
     timestamp?: boolean
     quoteData?: boolean
     dayChangePerc?: boolean
-    isBullish?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["niftyQuote"]>
 
@@ -3282,11 +3272,10 @@ export namespace Prisma {
     timestamp?: boolean
     quoteData?: boolean
     dayChangePerc?: boolean
-    isBullish?: boolean
     createdAt?: boolean
   }
 
-  export type NiftyQuoteOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "quoteData" | "dayChangePerc" | "isBullish" | "createdAt", ExtArgs["result"]["niftyQuote"]>
+  export type NiftyQuoteOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "quoteData" | "dayChangePerc" | "createdAt", ExtArgs["result"]["niftyQuote"]>
 
   export type $NiftyQuotePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "NiftyQuote"
@@ -3296,7 +3285,6 @@ export namespace Prisma {
       timestamp: Date
       quoteData: Prisma.JsonValue
       dayChangePerc: Prisma.Decimal
-      isBullish: boolean
       createdAt: Date
     }, ExtArgs["result"]["niftyQuote"]>
     composites: {}
@@ -3725,7 +3713,6 @@ export namespace Prisma {
     readonly timestamp: FieldRef<"NiftyQuote", 'DateTime'>
     readonly quoteData: FieldRef<"NiftyQuote", 'Json'>
     readonly dayChangePerc: FieldRef<"NiftyQuote", 'Decimal'>
-    readonly isBullish: FieldRef<"NiftyQuote", 'Boolean'>
     readonly createdAt: FieldRef<"NiftyQuote", 'DateTime'>
   }
     
@@ -4135,7 +4122,6 @@ export namespace Prisma {
     timestamp: 'timestamp',
     quoteData: 'quoteData',
     dayChangePerc: 'dayChangePerc',
-    isBullish: 'isBullish',
     createdAt: 'createdAt'
   };
 
@@ -4246,13 +4232,6 @@ export namespace Prisma {
    * Reference to a field of type 'Decimal[]'
    */
   export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -4390,7 +4369,6 @@ export namespace Prisma {
     timestamp?: DateTimeFilter<"NiftyQuote"> | Date | string
     quoteData?: JsonFilter<"NiftyQuote">
     dayChangePerc?: DecimalFilter<"NiftyQuote"> | Decimal | DecimalJsLike | number | string
-    isBullish?: BoolFilter<"NiftyQuote"> | boolean
     createdAt?: DateTimeFilter<"NiftyQuote"> | Date | string
   }
 
@@ -4399,7 +4377,6 @@ export namespace Prisma {
     timestamp?: SortOrder
     quoteData?: SortOrder
     dayChangePerc?: SortOrder
-    isBullish?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -4411,7 +4388,6 @@ export namespace Prisma {
     timestamp?: DateTimeFilter<"NiftyQuote"> | Date | string
     quoteData?: JsonFilter<"NiftyQuote">
     dayChangePerc?: DecimalFilter<"NiftyQuote"> | Decimal | DecimalJsLike | number | string
-    isBullish?: BoolFilter<"NiftyQuote"> | boolean
     createdAt?: DateTimeFilter<"NiftyQuote"> | Date | string
   }, "id">
 
@@ -4420,7 +4396,6 @@ export namespace Prisma {
     timestamp?: SortOrder
     quoteData?: SortOrder
     dayChangePerc?: SortOrder
-    isBullish?: SortOrder
     createdAt?: SortOrder
     _count?: NiftyQuoteCountOrderByAggregateInput
     _avg?: NiftyQuoteAvgOrderByAggregateInput
@@ -4437,7 +4412,6 @@ export namespace Prisma {
     timestamp?: DateTimeWithAggregatesFilter<"NiftyQuote"> | Date | string
     quoteData?: JsonWithAggregatesFilter<"NiftyQuote">
     dayChangePerc?: DecimalWithAggregatesFilter<"NiftyQuote"> | Decimal | DecimalJsLike | number | string
-    isBullish?: BoolWithAggregatesFilter<"NiftyQuote"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"NiftyQuote"> | Date | string
   }
 
@@ -4565,7 +4539,6 @@ export namespace Prisma {
     timestamp: Date | string
     quoteData: JsonNullValueInput | InputJsonValue
     dayChangePerc: Decimal | DecimalJsLike | number | string
-    isBullish: boolean
     createdAt?: Date | string
   }
 
@@ -4574,7 +4547,6 @@ export namespace Prisma {
     timestamp: Date | string
     quoteData: JsonNullValueInput | InputJsonValue
     dayChangePerc: Decimal | DecimalJsLike | number | string
-    isBullish: boolean
     createdAt?: Date | string
   }
 
@@ -4583,7 +4555,6 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     quoteData?: JsonNullValueInput | InputJsonValue
     dayChangePerc?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    isBullish?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -4592,7 +4563,6 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     quoteData?: JsonNullValueInput | InputJsonValue
     dayChangePerc?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    isBullish?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -4601,7 +4571,6 @@ export namespace Prisma {
     timestamp: Date | string
     quoteData: JsonNullValueInput | InputJsonValue
     dayChangePerc: Decimal | DecimalJsLike | number | string
-    isBullish: boolean
     createdAt?: Date | string
   }
 
@@ -4610,7 +4579,6 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     quoteData?: JsonNullValueInput | InputJsonValue
     dayChangePerc?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    isBullish?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -4619,7 +4587,6 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     quoteData?: JsonNullValueInput | InputJsonValue
     dayChangePerc?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    isBullish?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -4805,17 +4772,11 @@ export namespace Prisma {
     not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type NiftyQuoteCountOrderByAggregateInput = {
     id?: SortOrder
     timestamp?: SortOrder
     quoteData?: SortOrder
     dayChangePerc?: SortOrder
-    isBullish?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -4827,7 +4788,6 @@ export namespace Prisma {
     id?: SortOrder
     timestamp?: SortOrder
     dayChangePerc?: SortOrder
-    isBullish?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -4835,7 +4795,6 @@ export namespace Prisma {
     id?: SortOrder
     timestamp?: SortOrder
     dayChangePerc?: SortOrder
-    isBullish?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -4859,14 +4818,6 @@ export namespace Prisma {
     _max?: NestedDecimalFilter<$PrismaModel>
   }
 
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -4885,10 +4836,6 @@ export namespace Prisma {
     decrement?: Decimal | DecimalJsLike | number | string
     multiply?: Decimal | DecimalJsLike | number | string
     divide?: Decimal | DecimalJsLike | number | string
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -5009,11 +4956,6 @@ export namespace Prisma {
     not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
@@ -5028,14 +4970,6 @@ export namespace Prisma {
     _sum?: NestedDecimalFilter<$PrismaModel>
     _min?: NestedDecimalFilter<$PrismaModel>
     _max?: NestedDecimalFilter<$PrismaModel>
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
 

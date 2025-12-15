@@ -6,7 +6,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { isWithinCollectionWindow } from "./utils/time";
 import { collectMarketData } from "./collector";
-import { prisma } from "@ganaka/db";
+import { prisma } from "./utils/prisma";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -15,16 +15,16 @@ dotenv.config();
 
 async function runCollection(): Promise<void> {
   // Check if we're within the collection window (8:45 AM - 3:30 PM IST, weekdays only)
-  // if (!isWithinCollectionWindow()) {
-  //   const nowIST = dayjs().tz("Asia/Kolkata");
-  //   console.log(
-  //     `Outside collection window. Current time: ${nowIST.format(
-  //       "YYYY-MM-DD HH:mm:ss"
-  //     )} IST`
-  //   );
-  //   console.log(`Collection window: 8:45 AM - 3:30 PM IST, Monday-Friday`);
-  //   return;
-  // }
+  if (!isWithinCollectionWindow()) {
+    const nowIST = dayjs().tz("Asia/Kolkata");
+    console.log(
+      `Outside collection window. Current time: ${nowIST.format(
+        "YYYY-MM-DD HH:mm:ss"
+      )} IST`
+    );
+    console.log(`Collection window: 8:45 AM - 3:30 PM IST, Monday-Friday`);
+    return;
+  }
 
   // Log current time in UTC and IST
   const now = dayjs();

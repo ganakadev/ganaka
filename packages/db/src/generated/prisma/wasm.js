@@ -115,7 +115,6 @@ exports.Prisma.NiftyQuoteScalarFieldEnum = {
   timestamp: 'timestamp',
   quoteData: 'quoteData',
   dayChangePerc: 'dayChangePerc',
-  isBullish: 'isBullish',
   createdAt: 'createdAt'
 };
 
@@ -177,7 +176,7 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": "../../../.env",
+    "rootEnvPath": null,
     "schemaEnvPath": "../../../.env"
   },
   "relativePath": "../../../prisma",
@@ -187,7 +186,6 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -196,13 +194,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel ShortlistSnapshot {\n  id            String        @id @default(uuid())\n  timestamp     DateTime      @db.Timestamptz(6)\n  shortlistType ShortlistType\n  entries       Json // Array of shortlist items with nseSymbol, name, price\n  createdAt     DateTime      @default(now()) @db.Timestamptz(6)\n\n  @@index([timestamp])\n  @@map(\"shortlist_snapshots\")\n}\n\nmodel QuoteSnapshot {\n  id            String        @id @default(uuid())\n  timestamp     DateTime      @db.Timestamptz(6)\n  nseSymbol     String\n  shortlistType ShortlistType // Which shortlist this quote belongs to\n  quoteData     Json // Full quote payload from Groww API\n  createdAt     DateTime      @default(now()) @db.Timestamptz(6)\n\n  @@index([timestamp])\n  @@index([nseSymbol])\n  @@index([timestamp, nseSymbol])\n  @@map(\"quote_snapshots\")\n}\n\nmodel NiftyQuote {\n  id            String   @id @default(uuid())\n  timestamp     DateTime @db.Timestamptz(6)\n  quoteData     Json // Full NIFTY quote payload\n  dayChangePerc Decimal  @db.Decimal(10, 4)\n  isBullish     Boolean\n  createdAt     DateTime @default(now()) @db.Timestamptz(6)\n\n  @@index([timestamp])\n  @@map(\"nifty_quotes\")\n}\n\nenum ShortlistType {\n  TOP_GAINERS\n  VOLUME_SHOCKERS\n}\n",
-  "inlineSchemaHash": "4f22a322062861921e3cc8a8e932b3656f07fd80f787173c1498d00a06dbf791",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel ShortlistSnapshot {\n  id            String        @id @default(uuid())\n  timestamp     DateTime      @db.Timestamptz(6)\n  shortlistType ShortlistType\n  entries       Json // Array of shortlist items with nseSymbol, name, price\n  createdAt     DateTime      @default(now()) @db.Timestamptz(6)\n\n  @@index([timestamp])\n  @@map(\"shortlist_snapshots\")\n}\n\nmodel QuoteSnapshot {\n  id            String        @id @default(uuid())\n  timestamp     DateTime      @db.Timestamptz(6)\n  nseSymbol     String\n  shortlistType ShortlistType // Which shortlist this quote belongs to\n  quoteData     Json // Full quote payload from Groww API\n  createdAt     DateTime      @default(now()) @db.Timestamptz(6)\n\n  @@index([timestamp])\n  @@index([nseSymbol])\n  @@index([timestamp, nseSymbol])\n  @@map(\"quote_snapshots\")\n}\n\nmodel NiftyQuote {\n  id            String   @id @default(uuid())\n  timestamp     DateTime @db.Timestamptz(6)\n  quoteData     Json // Full NIFTY quote payload\n  dayChangePerc Decimal  @db.Decimal(10, 4)\n  createdAt     DateTime @default(now()) @db.Timestamptz(6)\n\n  @@index([timestamp])\n  @@map(\"nifty_quotes\")\n}\n\nenum ShortlistType {\n  TOP_GAINERS\n  VOLUME_SHOCKERS\n}\n",
+  "inlineSchemaHash": "6c52f3a42b74d0c5e11bd5b4662b51a27ff7bacaf0275f649f7de8d371e9c39b",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"ShortlistSnapshot\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"shortlistType\",\"kind\":\"enum\",\"type\":\"ShortlistType\"},{\"name\":\"entries\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"shortlist_snapshots\"},\"QuoteSnapshot\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"nseSymbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"shortlistType\",\"kind\":\"enum\",\"type\":\"ShortlistType\"},{\"name\":\"quoteData\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"quote_snapshots\"},\"NiftyQuote\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"quoteData\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"dayChangePerc\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"isBullish\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"nifty_quotes\"}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"ShortlistSnapshot\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"shortlistType\",\"kind\":\"enum\",\"type\":\"ShortlistType\"},{\"name\":\"entries\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"shortlist_snapshots\"},\"QuoteSnapshot\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"nseSymbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"shortlistType\",\"kind\":\"enum\",\"type\":\"ShortlistType\"},{\"name\":\"quoteData\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"quote_snapshots\"},\"NiftyQuote\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"quoteData\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"dayChangePerc\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"nifty_quotes\"}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

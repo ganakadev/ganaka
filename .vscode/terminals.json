@@ -4,37 +4,44 @@
     {
       "name": "Momentum Scalping: Dev",
       "focus": true,
+      "onlySingle": true,
       "command": "nvm use 22 && pnpm --filter @ganaka/momentum-scalping dev"
     },
     {
       "name": "Groww Access Token Generator: Dev",
       "focus": true,
+      "onlySingle": true,
       "cwd": "./packages/groww_access_token_generator",
       "command": "uv run main.py"
     },
     {
       "name": "SDK: Dev",
       "focus": true,
+      "onlySingle": true,
       "command": "nvm use 22 && pnpm --filter @ganaka/sdk dev"
     },
     {
       "name": "Market Data Collector: Dev",
       "focus": true,
+      "onlySingle": true,
       "command": "nvm use 22 && pnpm --filter @ganaka/market-data-collector dev"
     },
     {
       "name": "Market Data Dashboard: Dev",
       "focus": true,
+      "onlySingle": true,
       "command": "nvm use 22 && pnpm --filter @ganaka/market-data-dashboard dev"
     },
     {
       "name": "Prisma Migrate",
       "focus": true,
+      "onlySingle": true,
       "command": "nvm use 22 && pnpm --filter @ganaka/db prisma:migrate"
     },
     {
       "name": "Prisma Generate",
       "focus": true,
+      "onlySingle": true,
       "command": "nvm use 22 && pnpm --filter @ganaka/db prisma:generate"
     }
   ]
