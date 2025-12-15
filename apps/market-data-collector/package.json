@@ -1,17 +1,17 @@
 {
-  "name": "@ganaka-algos/market-data-collector",
+  "name": "@ganaka/market-data-collector",
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node src/index.ts",
-    "prebuild": "pnpm --filter @ganaka-algos/db prisma:generate",
+    "prebuild": "pnpm --filter @ganaka/db prisma:generate",
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@ganaka-algos/db": "workspace:*",
-    "@ganaka-algos/sdk": "workspace:*",
+    "@ganaka/db": "workspace:*",
+    "@ganaka/sdk": "workspace:*",
     "croner": "9.1.0",
     "dayjs": "^1.11.10",
     "dotenv": "^17.2.3",

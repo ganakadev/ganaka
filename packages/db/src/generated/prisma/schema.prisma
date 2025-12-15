@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ShortlistSnapshot {
+  id            String        @id @default(uuid())
+  timestamp     DateTime      @db.Timestamptz(6)
+  shortlistType ShortlistType
+  entries       Json // Array of shortlist items with nseSymbol, name, price
+  createdAt     DateTime      @default(now()) @db.Timestamptz(6)
+
+  @@index([timestamp])
+  @@map("shortlist_snapshots")
+}
+
+model QuoteSnapshot {
+  id            String        @id @default(uuid())
+  timestamp     DateTime      @db.Timestamptz(6)
+  nseSymbol     String
+  shortlistType ShortlistType // Which shortlist this quote belongs to
+  quoteData     Json // Full quote payload from Groww API
+  createdAt     DateTime      @default(now()) @db.Timestamptz(6)
+
+  @@index([timestamp])
+  @@index([nseSymbol])
+  @@index([timestamp, nseSymbol])
+  @@map("quote_snapshots")
+}
+
+model NiftyQuote {
+  id            String   @id @default(uuid())
+  timestamp     DateTime @db.Timestamptz(6)
+  quoteData     Json // Full NIFTY quote payload
+  dayChangePerc Decimal  @db.Decimal(10, 4)
+  isBullish     Boolean
+  createdAt     DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([timestamp])
+  @@map("nifty_quotes")
+}
+
+enum ShortlistType {
+  TOP_GAINERS
+  VOLUME_SHOCKERS
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { AvailableDatetimesResponse } from "@/types";
+import { AvailableDatetimesResponse } from "@/app/api/available-datetimes/route";
 import { SegmentedControl } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import axios from "axios";

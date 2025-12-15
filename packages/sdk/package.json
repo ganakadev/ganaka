@@ -72,7 +72,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@ganaka-algos/groww": "workspace:*",
+    "@ganaka/groww": "workspace:*",
     "axios": "^1.12.2",
     "cheerio": "^1.1.2",
     "csv-parser": "^3.2.0",

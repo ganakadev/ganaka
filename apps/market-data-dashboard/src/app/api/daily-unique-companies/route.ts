@@ -3,18 +3,20 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import {
-  ShortlistEntry,
-  DailyUniqueCompaniesResponse,
-  ShortlistSnapshot,
-} from "@/types";
-import {
   dailyPersistentCompaniesQuerySchema,
   formatZodError,
 } from "@/lib/validation";
-import { prisma } from "@ganaka-algos/db";
+import { prisma } from "@/lib/prisma";
+import { ShortlistEntry, ShortlistSnapshot, ShortlistType } from "@ganaka/db";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+export interface DailyUniqueCompaniesResponse {
+  date: string;
+  type: ShortlistType;
+  uniqueCount: number;
+}
 
 /**
  * Counts unique companies across all snapshots for a given list type on a given date
@@ -87,7 +89,7 @@ export async function GET(request: NextRequest) {
       uniqueCount,
     };
 
-    return NextResponse.json(response);
+    return NextResponse.json<DailyUniqueCompaniesResponse>(response);
   } catch (error) {
     console.error("Error fetching daily unique companies:", error);
     const errorMessage =
@@ -97,4 +99,3 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
-

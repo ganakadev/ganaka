@@ -1,5 +1,5 @@
 {
-  "name": "@ganaka-algos/momentum-scalping",
+  "name": "@ganaka/momentum-scalping",
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
@@ -9,8 +9,8 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@ganaka-algos/db": "workspace:*",
-    "@ganaka-algos/sdk": "workspace:*",
+    "@ganaka/db": "workspace:*",
+    "@ganaka/sdk": "workspace:*",
     "axios": "^1.13.2",
     "lodash": "^4.17.21"
   },

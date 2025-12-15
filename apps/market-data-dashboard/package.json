@@ -1,5 +1,5 @@
 {
-  "name": "@ganaka-algos/market-data-dashboard",
+  "name": "@ganaka/market-data-dashboard",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -7,11 +7,11 @@
     "build": "next build",
     "start": "next start -p 8081",
     "lint": "next lint",
-    "prebuild": "pnpm --filter @ganaka-algos/db prisma:generate"
+    "prebuild": "pnpm --filter @ganaka/db prisma:generate"
   },
   "dependencies": {
-    "@ganaka-algos/db": "workspace:*",
-    "@ganaka-algos/groww": "workspace:*",
+    "@ganaka/db": "workspace:*",
+    "@ganaka/groww": "workspace:*",
     "@mantine/charts": "^8.3.10",
     "@mantine/core": "^8.3.10",
     "@mantine/dates": "^8.3.10",

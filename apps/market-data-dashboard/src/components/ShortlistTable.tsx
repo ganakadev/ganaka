@@ -1,6 +1,7 @@
 "use client";
 
-import { ShortlistEntry, ShortlistSnapshot } from "@/types";
+import { ApiShortlistsResponse } from "@/app/api/shortlists/route";
+import { ShortlistEntry } from "@ganaka/db";
 import { Skeleton, Table } from "@mantine/core";
 import { times } from "lodash";
 
@@ -10,7 +11,7 @@ export const ShortlistTable = ({
   loading,
   selectedDate,
 }: {
-  shortlist: ShortlistSnapshot | null;
+  shortlist: NonNullable<ApiShortlistsResponse["shortlist"]> | null;
   onRowClick: (entry: ShortlistEntry) => void;
   loading: boolean;
   selectedDate: Date | null;
@@ -61,38 +62,36 @@ export const ShortlistTable = ({
               </Table.Tr>
             ))
           ) : (
-            (shortlist.entries as unknown as ShortlistEntry[]).map(
-              (entry, index) => (
-                <Table.Tr
-                  key={`${entry.nseSymbol}-${index}`}
-                  className="cursor-pointer"
-                  onClick={() => onRowClick(entry)}
-                >
-                  <Table.Td className="w-[55%]">
-                    <span className="font-medium">{entry.name}</span>
-                  </Table.Td>
-                  <Table.Td className="w-[20%]">
-                    <span className="text-sm">{entry.nseSymbol}</span>
-                  </Table.Td>
-                  <Table.Td className="w-[20%]">
-                    <span className="text-sm">
-                      {entry.buyerControlPercentage
-                        ? `${entry.buyerControlPercentage.toFixed(2)}%`
-                        : "N/A"}
-                    </span>
-                  </Table.Td>
-                  <Table.Td className="text-right w-[25%]">
-                    <span className="font-bold">
-                      ₹
-                      {entry.price.toLocaleString("en-IN", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </Table.Td>
-                </Table.Tr>
-              )
-            )
+            shortlist.entries.map((entry, index) => (
+              <Table.Tr
+                key={`${entry.nseSymbol}-${index}`}
+                className="cursor-pointer"
+                onClick={() => onRowClick(entry)}
+              >
+                <Table.Td className="w-[55%]">
+                  <span className="font-medium">{entry.name}</span>
+                </Table.Td>
+                <Table.Td className="w-[20%]">
+                  <span className="text-sm">{entry.nseSymbol}</span>
+                </Table.Td>
+                <Table.Td className="w-[20%]">
+                  <span className="text-sm">
+                    {entry.buyerControlPercentage
+                      ? `${entry.buyerControlPercentage.toFixed(2)}%`
+                      : "N/A"}
+                  </span>
+                </Table.Td>
+                <Table.Td className="text-right w-[25%]">
+                  <span className="font-bold">
+                    ₹
+                    {entry.price.toLocaleString("en-IN", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
+                </Table.Td>
+              </Table.Tr>
+            ))
           )}
         </Table.Tbody>
       </Table>

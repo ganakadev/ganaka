@@ -1,6 +1,6 @@
 import { chunk } from "lodash";
-import { GrowwShortlistItem } from "@ganaka-algos/sdk";
-import { Prisma, prisma, QuoteSnapshot } from "@ganaka-algos/db";
+import { GrowwShortlistItem } from "@ganaka/sdk";
+import { Prisma, prisma, QuoteSnapshot } from "@ganaka/db";
 import { getCurrentISTTime } from "./utils/time";
 
 // Enum matching Prisma schema (will be available from @prisma/client after generation)

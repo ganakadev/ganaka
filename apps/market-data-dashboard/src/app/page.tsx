@@ -14,7 +14,6 @@ import {
   ShortlistSnapshot,
   DailyPersistentCompaniesResponse,
 } from "@/types";
-import { Loader, SegmentedControl } from "@mantine/core";
 import axios from "axios";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -106,6 +105,7 @@ export default function DashboardPage() {
             `HTTP ${error.response?.status}: ${error.response?.statusText}`;
         } else if (error instanceof Error) {
           errorMessage = error.message;
+          console.error("Error fetching shortlists:", errorMessage);
         }
       } finally {
         setLoading(false);

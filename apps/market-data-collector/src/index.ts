@@ -1,12 +1,12 @@
 import dotenv from "dotenv";
 import { Cron } from "croner";
-import { ganaka } from "@ganaka-algos/sdk";
+import { ganaka } from "@ganaka/sdk";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { isWithinCollectionWindow } from "./utils/time";
 import { collectMarketData } from "./collector";
-import { prisma } from "@ganaka-algos/db";
+import { prisma } from "@ganaka/db";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

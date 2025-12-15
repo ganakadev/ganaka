@@ -1,13 +1,11 @@
 "use client";
 
-import { Table } from "@mantine/core";
-import { QuoteData, isQuoteData } from "@/utils/buyerControl";
 import { QuoteData as QuoteDataType } from "@/types";
-import dayjs from "dayjs";
+import { isQuoteData } from "@/utils/buyerControl";
+import { Table } from "@mantine/core";
 
 export function QuoteDataTables({
   quoteData,
-  selectedDate,
 }: {
   quoteData: QuoteDataType | null | undefined;
   selectedDate: Date | null;
