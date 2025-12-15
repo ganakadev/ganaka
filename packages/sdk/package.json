@@ -1,5 +1,5 @@
 {
-  "name": "@ganaka-algos/sdk",
+  "name": "@ganaka/sdk",
   "version": "1.0.1",
   "description": "Ganaka SDK - TypeScript client library",
   "main": "dist/index.js",
