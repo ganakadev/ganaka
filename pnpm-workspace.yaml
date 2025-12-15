@@ -1,13 +1,11 @@
 packages:
   - packages/*
+  - apps/*
+  - strategies/*
 
 onlyBuiltDependencies:
-  - '@prisma/client'
-  - '@prisma/engines'
+  - "@prisma/client"
+  - "@prisma/engines"
   - esbuild
   - prisma
   - sharp
-
-
-
-
