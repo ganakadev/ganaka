@@ -4,7 +4,7 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { NextRequest, NextResponse } from "next/server";
 import { dummyCandleResponse } from "./dummyData";
-import { growwApiRequest } from "@ganaka-algos/groww";
+import { getGrowwHistoricalCandles } from "@ganaka-algos/groww";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -93,17 +93,16 @@ export async function GET(request: NextRequest) {
     const response =
       process.env.NODE_ENV === "development"
         ? dummyCandleResponse
-        : await growwApiRequest<GrowwCandles>({
-            method: "get",
-            url: "https://api.groww.in/v1/historical/candles",
-            params: {
-              candle_interval: interval,
-              start_time: start_time,
-              end_time: end_time,
-              exchange: "NSE",
-              segment: "CASH",
-              groww_symbol: encodeURIComponent(`NSE-${symbol}`),
-            },
+        : await getGrowwHistoricalCandles({
+            symbol,
+            start_time,
+            end_time,
+            interval: interval as
+              | "5minute"
+              | "15minute"
+              | "30minute"
+              | "1hour"
+              | "4hour",
           });
 
     // Convert candles to lightweight-charts format

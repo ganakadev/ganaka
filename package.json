@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm --filter app dev"
+    "lint": "pnpm -r --parallel run lint"
   },
   "devDependencies": {
     "typescript": "^5.3.3"
@@ -13,10 +13,3 @@
     "dotenv": "^17.2.3"
   }
 }
-
-
-
-
-
-
-

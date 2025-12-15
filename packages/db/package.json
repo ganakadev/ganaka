@@ -9,14 +9,16 @@
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "prebuild": "prisma generate",
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.1"
+    "@prisma/client": "^7.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.5",
-    "prisma": "^6.19.1",
+    "dotenv": "^17.2.3",
+    "prisma": "^7.1.0",
     "typescript": "^5.3.3"
   }
 }
