@@ -9,7 +9,11 @@ export type {
 } from "./generated/prisma/client";
 
 // Re-export JsonValue type
-export type { JsonValue } from "./generated/prisma/runtime/library";
+export type {
+  JsonValue,
+  Decimal,
+  InputJsonValue,
+} from "./generated/prisma/runtime/library";
 
 // Re-export enum types
 export { ShortlistType } from "./generated/prisma/client";

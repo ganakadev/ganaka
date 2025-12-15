@@ -143,7 +143,6 @@ exports.Prisma.NiftyQuoteScalarFieldEnum = {
   timestamp: 'timestamp',
   quoteData: 'quoteData',
   dayChangePerc: 'dayChangePerc',
-  isBullish: 'isBullish',
   createdAt: 'createdAt'
 };
 

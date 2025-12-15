@@ -38,7 +38,6 @@ model NiftyQuote {
   timestamp     DateTime @db.Timestamptz(6)
   quoteData     Json // Full NIFTY quote payload
   dayChangePerc Decimal  @db.Decimal(10, 4)
-  isBullish     Boolean
   createdAt     DateTime @default(now()) @db.Timestamptz(6)
 
   @@index([timestamp])
