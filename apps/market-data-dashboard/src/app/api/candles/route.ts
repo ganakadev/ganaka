@@ -85,20 +85,19 @@ export async function GET(request: NextRequest) {
     const end_time = marketEnd.format("YYYY-MM-DDTHH:mm:ss");
 
     // Make API request
-    const response =
-      process.env.NODE_ENV === "development"
-        ? dummyCandleResponse
-        : await getGrowwHistoricalCandles({
-            symbol,
-            start_time,
-            end_time,
-            interval: interval as
-              | "5minute"
-              | "15minute"
-              | "30minute"
-              | "1hour"
-              | "4hour",
-          });
+    const response = false
+      ? dummyCandleResponse
+      : await getGrowwHistoricalCandles({
+          symbol,
+          start_time,
+          end_time,
+          interval: interval as
+            | "5minute"
+            | "15minute"
+            | "30minute"
+            | "1hour"
+            | "4hour",
+        });
 
     // Convert candles to lightweight-charts format
     // TODO: Remove this once the API is working again

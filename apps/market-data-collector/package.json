@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "ts-node src/index.ts",
+    "dev": "env-cmd -f ../../.env --silent ts-node src/index.ts",
+    "build": "env-cmd -f ../../.env --silent tsc",
+    "start": "env-cmd -f ../../.env --silent node dist/index.js",
     "prebuild": "pnpm --filter @ganaka/db prisma:generate",
-    "build": "tsc",
-    "start": "node dist/index.js",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 8081",
-    "build": "next build",
-    "start": "next start -p 8081",
+    "dev": "env-cmd -f ../../.env --silent next dev -p 8081",
+    "build": "env-cmd -f ../../.env --silent next build",
+    "start": "env-cmd -f ../../.env --silent next start -p 8081",
     "lint": "next lint",
     "prebuild": "pnpm --filter @ganaka/db prisma:generate"
   },
