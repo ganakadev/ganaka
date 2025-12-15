@@ -4,12 +4,12 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:migrate:deploy": "prisma migrate deploy",
-    "prisma:studio": "prisma studio",
-    "prebuild": "prisma generate",
-    "build": "tsc",
+    "prisma:generate": "env-cmd -f ../../.env --silent prisma generate",
+    "prisma:migrate": "env-cmd -f ../../.env --silent prisma migrate dev",
+    "prisma:migrate:deploy": "env-cmd -f ../../.env --silent prisma migrate deploy",
+    "prisma:studio": "env-cmd -f ../../.env --silent prisma studio",
+    "prebuild": "env-cmd -f ../../.env --silent prisma generate",
+    "build": "env-cmd -f ../../.env --silent tsc",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
