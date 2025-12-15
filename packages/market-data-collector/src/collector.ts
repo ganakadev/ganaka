@@ -1,6 +1,6 @@
 import { chunk } from "lodash";
 import { GrowwShortlistItem } from "@ganaka-algos/sdk";
-import { Prisma, prisma } from "@ganaka-algos/db";
+import { Prisma, prisma, QuoteSnapshot } from "@ganaka-algos/db";
 import { getCurrentISTTime } from "./utils/time";
 
 // Enum matching Prisma schema (will be available from @prisma/client after generation)
@@ -55,28 +55,6 @@ const RATE_LIMIT_DELAY_MS = 1000; // 1 second
 interface SymbolWithSource {
   symbol: string;
   shortlistType: ShortlistType;
-}
-
-function calculateBuyerControlPercentage(quote: GrowwQuote): number | null {
-  if (quote.status !== "SUCCESS") {
-    return null;
-  }
-
-  const totalDepthBuy = quote.payload.depth.buy.reduce(
-    (acc, curr) => acc + curr.quantity,
-    0
-  );
-  const totalDepthSell = quote.payload.depth.sell.reduce(
-    (acc, curr) => acc + curr.quantity,
-    0
-  );
-
-  const total = totalDepthBuy + totalDepthSell;
-  if (total === 0) {
-    return null;
-  }
-
-  return (totalDepthBuy / total) * 100;
 }
 
 async function fetchQuotesWithRateLimit(
@@ -201,17 +179,16 @@ export async function collectMarketData(
     // Prepare quote snapshot data array
     const quoteData: Prisma.QuoteSnapshotCreateManyInput[] = [];
     for (const [symbol, quote] of quotesMap.entries()) {
-      const buyerControlPercentage = calculateBuyerControlPercentage(quote);
       const shortlistTypes = Array.from(symbolMap.get(symbol) || []);
 
       for (const shortlistType of shortlistTypes) {
-        quoteData.push({
+        const dataToPush: QuoteSnapshot = {
           timestamp,
           nseSymbol: symbol,
           shortlistType,
           quoteData: quote as unknown as Prisma.InputJsonValue,
-          buyerControlPercentage: buyerControlPercentage ?? null,
-        });
+        };
+        quoteData.push(dataToPush);
       }
     }
 

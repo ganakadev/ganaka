@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model ShortlistSnapshot {
@@ -19,13 +19,12 @@ model ShortlistSnapshot {
 }
 
 model QuoteSnapshot {
-  id                     String        @id @default(uuid())
-  timestamp              DateTime      @db.Timestamptz(6)
-  nseSymbol              String
-  shortlistType          ShortlistType // Which shortlist this quote belongs to
-  quoteData              Json // Full quote payload from Groww API
-  buyerControlPercentage Decimal?      @db.Decimal(5, 2)
-  createdAt              DateTime      @default(now()) @db.Timestamptz(6)
+  id            String        @id @default(uuid())
+  timestamp     DateTime      @db.Timestamptz(6)
+  nseSymbol     String
+  shortlistType ShortlistType // Which shortlist this quote belongs to
+  quoteData     Json // Full quote payload from Groww API
+  createdAt     DateTime      @default(now()) @db.Timestamptz(6)
 
   @@index([timestamp])
   @@index([nseSymbol])
