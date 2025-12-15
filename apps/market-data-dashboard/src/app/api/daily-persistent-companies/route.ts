@@ -1,20 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { prisma } from "@ganaka-algos/db";
+import { prisma } from "@/lib/prisma";
 import timezone from "dayjs/plugin/timezone";
-import {
-  ShortlistEntry,
-  DailyPersistentCompaniesResponse,
-  ShortlistSnapshot,
-} from "@/types";
 import {
   dailyPersistentCompaniesQuerySchema,
   formatZodError,
 } from "@/lib/validation";
+import { ShortlistEntry, ShortlistSnapshot, ShortlistType } from "@ganaka/db";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+export interface DailyPersistentCompaniesResponse {
+  date: string;
+  type: ShortlistType;
+  totalSnapshots: number;
+  companies: Array<{
+    nseSymbol: string;
+    name: string;
+    count: number;
+    percentage: number;
+  }>;
+}
 
 /**
  * Finds companies that appeared in at least 80% of snapshots for a given list type on a given date

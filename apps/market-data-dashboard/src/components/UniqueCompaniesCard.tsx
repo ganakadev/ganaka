@@ -1,10 +1,9 @@
 "use client";
 
-import { DailyUniqueCompaniesResponse } from "@/types";
+import { DailyUniqueCompaniesResponse } from "@/app/api/daily-unique-companies/route";
 import { Card, Skeleton } from "@mantine/core";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import dayjs from "dayjs";
 
 export const UniqueCompaniesCard = ({
   selectedDate,
@@ -89,4 +88,3 @@ export const UniqueCompaniesCard = ({
     </Card>
   );
 };
-

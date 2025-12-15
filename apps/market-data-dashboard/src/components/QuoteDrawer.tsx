@@ -25,7 +25,7 @@ export function QuotePanel({
   selectedDate: Date | null;
 }) {
   const [candleData, setCandleData] = useState<CandleData[] | null>(null);
-  const [loadingCandles, setLoadingCandles] = useState(false);
+  const [, setLoadingCandles] = useState(false);
   const [candleError, setCandleError] = useState<string | null>(null);
 
   // Fetch candle data when drawer opens

@@ -4,21 +4,16 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { NextRequest, NextResponse } from "next/server";
 import { dummyCandleResponse } from "./dummyData";
-import { getGrowwHistoricalCandles } from "@ganaka-algos/groww";
+import { getGrowwHistoricalCandles } from "@ganaka/groww";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-interface GrowwCandles {
-  status: "SUCCESS" | "FAILURE";
-  payload: {
-    // [timestamp, open, high, low, close, volume, turnover]
-    candles: [string, number, number, number, number, number, number][];
-    closing_price: number | null;
-    start_time: string;
-    end_time: string;
-    interval_in_minutes: number;
-  };
+export interface CandlesResponse {
+  candles: CandleData[];
+  start_time: string;
+  end_time: string;
+  interval_in_minutes: number;
 }
 
 interface CandleData {
@@ -133,7 +128,7 @@ export async function GET(request: NextRequest) {
       }
     );
 
-    return NextResponse.json({
+    return NextResponse.json<CandlesResponse>({
       candles: candleData,
       start_time: response.payload.start_time,
       end_time: response.payload.end_time,

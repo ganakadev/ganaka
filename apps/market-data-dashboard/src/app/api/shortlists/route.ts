@@ -1,20 +1,35 @@
+import { prisma } from "@/lib/prisma";
 import { formatZodError, shortlistsQuerySchema } from "@/lib/validation";
-import { QuoteData, ShortlistEntry } from "@/types";
 import {
   BuyerControlMethod,
   QuoteData as BuyerControlQuoteData,
   calculateBuyerControlPercentage,
   isQuoteData,
 } from "@/utils/buyerControl";
-import { JsonValue, ShortlistType } from "@ganaka-algos/db";
+import {
+  QuoteData,
+  ShortlistEntry,
+  ShortlistSnapshot,
+  ShortlistType,
+} from "@ganaka/db";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@ganaka-algos/db";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+export interface ApiShortlistsResponse {
+  shortlist:
+    | (Omit<ShortlistSnapshot, "entries"> & {
+        entries: (ShortlistEntry & {
+          quoteData: QuoteData;
+          buyerControlPercentage: number;
+        })[];
+      })
+    | null;
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -78,57 +93,62 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    let shortlist = shortlists[0];
-    const shortlistEntries = shortlist.entries as ShortlistEntry[] | null;
+    const shortlistFromDb = shortlists[0];
+    const shortlistEntries = shortlistFromDb.entries as ShortlistEntry[] | null;
+    let entries: NonNullable<ApiShortlistsResponse["shortlist"]>["entries"] =
+      [];
 
     if (shortlistEntries) {
-      shortlist = {
-        ...shortlist,
-        entries: shortlistEntries.map((entry) => {
-          const quoteSnapshot = quoteSnapshots.find(
-            (quoteSnapshot) => quoteSnapshot.nseSymbol === entry.nseSymbol
-          );
-          const quoteData = quoteSnapshot?.quoteData as QuoteData | null;
+      entries = shortlistEntries.flatMap((entry) => {
+        const quoteSnapshot = quoteSnapshots.find(
+          (quoteSnapshot) => quoteSnapshot.nseSymbol === entry.nseSymbol
+        );
+        const quoteData = quoteSnapshot?.quoteData;
 
-          // Calculate buyer control percentage
-          let buyerControlPercentage: number | null = null;
+        // Calculate buyer control percentage
+        let buyerControlPercentage: number = 0;
 
-          // Safely cast quoteData if it's valid
-          const validQuoteData: BuyerControlQuoteData | null =
-            quoteData && isQuoteData(quoteData) ? quoteData : null;
+        // Safely cast quoteData if it's valid
+        const validQuoteData: BuyerControlQuoteData | null =
+          quoteData && isQuoteData(quoteData) ? quoteData : null;
 
-          // If method is specified, calculate on-the-fly
-          // Otherwise, use stored value if available
-          if (methodParam !== null) {
-            buyerControlPercentage = calculateBuyerControlPercentage(
+        // If method is specified, calculate on-the-fly
+        // Otherwise, use stored value if available
+        if (methodParam !== null) {
+          buyerControlPercentage =
+            calculateBuyerControlPercentage(validQuoteData, method) ?? 0;
+        } else {
+          // Use stored value from database if available
+          buyerControlPercentage =
+            calculateBuyerControlPercentage(
               validQuoteData,
-              method
-            );
-          } else {
-            // Use stored value from database if available
-            buyerControlPercentage =
-              quoteSnapshot?.buyerControlPercentage !== null &&
-              quoteSnapshot?.buyerControlPercentage !== undefined
-                ? Number(quoteSnapshot.buyerControlPercentage)
-                : calculateBuyerControlPercentage(
-                    validQuoteData,
-                    "hybrid" // Default to hybrid if no stored value
-                  );
-          }
+              "hybrid" // Default to hybrid if no stored value
+            ) ?? 0;
+        }
 
-          const data: ShortlistEntry = {
-            ...entry,
-            quoteData,
-            buyerControlPercentage,
+        if (quoteData) {
+          const data: NonNullable<
+            ApiShortlistsResponse["shortlist"]
+          >["entries"][0] = {
+            nseSymbol: entry.nseSymbol,
+            name: entry.name,
+            price: entry.price,
+            quoteData: quoteData as unknown as QuoteData,
+            buyerControlPercentage: buyerControlPercentage,
           };
 
-          return data as unknown as JsonValue;
-        }),
-      };
+          return data;
+        }
+
+        return [];
+      });
     }
 
-    return NextResponse.json({
-      shortlist,
+    return NextResponse.json<ApiShortlistsResponse>({
+      shortlist: {
+        ...shortlistFromDb,
+        entries,
+      },
     });
   } catch (error) {
     console.error("Error fetching shortlists:", error);

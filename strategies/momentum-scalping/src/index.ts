@@ -1,4 +1,4 @@
-import { ganaka } from "@ganaka-algos/sdk";
+import { ganaka } from "@ganaka/sdk";
 import { validateTradingWindow } from "./steps/validate-trading-window";
 import { validateNiftyTrend } from "./steps/validate-nifty-trend";
 import { fetchAndEnrichQuotes } from "./steps/fetch-and-enrich-quotes";

@@ -1,7 +1,6 @@
-import { z } from "zod";
-import { ShortlistType } from "@prisma/client";
-import { BuyerControlMethod } from "@/utils/buyerControl";
+import { ShortlistType } from "@ganaka/db";
 import dayjs from "dayjs";
+import { z } from "zod";
 
 /**
  * Validates a date string using dayjs
@@ -19,8 +18,8 @@ const dateStringSchema = z.string().refine(
 /**
  * Schema for ShortlistType enum
  */
-const shortlistTypeSchema = z.nativeEnum(ShortlistType, {
-  errorMap: () => ({
+const shortlistTypeSchema = z.enum(ShortlistType, {
+  error: () => ({
     message: `Invalid type. Must be one of: ${Object.values(ShortlistType).join(
       ", "
     )}`,
@@ -31,17 +30,17 @@ const shortlistTypeSchema = z.nativeEnum(ShortlistType, {
  * Schema for BuyerControlMethod
  */
 const buyerControlMethodSchema = z.enum(
-  [
-    "simple",
-    "total",
-    "price-weighted",
-    "near-price",
-    "volume-weighted",
-    "bid-ask",
-    "hybrid",
-  ],
   {
-    errorMap: () => ({
+    simple: "simple",
+    total: "total",
+    "price-weighted": "price-weighted",
+    "near-price": "near-price",
+    "volume-weighted": "volume-weighted",
+    "bid-ask": "bid-ask",
+    hybrid: "hybrid",
+  },
+  {
+    error: () => ({
       message:
         "Invalid method parameter. Supported methods: simple, total, price-weighted, near-price, volume-weighted, bid-ask, hybrid",
     }),
@@ -64,11 +63,17 @@ export const shortlistsQuerySchema = z.object({
  */
 export const dailyPersistentCompaniesQuerySchema = z.object({
   date: dateStringSchema,
-  type: z.enum([ShortlistType.TOP_GAINERS, ShortlistType.VOLUME_SHOCKERS], {
-    errorMap: () => ({
-      message: "Invalid type. Must be TOP_GAINERS or VOLUME_SHOCKERS",
-    }),
-  }),
+  type: z.enum(
+    {
+      TOP_GAINERS: ShortlistType.TOP_GAINERS,
+      VOLUME_SHOCKERS: ShortlistType.VOLUME_SHOCKERS,
+    },
+    {
+      error: () => ({
+        message: "Invalid type. Must be TOP_GAINERS or VOLUME_SHOCKERS",
+      }),
+    }
+  ),
 });
 
 /**

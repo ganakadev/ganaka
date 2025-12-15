@@ -4,7 +4,7 @@
     {
       "name": "Momentum Scalping: Dev",
       "focus": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka-algos/momentum-scalping dev"
+      "command": "nvm use 22 && pnpm --filter @ganaka/momentum-scalping dev"
     },
     {
       "name": "Groww Access Token Generator: Dev",
@@ -15,27 +15,27 @@
     {
       "name": "SDK: Dev",
       "focus": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka-algos/sdk dev"
+      "command": "nvm use 22 && pnpm --filter @ganaka/sdk dev"
     },
     {
       "name": "Market Data Collector: Dev",
       "focus": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka-algos/market-data-collector dev"
+      "command": "nvm use 22 && pnpm --filter @ganaka/market-data-collector dev"
     },
     {
       "name": "Market Data Dashboard: Dev",
       "focus": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka-algos/market-data-dashboard dev"
+      "command": "nvm use 22 && pnpm --filter @ganaka/market-data-dashboard dev"
     },
     {
       "name": "Prisma Migrate",
       "focus": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka-algos/db prisma:migrate"
+      "command": "nvm use 22 && pnpm --filter @ganaka/db prisma:migrate"
     },
     {
       "name": "Prisma Generate",
       "focus": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka-algos/db prisma:generate"
+      "command": "nvm use 22 && pnpm --filter @ganaka/db prisma:generate"
     }
   ]
 }

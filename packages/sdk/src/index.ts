@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { getGrowwQuote, getGrowwHistoricalCandles } from "@ganaka-algos/groww";
+import { getGrowwQuote, getGrowwHistoricalCandles } from "@ganaka/groww";
 import { scrapeGrowwShortlist } from "./groww/scrape-shortlist";
 import { logger } from "./utils/logger";
 import { PlaceOrderData, MarketDepthWriter } from "./utils/writer";

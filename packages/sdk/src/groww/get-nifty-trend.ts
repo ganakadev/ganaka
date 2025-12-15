@@ -1,4 +1,4 @@
-import { getGrowwQuote } from "@ganaka-algos/groww";
+import { getGrowwQuote } from "@ganaka/groww";
 
 export interface NiftyTrend {
   isBullish: boolean;
