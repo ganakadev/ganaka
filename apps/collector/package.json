@@ -1,5 +1,5 @@
 {
-  "name": "@ganaka/market-data-collector",
+  "name": "@ganaka/collector",
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {

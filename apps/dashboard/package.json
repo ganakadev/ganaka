@@ -1,5 +1,5 @@
 {
-  "name": "@ganaka/market-data-dashboard",
+  "name": "@ganaka/dashboard",
   "version": "1.0.0",
   "private": true,
   "scripts": {
