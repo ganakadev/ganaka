@@ -8,16 +8,17 @@
     "prisma:migrate": "env-cmd -f ../../.env --silent prisma migrate dev",
     "prisma:reset": "env-cmd -f ../../.env --silent prisma migrate reset",
     "prisma:studio": "env-cmd -f ../../.env --silent prisma studio",
-    "prebuild": "env-cmd -f ../../.env --silent prisma generate",
     "prisma:migrate:deploy": "env-cmd -f ../../.env --silent prisma migrate deploy",
-    "build": "env-cmd -f ../../.env --silent tsc",
+    "build": "env-cmd -f ../../.env --silent tsc && copyfiles -u 1 'src/generated/**/*' dist",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
     "@prisma/client": "^6.19.1"
   },
   "devDependencies": {
+    "@types/copyfiles": "^2.4.4",
     "@types/node": "^20.10.5",
+    "copyfiles": "^2.4.1",
     "dotenv": "^17.2.3",
     "prisma": "^6.19.1",
     "typescript": "^5.3.3"
