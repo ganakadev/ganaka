@@ -1,13 +1,8 @@
--- CreateEnum (only if it doesn't exist)
-DO $$ 
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'ShortlistType') THEN
-        CREATE TYPE "ShortlistType" AS ENUM ('TOP_GAINERS', 'VOLUME_SHOCKERS');
-    END IF;
-END $$;
+-- CreateEnum
+CREATE TYPE "ShortlistType" AS ENUM ('TOP_GAINERS', 'VOLUME_SHOCKERS');
 
 -- CreateTable
-CREATE TABLE IF NOT EXISTS "shortlist_snapshots" (
+CREATE TABLE "shortlist_snapshots" (
     "id" BIGSERIAL NOT NULL,
     "timestamp" TIMESTAMPTZ(6) NOT NULL,
     "shortlistType" "ShortlistType" NOT NULL,
@@ -18,7 +13,7 @@ CREATE TABLE IF NOT EXISTS "shortlist_snapshots" (
 );
 
 -- CreateTable
-CREATE TABLE IF NOT EXISTS "quote_snapshots" (
+CREATE TABLE "quote_snapshots" (
     "id" BIGSERIAL NOT NULL,
     "timestamp" TIMESTAMPTZ(6) NOT NULL,
     "nseSymbol" TEXT NOT NULL,
@@ -31,7 +26,7 @@ CREATE TABLE IF NOT EXISTS "quote_snapshots" (
 );
 
 -- CreateTable
-CREATE TABLE IF NOT EXISTS "nifty_quotes" (
+CREATE TABLE "nifty_quotes" (
     "id" BIGSERIAL NOT NULL,
     "timestamp" TIMESTAMPTZ(6) NOT NULL,
     "quoteData" JSONB NOT NULL,
@@ -43,16 +38,16 @@ CREATE TABLE IF NOT EXISTS "nifty_quotes" (
 );
 
 -- CreateIndex
-CREATE INDEX IF NOT EXISTS "shortlist_snapshots_timestamp_idx" ON "shortlist_snapshots"("timestamp");
+CREATE INDEX "shortlist_snapshots_timestamp_idx" ON "shortlist_snapshots"("timestamp");
 
 -- CreateIndex
-CREATE INDEX IF NOT EXISTS "quote_snapshots_timestamp_idx" ON "quote_snapshots"("timestamp");
+CREATE INDEX "quote_snapshots_timestamp_idx" ON "quote_snapshots"("timestamp");
 
 -- CreateIndex
-CREATE INDEX IF NOT EXISTS "quote_snapshots_nseSymbol_idx" ON "quote_snapshots"("nseSymbol");
+CREATE INDEX "quote_snapshots_nseSymbol_idx" ON "quote_snapshots"("nseSymbol");
 
 -- CreateIndex
-CREATE INDEX IF NOT EXISTS "quote_snapshots_timestamp_nseSymbol_idx" ON "quote_snapshots"("timestamp", "nseSymbol");
+CREATE INDEX "quote_snapshots_timestamp_nseSymbol_idx" ON "quote_snapshots"("timestamp", "nseSymbol");
 
 -- CreateIndex
-CREATE INDEX IF NOT EXISTS "nifty_quotes_timestamp_idx" ON "nifty_quotes"("timestamp");
+CREATE INDEX "nifty_quotes_timestamp_idx" ON "nifty_quotes"("timestamp");
