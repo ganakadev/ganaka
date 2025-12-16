@@ -29,4 +29,9 @@ export class RedisManager {
   async set(key: string, value: string): Promise<void> {
     await this.redis.set(key, value);
   }
+
+  async close(): Promise<void> {
+    await this.redis.quit();
+    this.fastify.log.info("Redis connection closed");
+  }
 }
