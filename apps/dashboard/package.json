@@ -6,8 +6,7 @@
     "dev": "env-cmd -f ../../.env --silent next dev -p 8081",
     "build": "env-cmd -f ../../.env --silent next build",
     "start": "env-cmd -f ../../.env --silent next start -p 8081",
-    "lint": "next lint",
-    "prebuild": "pnpm --filter @ganaka/db prisma:generate"
+    "lint": "next lint"
   },
   "dependencies": {
     "@ganaka/db": "workspace:*",
