@@ -1,37 +1,27 @@
-import Fastify from "fastify";
-import cors from "@fastify/cors";
+import { FastifyInstance, FastifyPluginAsync } from "fastify";
+import { TokenManager } from "../../../../utils/token-manager";
 import axios, { AxiosError } from "axios";
-import { TokenManager } from "./utils/token-manager";
+import { RedisManager } from "../../../../utils/redis";
 import {
-  quoteQuerySchema,
-  historicalCandlesQuerySchema,
   formatZodError,
-} from "./utils/validation";
-import { authenticator } from "./utils/authenticator";
+  historicalCandlesQuerySchema,
+  quoteQuerySchema,
+} from "../../../../utils/validation";
 
-export interface ServerOptions {
-  port: number;
-  tokenManager: TokenManager;
-}
-
-export async function createServer(options: ServerOptions) {
-  const fastify = Fastify({ logger: true });
-
-  // Register CORS
-  await fastify.register(cors, {
-    origin: true,
-  });
-
-  const { tokenManager } = options;
-
-  /**
-   * Helper function to make Groww API requests with automatic token refresh
-   */
-  async function makeGrowwApiRequest<T>(config: {
-    method?: string;
+/**
+ * Helper function to make Groww API requests with automatic token refresh
+ */
+const makeGrowwAPIRequest =
+  (fastify: FastifyInstance, tokenManager: TokenManager) =>
+  async ({
+    method,
+    url,
+    params,
+  }: {
     url: string;
+    method: string;
     params?: Record<string, any>;
-  }): Promise<T> {
+  }) => {
     const maxAttempts = 2;
     let lastError: unknown;
 
@@ -47,7 +37,9 @@ export async function createServer(options: ServerOptions) {
         };
 
         const response = await axios({
-          ...config,
+          method,
+          url,
+          params,
           headers,
         });
 
@@ -84,31 +76,21 @@ export async function createServer(options: ServerOptions) {
     }
 
     throw lastError;
-  }
+  };
 
-  // Health check endpoint
-  fastify.get("/health", async (request, reply) => {
-    return { status: "ok" };
-  });
+const growwRoutes: FastifyPluginAsync = async (fastify) => {
+  const redisManager = new RedisManager(fastify);
+  const tokenManager = new TokenManager(redisManager.redis, fastify);
+  const growwAPIRequest = makeGrowwAPIRequest(fastify, tokenManager);
 
   // Get latest token endpoint
   fastify.get("/token", async (request, reply) => {
-    const authenticated = await authenticator(request, reply);
-    if (!authenticated) {
-      return;
-    }
-
     const token = await tokenManager.getToken();
     return reply.send({ token });
   });
 
   // Quote endpoint
   fastify.get("/quote", async (request, reply) => {
-    const authenticated = await authenticator(request, reply);
-    if (!authenticated) {
-      return;
-    }
-
     const validationResult = quoteQuerySchema.safeParse(request.query);
 
     if (!validationResult.success) {
@@ -119,7 +101,7 @@ export async function createServer(options: ServerOptions) {
     const { symbol } = validationResult.data;
 
     try {
-      const response = await makeGrowwApiRequest({
+      const response = await growwAPIRequest({
         method: "get",
         url: `https://api.groww.in/v1/live-data/quote?exchange=NSE&segment=CASH&trading_symbol=${encodeURIComponent(
           symbol
@@ -135,11 +117,6 @@ export async function createServer(options: ServerOptions) {
 
   // Historical candles endpoint
   fastify.get("/historical-candles", async (request, reply) => {
-    const authenticated = await authenticator(request, reply);
-    if (!authenticated) {
-      return;
-    }
-
     const validationResult = historicalCandlesQuerySchema.safeParse(
       request.query
     );
@@ -152,7 +129,7 @@ export async function createServer(options: ServerOptions) {
     const { symbol, interval, start_time, end_time } = validationResult.data;
 
     try {
-      const response = await makeGrowwApiRequest({
+      const response = await growwAPIRequest({
         method: "get",
         url: `https://api.groww.in/v1/historical/candles`,
         params: {
@@ -173,6 +150,6 @@ export async function createServer(options: ServerOptions) {
         .send({ error: "Failed to fetch historical candles" });
     }
   });
+};
 
-  return fastify;
-}
+export default growwRoutes;

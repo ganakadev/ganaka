@@ -1,53 +1,55 @@
+import cors from "@fastify/cors";
+import autoLoad from "@fastify/autoload";
+import sensible from "@fastify/sensible";
 import dotenv from "dotenv";
+import Fastify from "fastify";
 import Redis from "ioredis";
 import { TokenManager } from "./utils/token-manager";
-import { createServer } from "./server";
+import path from "path";
+import authPlugin from "./plugins/auth";
+import { prisma } from "./utils/prisma";
 
 dotenv.config();
 
 async function main() {
-  // Get configuration from environment variables
-  const port = parseInt(process.env.PORT || "4000", 10);
-  const redisUrl = process.env.REDIS_URL;
-
-  if (!redisUrl) {
-    throw new Error("REDIS_URL is not set");
-  }
-
-  // Initialize Redis
-  const redis = new Redis(redisUrl);
-
-  redis.on("error", (error) => {
-    console.error("Redis connection error:", error);
+  // FASTIFY CONFIGURATION
+  const fastify = Fastify({ logger: true });
+  fastify.register(sensible);
+  fastify.register(cors, {
+    origin: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   });
 
-  redis.on("connect", () => {
-    console.log("Connected to Redis");
+  // ROUTES CONFIGURATION
+  // Register routes with authentication plugins
+  // Developer routes (/v1/developer) - protected with developer token
+  fastify.register(async function (fastify, opts) {
+    await authPlugin("developer")(fastify, opts);
+    // Register developer routes
+    fastify.register(autoLoad, {
+      dir: path.join(__dirname, "routes/v1/developer"),
+      options: { prefix: "/v1/developer/" },
+      maxDepth: 5,
+    });
   });
 
-  // Initialize token manager
-  const tokenManager = new TokenManager(redis);
-
-  // Create and start Fastify server
-  const server = await createServer({
-    port,
-    tokenManager,
-  });
-
-  // Start server
+  // SERVER CONFIGURATION
   try {
-    await server.listen({ port, host: "0.0.0.0" });
-    console.log(`Groww service server listening on port ${port}`);
+    const port = parseInt(process.env.PORT || "4000", 10);
+    await prisma.$connect();
+    fastify.log.info("Database connection established successfully");
+    await fastify.listen({ port, host: "0.0.0.0" });
+    fastify.log.info(`Server listening on port ${port}`);
   } catch (error) {
-    console.error("Error starting server:", error);
+    fastify.log.error(error, "Error starting server");
     process.exit(1);
   }
 
   // Graceful shutdown
   const shutdown = async (signal: string) => {
-    console.log(`Received ${signal}, shutting down gracefully...`);
-    await server.close();
-    await redis.quit();
+    fastify.log.info(`Received ${signal}, shutting down gracefully...`);
+    await prisma.$disconnect();
+    await fastify.close();
     process.exit(0);
   };
 
