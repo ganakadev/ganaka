@@ -33,10 +33,10 @@
       "command": "nvm use 22 && pnpm --filter @ganaka/dashboard dev"
     },
     {
-      "name": "Groww Service: Dev",
+      "name": "Server: Dev",
       "focus": true,
       "onlySingle": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka/groww-service dev"
+      "command": "nvm use 22 && pnpm --filter @ganaka/server dev"
     },
     {
       "name": "Prisma Migrate",
