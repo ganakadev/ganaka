@@ -1,14 +1,17 @@
 import axios, { AxiosResponse } from "axios";
 import Redis from "ioredis";
+import { FastifyInstance } from "fastify";
 
 const REDIS_KEY = "groww:token";
 
 export class TokenManager {
   private redis: Redis;
   private tokenGenerationInProgress: Promise<string> | null = null;
+  private fastify: FastifyInstance;
 
-  constructor(redis: Redis) {
+  constructor(redis: Redis, fastify: FastifyInstance) {
     this.redis = redis;
+    this.fastify = fastify;
   }
 
   /**
@@ -26,7 +29,7 @@ export class TokenManager {
       });
       return response.status === 200;
     } catch (error) {
-      console.error("Token validation failed");
+      this.fastify.log.error("Token validation failed");
       return false;
     }
   }
@@ -70,7 +73,7 @@ export class TokenManager {
    * Generate a new access token and store it in Redis
    */
   private async generateNewToken(): Promise<string> {
-    console.log(
+    this.fastify.log.info(
       "######################### Generating new token #########################"
     );
 
