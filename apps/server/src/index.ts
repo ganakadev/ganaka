@@ -1,10 +1,8 @@
-import cors from "@fastify/cors";
 import autoLoad from "@fastify/autoload";
+import cors from "@fastify/cors";
 import sensible from "@fastify/sensible";
 import dotenv from "dotenv";
 import Fastify from "fastify";
-import Redis from "ioredis";
-import { TokenManager } from "./utils/token-manager";
 import path from "path";
 import authPlugin from "./plugins/auth";
 import { prisma } from "./utils/prisma";
