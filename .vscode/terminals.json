@@ -24,13 +24,13 @@
       "name": "Market Data Collector: Dev",
       "focus": true,
       "onlySingle": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka/market-data-collector dev"
+      "command": "nvm use 22 && pnpm --filter @ganaka/collector dev"
     },
     {
       "name": "Market Data Dashboard: Dev",
       "focus": true,
       "onlySingle": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka/market-data-dashboard dev"
+      "command": "nvm use 22 && pnpm --filter @ganaka/dashboard dev"
     },
     {
       "name": "Prisma Migrate",
