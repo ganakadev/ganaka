@@ -146,6 +146,12 @@ exports.Prisma.NiftyQuoteScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.DeveloperTokenScalarFieldEnum = {
+  username: 'username',
+  token: 'token',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -173,7 +179,8 @@ exports.ShortlistType = exports.$Enums.ShortlistType = {
 exports.Prisma.ModelName = {
   ShortlistSnapshot: 'ShortlistSnapshot',
   QuoteSnapshot: 'QuoteSnapshot',
-  NiftyQuote: 'NiftyQuote'
+  NiftyQuote: 'NiftyQuote',
+  DeveloperToken: 'DeveloperToken'
 };
 
 /**

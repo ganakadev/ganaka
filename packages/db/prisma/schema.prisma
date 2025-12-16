@@ -44,6 +44,15 @@ model NiftyQuote {
   @@map("nifty_quotes")
 }
 
+model DeveloperToken {
+  username  String   @unique
+  token     String   @unique
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([token])
+  @@map("developer_tokens")
+}
+
 enum ShortlistType {
   TOP_GAINERS
   VOLUME_SHOCKERS
