@@ -6,7 +6,6 @@
     "dev": "env-cmd -f ../../.env --silent ts-node src/index.ts",
     "build": "env-cmd -f ../../.env --silent tsc",
     "start": "env-cmd -f ../../.env --silent node dist/index.js",
-    "prebuild": "pnpm --filter @ganaka/db prisma:generate",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
