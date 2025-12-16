@@ -6,6 +6,7 @@
   "scripts": {
     "prisma:generate": "env-cmd -f ../../.env --silent prisma generate",
     "prisma:migrate": "env-cmd -f ../../.env --silent prisma migrate dev",
+    "prisma:reset": "env-cmd -f ../../.env --silent prisma migrate reset",
     "prisma:studio": "env-cmd -f ../../.env --silent prisma studio",
     "prebuild": "env-cmd -f ../../.env --silent prisma generate",
     "prisma:migrate:deploy": "env-cmd -f ../../.env --silent prisma migrate deploy",
