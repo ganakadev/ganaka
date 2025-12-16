@@ -8,7 +8,7 @@
     "prisma:migrate": "env-cmd -f ../../.env --silent prisma migrate dev",
     "prisma:studio": "env-cmd -f ../../.env --silent prisma studio",
     "prebuild": "env-cmd -f ../../.env --silent prisma generate",
-    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:migrate:deploy": "env-cmd -f ../../.env --silent prisma migrate deploy",
     "build": "env-cmd -f ../../.env --silent tsc",
     "lint": "tsc --noEmit"
   },
