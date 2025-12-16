@@ -21,16 +21,22 @@
       "command": "nvm use 22 && pnpm --filter @ganaka/sdk dev"
     },
     {
-      "name": "Market Data Collector: Dev",
+      "name": "Collector: Dev",
       "focus": true,
       "onlySingle": true,
       "command": "nvm use 22 && pnpm --filter @ganaka/collector dev"
     },
     {
-      "name": "Market Data Dashboard: Dev",
+      "name": "Dashboard: Dev",
       "focus": true,
       "onlySingle": true,
       "command": "nvm use 22 && pnpm --filter @ganaka/dashboard dev"
+    },
+    {
+      "name": "Groww Service: Dev",
+      "focus": true,
+      "onlySingle": true,
+      "command": "nvm use 22 && pnpm --filter @ganaka/groww-service dev"
     },
     {
       "name": "Prisma Migrate",

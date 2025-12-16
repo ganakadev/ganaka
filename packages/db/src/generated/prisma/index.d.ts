@@ -28,6 +28,11 @@ export type QuoteSnapshot = $Result.DefaultSelection<Prisma.$QuoteSnapshotPayloa
  * 
  */
 export type NiftyQuote = $Result.DefaultSelection<Prisma.$NiftyQuotePayload>
+/**
+ * Model DeveloperToken
+ * 
+ */
+export type DeveloperToken = $Result.DefaultSelection<Prisma.$DeveloperTokenPayload>
 
 /**
  * Enums
@@ -193,6 +198,16 @@ export class PrismaClient<
     * ```
     */
   get niftyQuote(): Prisma.NiftyQuoteDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.developerToken`: Exposes CRUD operations for the **DeveloperToken** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DeveloperTokens
+    * const developerTokens = await prisma.developerToken.findMany()
+    * ```
+    */
+  get developerToken(): Prisma.DeveloperTokenDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -636,7 +651,8 @@ export namespace Prisma {
   export const ModelName: {
     ShortlistSnapshot: 'ShortlistSnapshot',
     QuoteSnapshot: 'QuoteSnapshot',
-    NiftyQuote: 'NiftyQuote'
+    NiftyQuote: 'NiftyQuote',
+    DeveloperToken: 'DeveloperToken'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -655,7 +671,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "shortlistSnapshot" | "quoteSnapshot" | "niftyQuote"
+      modelProps: "shortlistSnapshot" | "quoteSnapshot" | "niftyQuote" | "developerToken"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -881,6 +897,80 @@ export namespace Prisma {
           }
         }
       }
+      DeveloperToken: {
+        payload: Prisma.$DeveloperTokenPayload<ExtArgs>
+        fields: Prisma.DeveloperTokenFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DeveloperTokenFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DeveloperTokenFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>
+          }
+          findFirst: {
+            args: Prisma.DeveloperTokenFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DeveloperTokenFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>
+          }
+          findMany: {
+            args: Prisma.DeveloperTokenFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>[]
+          }
+          create: {
+            args: Prisma.DeveloperTokenCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>
+          }
+          createMany: {
+            args: Prisma.DeveloperTokenCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DeveloperTokenCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>[]
+          }
+          delete: {
+            args: Prisma.DeveloperTokenDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>
+          }
+          update: {
+            args: Prisma.DeveloperTokenUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>
+          }
+          deleteMany: {
+            args: Prisma.DeveloperTokenDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DeveloperTokenUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DeveloperTokenUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>[]
+          }
+          upsert: {
+            args: Prisma.DeveloperTokenUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>
+          }
+          aggregate: {
+            args: Prisma.DeveloperTokenAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDeveloperToken>
+          }
+          groupBy: {
+            args: Prisma.DeveloperTokenGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DeveloperTokenGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DeveloperTokenCountArgs<ExtArgs>
+            result: $Utils.Optional<DeveloperTokenCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -980,6 +1070,7 @@ export namespace Prisma {
     shortlistSnapshot?: ShortlistSnapshotOmit
     quoteSnapshot?: QuoteSnapshotOmit
     niftyQuote?: NiftyQuoteOmit
+    developerToken?: DeveloperTokenOmit
   }
 
   /* Types for Logging */
@@ -4081,6 +4172,975 @@ export namespace Prisma {
 
 
   /**
+   * Model DeveloperToken
+   */
+
+  export type AggregateDeveloperToken = {
+    _count: DeveloperTokenCountAggregateOutputType | null
+    _min: DeveloperTokenMinAggregateOutputType | null
+    _max: DeveloperTokenMaxAggregateOutputType | null
+  }
+
+  export type DeveloperTokenMinAggregateOutputType = {
+    username: string | null
+    token: string | null
+    createdAt: Date | null
+  }
+
+  export type DeveloperTokenMaxAggregateOutputType = {
+    username: string | null
+    token: string | null
+    createdAt: Date | null
+  }
+
+  export type DeveloperTokenCountAggregateOutputType = {
+    username: number
+    token: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type DeveloperTokenMinAggregateInputType = {
+    username?: true
+    token?: true
+    createdAt?: true
+  }
+
+  export type DeveloperTokenMaxAggregateInputType = {
+    username?: true
+    token?: true
+    createdAt?: true
+  }
+
+  export type DeveloperTokenCountAggregateInputType = {
+    username?: true
+    token?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type DeveloperTokenAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DeveloperToken to aggregate.
+     */
+    where?: DeveloperTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DeveloperTokens to fetch.
+     */
+    orderBy?: DeveloperTokenOrderByWithRelationInput | DeveloperTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DeveloperTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DeveloperTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DeveloperTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DeveloperTokens
+    **/
+    _count?: true | DeveloperTokenCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DeveloperTokenMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DeveloperTokenMaxAggregateInputType
+  }
+
+  export type GetDeveloperTokenAggregateType<T extends DeveloperTokenAggregateArgs> = {
+        [P in keyof T & keyof AggregateDeveloperToken]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDeveloperToken[P]>
+      : GetScalarType<T[P], AggregateDeveloperToken[P]>
+  }
+
+
+
+
+  export type DeveloperTokenGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DeveloperTokenWhereInput
+    orderBy?: DeveloperTokenOrderByWithAggregationInput | DeveloperTokenOrderByWithAggregationInput[]
+    by: DeveloperTokenScalarFieldEnum[] | DeveloperTokenScalarFieldEnum
+    having?: DeveloperTokenScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DeveloperTokenCountAggregateInputType | true
+    _min?: DeveloperTokenMinAggregateInputType
+    _max?: DeveloperTokenMaxAggregateInputType
+  }
+
+  export type DeveloperTokenGroupByOutputType = {
+    username: string
+    token: string
+    createdAt: Date
+    _count: DeveloperTokenCountAggregateOutputType | null
+    _min: DeveloperTokenMinAggregateOutputType | null
+    _max: DeveloperTokenMaxAggregateOutputType | null
+  }
+
+  type GetDeveloperTokenGroupByPayload<T extends DeveloperTokenGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DeveloperTokenGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DeveloperTokenGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DeveloperTokenGroupByOutputType[P]>
+            : GetScalarType<T[P], DeveloperTokenGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DeveloperTokenSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    username?: boolean
+    token?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["developerToken"]>
+
+  export type DeveloperTokenSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    username?: boolean
+    token?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["developerToken"]>
+
+  export type DeveloperTokenSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    username?: boolean
+    token?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["developerToken"]>
+
+  export type DeveloperTokenSelectScalar = {
+    username?: boolean
+    token?: boolean
+    createdAt?: boolean
+  }
+
+  export type DeveloperTokenOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"username" | "token" | "createdAt", ExtArgs["result"]["developerToken"]>
+
+  export type $DeveloperTokenPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DeveloperToken"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      username: string
+      token: string
+      createdAt: Date
+    }, ExtArgs["result"]["developerToken"]>
+    composites: {}
+  }
+
+  type DeveloperTokenGetPayload<S extends boolean | null | undefined | DeveloperTokenDefaultArgs> = $Result.GetResult<Prisma.$DeveloperTokenPayload, S>
+
+  type DeveloperTokenCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DeveloperTokenFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DeveloperTokenCountAggregateInputType | true
+    }
+
+  export interface DeveloperTokenDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DeveloperToken'], meta: { name: 'DeveloperToken' } }
+    /**
+     * Find zero or one DeveloperToken that matches the filter.
+     * @param {DeveloperTokenFindUniqueArgs} args - Arguments to find a DeveloperToken
+     * @example
+     * // Get one DeveloperToken
+     * const developerToken = await prisma.developerToken.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DeveloperTokenFindUniqueArgs>(args: SelectSubset<T, DeveloperTokenFindUniqueArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DeveloperToken that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DeveloperTokenFindUniqueOrThrowArgs} args - Arguments to find a DeveloperToken
+     * @example
+     * // Get one DeveloperToken
+     * const developerToken = await prisma.developerToken.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DeveloperTokenFindUniqueOrThrowArgs>(args: SelectSubset<T, DeveloperTokenFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DeveloperToken that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DeveloperTokenFindFirstArgs} args - Arguments to find a DeveloperToken
+     * @example
+     * // Get one DeveloperToken
+     * const developerToken = await prisma.developerToken.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DeveloperTokenFindFirstArgs>(args?: SelectSubset<T, DeveloperTokenFindFirstArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DeveloperToken that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DeveloperTokenFindFirstOrThrowArgs} args - Arguments to find a DeveloperToken
+     * @example
+     * // Get one DeveloperToken
+     * const developerToken = await prisma.developerToken.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DeveloperTokenFindFirstOrThrowArgs>(args?: SelectSubset<T, DeveloperTokenFindFirstOrThrowArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DeveloperTokens that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DeveloperTokenFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DeveloperTokens
+     * const developerTokens = await prisma.developerToken.findMany()
+     * 
+     * // Get first 10 DeveloperTokens
+     * const developerTokens = await prisma.developerToken.findMany({ take: 10 })
+     * 
+     * // Only select the `username`
+     * const developerTokenWithUsernameOnly = await prisma.developerToken.findMany({ select: { username: true } })
+     * 
+     */
+    findMany<T extends DeveloperTokenFindManyArgs>(args?: SelectSubset<T, DeveloperTokenFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DeveloperToken.
+     * @param {DeveloperTokenCreateArgs} args - Arguments to create a DeveloperToken.
+     * @example
+     * // Create one DeveloperToken
+     * const DeveloperToken = await prisma.developerToken.create({
+     *   data: {
+     *     // ... data to create a DeveloperToken
+     *   }
+     * })
+     * 
+     */
+    create<T extends DeveloperTokenCreateArgs>(args: SelectSubset<T, DeveloperTokenCreateArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DeveloperTokens.
+     * @param {DeveloperTokenCreateManyArgs} args - Arguments to create many DeveloperTokens.
+     * @example
+     * // Create many DeveloperTokens
+     * const developerToken = await prisma.developerToken.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DeveloperTokenCreateManyArgs>(args?: SelectSubset<T, DeveloperTokenCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DeveloperTokens and returns the data saved in the database.
+     * @param {DeveloperTokenCreateManyAndReturnArgs} args - Arguments to create many DeveloperTokens.
+     * @example
+     * // Create many DeveloperTokens
+     * const developerToken = await prisma.developerToken.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DeveloperTokens and only return the `username`
+     * const developerTokenWithUsernameOnly = await prisma.developerToken.createManyAndReturn({
+     *   select: { username: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DeveloperTokenCreateManyAndReturnArgs>(args?: SelectSubset<T, DeveloperTokenCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DeveloperToken.
+     * @param {DeveloperTokenDeleteArgs} args - Arguments to delete one DeveloperToken.
+     * @example
+     * // Delete one DeveloperToken
+     * const DeveloperToken = await prisma.developerToken.delete({
+     *   where: {
+     *     // ... filter to delete one DeveloperToken
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DeveloperTokenDeleteArgs>(args: SelectSubset<T, DeveloperTokenDeleteArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DeveloperToken.
+     * @param {DeveloperTokenUpdateArgs} args - Arguments to update one DeveloperToken.
+     * @example
+     * // Update one DeveloperToken
+     * const developerToken = await prisma.developerToken.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DeveloperTokenUpdateArgs>(args: SelectSubset<T, DeveloperTokenUpdateArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DeveloperTokens.
+     * @param {DeveloperTokenDeleteManyArgs} args - Arguments to filter DeveloperTokens to delete.
+     * @example
+     * // Delete a few DeveloperTokens
+     * const { count } = await prisma.developerToken.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DeveloperTokenDeleteManyArgs>(args?: SelectSubset<T, DeveloperTokenDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DeveloperTokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DeveloperTokenUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DeveloperTokens
+     * const developerToken = await prisma.developerToken.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DeveloperTokenUpdateManyArgs>(args: SelectSubset<T, DeveloperTokenUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DeveloperTokens and returns the data updated in the database.
+     * @param {DeveloperTokenUpdateManyAndReturnArgs} args - Arguments to update many DeveloperTokens.
+     * @example
+     * // Update many DeveloperTokens
+     * const developerToken = await prisma.developerToken.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DeveloperTokens and only return the `username`
+     * const developerTokenWithUsernameOnly = await prisma.developerToken.updateManyAndReturn({
+     *   select: { username: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DeveloperTokenUpdateManyAndReturnArgs>(args: SelectSubset<T, DeveloperTokenUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DeveloperToken.
+     * @param {DeveloperTokenUpsertArgs} args - Arguments to update or create a DeveloperToken.
+     * @example
+     * // Update or create a DeveloperToken
+     * const developerToken = await prisma.developerToken.upsert({
+     *   create: {
+     *     // ... data to create a DeveloperToken
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DeveloperToken we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DeveloperTokenUpsertArgs>(args: SelectSubset<T, DeveloperTokenUpsertArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DeveloperTokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DeveloperTokenCountArgs} args - Arguments to filter DeveloperTokens to count.
+     * @example
+     * // Count the number of DeveloperTokens
+     * const count = await prisma.developerToken.count({
+     *   where: {
+     *     // ... the filter for the DeveloperTokens we want to count
+     *   }
+     * })
+    **/
+    count<T extends DeveloperTokenCountArgs>(
+      args?: Subset<T, DeveloperTokenCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DeveloperTokenCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DeveloperToken.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DeveloperTokenAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DeveloperTokenAggregateArgs>(args: Subset<T, DeveloperTokenAggregateArgs>): Prisma.PrismaPromise<GetDeveloperTokenAggregateType<T>>
+
+    /**
+     * Group by DeveloperToken.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DeveloperTokenGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DeveloperTokenGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DeveloperTokenGroupByArgs['orderBy'] }
+        : { orderBy?: DeveloperTokenGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DeveloperTokenGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDeveloperTokenGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DeveloperToken model
+   */
+  readonly fields: DeveloperTokenFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DeveloperToken.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DeveloperTokenClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DeveloperToken model
+   */
+  interface DeveloperTokenFieldRefs {
+    readonly username: FieldRef<"DeveloperToken", 'String'>
+    readonly token: FieldRef<"DeveloperToken", 'String'>
+    readonly createdAt: FieldRef<"DeveloperToken", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DeveloperToken findUnique
+   */
+  export type DeveloperTokenFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeveloperToken
+     */
+    select?: DeveloperTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeveloperToken
+     */
+    omit?: DeveloperTokenOmit<ExtArgs> | null
+    /**
+     * Filter, which DeveloperToken to fetch.
+     */
+    where: DeveloperTokenWhereUniqueInput
+  }
+
+  /**
+   * DeveloperToken findUniqueOrThrow
+   */
+  export type DeveloperTokenFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeveloperToken
+     */
+    select?: DeveloperTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeveloperToken
+     */
+    omit?: DeveloperTokenOmit<ExtArgs> | null
+    /**
+     * Filter, which DeveloperToken to fetch.
+     */
+    where: DeveloperTokenWhereUniqueInput
+  }
+
+  /**
+   * DeveloperToken findFirst
+   */
+  export type DeveloperTokenFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeveloperToken
+     */
+    select?: DeveloperTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeveloperToken
+     */
+    omit?: DeveloperTokenOmit<ExtArgs> | null
+    /**
+     * Filter, which DeveloperToken to fetch.
+     */
+    where?: DeveloperTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DeveloperTokens to fetch.
+     */
+    orderBy?: DeveloperTokenOrderByWithRelationInput | DeveloperTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DeveloperTokens.
+     */
+    cursor?: DeveloperTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DeveloperTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DeveloperTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DeveloperTokens.
+     */
+    distinct?: DeveloperTokenScalarFieldEnum | DeveloperTokenScalarFieldEnum[]
+  }
+
+  /**
+   * DeveloperToken findFirstOrThrow
+   */
+  export type DeveloperTokenFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeveloperToken
+     */
+    select?: DeveloperTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeveloperToken
+     */
+    omit?: DeveloperTokenOmit<ExtArgs> | null
+    /**
+     * Filter, which DeveloperToken to fetch.
+     */
+    where?: DeveloperTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DeveloperTokens to fetch.
+     */
+    orderBy?: DeveloperTokenOrderByWithRelationInput | DeveloperTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DeveloperTokens.
+     */
+    cursor?: DeveloperTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DeveloperTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DeveloperTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DeveloperTokens.
+     */
+    distinct?: DeveloperTokenScalarFieldEnum | DeveloperTokenScalarFieldEnum[]
+  }
+
+  /**
+   * DeveloperToken findMany
+   */
+  export type DeveloperTokenFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeveloperToken
+     */
+    select?: DeveloperTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeveloperToken
+     */
+    omit?: DeveloperTokenOmit<ExtArgs> | null
+    /**
+     * Filter, which DeveloperTokens to fetch.
+     */
+    where?: DeveloperTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DeveloperTokens to fetch.
+     */
+    orderBy?: DeveloperTokenOrderByWithRelationInput | DeveloperTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DeveloperTokens.
+     */
+    cursor?: DeveloperTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DeveloperTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DeveloperTokens.
+     */
+    skip?: number
+    distinct?: DeveloperTokenScalarFieldEnum | DeveloperTokenScalarFieldEnum[]
+  }
+
+  /**
+   * DeveloperToken create
+   */
+  export type DeveloperTokenCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeveloperToken
+     */
+    select?: DeveloperTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeveloperToken
+     */
+    omit?: DeveloperTokenOmit<ExtArgs> | null
+    /**
+     * The data needed to create a DeveloperToken.
+     */
+    data: XOR<DeveloperTokenCreateInput, DeveloperTokenUncheckedCreateInput>
+  }
+
+  /**
+   * DeveloperToken createMany
+   */
+  export type DeveloperTokenCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DeveloperTokens.
+     */
+    data: DeveloperTokenCreateManyInput | DeveloperTokenCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DeveloperToken createManyAndReturn
+   */
+  export type DeveloperTokenCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeveloperToken
+     */
+    select?: DeveloperTokenSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeveloperToken
+     */
+    omit?: DeveloperTokenOmit<ExtArgs> | null
+    /**
+     * The data used to create many DeveloperTokens.
+     */
+    data: DeveloperTokenCreateManyInput | DeveloperTokenCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DeveloperToken update
+   */
+  export type DeveloperTokenUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeveloperToken
+     */
+    select?: DeveloperTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeveloperToken
+     */
+    omit?: DeveloperTokenOmit<ExtArgs> | null
+    /**
+     * The data needed to update a DeveloperToken.
+     */
+    data: XOR<DeveloperTokenUpdateInput, DeveloperTokenUncheckedUpdateInput>
+    /**
+     * Choose, which DeveloperToken to update.
+     */
+    where: DeveloperTokenWhereUniqueInput
+  }
+
+  /**
+   * DeveloperToken updateMany
+   */
+  export type DeveloperTokenUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DeveloperTokens.
+     */
+    data: XOR<DeveloperTokenUpdateManyMutationInput, DeveloperTokenUncheckedUpdateManyInput>
+    /**
+     * Filter which DeveloperTokens to update
+     */
+    where?: DeveloperTokenWhereInput
+    /**
+     * Limit how many DeveloperTokens to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DeveloperToken updateManyAndReturn
+   */
+  export type DeveloperTokenUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeveloperToken
+     */
+    select?: DeveloperTokenSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeveloperToken
+     */
+    omit?: DeveloperTokenOmit<ExtArgs> | null
+    /**
+     * The data used to update DeveloperTokens.
+     */
+    data: XOR<DeveloperTokenUpdateManyMutationInput, DeveloperTokenUncheckedUpdateManyInput>
+    /**
+     * Filter which DeveloperTokens to update
+     */
+    where?: DeveloperTokenWhereInput
+    /**
+     * Limit how many DeveloperTokens to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DeveloperToken upsert
+   */
+  export type DeveloperTokenUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeveloperToken
+     */
+    select?: DeveloperTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeveloperToken
+     */
+    omit?: DeveloperTokenOmit<ExtArgs> | null
+    /**
+     * The filter to search for the DeveloperToken to update in case it exists.
+     */
+    where: DeveloperTokenWhereUniqueInput
+    /**
+     * In case the DeveloperToken found by the `where` argument doesn't exist, create a new DeveloperToken with this data.
+     */
+    create: XOR<DeveloperTokenCreateInput, DeveloperTokenUncheckedCreateInput>
+    /**
+     * In case the DeveloperToken was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DeveloperTokenUpdateInput, DeveloperTokenUncheckedUpdateInput>
+  }
+
+  /**
+   * DeveloperToken delete
+   */
+  export type DeveloperTokenDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeveloperToken
+     */
+    select?: DeveloperTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeveloperToken
+     */
+    omit?: DeveloperTokenOmit<ExtArgs> | null
+    /**
+     * Filter which DeveloperToken to delete.
+     */
+    where: DeveloperTokenWhereUniqueInput
+  }
+
+  /**
+   * DeveloperToken deleteMany
+   */
+  export type DeveloperTokenDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DeveloperTokens to delete
+     */
+    where?: DeveloperTokenWhereInput
+    /**
+     * Limit how many DeveloperTokens to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DeveloperToken without action
+   */
+  export type DeveloperTokenDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeveloperToken
+     */
+    select?: DeveloperTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeveloperToken
+     */
+    omit?: DeveloperTokenOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -4126,6 +5186,15 @@ export namespace Prisma {
   };
 
   export type NiftyQuoteScalarFieldEnum = (typeof NiftyQuoteScalarFieldEnum)[keyof typeof NiftyQuoteScalarFieldEnum]
+
+
+  export const DeveloperTokenScalarFieldEnum: {
+    username: 'username',
+    token: 'token',
+    createdAt: 'createdAt'
+  };
+
+  export type DeveloperTokenScalarFieldEnum = (typeof DeveloperTokenScalarFieldEnum)[keyof typeof DeveloperTokenScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -4415,6 +5484,48 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"NiftyQuote"> | Date | string
   }
 
+  export type DeveloperTokenWhereInput = {
+    AND?: DeveloperTokenWhereInput | DeveloperTokenWhereInput[]
+    OR?: DeveloperTokenWhereInput[]
+    NOT?: DeveloperTokenWhereInput | DeveloperTokenWhereInput[]
+    username?: StringFilter<"DeveloperToken"> | string
+    token?: StringFilter<"DeveloperToken"> | string
+    createdAt?: DateTimeFilter<"DeveloperToken"> | Date | string
+  }
+
+  export type DeveloperTokenOrderByWithRelationInput = {
+    username?: SortOrder
+    token?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DeveloperTokenWhereUniqueInput = Prisma.AtLeast<{
+    username?: string
+    token?: string
+    AND?: DeveloperTokenWhereInput | DeveloperTokenWhereInput[]
+    OR?: DeveloperTokenWhereInput[]
+    NOT?: DeveloperTokenWhereInput | DeveloperTokenWhereInput[]
+    createdAt?: DateTimeFilter<"DeveloperToken"> | Date | string
+  }, "username" | "token">
+
+  export type DeveloperTokenOrderByWithAggregationInput = {
+    username?: SortOrder
+    token?: SortOrder
+    createdAt?: SortOrder
+    _count?: DeveloperTokenCountOrderByAggregateInput
+    _max?: DeveloperTokenMaxOrderByAggregateInput
+    _min?: DeveloperTokenMinOrderByAggregateInput
+  }
+
+  export type DeveloperTokenScalarWhereWithAggregatesInput = {
+    AND?: DeveloperTokenScalarWhereWithAggregatesInput | DeveloperTokenScalarWhereWithAggregatesInput[]
+    OR?: DeveloperTokenScalarWhereWithAggregatesInput[]
+    NOT?: DeveloperTokenScalarWhereWithAggregatesInput | DeveloperTokenScalarWhereWithAggregatesInput[]
+    username?: StringWithAggregatesFilter<"DeveloperToken"> | string
+    token?: StringWithAggregatesFilter<"DeveloperToken"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"DeveloperToken"> | Date | string
+  }
+
   export type ShortlistSnapshotCreateInput = {
     id?: string
     timestamp: Date | string
@@ -4587,6 +5698,48 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     quoteData?: JsonNullValueInput | InputJsonValue
     dayChangePerc?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DeveloperTokenCreateInput = {
+    username: string
+    token: string
+    createdAt?: Date | string
+  }
+
+  export type DeveloperTokenUncheckedCreateInput = {
+    username: string
+    token: string
+    createdAt?: Date | string
+  }
+
+  export type DeveloperTokenUpdateInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DeveloperTokenUncheckedUpdateInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DeveloperTokenCreateManyInput = {
+    username: string
+    token: string
+    createdAt?: Date | string
+  }
+
+  export type DeveloperTokenUpdateManyMutationInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DeveloperTokenUncheckedUpdateManyInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -4816,6 +5969,24 @@ export namespace Prisma {
     _sum?: NestedDecimalFilter<$PrismaModel>
     _min?: NestedDecimalFilter<$PrismaModel>
     _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type DeveloperTokenCountOrderByAggregateInput = {
+    username?: SortOrder
+    token?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DeveloperTokenMaxOrderByAggregateInput = {
+    username?: SortOrder
+    token?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DeveloperTokenMinOrderByAggregateInput = {
+    username?: SortOrder
+    token?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type StringFieldUpdateOperationsInput = {
