@@ -10,22 +10,25 @@ datasource db {
 
 model ShortlistSnapshot {
   id            String        @id @default(uuid())
-  timestamp     DateTime      @db.Timestamptz(6)
+  timestamp     DateTime
   shortlistType ShortlistType
   entries       Json // Array of shortlist items with nseSymbol, name, price
-  createdAt     DateTime      @default(now()) @db.Timestamptz(6)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt
 
   @@index([timestamp])
   @@map("shortlist_snapshots")
 }
 
 model QuoteSnapshot {
-  id            String        @id @default(uuid())
-  timestamp     DateTime      @db.Timestamptz(6)
-  nseSymbol     String
-  shortlistType ShortlistType // Which shortlist this quote belongs to
-  quoteData     Json // Full quote payload from Groww API
-  createdAt     DateTime      @default(now()) @db.Timestamptz(6)
+  id        String   @id @default(uuid())
+  timestamp DateTime
+  nseSymbol String
+  quoteData Json // Full quote payload from Groww API
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([timestamp])
   @@index([nseSymbol])
@@ -35,19 +38,23 @@ model QuoteSnapshot {
 
 model NiftyQuote {
   id            String   @id @default(uuid())
-  timestamp     DateTime @db.Timestamptz(6)
+  timestamp     DateTime
   quoteData     Json // Full NIFTY quote payload
-  dayChangePerc Decimal  @db.Decimal(10, 4)
-  createdAt     DateTime @default(now()) @db.Timestamptz(6)
+  dayChangePerc Decimal
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([timestamp])
   @@map("nifty_quotes")
 }
 
 model DeveloperToken {
-  username  String   @unique
-  token     String   @unique
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  username String @id @unique
+  token    String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([token])
   @@map("developer_tokens")

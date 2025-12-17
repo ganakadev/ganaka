@@ -6,6 +6,7 @@ import timezone from "dayjs/plugin/timezone";
 import { isWithinCollectionWindow } from "./utils/time";
 import { collectMarketData } from "./collector";
 import { prisma } from "./utils/prisma";
+import { RedisManager } from "./utils/redis";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -46,6 +47,14 @@ async function runCollection(): Promise<void> {
 }
 
 function main() {
+  // Initialize Redis connection
+  try {
+    RedisManager.getInstance();
+  } catch (error) {
+    console.error("Failed to initialize Redis:", error);
+    process.exit(1);
+  }
+
   // Set up cron job: every minute on weekdays (Monday-Friday)
   // Cron expression: * * * * 1-5 (every minute, Monday through Friday)
   const job = new Cron(
@@ -69,6 +78,8 @@ function main() {
     console.log(`Received ${signal}, shutting down gracefully...`);
     job.stop();
     await prisma.$disconnect();
+    const redisManager = RedisManager.getInstance();
+    await redisManager.close();
     process.exit(0);
   };
 
