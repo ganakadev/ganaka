@@ -1166,6 +1166,7 @@ export namespace Prisma {
     timestamp: Date | null
     shortlistType: $Enums.ShortlistType | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type ShortlistSnapshotMaxAggregateOutputType = {
@@ -1173,6 +1174,7 @@ export namespace Prisma {
     timestamp: Date | null
     shortlistType: $Enums.ShortlistType | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type ShortlistSnapshotCountAggregateOutputType = {
@@ -1181,6 +1183,7 @@ export namespace Prisma {
     shortlistType: number
     entries: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -1190,6 +1193,7 @@ export namespace Prisma {
     timestamp?: true
     shortlistType?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type ShortlistSnapshotMaxAggregateInputType = {
@@ -1197,6 +1201,7 @@ export namespace Prisma {
     timestamp?: true
     shortlistType?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type ShortlistSnapshotCountAggregateInputType = {
@@ -1205,6 +1210,7 @@ export namespace Prisma {
     shortlistType?: true
     entries?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -1286,6 +1292,7 @@ export namespace Prisma {
     shortlistType: $Enums.ShortlistType
     entries: JsonValue
     createdAt: Date
+    updatedAt: Date
     _count: ShortlistSnapshotCountAggregateOutputType | null
     _min: ShortlistSnapshotMinAggregateOutputType | null
     _max: ShortlistSnapshotMaxAggregateOutputType | null
@@ -1311,6 +1318,7 @@ export namespace Prisma {
     shortlistType?: boolean
     entries?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["shortlistSnapshot"]>
 
   export type ShortlistSnapshotSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1319,6 +1327,7 @@ export namespace Prisma {
     shortlistType?: boolean
     entries?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["shortlistSnapshot"]>
 
   export type ShortlistSnapshotSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1327,6 +1336,7 @@ export namespace Prisma {
     shortlistType?: boolean
     entries?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["shortlistSnapshot"]>
 
   export type ShortlistSnapshotSelectScalar = {
@@ -1335,9 +1345,10 @@ export namespace Prisma {
     shortlistType?: boolean
     entries?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type ShortlistSnapshotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "shortlistType" | "entries" | "createdAt", ExtArgs["result"]["shortlistSnapshot"]>
+  export type ShortlistSnapshotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "shortlistType" | "entries" | "createdAt" | "updatedAt", ExtArgs["result"]["shortlistSnapshot"]>
 
   export type $ShortlistSnapshotPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ShortlistSnapshot"
@@ -1348,6 +1359,7 @@ export namespace Prisma {
       shortlistType: $Enums.ShortlistType
       entries: Prisma.JsonValue
       createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["shortlistSnapshot"]>
     composites: {}
   }
@@ -1776,6 +1788,7 @@ export namespace Prisma {
     readonly shortlistType: FieldRef<"ShortlistSnapshot", 'ShortlistType'>
     readonly entries: FieldRef<"ShortlistSnapshot", 'Json'>
     readonly createdAt: FieldRef<"ShortlistSnapshot", 'DateTime'>
+    readonly updatedAt: FieldRef<"ShortlistSnapshot", 'DateTime'>
   }
     
 
@@ -2156,25 +2169,25 @@ export namespace Prisma {
     id: string | null
     timestamp: Date | null
     nseSymbol: string | null
-    shortlistType: $Enums.ShortlistType | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type QuoteSnapshotMaxAggregateOutputType = {
     id: string | null
     timestamp: Date | null
     nseSymbol: string | null
-    shortlistType: $Enums.ShortlistType | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type QuoteSnapshotCountAggregateOutputType = {
     id: number
     timestamp: number
     nseSymbol: number
-    shortlistType: number
     quoteData: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -2183,25 +2196,25 @@ export namespace Prisma {
     id?: true
     timestamp?: true
     nseSymbol?: true
-    shortlistType?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type QuoteSnapshotMaxAggregateInputType = {
     id?: true
     timestamp?: true
     nseSymbol?: true
-    shortlistType?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type QuoteSnapshotCountAggregateInputType = {
     id?: true
     timestamp?: true
     nseSymbol?: true
-    shortlistType?: true
     quoteData?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -2281,9 +2294,9 @@ export namespace Prisma {
     id: string
     timestamp: Date
     nseSymbol: string
-    shortlistType: $Enums.ShortlistType
     quoteData: JsonValue
     createdAt: Date
+    updatedAt: Date
     _count: QuoteSnapshotCountAggregateOutputType | null
     _min: QuoteSnapshotMinAggregateOutputType | null
     _max: QuoteSnapshotMaxAggregateOutputType | null
@@ -2307,39 +2320,39 @@ export namespace Prisma {
     id?: boolean
     timestamp?: boolean
     nseSymbol?: boolean
-    shortlistType?: boolean
     quoteData?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["quoteSnapshot"]>
 
   export type QuoteSnapshotSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     timestamp?: boolean
     nseSymbol?: boolean
-    shortlistType?: boolean
     quoteData?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["quoteSnapshot"]>
 
   export type QuoteSnapshotSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     timestamp?: boolean
     nseSymbol?: boolean
-    shortlistType?: boolean
     quoteData?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["quoteSnapshot"]>
 
   export type QuoteSnapshotSelectScalar = {
     id?: boolean
     timestamp?: boolean
     nseSymbol?: boolean
-    shortlistType?: boolean
     quoteData?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type QuoteSnapshotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "nseSymbol" | "shortlistType" | "quoteData" | "createdAt", ExtArgs["result"]["quoteSnapshot"]>
+  export type QuoteSnapshotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "nseSymbol" | "quoteData" | "createdAt" | "updatedAt", ExtArgs["result"]["quoteSnapshot"]>
 
   export type $QuoteSnapshotPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "QuoteSnapshot"
@@ -2348,9 +2361,9 @@ export namespace Prisma {
       id: string
       timestamp: Date
       nseSymbol: string
-      shortlistType: $Enums.ShortlistType
       quoteData: Prisma.JsonValue
       createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["quoteSnapshot"]>
     composites: {}
   }
@@ -2777,9 +2790,9 @@ export namespace Prisma {
     readonly id: FieldRef<"QuoteSnapshot", 'String'>
     readonly timestamp: FieldRef<"QuoteSnapshot", 'DateTime'>
     readonly nseSymbol: FieldRef<"QuoteSnapshot", 'String'>
-    readonly shortlistType: FieldRef<"QuoteSnapshot", 'ShortlistType'>
     readonly quoteData: FieldRef<"QuoteSnapshot", 'Json'>
     readonly createdAt: FieldRef<"QuoteSnapshot", 'DateTime'>
+    readonly updatedAt: FieldRef<"QuoteSnapshot", 'DateTime'>
   }
     
 
@@ -3171,6 +3184,7 @@ export namespace Prisma {
     timestamp: Date | null
     dayChangePerc: Decimal | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type NiftyQuoteMaxAggregateOutputType = {
@@ -3178,6 +3192,7 @@ export namespace Prisma {
     timestamp: Date | null
     dayChangePerc: Decimal | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type NiftyQuoteCountAggregateOutputType = {
@@ -3186,6 +3201,7 @@ export namespace Prisma {
     quoteData: number
     dayChangePerc: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -3203,6 +3219,7 @@ export namespace Prisma {
     timestamp?: true
     dayChangePerc?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type NiftyQuoteMaxAggregateInputType = {
@@ -3210,6 +3227,7 @@ export namespace Prisma {
     timestamp?: true
     dayChangePerc?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type NiftyQuoteCountAggregateInputType = {
@@ -3218,6 +3236,7 @@ export namespace Prisma {
     quoteData?: true
     dayChangePerc?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -3313,6 +3332,7 @@ export namespace Prisma {
     quoteData: JsonValue
     dayChangePerc: Decimal
     createdAt: Date
+    updatedAt: Date
     _count: NiftyQuoteCountAggregateOutputType | null
     _avg: NiftyQuoteAvgAggregateOutputType | null
     _sum: NiftyQuoteSumAggregateOutputType | null
@@ -3340,6 +3360,7 @@ export namespace Prisma {
     quoteData?: boolean
     dayChangePerc?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["niftyQuote"]>
 
   export type NiftyQuoteSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3348,6 +3369,7 @@ export namespace Prisma {
     quoteData?: boolean
     dayChangePerc?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["niftyQuote"]>
 
   export type NiftyQuoteSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3356,6 +3378,7 @@ export namespace Prisma {
     quoteData?: boolean
     dayChangePerc?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["niftyQuote"]>
 
   export type NiftyQuoteSelectScalar = {
@@ -3364,9 +3387,10 @@ export namespace Prisma {
     quoteData?: boolean
     dayChangePerc?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type NiftyQuoteOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "quoteData" | "dayChangePerc" | "createdAt", ExtArgs["result"]["niftyQuote"]>
+  export type NiftyQuoteOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "quoteData" | "dayChangePerc" | "createdAt" | "updatedAt", ExtArgs["result"]["niftyQuote"]>
 
   export type $NiftyQuotePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "NiftyQuote"
@@ -3377,6 +3401,7 @@ export namespace Prisma {
       quoteData: Prisma.JsonValue
       dayChangePerc: Prisma.Decimal
       createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["niftyQuote"]>
     composites: {}
   }
@@ -3805,6 +3830,7 @@ export namespace Prisma {
     readonly quoteData: FieldRef<"NiftyQuote", 'Json'>
     readonly dayChangePerc: FieldRef<"NiftyQuote", 'Decimal'>
     readonly createdAt: FieldRef<"NiftyQuote", 'DateTime'>
+    readonly updatedAt: FieldRef<"NiftyQuote", 'DateTime'>
   }
     
 
@@ -4185,18 +4211,21 @@ export namespace Prisma {
     username: string | null
     token: string | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type DeveloperTokenMaxAggregateOutputType = {
     username: string | null
     token: string | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type DeveloperTokenCountAggregateOutputType = {
     username: number
     token: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -4205,18 +4234,21 @@ export namespace Prisma {
     username?: true
     token?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type DeveloperTokenMaxAggregateInputType = {
     username?: true
     token?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type DeveloperTokenCountAggregateInputType = {
     username?: true
     token?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -4296,6 +4328,7 @@ export namespace Prisma {
     username: string
     token: string
     createdAt: Date
+    updatedAt: Date
     _count: DeveloperTokenCountAggregateOutputType | null
     _min: DeveloperTokenMinAggregateOutputType | null
     _max: DeveloperTokenMaxAggregateOutputType | null
@@ -4319,27 +4352,31 @@ export namespace Prisma {
     username?: boolean
     token?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["developerToken"]>
 
   export type DeveloperTokenSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     username?: boolean
     token?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["developerToken"]>
 
   export type DeveloperTokenSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     username?: boolean
     token?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["developerToken"]>
 
   export type DeveloperTokenSelectScalar = {
     username?: boolean
     token?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type DeveloperTokenOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"username" | "token" | "createdAt", ExtArgs["result"]["developerToken"]>
+  export type DeveloperTokenOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"username" | "token" | "createdAt" | "updatedAt", ExtArgs["result"]["developerToken"]>
 
   export type $DeveloperTokenPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "DeveloperToken"
@@ -4348,6 +4385,7 @@ export namespace Prisma {
       username: string
       token: string
       createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["developerToken"]>
     composites: {}
   }
@@ -4774,6 +4812,7 @@ export namespace Prisma {
     readonly username: FieldRef<"DeveloperToken", 'String'>
     readonly token: FieldRef<"DeveloperToken", 'String'>
     readonly createdAt: FieldRef<"DeveloperToken", 'DateTime'>
+    readonly updatedAt: FieldRef<"DeveloperToken", 'DateTime'>
   }
     
 
@@ -5159,7 +5198,8 @@ export namespace Prisma {
     timestamp: 'timestamp',
     shortlistType: 'shortlistType',
     entries: 'entries',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type ShortlistSnapshotScalarFieldEnum = (typeof ShortlistSnapshotScalarFieldEnum)[keyof typeof ShortlistSnapshotScalarFieldEnum]
@@ -5169,9 +5209,9 @@ export namespace Prisma {
     id: 'id',
     timestamp: 'timestamp',
     nseSymbol: 'nseSymbol',
-    shortlistType: 'shortlistType',
     quoteData: 'quoteData',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type QuoteSnapshotScalarFieldEnum = (typeof QuoteSnapshotScalarFieldEnum)[keyof typeof QuoteSnapshotScalarFieldEnum]
@@ -5182,7 +5222,8 @@ export namespace Prisma {
     timestamp: 'timestamp',
     quoteData: 'quoteData',
     dayChangePerc: 'dayChangePerc',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type NiftyQuoteScalarFieldEnum = (typeof NiftyQuoteScalarFieldEnum)[keyof typeof NiftyQuoteScalarFieldEnum]
@@ -5191,7 +5232,8 @@ export namespace Prisma {
   export const DeveloperTokenScalarFieldEnum: {
     username: 'username',
     token: 'token',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type DeveloperTokenScalarFieldEnum = (typeof DeveloperTokenScalarFieldEnum)[keyof typeof DeveloperTokenScalarFieldEnum]
@@ -5330,6 +5372,7 @@ export namespace Prisma {
     shortlistType?: EnumShortlistTypeFilter<"ShortlistSnapshot"> | $Enums.ShortlistType
     entries?: JsonFilter<"ShortlistSnapshot">
     createdAt?: DateTimeFilter<"ShortlistSnapshot"> | Date | string
+    updatedAt?: DateTimeFilter<"ShortlistSnapshot"> | Date | string
   }
 
   export type ShortlistSnapshotOrderByWithRelationInput = {
@@ -5338,6 +5381,7 @@ export namespace Prisma {
     shortlistType?: SortOrder
     entries?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type ShortlistSnapshotWhereUniqueInput = Prisma.AtLeast<{
@@ -5349,6 +5393,7 @@ export namespace Prisma {
     shortlistType?: EnumShortlistTypeFilter<"ShortlistSnapshot"> | $Enums.ShortlistType
     entries?: JsonFilter<"ShortlistSnapshot">
     createdAt?: DateTimeFilter<"ShortlistSnapshot"> | Date | string
+    updatedAt?: DateTimeFilter<"ShortlistSnapshot"> | Date | string
   }, "id">
 
   export type ShortlistSnapshotOrderByWithAggregationInput = {
@@ -5357,6 +5402,7 @@ export namespace Prisma {
     shortlistType?: SortOrder
     entries?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: ShortlistSnapshotCountOrderByAggregateInput
     _max?: ShortlistSnapshotMaxOrderByAggregateInput
     _min?: ShortlistSnapshotMinOrderByAggregateInput
@@ -5371,6 +5417,7 @@ export namespace Prisma {
     shortlistType?: EnumShortlistTypeWithAggregatesFilter<"ShortlistSnapshot"> | $Enums.ShortlistType
     entries?: JsonWithAggregatesFilter<"ShortlistSnapshot">
     createdAt?: DateTimeWithAggregatesFilter<"ShortlistSnapshot"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ShortlistSnapshot"> | Date | string
   }
 
   export type QuoteSnapshotWhereInput = {
@@ -5380,18 +5427,18 @@ export namespace Prisma {
     id?: StringFilter<"QuoteSnapshot"> | string
     timestamp?: DateTimeFilter<"QuoteSnapshot"> | Date | string
     nseSymbol?: StringFilter<"QuoteSnapshot"> | string
-    shortlistType?: EnumShortlistTypeFilter<"QuoteSnapshot"> | $Enums.ShortlistType
     quoteData?: JsonFilter<"QuoteSnapshot">
     createdAt?: DateTimeFilter<"QuoteSnapshot"> | Date | string
+    updatedAt?: DateTimeFilter<"QuoteSnapshot"> | Date | string
   }
 
   export type QuoteSnapshotOrderByWithRelationInput = {
     id?: SortOrder
     timestamp?: SortOrder
     nseSymbol?: SortOrder
-    shortlistType?: SortOrder
     quoteData?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type QuoteSnapshotWhereUniqueInput = Prisma.AtLeast<{
@@ -5401,18 +5448,18 @@ export namespace Prisma {
     NOT?: QuoteSnapshotWhereInput | QuoteSnapshotWhereInput[]
     timestamp?: DateTimeFilter<"QuoteSnapshot"> | Date | string
     nseSymbol?: StringFilter<"QuoteSnapshot"> | string
-    shortlistType?: EnumShortlistTypeFilter<"QuoteSnapshot"> | $Enums.ShortlistType
     quoteData?: JsonFilter<"QuoteSnapshot">
     createdAt?: DateTimeFilter<"QuoteSnapshot"> | Date | string
+    updatedAt?: DateTimeFilter<"QuoteSnapshot"> | Date | string
   }, "id">
 
   export type QuoteSnapshotOrderByWithAggregationInput = {
     id?: SortOrder
     timestamp?: SortOrder
     nseSymbol?: SortOrder
-    shortlistType?: SortOrder
     quoteData?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: QuoteSnapshotCountOrderByAggregateInput
     _max?: QuoteSnapshotMaxOrderByAggregateInput
     _min?: QuoteSnapshotMinOrderByAggregateInput
@@ -5425,9 +5472,9 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"QuoteSnapshot"> | string
     timestamp?: DateTimeWithAggregatesFilter<"QuoteSnapshot"> | Date | string
     nseSymbol?: StringWithAggregatesFilter<"QuoteSnapshot"> | string
-    shortlistType?: EnumShortlistTypeWithAggregatesFilter<"QuoteSnapshot"> | $Enums.ShortlistType
     quoteData?: JsonWithAggregatesFilter<"QuoteSnapshot">
     createdAt?: DateTimeWithAggregatesFilter<"QuoteSnapshot"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"QuoteSnapshot"> | Date | string
   }
 
   export type NiftyQuoteWhereInput = {
@@ -5439,6 +5486,7 @@ export namespace Prisma {
     quoteData?: JsonFilter<"NiftyQuote">
     dayChangePerc?: DecimalFilter<"NiftyQuote"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"NiftyQuote"> | Date | string
+    updatedAt?: DateTimeFilter<"NiftyQuote"> | Date | string
   }
 
   export type NiftyQuoteOrderByWithRelationInput = {
@@ -5447,6 +5495,7 @@ export namespace Prisma {
     quoteData?: SortOrder
     dayChangePerc?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type NiftyQuoteWhereUniqueInput = Prisma.AtLeast<{
@@ -5458,6 +5507,7 @@ export namespace Prisma {
     quoteData?: JsonFilter<"NiftyQuote">
     dayChangePerc?: DecimalFilter<"NiftyQuote"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"NiftyQuote"> | Date | string
+    updatedAt?: DateTimeFilter<"NiftyQuote"> | Date | string
   }, "id">
 
   export type NiftyQuoteOrderByWithAggregationInput = {
@@ -5466,6 +5516,7 @@ export namespace Prisma {
     quoteData?: SortOrder
     dayChangePerc?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: NiftyQuoteCountOrderByAggregateInput
     _avg?: NiftyQuoteAvgOrderByAggregateInput
     _max?: NiftyQuoteMaxOrderByAggregateInput
@@ -5482,6 +5533,7 @@ export namespace Prisma {
     quoteData?: JsonWithAggregatesFilter<"NiftyQuote">
     dayChangePerc?: DecimalWithAggregatesFilter<"NiftyQuote"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeWithAggregatesFilter<"NiftyQuote"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"NiftyQuote"> | Date | string
   }
 
   export type DeveloperTokenWhereInput = {
@@ -5491,12 +5543,14 @@ export namespace Prisma {
     username?: StringFilter<"DeveloperToken"> | string
     token?: StringFilter<"DeveloperToken"> | string
     createdAt?: DateTimeFilter<"DeveloperToken"> | Date | string
+    updatedAt?: DateTimeFilter<"DeveloperToken"> | Date | string
   }
 
   export type DeveloperTokenOrderByWithRelationInput = {
     username?: SortOrder
     token?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type DeveloperTokenWhereUniqueInput = Prisma.AtLeast<{
@@ -5506,12 +5560,14 @@ export namespace Prisma {
     OR?: DeveloperTokenWhereInput[]
     NOT?: DeveloperTokenWhereInput | DeveloperTokenWhereInput[]
     createdAt?: DateTimeFilter<"DeveloperToken"> | Date | string
-  }, "username" | "token">
+    updatedAt?: DateTimeFilter<"DeveloperToken"> | Date | string
+  }, "username" | "username" | "token">
 
   export type DeveloperTokenOrderByWithAggregationInput = {
     username?: SortOrder
     token?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: DeveloperTokenCountOrderByAggregateInput
     _max?: DeveloperTokenMaxOrderByAggregateInput
     _min?: DeveloperTokenMinOrderByAggregateInput
@@ -5524,6 +5580,7 @@ export namespace Prisma {
     username?: StringWithAggregatesFilter<"DeveloperToken"> | string
     token?: StringWithAggregatesFilter<"DeveloperToken"> | string
     createdAt?: DateTimeWithAggregatesFilter<"DeveloperToken"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"DeveloperToken"> | Date | string
   }
 
   export type ShortlistSnapshotCreateInput = {
@@ -5532,6 +5589,7 @@ export namespace Prisma {
     shortlistType: $Enums.ShortlistType
     entries: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ShortlistSnapshotUncheckedCreateInput = {
@@ -5540,6 +5598,7 @@ export namespace Prisma {
     shortlistType: $Enums.ShortlistType
     entries: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ShortlistSnapshotUpdateInput = {
@@ -5548,6 +5607,7 @@ export namespace Prisma {
     shortlistType?: EnumShortlistTypeFieldUpdateOperationsInput | $Enums.ShortlistType
     entries?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ShortlistSnapshotUncheckedUpdateInput = {
@@ -5556,6 +5616,7 @@ export namespace Prisma {
     shortlistType?: EnumShortlistTypeFieldUpdateOperationsInput | $Enums.ShortlistType
     entries?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ShortlistSnapshotCreateManyInput = {
@@ -5564,6 +5625,7 @@ export namespace Prisma {
     shortlistType: $Enums.ShortlistType
     entries: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ShortlistSnapshotUpdateManyMutationInput = {
@@ -5572,6 +5634,7 @@ export namespace Prisma {
     shortlistType?: EnumShortlistTypeFieldUpdateOperationsInput | $Enums.ShortlistType
     entries?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ShortlistSnapshotUncheckedUpdateManyInput = {
@@ -5580,69 +5643,70 @@ export namespace Prisma {
     shortlistType?: EnumShortlistTypeFieldUpdateOperationsInput | $Enums.ShortlistType
     entries?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type QuoteSnapshotCreateInput = {
     id?: string
     timestamp: Date | string
     nseSymbol: string
-    shortlistType: $Enums.ShortlistType
     quoteData: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type QuoteSnapshotUncheckedCreateInput = {
     id?: string
     timestamp: Date | string
     nseSymbol: string
-    shortlistType: $Enums.ShortlistType
     quoteData: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type QuoteSnapshotUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     nseSymbol?: StringFieldUpdateOperationsInput | string
-    shortlistType?: EnumShortlistTypeFieldUpdateOperationsInput | $Enums.ShortlistType
     quoteData?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type QuoteSnapshotUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     nseSymbol?: StringFieldUpdateOperationsInput | string
-    shortlistType?: EnumShortlistTypeFieldUpdateOperationsInput | $Enums.ShortlistType
     quoteData?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type QuoteSnapshotCreateManyInput = {
     id?: string
     timestamp: Date | string
     nseSymbol: string
-    shortlistType: $Enums.ShortlistType
     quoteData: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type QuoteSnapshotUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     nseSymbol?: StringFieldUpdateOperationsInput | string
-    shortlistType?: EnumShortlistTypeFieldUpdateOperationsInput | $Enums.ShortlistType
     quoteData?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type QuoteSnapshotUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     nseSymbol?: StringFieldUpdateOperationsInput | string
-    shortlistType?: EnumShortlistTypeFieldUpdateOperationsInput | $Enums.ShortlistType
     quoteData?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type NiftyQuoteCreateInput = {
@@ -5651,6 +5715,7 @@ export namespace Prisma {
     quoteData: JsonNullValueInput | InputJsonValue
     dayChangePerc: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type NiftyQuoteUncheckedCreateInput = {
@@ -5659,6 +5724,7 @@ export namespace Prisma {
     quoteData: JsonNullValueInput | InputJsonValue
     dayChangePerc: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type NiftyQuoteUpdateInput = {
@@ -5667,6 +5733,7 @@ export namespace Prisma {
     quoteData?: JsonNullValueInput | InputJsonValue
     dayChangePerc?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type NiftyQuoteUncheckedUpdateInput = {
@@ -5675,6 +5742,7 @@ export namespace Prisma {
     quoteData?: JsonNullValueInput | InputJsonValue
     dayChangePerc?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type NiftyQuoteCreateManyInput = {
@@ -5683,6 +5751,7 @@ export namespace Prisma {
     quoteData: JsonNullValueInput | InputJsonValue
     dayChangePerc: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type NiftyQuoteUpdateManyMutationInput = {
@@ -5691,6 +5760,7 @@ export namespace Prisma {
     quoteData?: JsonNullValueInput | InputJsonValue
     dayChangePerc?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type NiftyQuoteUncheckedUpdateManyInput = {
@@ -5699,48 +5769,56 @@ export namespace Prisma {
     quoteData?: JsonNullValueInput | InputJsonValue
     dayChangePerc?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type DeveloperTokenCreateInput = {
     username: string
     token: string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type DeveloperTokenUncheckedCreateInput = {
     username: string
     token: string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type DeveloperTokenUpdateInput = {
     username?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type DeveloperTokenUncheckedUpdateInput = {
     username?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type DeveloperTokenCreateManyInput = {
     username: string
     token: string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type DeveloperTokenUpdateManyMutationInput = {
     username?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type DeveloperTokenUncheckedUpdateManyInput = {
     username?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -5805,6 +5883,7 @@ export namespace Prisma {
     shortlistType?: SortOrder
     entries?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type ShortlistSnapshotMaxOrderByAggregateInput = {
@@ -5812,6 +5891,7 @@ export namespace Prisma {
     timestamp?: SortOrder
     shortlistType?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type ShortlistSnapshotMinOrderByAggregateInput = {
@@ -5819,6 +5899,7 @@ export namespace Prisma {
     timestamp?: SortOrder
     shortlistType?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -5893,25 +5974,25 @@ export namespace Prisma {
     id?: SortOrder
     timestamp?: SortOrder
     nseSymbol?: SortOrder
-    shortlistType?: SortOrder
     quoteData?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type QuoteSnapshotMaxOrderByAggregateInput = {
     id?: SortOrder
     timestamp?: SortOrder
     nseSymbol?: SortOrder
-    shortlistType?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type QuoteSnapshotMinOrderByAggregateInput = {
     id?: SortOrder
     timestamp?: SortOrder
     nseSymbol?: SortOrder
-    shortlistType?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type DecimalFilter<$PrismaModel = never> = {
@@ -5931,6 +6012,7 @@ export namespace Prisma {
     quoteData?: SortOrder
     dayChangePerc?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type NiftyQuoteAvgOrderByAggregateInput = {
@@ -5942,6 +6024,7 @@ export namespace Prisma {
     timestamp?: SortOrder
     dayChangePerc?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type NiftyQuoteMinOrderByAggregateInput = {
@@ -5949,6 +6032,7 @@ export namespace Prisma {
     timestamp?: SortOrder
     dayChangePerc?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type NiftyQuoteSumOrderByAggregateInput = {
@@ -5975,18 +6059,21 @@ export namespace Prisma {
     username?: SortOrder
     token?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type DeveloperTokenMaxOrderByAggregateInput = {
     username?: SortOrder
     token?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type DeveloperTokenMinOrderByAggregateInput = {
     username?: SortOrder
     token?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type StringFieldUpdateOperationsInput = {

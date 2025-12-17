@@ -126,16 +126,17 @@ exports.Prisma.ShortlistSnapshotScalarFieldEnum = {
   timestamp: 'timestamp',
   shortlistType: 'shortlistType',
   entries: 'entries',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.QuoteSnapshotScalarFieldEnum = {
   id: 'id',
   timestamp: 'timestamp',
   nseSymbol: 'nseSymbol',
-  shortlistType: 'shortlistType',
   quoteData: 'quoteData',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.NiftyQuoteScalarFieldEnum = {
@@ -143,13 +144,15 @@ exports.Prisma.NiftyQuoteScalarFieldEnum = {
   timestamp: 'timestamp',
   quoteData: 'quoteData',
   dayChangePerc: 'dayChangePerc',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.DeveloperTokenScalarFieldEnum = {
   username: 'username',
   token: 'token',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {

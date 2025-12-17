@@ -5,7 +5,9 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "prisma:generate": "env-cmd -f ../../.env --silent prisma generate",
+    "postprisma:generate": "pnpm run build",
     "prisma:migrate": "env-cmd -f ../../.env --silent prisma migrate dev",
+    "postprisma:migrate": "pnpm run build",
     "prisma:reset": "env-cmd -f ../../.env --silent prisma migrate reset",
     "prisma:studio": "env-cmd -f ../../.env --silent prisma studio",
     "prisma:migrate:deploy": "env-cmd -f ../../.env --silent prisma migrate deploy",
