@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ganaka/db": "workspace:*",
-    "@ganaka/groww": "workspace:*",
+    "@ganaka/schemas": "workspace:*",
     "croner": "9.1.0",
     "dayjs": "^1.11.10",
     "dotenv": "^17.2.3",

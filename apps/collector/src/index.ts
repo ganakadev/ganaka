@@ -37,7 +37,7 @@ async function runCollection(): Promise<void> {
   console.log(`\nCron job triggered - UTC: ${utcTime}, IST: ${istTime} IST`);
 
   try {
-    await collectMarketData(getGrowwShortlist, getGrowwQuote);
+    await collectMarketData();
     console.log("Market data collection completed successfully");
   } catch (error) {
     console.error("Failed to collect market data:", error);

@@ -94,10 +94,7 @@ async function fetchQuotesWithRateLimit(
   return results;
 }
 
-export async function collectMarketData(
-  getGrowwShortlist: GetGrowwShortlist,
-  getGrowwQuote: GetGrowwQuote
-): Promise<void> {
+export async function collectMarketData(): Promise<void> {
   const timestamp = getCurrentISTTime();
   console.log(
     `\n[${timestamp.toISOString()}] Starting market data collection...`
