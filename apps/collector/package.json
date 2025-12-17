@@ -9,12 +9,14 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@ganaka/apis": "workspace:*",
     "@ganaka/db": "workspace:*",
     "@ganaka/schemas": "workspace:*",
     "croner": "9.1.0",
     "dayjs": "^1.11.10",
     "dotenv": "^17.2.3",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.21",

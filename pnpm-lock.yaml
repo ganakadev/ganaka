@@ -21,6 +21,9 @@ importers:
 
   apps/collector:
     dependencies:
+      '@ganaka/apis':
+        specifier: workspace:*
+        version: link:../../packages/apis
       '@ganaka/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -39,6 +42,9 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+      zod:
+        specifier: ^4.2.1
+        version: 4.2.1
     devDependencies:
       '@types/lodash':
         specifier: ^4.17.21
@@ -178,6 +184,28 @@ importers:
         specifier: ^5.7.2
         version: 5.9.3
 
+  packages/apis:
+    dependencies:
+      '@ganaka/schemas':
+        specifier: workspace:*
+        version: link:../schemas
+      axios:
+        specifier: ^1.13.2
+        version: 1.13.2
+      ioredis:
+        specifier: ^5.8.2
+        version: 5.8.2
+      zod:
+        specifier: ^4.2.1
+        version: 4.2.1
+    devDependencies:
+      '@types/node':
+        specifier: ^20.10.5
+        version: 20.19.27
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
+
   packages/db:
     dependencies:
       '@prisma/client':
@@ -199,28 +227,6 @@ importers:
       prisma:
         specifier: ^6.19.1
         version: 6.19.1(typescript@5.9.3)
-      typescript:
-        specifier: ^5.3.3
-        version: 5.9.3
-
-  packages/groww:
-    dependencies:
-      '@ganaka/schemas':
-        specifier: workspace:*
-        version: link:../schemas
-      axios:
-        specifier: ^1.13.2
-        version: 1.13.2
-      ioredis:
-        specifier: ^5.8.2
-        version: 5.8.2
-      zod:
-        specifier: ^4.2.1
-        version: 4.2.1
-    devDependencies:
-      '@types/node':
-        specifier: ^20.10.5
-        version: 20.19.27
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
