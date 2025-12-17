@@ -1,19 +1,18 @@
-import { FastifyInstance, FastifyPluginAsync } from "fastify";
-import { TokenManager } from "../../../../utils/token-manager";
+import { v1_developer_groww_schemas } from "@ganaka/schemas";
 import axios, { AxiosError } from "axios";
+import { FastifyInstance, FastifyPluginAsync } from "fastify";
+import z from "zod";
 import { RedisManager } from "../../../../utils/redis";
-import {
-  formatZodError,
-  historicalCandlesQuerySchema,
-  quoteQuerySchema,
-} from "../../../../utils/validation";
+import { sendResponse } from "../../../../utils/sendResponse";
+import { TokenManager } from "../../../../utils/token-manager";
+import { validateRequest } from "../../../../utils/validator";
 
 /**
  * Helper function to make Groww API requests with automatic token refresh
  */
 const makeGrowwAPIRequest =
   (fastify: FastifyInstance, tokenManager: TokenManager) =>
-  async ({
+  async <T>({
     method,
     url,
     params,
@@ -21,7 +20,7 @@ const makeGrowwAPIRequest =
     url: string;
     method: string;
     params?: Record<string, any>;
-  }) => {
+  }): Promise<T> => {
     const maxAttempts = 2;
     let lastError: unknown;
 
@@ -94,65 +93,92 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
     return reply.send({ token });
   });
 
+  // ==================== GET /quote ====================
+
   // Quote endpoint
   fastify.get("/quote", async (request, reply) => {
-    const validationResult = quoteQuerySchema.safeParse(request.query);
-
-    if (!validationResult.success) {
-      const errorResponse = formatZodError(validationResult.error);
-      return reply.status(400).send(errorResponse);
-    }
-
-    const { symbol } = validationResult.data;
-
-    try {
-      const response = await growwAPIRequest({
-        method: "get",
-        url: `https://api.groww.in/v1/live-data/quote?exchange=NSE&segment=CASH&trading_symbol=${encodeURIComponent(
-          symbol
-        )}`,
-      });
-
-      return reply.send(response);
-    } catch (error) {
-      fastify.log.error("Error fetching quote: %s", error);
-      return reply.status(500).send({ error: "Failed to fetch quote" });
-    }
-  });
-
-  // Historical candles endpoint
-  fastify.get("/historical-candles", async (request, reply) => {
-    const validationResult = historicalCandlesQuerySchema.safeParse(
-      request.query
+    const validationResult = validateRequest(
+      request.query,
+      reply,
+      v1_developer_groww_schemas.getGrowwQuote.query,
+      "query"
     );
-
-    if (!validationResult.success) {
-      const errorResponse = formatZodError(validationResult.error);
-      return reply.status(400).send(errorResponse);
+    if (!validationResult) {
+      return;
     }
 
-    const { symbol, interval, start_time, end_time } = validationResult.data;
-
     try {
-      const response = await growwAPIRequest({
+      const response = await growwAPIRequest<
+        z.infer<typeof v1_developer_groww_schemas.growwQuoteSchema>
+      >({
         method: "get",
-        url: `https://api.groww.in/v1/historical/candles`,
+        url: `https://api.groww.in/v1/live-data/quote`,
         params: {
-          candle_interval: interval,
-          start_time: start_time,
-          end_time: end_time,
           exchange: "NSE",
           segment: "CASH",
-          groww_symbol: encodeURIComponent(`NSE-${symbol}`),
+          trading_symbol: encodeURIComponent(validationResult.symbol),
         },
       });
 
-      return reply.send(response);
+      return sendResponse<
+        z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>
+      >({
+        statusCode: 200,
+        message: "Quote fetched successfully",
+        data: response,
+      });
+    } catch (error) {
+      fastify.log.error("Error fetching quote: %s", error);
+      return reply.internalServerError(
+        "Failed to fetch quote. Please check server logs for more details."
+      );
+    }
+  });
+
+  // ==================== GET /historical-candles ====================
+
+  // Historical candles endpoint
+  fastify.get("/historical-candles", async (request, reply) => {
+    const validationResult = validateRequest(
+      request.query,
+      reply,
+      v1_developer_groww_schemas.getGrowwHistoricalCandles.query,
+      "query"
+    );
+    if (!validationResult) {
+      return;
+    }
+
+    try {
+      const response = await growwAPIRequest<
+        z.infer<typeof v1_developer_groww_schemas.growwHistoricalCandlesSchema>
+      >({
+        method: "get",
+        url: `https://api.groww.in/v1/historical/candles`,
+        params: {
+          candle_interval: validationResult.interval,
+          start_time: validationResult.start_time,
+          end_time: validationResult.end_time,
+          exchange: "NSE",
+          segment: "CASH",
+          groww_symbol: encodeURIComponent(`NSE-${validationResult.symbol}`),
+        },
+      });
+
+      return sendResponse<
+        z.infer<
+          typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response
+        >
+      >({
+        statusCode: 200,
+        message: "Historical candles fetched successfully",
+        data: response,
+      });
     } catch (error) {
       fastify.log.error("Error fetching historical candles: %s", error);
-      return reply
-        .status(500)
-        .send({ error: "Failed to fetch historical candles" });
+      return reply.internalServerError(
+        "Failed to fetch historical candles. Please check server logs for more details."
+      );
     }
   });
 };

@@ -5,7 +5,6 @@ import {
   ShortlistSnapshot,
 } from "@ganaka/db";
 import { Decimal } from "@ganaka/db/src/generated/prisma/runtime/library";
-import { GrowwShortlistItem } from "@ganaka/sdk";
 import { chunk } from "lodash";
 import { prisma } from "./utils/prisma";
 import { getCurrentISTTime } from "./utils/time";

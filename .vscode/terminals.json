@@ -2,53 +2,58 @@
   "autorun": false,
   "terminals": [
     {
-      "name": "Momentum Scalping: Dev",
+      "name": "@ganaka/momentum-scalping",
       "focus": true,
       "onlySingle": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka/momentum-scalping dev"
+      "execute": false,
+      "command": "nvm use 22 && pnpm --filter @ganaka/momentum-scalping"
     },
     {
-      "name": "Groww Access Token Generator: Dev",
+      "name": "@ganaka/groww_access_token_generator",
       "focus": true,
       "onlySingle": true,
       "cwd": "./packages/groww_access_token_generator",
       "command": "uv run main.py"
     },
     {
-      "name": "SDK: Dev",
+      "name": "@ganaka/sdk",
       "focus": true,
       "onlySingle": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka/sdk dev"
+      "execute": false,
+      "command": "nvm use 22 && pnpm --filter @ganaka/sdk"
     },
     {
-      "name": "Collector: Dev",
+      "name": "@ganaka/collector",
       "focus": true,
       "onlySingle": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka/collector dev"
+      "execute": false,
+      "command": "nvm use 22 && pnpm --filter @ganaka/collector"
     },
     {
-      "name": "Dashboard: Dev",
+      "name": "@ganaka/dashboard",
       "focus": true,
       "onlySingle": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka/dashboard dev"
+      "execute": false,
+      "command": "nvm use 22 && pnpm --filter @ganaka/dashboard"
     },
     {
-      "name": "Server: Dev",
+      "name": "@ganaka/server",
       "focus": true,
       "onlySingle": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka/server dev"
+      "execute": false,
+      "command": "nvm use 22 && pnpm --filter @ganaka/server"
     },
     {
-      "name": "Prisma Migrate",
+      "name": "@ganaka/db",
       "focus": true,
       "onlySingle": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka/db prisma:migrate"
+      "command": "nvm use 22 && pnpm --filter @ganaka/db"
     },
     {
-      "name": "Prisma Generate",
+      "name": "Build all packages",
       "focus": true,
       "onlySingle": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka/db prisma:generate"
+      "command": "nvm use 22 && pnpm --filter @ganaka/db build && pnpm --filter @ganaka/groww build && pnpm --filter @ganaka/sdk build && pnpm --filter @ganaka/schemas build"
     }
   ]
 }

@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 import { Cron } from "croner";
-import { ganaka } from "@ganaka/sdk";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -37,19 +36,13 @@ async function runCollection(): Promise<void> {
   const istTime = nowIST.format("YYYY-MM-DD HH:mm:ss");
   console.log(`\nCron job triggered - UTC: ${utcTime}, IST: ${istTime} IST`);
 
-  // Run within ganaka SDK to access SDK functions
-  await ganaka({
-    fn: async ({ getGrowwShortlist, getGrowwQuote }) => {
-      try {
-        await collectMarketData(getGrowwShortlist, getGrowwQuote);
-        console.log("Market data collection completed successfully");
-      } catch (error) {
-        console.error("Failed to collect market data:", error);
-        // Don't throw - let the cron job continue running
-      }
-    },
-    disableActivityFiles: true,
-  });
+  try {
+    await collectMarketData(getGrowwShortlist, getGrowwQuote);
+    console.log("Market data collection completed successfully");
+  } catch (error) {
+    console.error("Failed to collect market data:", error);
+    // Don't throw - let the cron job continue running
+  }
 }
 
 function main() {
