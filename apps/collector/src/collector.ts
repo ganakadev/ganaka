@@ -5,7 +5,7 @@ import {
   ShortlistSnapshot,
 } from "@ganaka/db";
 import { Decimal } from "@ganaka/db/src/generated/prisma/runtime/library";
-import { chunk } from "lodash";
+import { chunk, shuffle } from "lodash";
 import { prisma } from "./utils/prisma";
 import { getCurrentISTTime } from "./utils/time";
 import { RedisManager } from "./utils/redis";
@@ -21,7 +21,8 @@ enum ShortlistType {
 
 const NIFTY_SYMBOL = "NIFTY";
 const TOP_STOCKS_LIMIT = 5;
-const RATE_LIMIT_BATCH_SIZE = 5;
+const MAX_SYMBOLS_IN_BUCKET = 298; // 300/minute is the groww API rate limit
+const RATE_LIMIT_BATCH_SIZE = 8; // 10/second is the groww API rate limit
 const RATE_LIMIT_DELAY_MS = 1000; // 1 second
 
 async function fetchQuotesWithRateLimit(symbols: string[]) {
@@ -34,7 +35,7 @@ async function fetchQuotesWithRateLimit(symbols: string[]) {
   for await (const batch of batches) {
     const promises = batch.map((symbol) =>
       v1_developer_groww
-        .getGrowwQuote(symbol)
+        .getGrowwQuote(process.env.DEVELOPER_KEY!)(symbol)
         .then((quote) => ({ symbol, quote }))
         .catch((error: unknown) => {
           console.error(`Failed to fetch quote for ${symbol}:`, error);
@@ -61,21 +62,25 @@ async function fetchQuotesWithRateLimit(symbols: string[]) {
  * Fetches shortlists, stores them in DB, and adds new companies to Redis bucket
  * Returns the symbolMap for the current run's top 5 companies
  */
-async function updateDailyBucket(): Promise<Map<string, Set<ShortlistType>>> {
+async function updateDailyBucket(): Promise<Set<string>> {
   const timestamp = getCurrentISTTime();
   console.log("Updating daily bucket...");
 
   // 1. Fetch both shortlists in parallel
   console.log("Fetching shortlists...");
   const [topGainers, volumeShockers] = await Promise.all([
-    v1_developer_lists.getLists("top-gainers").catch((error: unknown) => {
-      console.error("Failed to fetch top-gainers:", error);
-      return null;
-    }),
-    v1_developer_lists.getLists("volume-shockers").catch((error: unknown) => {
-      console.error("Failed to fetch volume-shockers:", error);
-      return null;
-    }),
+    v1_developer_lists
+      .getLists(process.env.DEVELOPER_KEY!)("top-gainers")
+      .catch((error: unknown) => {
+        console.error("Failed to fetch top-gainers:", error);
+        return null;
+      }),
+    v1_developer_lists
+      .getLists(process.env.DEVELOPER_KEY!)("volume-shockers")
+      .catch((error: unknown) => {
+        console.error("Failed to fetch volume-shockers:", error);
+        return null;
+      }),
   ]);
   if (!topGainers || !volumeShockers) {
     console.error("Failed to fetch shortlists");
@@ -87,6 +92,11 @@ async function updateDailyBucket(): Promise<Map<string, Set<ShortlistType>>> {
     topGainers.data?.data?.slice(0, TOP_STOCKS_LIMIT) ?? [];
   const volumeShockersLimited =
     volumeShockers.data?.data?.slice(0, TOP_STOCKS_LIMIT) ?? [];
+  // shuffle for testing in local development
+  // const topGainersLimited =
+  //   shuffle(topGainers.data?.data ?? [])?.slice(0, TOP_STOCKS_LIMIT) ?? [];
+  // const volumeShockersLimited =
+  //   shuffle(volumeShockers.data?.data ?? [])?.slice(0, TOP_STOCKS_LIMIT) ?? [];
   console.log(
     `Top gainers: ${topGainersLimited.length}, Volume shockers: ${volumeShockersLimited.length}`
   );
@@ -117,18 +127,12 @@ async function updateDailyBucket(): Promise<Map<string, Set<ShortlistType>>> {
   }
 
   // 4. Collect unique symbols from top 5 (de-duplicate across both lists)
-  const symbolMap = new Map<string, Set<ShortlistType>>();
+  const symbolMap = new Set<string>();
   topGainersLimited.forEach((item) => {
-    if (!symbolMap.has(item.nseSymbol)) {
-      symbolMap.set(item.nseSymbol, new Set());
-    }
-    symbolMap.get(item.nseSymbol)!.add(ShortlistType.TOP_GAINERS);
+    symbolMap.add(item.nseSymbol);
   });
   volumeShockersLimited.forEach((item) => {
-    if (!symbolMap.has(item.nseSymbol)) {
-      symbolMap.set(item.nseSymbol, new Set());
-    }
-    symbolMap.get(item.nseSymbol)!.add(ShortlistType.VOLUME_SHOCKERS);
+    symbolMap.add(item.nseSymbol);
   });
   const currentRunSymbols = Array.from(symbolMap.keys());
   console.log(`Current run unique symbols: ${currentRunSymbols.length}`);
@@ -150,6 +154,14 @@ async function updateDailyBucket(): Promise<Map<string, Set<ShortlistType>>> {
     console.log(`Added ${newSymbols.length} new symbols to bucket`);
   }
 
+  // 8. Add bucket symbols to symbol map
+  for (const symbol of existingBucket) {
+    if (symbolMap.size > MAX_SYMBOLS_IN_BUCKET) {
+      break;
+    }
+    symbolMap.add(symbol);
+  }
+
   return symbolMap;
 }
 
@@ -158,24 +170,18 @@ async function updateDailyBucket(): Promise<Map<string, Set<ShortlistType>>> {
  * Fetches quotes for all bucket companies and stores them in database
  */
 async function collectMarketDataForBucket(
-  currentRunSymbolMap: Map<string, Set<ShortlistType>>
+  currentRunSymbolMap: Set<string>
 ): Promise<void> {
   const timestamp = getCurrentISTTime();
-  console.log("Collecting market data for bucket companies...");
 
-  // 1. Get all symbols from daily bucket
-  const redisManager = RedisManager.getInstance();
-  const bucketSymbols = await redisManager.getAllFromDailyBucket(timestamp);
-  console.log(`Total symbols in bucket: ${bucketSymbols.length}`);
-
-  if (bucketSymbols.length === 0) {
-    console.log("No symbols in bucket, skipping quote collection");
-    return;
-  }
+  // 1. Format symbols from current run symbol map
+  const bucketSymbols = Array.from(currentRunSymbolMap.keys());
 
   // 2. Fetch NIFTY quote
   console.log("Fetching NIFTY quote...");
-  const niftybankQuote = await v1_developer_groww.getGrowwQuote(NIFTY_SYMBOL);
+  const niftybankQuote = await v1_developer_groww.getGrowwQuote(
+    process.env.DEVELOPER_KEY!
+  )(NIFTY_SYMBOL);
 
   // 3. Fetch quotes with rate limiting
   console.log("Fetching quotes with rate limiting...");
