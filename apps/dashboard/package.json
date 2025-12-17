@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@ganaka/db": "workspace:*",
-    "@ganaka/groww": "workspace:*",
     "@mantine/charts": "^8.3.10",
     "@mantine/core": "^8.3.10",
     "@mantine/dates": "^8.3.10",

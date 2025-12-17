@@ -6,7 +6,7 @@
       "focus": true,
       "onlySingle": true,
       "execute": false,
-      "command": "nvm use 22 && pnpm --filter @ganaka/momentum-scalping"
+      "command": "nvm use 22 && pnpm --filter @ganaka/momentum-scalping "
     },
     {
       "name": "@ganaka/groww_access_token_generator",
@@ -16,44 +16,53 @@
       "command": "uv run main.py"
     },
     {
-      "name": "@ganaka/sdk",
-      "focus": true,
-      "onlySingle": true,
-      "execute": false,
-      "command": "nvm use 22 && pnpm --filter @ganaka/sdk"
-    },
-    {
       "name": "@ganaka/collector",
       "focus": true,
       "onlySingle": true,
       "execute": false,
-      "command": "nvm use 22 && pnpm --filter @ganaka/collector"
+      "command": "nvm use 22 && pnpm --filter @ganaka/collector "
     },
     {
       "name": "@ganaka/dashboard",
       "focus": true,
       "onlySingle": true,
       "execute": false,
-      "command": "nvm use 22 && pnpm --filter @ganaka/dashboard"
+      "command": "nvm use 22 && pnpm --filter @ganaka/dashboard "
     },
     {
       "name": "@ganaka/server",
       "focus": true,
       "onlySingle": true,
       "execute": false,
-      "command": "nvm use 22 && pnpm --filter @ganaka/server"
+      "command": "nvm use 22 && pnpm --filter @ganaka/server "
     },
     {
       "name": "@ganaka/db",
       "focus": true,
       "onlySingle": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka/db"
+      "execute": false,
+      "command": "nvm use 22 && pnpm --filter @ganaka/db "
     },
     {
-      "name": "Build all packages",
+      "name": "@ganaka/schemas",
       "focus": true,
       "onlySingle": true,
-      "command": "nvm use 22 && pnpm --filter @ganaka/db build && pnpm --filter @ganaka/groww build && pnpm --filter @ganaka/sdk build && pnpm --filter @ganaka/schemas build"
+      "execute": false,
+      "command": "nvm use 22 && pnpm --filter @ganaka/schemas "
+    },
+    {
+      "name": "@ganaka/sdk",
+      "focus": true,
+      "onlySingle": true,
+      "execute": false,
+      "command": "nvm use 22 && pnpm --filter @ganaka/sdk "
+    },
+    {
+      "name": "@ganaka/apis",
+      "focus": true,
+      "onlySingle": true,
+      "execute": false,
+      "command": "nvm use 22 && pnpm --filter @ganaka/apis "
     }
   ]
 }

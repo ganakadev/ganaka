@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import { getGrowwQuote, getGrowwHistoricalCandles } from "@ganaka/groww";
 import { scrapeGrowwShortlist } from "./groww/scrape-shortlist";
 import { logger } from "./utils/logger";
 import { PlaceOrderData, MarketDepthWriter } from "./utils/writer";
@@ -11,8 +10,6 @@ export type { PlaceOrderData } from "./utils/writer";
 export type { NiftyTrend } from "./groww/get-nifty-trend";
 
 export interface RunContext {
-  getGrowwQuote: typeof getGrowwQuote;
-  getGrowwHistoricalCandles: typeof getGrowwHistoricalCandles;
   scrapeGrowwShortlist: typeof scrapeGrowwShortlist;
   getNiftyTrend: typeof getNiftyTrend;
   placeOrder: (data: PlaceOrderData) => void;

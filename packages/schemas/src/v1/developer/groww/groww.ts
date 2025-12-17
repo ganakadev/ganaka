@@ -87,8 +87,18 @@ export const getGrowwHistoricalCandles = {
 export const getGrowwQuote = {
   query: z.object({
     symbol: z.string(),
+    exchange: z.enum(["NSE", "BSE"]).optional(),
+    segment: z.enum(["CASH"]).optional(),
   }),
   response: apiResponseSchema.extend({
     data: growwQuoteSchema,
+  }),
+};
+
+// ==================== GET /token ====================
+
+export const getGrowwToken = {
+  response: apiResponseSchema.extend({
+    data: z.string(),
   }),
 };

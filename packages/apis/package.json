@@ -1,5 +1,5 @@
 {
-  "name": "@ganaka/groww",
+  "name": "@ganaka/apis",
   "version": "1.0.0",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -8,8 +8,10 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@ganaka/schemas": "workspace:*",
     "axios": "^1.13.2",
-    "ioredis": "^5.8.2"
+    "ioredis": "^5.8.2",
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@types/node": "^20.10.5",

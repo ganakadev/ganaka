@@ -90,7 +90,13 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
   // Get latest token endpoint
   fastify.get("/token", async (request, reply) => {
     const token = await tokenManager.getToken();
-    return reply.send({ token });
+    return sendResponse<
+      z.infer<typeof v1_developer_groww_schemas.getGrowwToken.response>
+    >({
+      statusCode: 200,
+      message: "Token fetched successfully",
+      data: token,
+    });
   });
 
   // ==================== GET /quote ====================
