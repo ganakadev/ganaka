@@ -24,9 +24,9 @@ importers:
       '@ganaka/db':
         specifier: workspace:*
         version: link:../../packages/db
-      '@ganaka/sdk':
+      '@ganaka/groww':
         specifier: workspace:*
-        version: link:../../packages/sdk
+        version: link:../../packages/groww
       croner:
         specifier: 9.1.0
         version: 9.1.0
@@ -276,6 +276,30 @@ importers:
       vitest:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@20.19.27)(@vitest/ui@2.1.9)(lightningcss@1.30.2)
+
+  packages/server-schemas:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.10.0
+        version: 20.19.27
+      '@types/semver':
+        specifier: ^7.5.6
+        version: 7.7.1
+      semver:
+        specifier: ^7.5.4
+        version: 7.7.3
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)
+      vite-plugin-dts:
+        specifier: ^3.6.0
+        version: 3.9.1(@types/node@20.19.27)(rollup@4.53.4)(typescript@5.9.3)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2))
+      zod:
+        specifier: ^4.1.11
+        version: 4.2.0
 
   strategies/momentum-scalping:
     dependencies:
@@ -1403,6 +1427,9 @@ packages:
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
+
+  '@types/semver@7.7.1':
+    resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
 
   '@types/use-sync-external-store@0.0.6':
     resolution: {integrity: sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg==}
@@ -4910,6 +4937,8 @@ snapshots:
       csstype: 3.2.3
 
   '@types/resolve@1.20.2': {}
+
+  '@types/semver@7.7.1': {}
 
   '@types/use-sync-external-store@0.0.6': {}
 
