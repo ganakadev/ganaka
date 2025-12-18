@@ -33,6 +33,11 @@ export type NiftyQuote = $Result.DefaultSelection<Prisma.$NiftyQuotePayload>
  * 
  */
 export type DeveloperToken = $Result.DefaultSelection<Prisma.$DeveloperTokenPayload>
+/**
+ * Model CollectorError
+ * 
+ */
+export type CollectorError = $Result.DefaultSelection<Prisma.$CollectorErrorPayload>
 
 /**
  * Enums
@@ -208,6 +213,16 @@ export class PrismaClient<
     * ```
     */
   get developerToken(): Prisma.DeveloperTokenDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.collectorError`: Exposes CRUD operations for the **CollectorError** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CollectorErrors
+    * const collectorErrors = await prisma.collectorError.findMany()
+    * ```
+    */
+  get collectorError(): Prisma.CollectorErrorDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -652,7 +667,8 @@ export namespace Prisma {
     ShortlistSnapshot: 'ShortlistSnapshot',
     QuoteSnapshot: 'QuoteSnapshot',
     NiftyQuote: 'NiftyQuote',
-    DeveloperToken: 'DeveloperToken'
+    DeveloperToken: 'DeveloperToken',
+    CollectorError: 'CollectorError'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -671,7 +687,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "shortlistSnapshot" | "quoteSnapshot" | "niftyQuote" | "developerToken"
+      modelProps: "shortlistSnapshot" | "quoteSnapshot" | "niftyQuote" | "developerToken" | "collectorError"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -971,6 +987,80 @@ export namespace Prisma {
           }
         }
       }
+      CollectorError: {
+        payload: Prisma.$CollectorErrorPayload<ExtArgs>
+        fields: Prisma.CollectorErrorFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CollectorErrorFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CollectorErrorPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CollectorErrorFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CollectorErrorPayload>
+          }
+          findFirst: {
+            args: Prisma.CollectorErrorFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CollectorErrorPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CollectorErrorFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CollectorErrorPayload>
+          }
+          findMany: {
+            args: Prisma.CollectorErrorFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CollectorErrorPayload>[]
+          }
+          create: {
+            args: Prisma.CollectorErrorCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CollectorErrorPayload>
+          }
+          createMany: {
+            args: Prisma.CollectorErrorCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CollectorErrorCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CollectorErrorPayload>[]
+          }
+          delete: {
+            args: Prisma.CollectorErrorDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CollectorErrorPayload>
+          }
+          update: {
+            args: Prisma.CollectorErrorUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CollectorErrorPayload>
+          }
+          deleteMany: {
+            args: Prisma.CollectorErrorDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CollectorErrorUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CollectorErrorUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CollectorErrorPayload>[]
+          }
+          upsert: {
+            args: Prisma.CollectorErrorUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CollectorErrorPayload>
+          }
+          aggregate: {
+            args: Prisma.CollectorErrorAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCollectorError>
+          }
+          groupBy: {
+            args: Prisma.CollectorErrorGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CollectorErrorGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CollectorErrorCountArgs<ExtArgs>
+            result: $Utils.Optional<CollectorErrorCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1071,6 +1161,7 @@ export namespace Prisma {
     quoteSnapshot?: QuoteSnapshotOmit
     niftyQuote?: NiftyQuoteOmit
     developerToken?: DeveloperTokenOmit
+    collectorError?: CollectorErrorOmit
   }
 
   /* Types for Logging */
@@ -5180,6 +5271,1023 @@ export namespace Prisma {
 
 
   /**
+   * Model CollectorError
+   */
+
+  export type AggregateCollectorError = {
+    _count: CollectorErrorCountAggregateOutputType | null
+    _min: CollectorErrorMinAggregateOutputType | null
+    _max: CollectorErrorMaxAggregateOutputType | null
+  }
+
+  export type CollectorErrorMinAggregateOutputType = {
+    id: string | null
+    timestamp: Date | null
+    errorMessage: string | null
+    errorStack: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CollectorErrorMaxAggregateOutputType = {
+    id: string | null
+    timestamp: Date | null
+    errorMessage: string | null
+    errorStack: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CollectorErrorCountAggregateOutputType = {
+    id: number
+    timestamp: number
+    errorMessage: number
+    errorStack: number
+    errorContext: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CollectorErrorMinAggregateInputType = {
+    id?: true
+    timestamp?: true
+    errorMessage?: true
+    errorStack?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CollectorErrorMaxAggregateInputType = {
+    id?: true
+    timestamp?: true
+    errorMessage?: true
+    errorStack?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CollectorErrorCountAggregateInputType = {
+    id?: true
+    timestamp?: true
+    errorMessage?: true
+    errorStack?: true
+    errorContext?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CollectorErrorAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CollectorError to aggregate.
+     */
+    where?: CollectorErrorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CollectorErrors to fetch.
+     */
+    orderBy?: CollectorErrorOrderByWithRelationInput | CollectorErrorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CollectorErrorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CollectorErrors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CollectorErrors.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CollectorErrors
+    **/
+    _count?: true | CollectorErrorCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CollectorErrorMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CollectorErrorMaxAggregateInputType
+  }
+
+  export type GetCollectorErrorAggregateType<T extends CollectorErrorAggregateArgs> = {
+        [P in keyof T & keyof AggregateCollectorError]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCollectorError[P]>
+      : GetScalarType<T[P], AggregateCollectorError[P]>
+  }
+
+
+
+
+  export type CollectorErrorGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CollectorErrorWhereInput
+    orderBy?: CollectorErrorOrderByWithAggregationInput | CollectorErrorOrderByWithAggregationInput[]
+    by: CollectorErrorScalarFieldEnum[] | CollectorErrorScalarFieldEnum
+    having?: CollectorErrorScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CollectorErrorCountAggregateInputType | true
+    _min?: CollectorErrorMinAggregateInputType
+    _max?: CollectorErrorMaxAggregateInputType
+  }
+
+  export type CollectorErrorGroupByOutputType = {
+    id: string
+    timestamp: Date
+    errorMessage: string
+    errorStack: string | null
+    errorContext: JsonValue | null
+    createdAt: Date
+    updatedAt: Date
+    _count: CollectorErrorCountAggregateOutputType | null
+    _min: CollectorErrorMinAggregateOutputType | null
+    _max: CollectorErrorMaxAggregateOutputType | null
+  }
+
+  type GetCollectorErrorGroupByPayload<T extends CollectorErrorGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CollectorErrorGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CollectorErrorGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CollectorErrorGroupByOutputType[P]>
+            : GetScalarType<T[P], CollectorErrorGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CollectorErrorSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    timestamp?: boolean
+    errorMessage?: boolean
+    errorStack?: boolean
+    errorContext?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["collectorError"]>
+
+  export type CollectorErrorSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    timestamp?: boolean
+    errorMessage?: boolean
+    errorStack?: boolean
+    errorContext?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["collectorError"]>
+
+  export type CollectorErrorSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    timestamp?: boolean
+    errorMessage?: boolean
+    errorStack?: boolean
+    errorContext?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["collectorError"]>
+
+  export type CollectorErrorSelectScalar = {
+    id?: boolean
+    timestamp?: boolean
+    errorMessage?: boolean
+    errorStack?: boolean
+    errorContext?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type CollectorErrorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "errorMessage" | "errorStack" | "errorContext" | "createdAt" | "updatedAt", ExtArgs["result"]["collectorError"]>
+
+  export type $CollectorErrorPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CollectorError"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      timestamp: Date
+      errorMessage: string
+      errorStack: string | null
+      errorContext: Prisma.JsonValue | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["collectorError"]>
+    composites: {}
+  }
+
+  type CollectorErrorGetPayload<S extends boolean | null | undefined | CollectorErrorDefaultArgs> = $Result.GetResult<Prisma.$CollectorErrorPayload, S>
+
+  type CollectorErrorCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CollectorErrorFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CollectorErrorCountAggregateInputType | true
+    }
+
+  export interface CollectorErrorDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CollectorError'], meta: { name: 'CollectorError' } }
+    /**
+     * Find zero or one CollectorError that matches the filter.
+     * @param {CollectorErrorFindUniqueArgs} args - Arguments to find a CollectorError
+     * @example
+     * // Get one CollectorError
+     * const collectorError = await prisma.collectorError.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CollectorErrorFindUniqueArgs>(args: SelectSubset<T, CollectorErrorFindUniqueArgs<ExtArgs>>): Prisma__CollectorErrorClient<$Result.GetResult<Prisma.$CollectorErrorPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CollectorError that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CollectorErrorFindUniqueOrThrowArgs} args - Arguments to find a CollectorError
+     * @example
+     * // Get one CollectorError
+     * const collectorError = await prisma.collectorError.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CollectorErrorFindUniqueOrThrowArgs>(args: SelectSubset<T, CollectorErrorFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CollectorErrorClient<$Result.GetResult<Prisma.$CollectorErrorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CollectorError that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CollectorErrorFindFirstArgs} args - Arguments to find a CollectorError
+     * @example
+     * // Get one CollectorError
+     * const collectorError = await prisma.collectorError.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CollectorErrorFindFirstArgs>(args?: SelectSubset<T, CollectorErrorFindFirstArgs<ExtArgs>>): Prisma__CollectorErrorClient<$Result.GetResult<Prisma.$CollectorErrorPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CollectorError that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CollectorErrorFindFirstOrThrowArgs} args - Arguments to find a CollectorError
+     * @example
+     * // Get one CollectorError
+     * const collectorError = await prisma.collectorError.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CollectorErrorFindFirstOrThrowArgs>(args?: SelectSubset<T, CollectorErrorFindFirstOrThrowArgs<ExtArgs>>): Prisma__CollectorErrorClient<$Result.GetResult<Prisma.$CollectorErrorPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CollectorErrors that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CollectorErrorFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CollectorErrors
+     * const collectorErrors = await prisma.collectorError.findMany()
+     * 
+     * // Get first 10 CollectorErrors
+     * const collectorErrors = await prisma.collectorError.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const collectorErrorWithIdOnly = await prisma.collectorError.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CollectorErrorFindManyArgs>(args?: SelectSubset<T, CollectorErrorFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CollectorErrorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CollectorError.
+     * @param {CollectorErrorCreateArgs} args - Arguments to create a CollectorError.
+     * @example
+     * // Create one CollectorError
+     * const CollectorError = await prisma.collectorError.create({
+     *   data: {
+     *     // ... data to create a CollectorError
+     *   }
+     * })
+     * 
+     */
+    create<T extends CollectorErrorCreateArgs>(args: SelectSubset<T, CollectorErrorCreateArgs<ExtArgs>>): Prisma__CollectorErrorClient<$Result.GetResult<Prisma.$CollectorErrorPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CollectorErrors.
+     * @param {CollectorErrorCreateManyArgs} args - Arguments to create many CollectorErrors.
+     * @example
+     * // Create many CollectorErrors
+     * const collectorError = await prisma.collectorError.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CollectorErrorCreateManyArgs>(args?: SelectSubset<T, CollectorErrorCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CollectorErrors and returns the data saved in the database.
+     * @param {CollectorErrorCreateManyAndReturnArgs} args - Arguments to create many CollectorErrors.
+     * @example
+     * // Create many CollectorErrors
+     * const collectorError = await prisma.collectorError.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CollectorErrors and only return the `id`
+     * const collectorErrorWithIdOnly = await prisma.collectorError.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CollectorErrorCreateManyAndReturnArgs>(args?: SelectSubset<T, CollectorErrorCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CollectorErrorPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CollectorError.
+     * @param {CollectorErrorDeleteArgs} args - Arguments to delete one CollectorError.
+     * @example
+     * // Delete one CollectorError
+     * const CollectorError = await prisma.collectorError.delete({
+     *   where: {
+     *     // ... filter to delete one CollectorError
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CollectorErrorDeleteArgs>(args: SelectSubset<T, CollectorErrorDeleteArgs<ExtArgs>>): Prisma__CollectorErrorClient<$Result.GetResult<Prisma.$CollectorErrorPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CollectorError.
+     * @param {CollectorErrorUpdateArgs} args - Arguments to update one CollectorError.
+     * @example
+     * // Update one CollectorError
+     * const collectorError = await prisma.collectorError.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CollectorErrorUpdateArgs>(args: SelectSubset<T, CollectorErrorUpdateArgs<ExtArgs>>): Prisma__CollectorErrorClient<$Result.GetResult<Prisma.$CollectorErrorPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CollectorErrors.
+     * @param {CollectorErrorDeleteManyArgs} args - Arguments to filter CollectorErrors to delete.
+     * @example
+     * // Delete a few CollectorErrors
+     * const { count } = await prisma.collectorError.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CollectorErrorDeleteManyArgs>(args?: SelectSubset<T, CollectorErrorDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CollectorErrors.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CollectorErrorUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CollectorErrors
+     * const collectorError = await prisma.collectorError.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CollectorErrorUpdateManyArgs>(args: SelectSubset<T, CollectorErrorUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CollectorErrors and returns the data updated in the database.
+     * @param {CollectorErrorUpdateManyAndReturnArgs} args - Arguments to update many CollectorErrors.
+     * @example
+     * // Update many CollectorErrors
+     * const collectorError = await prisma.collectorError.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CollectorErrors and only return the `id`
+     * const collectorErrorWithIdOnly = await prisma.collectorError.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CollectorErrorUpdateManyAndReturnArgs>(args: SelectSubset<T, CollectorErrorUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CollectorErrorPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CollectorError.
+     * @param {CollectorErrorUpsertArgs} args - Arguments to update or create a CollectorError.
+     * @example
+     * // Update or create a CollectorError
+     * const collectorError = await prisma.collectorError.upsert({
+     *   create: {
+     *     // ... data to create a CollectorError
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CollectorError we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CollectorErrorUpsertArgs>(args: SelectSubset<T, CollectorErrorUpsertArgs<ExtArgs>>): Prisma__CollectorErrorClient<$Result.GetResult<Prisma.$CollectorErrorPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CollectorErrors.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CollectorErrorCountArgs} args - Arguments to filter CollectorErrors to count.
+     * @example
+     * // Count the number of CollectorErrors
+     * const count = await prisma.collectorError.count({
+     *   where: {
+     *     // ... the filter for the CollectorErrors we want to count
+     *   }
+     * })
+    **/
+    count<T extends CollectorErrorCountArgs>(
+      args?: Subset<T, CollectorErrorCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CollectorErrorCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CollectorError.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CollectorErrorAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CollectorErrorAggregateArgs>(args: Subset<T, CollectorErrorAggregateArgs>): Prisma.PrismaPromise<GetCollectorErrorAggregateType<T>>
+
+    /**
+     * Group by CollectorError.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CollectorErrorGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CollectorErrorGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CollectorErrorGroupByArgs['orderBy'] }
+        : { orderBy?: CollectorErrorGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CollectorErrorGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCollectorErrorGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CollectorError model
+   */
+  readonly fields: CollectorErrorFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CollectorError.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CollectorErrorClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CollectorError model
+   */
+  interface CollectorErrorFieldRefs {
+    readonly id: FieldRef<"CollectorError", 'String'>
+    readonly timestamp: FieldRef<"CollectorError", 'DateTime'>
+    readonly errorMessage: FieldRef<"CollectorError", 'String'>
+    readonly errorStack: FieldRef<"CollectorError", 'String'>
+    readonly errorContext: FieldRef<"CollectorError", 'Json'>
+    readonly createdAt: FieldRef<"CollectorError", 'DateTime'>
+    readonly updatedAt: FieldRef<"CollectorError", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CollectorError findUnique
+   */
+  export type CollectorErrorFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CollectorError
+     */
+    select?: CollectorErrorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CollectorError
+     */
+    omit?: CollectorErrorOmit<ExtArgs> | null
+    /**
+     * Filter, which CollectorError to fetch.
+     */
+    where: CollectorErrorWhereUniqueInput
+  }
+
+  /**
+   * CollectorError findUniqueOrThrow
+   */
+  export type CollectorErrorFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CollectorError
+     */
+    select?: CollectorErrorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CollectorError
+     */
+    omit?: CollectorErrorOmit<ExtArgs> | null
+    /**
+     * Filter, which CollectorError to fetch.
+     */
+    where: CollectorErrorWhereUniqueInput
+  }
+
+  /**
+   * CollectorError findFirst
+   */
+  export type CollectorErrorFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CollectorError
+     */
+    select?: CollectorErrorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CollectorError
+     */
+    omit?: CollectorErrorOmit<ExtArgs> | null
+    /**
+     * Filter, which CollectorError to fetch.
+     */
+    where?: CollectorErrorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CollectorErrors to fetch.
+     */
+    orderBy?: CollectorErrorOrderByWithRelationInput | CollectorErrorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CollectorErrors.
+     */
+    cursor?: CollectorErrorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CollectorErrors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CollectorErrors.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CollectorErrors.
+     */
+    distinct?: CollectorErrorScalarFieldEnum | CollectorErrorScalarFieldEnum[]
+  }
+
+  /**
+   * CollectorError findFirstOrThrow
+   */
+  export type CollectorErrorFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CollectorError
+     */
+    select?: CollectorErrorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CollectorError
+     */
+    omit?: CollectorErrorOmit<ExtArgs> | null
+    /**
+     * Filter, which CollectorError to fetch.
+     */
+    where?: CollectorErrorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CollectorErrors to fetch.
+     */
+    orderBy?: CollectorErrorOrderByWithRelationInput | CollectorErrorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CollectorErrors.
+     */
+    cursor?: CollectorErrorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CollectorErrors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CollectorErrors.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CollectorErrors.
+     */
+    distinct?: CollectorErrorScalarFieldEnum | CollectorErrorScalarFieldEnum[]
+  }
+
+  /**
+   * CollectorError findMany
+   */
+  export type CollectorErrorFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CollectorError
+     */
+    select?: CollectorErrorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CollectorError
+     */
+    omit?: CollectorErrorOmit<ExtArgs> | null
+    /**
+     * Filter, which CollectorErrors to fetch.
+     */
+    where?: CollectorErrorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CollectorErrors to fetch.
+     */
+    orderBy?: CollectorErrorOrderByWithRelationInput | CollectorErrorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CollectorErrors.
+     */
+    cursor?: CollectorErrorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CollectorErrors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CollectorErrors.
+     */
+    skip?: number
+    distinct?: CollectorErrorScalarFieldEnum | CollectorErrorScalarFieldEnum[]
+  }
+
+  /**
+   * CollectorError create
+   */
+  export type CollectorErrorCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CollectorError
+     */
+    select?: CollectorErrorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CollectorError
+     */
+    omit?: CollectorErrorOmit<ExtArgs> | null
+    /**
+     * The data needed to create a CollectorError.
+     */
+    data: XOR<CollectorErrorCreateInput, CollectorErrorUncheckedCreateInput>
+  }
+
+  /**
+   * CollectorError createMany
+   */
+  export type CollectorErrorCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CollectorErrors.
+     */
+    data: CollectorErrorCreateManyInput | CollectorErrorCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CollectorError createManyAndReturn
+   */
+  export type CollectorErrorCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CollectorError
+     */
+    select?: CollectorErrorSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CollectorError
+     */
+    omit?: CollectorErrorOmit<ExtArgs> | null
+    /**
+     * The data used to create many CollectorErrors.
+     */
+    data: CollectorErrorCreateManyInput | CollectorErrorCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CollectorError update
+   */
+  export type CollectorErrorUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CollectorError
+     */
+    select?: CollectorErrorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CollectorError
+     */
+    omit?: CollectorErrorOmit<ExtArgs> | null
+    /**
+     * The data needed to update a CollectorError.
+     */
+    data: XOR<CollectorErrorUpdateInput, CollectorErrorUncheckedUpdateInput>
+    /**
+     * Choose, which CollectorError to update.
+     */
+    where: CollectorErrorWhereUniqueInput
+  }
+
+  /**
+   * CollectorError updateMany
+   */
+  export type CollectorErrorUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CollectorErrors.
+     */
+    data: XOR<CollectorErrorUpdateManyMutationInput, CollectorErrorUncheckedUpdateManyInput>
+    /**
+     * Filter which CollectorErrors to update
+     */
+    where?: CollectorErrorWhereInput
+    /**
+     * Limit how many CollectorErrors to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CollectorError updateManyAndReturn
+   */
+  export type CollectorErrorUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CollectorError
+     */
+    select?: CollectorErrorSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CollectorError
+     */
+    omit?: CollectorErrorOmit<ExtArgs> | null
+    /**
+     * The data used to update CollectorErrors.
+     */
+    data: XOR<CollectorErrorUpdateManyMutationInput, CollectorErrorUncheckedUpdateManyInput>
+    /**
+     * Filter which CollectorErrors to update
+     */
+    where?: CollectorErrorWhereInput
+    /**
+     * Limit how many CollectorErrors to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CollectorError upsert
+   */
+  export type CollectorErrorUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CollectorError
+     */
+    select?: CollectorErrorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CollectorError
+     */
+    omit?: CollectorErrorOmit<ExtArgs> | null
+    /**
+     * The filter to search for the CollectorError to update in case it exists.
+     */
+    where: CollectorErrorWhereUniqueInput
+    /**
+     * In case the CollectorError found by the `where` argument doesn't exist, create a new CollectorError with this data.
+     */
+    create: XOR<CollectorErrorCreateInput, CollectorErrorUncheckedCreateInput>
+    /**
+     * In case the CollectorError was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CollectorErrorUpdateInput, CollectorErrorUncheckedUpdateInput>
+  }
+
+  /**
+   * CollectorError delete
+   */
+  export type CollectorErrorDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CollectorError
+     */
+    select?: CollectorErrorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CollectorError
+     */
+    omit?: CollectorErrorOmit<ExtArgs> | null
+    /**
+     * Filter which CollectorError to delete.
+     */
+    where: CollectorErrorWhereUniqueInput
+  }
+
+  /**
+   * CollectorError deleteMany
+   */
+  export type CollectorErrorDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CollectorErrors to delete
+     */
+    where?: CollectorErrorWhereInput
+    /**
+     * Limit how many CollectorErrors to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CollectorError without action
+   */
+  export type CollectorErrorDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CollectorError
+     */
+    select?: CollectorErrorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CollectorError
+     */
+    omit?: CollectorErrorOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -5239,6 +6347,19 @@ export namespace Prisma {
   export type DeveloperTokenScalarFieldEnum = (typeof DeveloperTokenScalarFieldEnum)[keyof typeof DeveloperTokenScalarFieldEnum]
 
 
+  export const CollectorErrorScalarFieldEnum: {
+    id: 'id',
+    timestamp: 'timestamp',
+    errorMessage: 'errorMessage',
+    errorStack: 'errorStack',
+    errorContext: 'errorContext',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CollectorErrorScalarFieldEnum = (typeof CollectorErrorScalarFieldEnum)[keyof typeof CollectorErrorScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -5252,6 +6373,14 @@ export namespace Prisma {
   };
 
   export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
   export const QueryMode: {
@@ -5269,6 +6398,14 @@ export namespace Prisma {
   };
 
   export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+  export const NullsOrder: {
+    first: 'first',
+    last: 'last'
+  };
+
+  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
   /**
@@ -5583,6 +6720,68 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"DeveloperToken"> | Date | string
   }
 
+  export type CollectorErrorWhereInput = {
+    AND?: CollectorErrorWhereInput | CollectorErrorWhereInput[]
+    OR?: CollectorErrorWhereInput[]
+    NOT?: CollectorErrorWhereInput | CollectorErrorWhereInput[]
+    id?: StringFilter<"CollectorError"> | string
+    timestamp?: DateTimeFilter<"CollectorError"> | Date | string
+    errorMessage?: StringFilter<"CollectorError"> | string
+    errorStack?: StringNullableFilter<"CollectorError"> | string | null
+    errorContext?: JsonNullableFilter<"CollectorError">
+    createdAt?: DateTimeFilter<"CollectorError"> | Date | string
+    updatedAt?: DateTimeFilter<"CollectorError"> | Date | string
+  }
+
+  export type CollectorErrorOrderByWithRelationInput = {
+    id?: SortOrder
+    timestamp?: SortOrder
+    errorMessage?: SortOrder
+    errorStack?: SortOrderInput | SortOrder
+    errorContext?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CollectorErrorWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: CollectorErrorWhereInput | CollectorErrorWhereInput[]
+    OR?: CollectorErrorWhereInput[]
+    NOT?: CollectorErrorWhereInput | CollectorErrorWhereInput[]
+    timestamp?: DateTimeFilter<"CollectorError"> | Date | string
+    errorMessage?: StringFilter<"CollectorError"> | string
+    errorStack?: StringNullableFilter<"CollectorError"> | string | null
+    errorContext?: JsonNullableFilter<"CollectorError">
+    createdAt?: DateTimeFilter<"CollectorError"> | Date | string
+    updatedAt?: DateTimeFilter<"CollectorError"> | Date | string
+  }, "id">
+
+  export type CollectorErrorOrderByWithAggregationInput = {
+    id?: SortOrder
+    timestamp?: SortOrder
+    errorMessage?: SortOrder
+    errorStack?: SortOrderInput | SortOrder
+    errorContext?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CollectorErrorCountOrderByAggregateInput
+    _max?: CollectorErrorMaxOrderByAggregateInput
+    _min?: CollectorErrorMinOrderByAggregateInput
+  }
+
+  export type CollectorErrorScalarWhereWithAggregatesInput = {
+    AND?: CollectorErrorScalarWhereWithAggregatesInput | CollectorErrorScalarWhereWithAggregatesInput[]
+    OR?: CollectorErrorScalarWhereWithAggregatesInput[]
+    NOT?: CollectorErrorScalarWhereWithAggregatesInput | CollectorErrorScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CollectorError"> | string
+    timestamp?: DateTimeWithAggregatesFilter<"CollectorError"> | Date | string
+    errorMessage?: StringWithAggregatesFilter<"CollectorError"> | string
+    errorStack?: StringNullableWithAggregatesFilter<"CollectorError"> | string | null
+    errorContext?: JsonNullableWithAggregatesFilter<"CollectorError">
+    createdAt?: DateTimeWithAggregatesFilter<"CollectorError"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"CollectorError"> | Date | string
+  }
+
   export type ShortlistSnapshotCreateInput = {
     id?: string
     timestamp: Date | string
@@ -5817,6 +7016,76 @@ export namespace Prisma {
   export type DeveloperTokenUncheckedUpdateManyInput = {
     username?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CollectorErrorCreateInput = {
+    id?: string
+    timestamp: Date | string
+    errorMessage: string
+    errorStack?: string | null
+    errorContext?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CollectorErrorUncheckedCreateInput = {
+    id?: string
+    timestamp: Date | string
+    errorMessage: string
+    errorStack?: string | null
+    errorContext?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CollectorErrorUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    errorMessage?: StringFieldUpdateOperationsInput | string
+    errorStack?: NullableStringFieldUpdateOperationsInput | string | null
+    errorContext?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CollectorErrorUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    errorMessage?: StringFieldUpdateOperationsInput | string
+    errorStack?: NullableStringFieldUpdateOperationsInput | string | null
+    errorContext?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CollectorErrorCreateManyInput = {
+    id?: string
+    timestamp: Date | string
+    errorMessage: string
+    errorStack?: string | null
+    errorContext?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CollectorErrorUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    errorMessage?: StringFieldUpdateOperationsInput | string
+    errorStack?: NullableStringFieldUpdateOperationsInput | string | null
+    errorContext?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CollectorErrorUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    errorMessage?: StringFieldUpdateOperationsInput | string
+    errorStack?: NullableStringFieldUpdateOperationsInput | string | null
+    errorContext?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -6076,6 +7345,121 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
+  export type CollectorErrorCountOrderByAggregateInput = {
+    id?: SortOrder
+    timestamp?: SortOrder
+    errorMessage?: SortOrder
+    errorStack?: SortOrder
+    errorContext?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CollectorErrorMaxOrderByAggregateInput = {
+    id?: SortOrder
+    timestamp?: SortOrder
+    errorMessage?: SortOrder
+    errorStack?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CollectorErrorMinOrderByAggregateInput = {
+    id?: SortOrder
+    timestamp?: SortOrder
+    errorMessage?: SortOrder
+    errorStack?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -6094,6 +7478,10 @@ export namespace Prisma {
     decrement?: Decimal | DecimalJsLike | number | string
     multiply?: Decimal | DecimalJsLike | number | string
     divide?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -6228,6 +7616,71 @@ export namespace Prisma {
     _sum?: NestedDecimalFilter<$PrismaModel>
     _min?: NestedDecimalFilter<$PrismaModel>
     _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
 

@@ -60,6 +60,20 @@ model DeveloperToken {
   @@map("developer_tokens")
 }
 
+model CollectorError {
+  id           String   @id @default(uuid())
+  timestamp    DateTime
+  errorMessage String
+  errorStack   String?  @db.Text
+  errorContext Json?
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt
+
+  @@index([timestamp])
+  @@map("collector_errors")
+}
+
 enum ShortlistType {
   TOP_GAINERS
   VOLUME_SHOCKERS
