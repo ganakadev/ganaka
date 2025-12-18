@@ -9,8 +9,13 @@ import axios, { AxiosResponse } from "axios";
 const getProxyList = async (fastify: FastifyInstance) => {
   try {
     const response = (await axios.get(
-      "https://proxy.webshare.io/api/v2/proxy/list/?page=1&page_size=10&mode=direct",
+      "https://proxy.webshare.io/api/v2/proxy/list",
       {
+        params: {
+          page: 1,
+          page_size: 5,
+          mode: "direct",
+        },
         headers: {
           Authorization: `Token ${process.env.WEBSHARE_API_KEY}`,
         },
@@ -54,8 +59,6 @@ const getProxyList = async (fastify: FastifyInstance) => {
 };
 
 const listsRoutes: FastifyPluginAsync = async (fastify) => {
-  const proxyList = await getProxyList(fastify);
-
   fastify.get("/", async (request, reply) => {
     const validationResult = validateRequest(
       request.query,
@@ -67,9 +70,15 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
       return;
     }
 
+    const proxyList = await getProxyList(fastify);
     // Get a random proxy from the list
-    const proxy = proxyList[Math.floor(Math.random() * proxyList.length)];
-    fastify.log.info(`Using proxy: ${proxy?.host}:${proxy?.port}`);
+    const proxy =
+      proxyList.length > 0
+        ? proxyList[Math.floor(Math.random() * proxyList.length)]
+        : null;
+    fastify.log.info(
+      `Using proxy: ${proxy ? `${proxy.host}:${proxy.port}` : "None"}`
+    );
 
     try {
       const url =
