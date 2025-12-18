@@ -164,10 +164,16 @@ importers:
       ioredis:
         specifier: ^5.4.1
         version: 5.8.2
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       zod:
         specifier: ^4.1.13
         version: 4.2.0
     devDependencies:
+      '@types/lodash':
+        specifier: ^4.17.21
+        version: 4.17.21
       '@types/node':
         specifier: ^22.10.2
         version: 22.19.3
