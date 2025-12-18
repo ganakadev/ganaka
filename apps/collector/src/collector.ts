@@ -147,6 +147,12 @@ async function updateDailyBucket(): Promise<Set<string>> {
   // 5. Get current day's bucket from Redis
   const redisManager = RedisManager.getInstance();
   const existingBucket = await redisManager.getDailyBucket(timestamp);
+
+  if (!existingBucket) {
+    console.error("Failed to get existing bucket from Redis");
+    return symbolMap;
+  }
+
   console.log(`Existing bucket size: ${existingBucket.size}`);
 
   // if no symbols to add to bucket, return existing bucket
@@ -192,9 +198,12 @@ async function collectMarketDataForBucket(
 
   // 2. Fetch NIFTY quote
   console.log("Fetching NIFTY quote...");
-  const niftybankQuote = await v1_developer_groww.getGrowwQuote(
-    process.env.DEVELOPER_KEY!
-  )(NIFTY_SYMBOL);
+  const niftybankQuote = await v1_developer_groww
+    .getGrowwQuote(process.env.DEVELOPER_KEY!)(NIFTY_SYMBOL)
+    .catch((error: unknown) => {
+      console.error("Failed to fetch NIFTY quote:", error);
+      return null;
+    });
 
   // 3. Fetch quotes with rate limiting
   console.log("Fetching quotes with rate limiting...");

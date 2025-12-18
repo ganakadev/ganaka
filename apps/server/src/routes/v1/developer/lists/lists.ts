@@ -5,9 +5,9 @@ import { sendResponse } from "../../../../utils/sendResponse";
 import z from "zod";
 import * as cheerio from "cheerio";
 import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse } from "axios";
-import { shuffle } from "lodash";
+import { isEmpty, shuffle } from "lodash";
 
-const MAX_PROXY_RETRIES = 3;
+const MAX_LIST_FETCH_RETRIES = 3;
 
 const getProxyList = async (fastify: FastifyInstance) => {
   try {
@@ -74,122 +74,146 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     const proxyList = await getProxyList(fastify);
+    const shuffledProxyList =
+      proxyList.length > 0
+        ? shuffle(proxyList)
+        : [
+            // setting marker in case proxy list is empty
+            {
+              host: "127.0.0.1",
+              port: 9090,
+              username: "ganaka",
+              password: "ganaka",
+            },
+          ];
     const url =
       validationResult.type === "volume-shockers"
         ? `https://groww.in/markets/volume-shockers`
         : `https://groww.in/markets/top-gainers?index=GIDXNIFTYTOTALMCAP`;
 
-    if (proxyList.length > 0) {
-      const shuffledProxyList = shuffle(proxyList);
+    for await (const [tryCount, proxy] of shuffledProxyList.entries()) {
+      fastify.log.info(
+        `Trying proxy: ${proxy ? `${proxy.host}:${proxy.port}` : "None"}`
+      );
 
-      for await (const [tryCount, proxy] of shuffledProxyList.entries()) {
-        fastify.log.info(
-          `Trying proxy: ${proxy ? `${proxy.host}:${proxy.port}` : "None"}`
-        );
+      try {
+        // block to simulate proxy blocking
+        // if (tryCount === 0) {
+        //   // Fetch the HTML page
+        //   throw new AxiosError("Proxy blocked", "429", undefined, undefined, {
+        //     status: 429,
+        //     config: {
+        //       url: url,
+        //       headers: {} as AxiosRequestHeaders,
+        //       data: undefined,
+        //     },
+        //     data: undefined,
+        //     statusText: "200 OK",
+        //     headers: {},
+        //   });
+        // }
+
+        const response = await axios.get(url, {
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            Accept:
+              "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+            Referer: "https://groww.in/",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-User": "?1",
+            "Upgrade-Insecure-Requests": "1",
+          },
+          ...(proxy.host !== "127.0.0.1"
+            ? {
+                proxy: {
+                  host: proxy.host,
+                  port: proxy.port,
+                  auth: {
+                    username: proxy.username,
+                    password: proxy.password,
+                  },
+                },
+              }
+            : {}),
+        });
+
+        // Parse HTML with cheerio to find __NEXT_DATA__ script tag
+        const $ = cheerio.load(response.data);
+        const nextDataScript = $("#__NEXT_DATA__").html();
+
+        if (!nextDataScript) {
+          throw new Error("__NEXT_DATA__ script tag not found");
+        }
+
+        // Parse the JSON data
+        let nextData: { props: { pageProps: { stocks: any[] } } } | null = null;
 
         try {
-          // block to simulate proxy blocking
-          // if (tryCount === 0) {
-          //   // Fetch the HTML page
-          //   throw new AxiosError("Proxy blocked", "429", undefined, undefined, {
-          //     status: 429,
-          //     config: {
-          //       url: url,
-          //       headers: {} as AxiosRequestHeaders,
-          //       data: undefined,
-          //     },
-          //     data: undefined,
-          //     statusText: "200 OK",
-          //     headers: {},
-          //   });
-          // }
-
-          const response = await axios.get(url, {
-            headers: {
-              "User-Agent":
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-              Accept:
-                "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-              "Accept-Language": "en-US,en;q=0.9",
-              Referer: "https://groww.in/",
-              "Accept-Encoding": "gzip, deflate, br",
-              "Sec-Fetch-Dest": "document",
-              "Sec-Fetch-Mode": "navigate",
-              "Sec-Fetch-Site": "none",
-              "Sec-Fetch-User": "?1",
-              "Upgrade-Insecure-Requests": "1",
-            },
-            proxy: {
-              host: proxy.host,
-              port: proxy.port,
-              auth: {
-                username: proxy.username,
-                password: proxy.password,
-              },
-              protocol: "http",
-            },
-          });
-
-          // Parse HTML with cheerio to find __NEXT_DATA__ script tag
-          const $ = cheerio.load(response.data);
-          const nextDataScript = $("#__NEXT_DATA__").html();
-
-          if (!nextDataScript) {
-            throw new Error("__NEXT_DATA__ script tag not found");
-          }
-
-          // Parse the JSON data
-          const nextData = JSON.parse(nextDataScript);
-          const stocks = nextData?.props?.pageProps?.stocks ?? [];
-
-          return sendResponse<
-            z.infer<typeof v1_developer_lists_schemas.getLists.response>
-          >({
-            statusCode: 200,
-            message: "Lists fetched successfully",
-            data: stocks
-              .map((stock: any) => ({
-                name: stock.companyName || stock.companyShortName || "",
-                price: stock.ltp || 0,
-                nseSymbol: stock.nseScriptCode || "",
-              }))
-              .filter(
-                (shortlistItem: {
-                  name?: string;
-                  nseSymbol?: string;
-                  price?: number;
-                }) => shortlistItem.name && shortlistItem.nseSymbol
-              ),
-          });
+          nextData = JSON.parse(nextDataScript);
         } catch (error) {
-          if (
-            axios.isAxiosError(error) &&
-            (error.response?.status === 403 || error.response?.status === 429)
-          ) {
-            fastify.log.error(error, "Error fetching lists");
-            fastify.log.error(proxy, "Proxy blocked");
+          fastify.log.error(error, "Error parsing JSON");
 
-            if (tryCount < MAX_PROXY_RETRIES) {
-              continue;
-            }
-
-            return sendResponse<
-              z.infer<typeof v1_developer_lists_schemas.getLists.response>
-            >({
-              statusCode: 200,
-              message:
-                "List unable to be fetched. Please check server logs for more details.",
-              data: [],
-            });
+          if (tryCount < MAX_LIST_FETCH_RETRIES) {
+            continue;
           }
 
-          fastify.log.error(error, "Error fetching lists");
-          return reply.internalServerError(
-            "Failed to fetch lists. Please check server logs for more details."
-          );
+          break;
         }
+
+        const stocks = nextData?.props?.pageProps?.stocks ?? [];
+        if (stocks.length === 0) {
+          if (tryCount < MAX_LIST_FETCH_RETRIES) {
+            continue;
+          }
+
+          break;
+        }
+
+        return sendResponse<
+          z.infer<typeof v1_developer_lists_schemas.getLists.response>
+        >({
+          statusCode: 200,
+          message: "Lists fetched successfully",
+          data: stocks
+            .map((stock: any) => ({
+              name: stock.companyName || stock.companyShortName || "",
+              price: stock.ltp || 0,
+              nseSymbol: stock.nseScriptCode || "",
+            }))
+            .filter(
+              (shortlistItem: {
+                name?: string;
+                nseSymbol?: string;
+                price?: number;
+              }) =>
+                !isEmpty(shortlistItem.name) &&
+                !isEmpty(shortlistItem.nseSymbol)
+            ),
+        });
+      } catch (error) {
+        fastify.log.error(error, "Error fetching lists");
+
+        if (tryCount < MAX_LIST_FETCH_RETRIES) {
+          continue;
+        }
+
+        break;
       }
     }
+
+    return sendResponse<
+      z.infer<typeof v1_developer_lists_schemas.getLists.response>
+    >({
+      statusCode: 200,
+      message:
+        "Lists unable to be fetched. Please check server logs for more details.",
+      data: [],
+    });
   });
 };
 
