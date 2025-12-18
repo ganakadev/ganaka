@@ -82,65 +82,78 @@ async function updateDailyBucket(): Promise<Set<string>> {
         return null;
       }),
   ]);
-  if (!topGainers || !volumeShockers) {
-    console.error("Failed to fetch shortlists");
-    throw new Error("Failed to fetch shortlists");
-  }
 
-  // 2. Limit each to top items
-  const topGainersLimited =
-    topGainers.data?.data?.slice(0, TOP_STOCKS_LIMIT) ?? [];
-  const volumeShockersLimited =
-    volumeShockers.data?.data?.slice(0, TOP_STOCKS_LIMIT) ?? [];
-  // shuffle for testing in local development
-  // const topGainersLimited =
-  //   shuffle(topGainers.data?.data ?? [])?.slice(0, TOP_STOCKS_LIMIT) ?? [];
-  // const volumeShockersLimited =
-  //   shuffle(volumeShockers.data?.data ?? [])?.slice(0, TOP_STOCKS_LIMIT) ?? [];
-  console.log(
-    `Top gainers: ${topGainersLimited.length}, Volume shockers: ${volumeShockersLimited.length}`
-  );
+  let currentRunSymbols: string[] = [];
+  let symbolMap: Set<string> = new Set();
 
-  // 3. Store shortlists in database
-  console.log("Storing shortlists in database...");
-  const shortlistData: (Omit<
-    ShortlistSnapshot,
-    "id" | "createdAt" | "entries" | "updatedAt"
-  > & { entries: InputJsonValue })[] = [];
-  if (topGainersLimited.length > 0) {
-    shortlistData.push({
-      timestamp,
-      shortlistType: ShortlistType.TOP_GAINERS,
-      entries: topGainersLimited as unknown as InputJsonValue,
+  if (
+    topGainers &&
+    volumeShockers &&
+    topGainers.data?.data?.length > 0 &&
+    volumeShockers.data?.data?.length > 0
+  ) {
+    // 2. Limit each to top items
+    const topGainersLimited =
+      topGainers.data?.data?.slice(0, TOP_STOCKS_LIMIT) ?? [];
+    const volumeShockersLimited =
+      volumeShockers.data?.data?.slice(0, TOP_STOCKS_LIMIT) ?? [];
+    // shuffle for testing in local development
+    // const topGainersLimited =
+    //   shuffle(topGainers.data?.data ?? [])?.slice(0, TOP_STOCKS_LIMIT) ?? [];
+    // const volumeShockersLimited =
+    //   shuffle(volumeShockers.data?.data ?? [])?.slice(0, TOP_STOCKS_LIMIT) ?? [];
+    console.log(
+      `Top gainers: ${topGainersLimited.length}, Volume shockers: ${volumeShockersLimited.length}`
+    );
+
+    // 3. Store shortlists in database
+    console.log("Storing shortlists in database...");
+    const shortlistData: (Omit<
+      ShortlistSnapshot,
+      "id" | "createdAt" | "entries" | "updatedAt"
+    > & { entries: InputJsonValue })[] = [];
+    if (topGainersLimited.length > 0) {
+      shortlistData.push({
+        timestamp,
+        shortlistType: ShortlistType.TOP_GAINERS,
+        entries: topGainersLimited as unknown as InputJsonValue,
+      });
+    }
+    if (volumeShockersLimited.length > 0) {
+      shortlistData.push({
+        timestamp,
+        shortlistType: ShortlistType.VOLUME_SHOCKERS,
+        entries: volumeShockersLimited as unknown as InputJsonValue,
+      });
+    }
+
+    if (shortlistData.length > 0) {
+      await prisma.shortlistSnapshot.createMany({ data: shortlistData });
+    }
+
+    // 4. Collect unique symbols from top 5 (de-duplicate across both lists)
+    symbolMap = new Set<string>();
+    topGainersLimited.forEach((item) => {
+      symbolMap.add(item.nseSymbol);
     });
-  }
-  if (volumeShockersLimited.length > 0) {
-    shortlistData.push({
-      timestamp,
-      shortlistType: ShortlistType.VOLUME_SHOCKERS,
-      entries: volumeShockersLimited as unknown as InputJsonValue,
+    volumeShockersLimited.forEach((item) => {
+      symbolMap.add(item.nseSymbol);
     });
-  }
 
-  if (shortlistData.length > 0) {
-    await prisma.shortlistSnapshot.createMany({ data: shortlistData });
+    currentRunSymbols = Array.from(symbolMap.keys());
+    console.log(`Current run unique symbols: ${currentRunSymbols.length}`);
   }
-
-  // 4. Collect unique symbols from top 5 (de-duplicate across both lists)
-  const symbolMap = new Set<string>();
-  topGainersLimited.forEach((item) => {
-    symbolMap.add(item.nseSymbol);
-  });
-  volumeShockersLimited.forEach((item) => {
-    symbolMap.add(item.nseSymbol);
-  });
-  const currentRunSymbols = Array.from(symbolMap.keys());
-  console.log(`Current run unique symbols: ${currentRunSymbols.length}`);
 
   // 5. Get current day's bucket from Redis
   const redisManager = RedisManager.getInstance();
   const existingBucket = await redisManager.getDailyBucket(timestamp);
   console.log(`Existing bucket size: ${existingBucket.size}`);
+
+  // if no symbols to add to bucket, return existing bucket
+  if (currentRunSymbols.length === 0) {
+    console.log("No symbols to add to bucket");
+    return existingBucket;
+  }
 
   // 6. Find new symbols not in bucket
   const newSymbols = currentRunSymbols.filter(
