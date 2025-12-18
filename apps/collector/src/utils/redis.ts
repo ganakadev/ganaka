@@ -63,34 +63,43 @@ export class RedisManager {
   /**
    * Get current bucket as Set of symbols
    */
-  async getDailyBucket(date: Date): Promise<Set<string>> {
+  async getDailyBucket(date: Date): Promise<Set<string> | null> {
     const key = this.getDailyBucketKey(date);
-    const members = await this.redis.smembers(key);
-    return new Set(members);
+    try {
+      const members = await this.redis.smembers(key);
+      return new Set(members);
+    } catch (error) {
+      console.error("Error getting daily bucket:", error);
+      return null;
+    }
   }
 
   /**
    * Add new symbols to bucket and set TTL if key is new
    */
   async addToDailyBucket(date: Date, symbols: string[]): Promise<void> {
-    if (symbols.length === 0) {
-      return;
-    }
+    try {
+      if (symbols.length === 0) {
+        return;
+      }
 
-    const key = this.getDailyBucketKey(date);
+      const key = this.getDailyBucketKey(date);
 
-    // Check if key exists to determine if we need to set TTL
-    const exists = await this.redis.exists(key);
+      // Check if key exists to determine if we need to set TTL
+      const exists = await this.redis.exists(key);
 
-    // Add symbols to set
-    if (symbols.length > 0) {
-      await this.redis.sadd(key, ...symbols);
-    }
+      // Add symbols to set
+      if (symbols.length > 0) {
+        await this.redis.sadd(key, ...symbols);
+      }
 
-    // Set TTL if this is a new key
-    if (!exists) {
-      const ttl = this.calculateTTLUntilEndOfDay(date);
-      await this.redis.expire(key, ttl);
+      // Set TTL if this is a new key
+      if (!exists) {
+        const ttl = this.calculateTTLUntilEndOfDay(date);
+        await this.redis.expire(key, ttl);
+      }
+    } catch (error) {
+      console.error("Error adding symbols to daily bucket:", error);
     }
   }
 
