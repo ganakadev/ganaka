@@ -1,12 +1,61 @@
-import { FastifyPluginAsync } from "fastify";
+import { FastifyInstance, FastifyPluginAsync } from "fastify";
 import { validateRequest } from "../../../../utils/validator";
 import { v1_developer_lists_schemas } from "@ganaka/schemas";
 import { sendResponse } from "../../../../utils/sendResponse";
 import z from "zod";
 import * as cheerio from "cheerio";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+
+const getProxyList = async (fastify: FastifyInstance) => {
+  try {
+    const response = (await axios.get(
+      "https://proxy.webshare.io/api/v2/proxy/list/?page=1&page_size=10&mode=direct",
+      {
+        headers: {
+          Authorization: `Token ${process.env.WEBSHARE_API_KEY}`,
+        },
+      }
+    )) as AxiosResponse<{
+      count: number;
+      next: string | null;
+      previous: string | null;
+      results: {
+        id: string;
+        username: string;
+        password: string;
+        proxy_address: string;
+        port: number;
+        valid: boolean;
+        last_verification: string;
+        country_code: string;
+        city_name: string;
+        asn_name: string;
+        asn_number: number;
+        high_country_confidence: boolean;
+        created_at: string;
+      }[];
+    }>;
+
+    return response.data?.results?.flatMap((proxy) => {
+      if (proxy.valid) {
+        return {
+          host: proxy.proxy_address,
+          port: proxy.port,
+          username: proxy.username,
+          password: proxy.password,
+        };
+      }
+      return [];
+    });
+  } catch (error) {
+    fastify.log.error("Error getting proxy list: %s", error);
+    return [];
+  }
+};
 
 const listsRoutes: FastifyPluginAsync = async (fastify) => {
+  const proxyList = await getProxyList(fastify);
+
   fastify.get("/", async (request, reply) => {
     const validationResult = validateRequest(
       request.query,
@@ -17,6 +66,10 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
     if (!validationResult) {
       return;
     }
+
+    // Get a random proxy from the list
+    const proxy = proxyList[Math.floor(Math.random() * proxyList.length)];
+    fastify.log.info(`Using proxy: ${proxy?.host}:${proxy?.port}`);
 
     try {
       const url =
@@ -40,6 +93,19 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
           "Sec-Fetch-User": "?1",
           "Upgrade-Insecure-Requests": "1",
         },
+        ...(proxy
+          ? {
+              proxy: {
+                host: proxy.host,
+                port: proxy.port,
+                auth: {
+                  username: proxy.username,
+                  password: proxy.password,
+                },
+                protocol: "http",
+              },
+            }
+          : {}),
       });
 
       // Parse HTML with cheerio to find __NEXT_DATA__ script tag
