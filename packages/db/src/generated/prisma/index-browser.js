@@ -155,12 +155,27 @@ exports.Prisma.DeveloperTokenScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.CollectorErrorScalarFieldEnum = {
+  id: 'id',
+  timestamp: 'timestamp',
+  errorMessage: 'errorMessage',
+  errorStack: 'errorStack',
+  errorContext: 'errorContext',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
 exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull
 };
 
@@ -174,6 +189,11 @@ exports.Prisma.JsonNullValueFilter = {
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
 exports.ShortlistType = exports.$Enums.ShortlistType = {
   TOP_GAINERS: 'TOP_GAINERS',
   VOLUME_SHOCKERS: 'VOLUME_SHOCKERS'
@@ -183,7 +203,8 @@ exports.Prisma.ModelName = {
   ShortlistSnapshot: 'ShortlistSnapshot',
   QuoteSnapshot: 'QuoteSnapshot',
   NiftyQuote: 'NiftyQuote',
-  DeveloperToken: 'DeveloperToken'
+  DeveloperToken: 'DeveloperToken',
+  CollectorError: 'CollectorError'
 };
 
 /**
