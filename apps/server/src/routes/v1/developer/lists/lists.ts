@@ -137,6 +137,7 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
                     username: proxy.username,
                     password: proxy.password,
                   },
+                  protocol: "http",
                 },
               }
             : {}),
