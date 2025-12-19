@@ -31,6 +31,13 @@ async function main() {
     });
   });
 
+  // Dashboard routes (/v1/dashboard) - public, no authentication required
+  fastify.register(autoLoad, {
+    dir: path.join(__dirname, "routes/v1/dashboard"),
+    options: { prefix: "/v1/dashboard/" },
+    maxDepth: 5,
+  });
+
   // SERVER CONFIGURATION
   try {
     const port = parseInt(process.env.PORT || "4000", 10);

@@ -32,7 +32,8 @@
   "license": "MIT",
   "peerDependencies": {
     "semver": "^7.0.0",
-    "zod": "^4.0.0"
+    "zod": "^4.0.0",
+    "@ganaka/db": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
