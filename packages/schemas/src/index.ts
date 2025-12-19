@@ -11,3 +11,6 @@ export * from "./common";
 // Re-export developer groww endpoint schemas
 export * as v1_developer_groww_schemas from "./v1/developer/groww/groww";
 export * as v1_developer_lists_schemas from "./v1/developer/lists/lists";
+
+// Re-export dashboard endpoint schemas
+export * as v1_dashboard_schemas from "./v1/dashboard";
