@@ -14,17 +14,17 @@ dayjs.extend(timezone);
 dotenv.config();
 
 async function runCollection(): Promise<void> {
-  // // Check if we're within the collection window (8:45 AM - 3:30 PM IST, weekdays only)
-  // if (!isWithinCollectionWindow()) {
-  //   const nowIST = dayjs().tz("Asia/Kolkata");
-  //   console.log(
-  //     `Outside collection window. Current time: ${nowIST.format(
-  //       "YYYY-MM-DD HH:mm:ss"
-  //     )} IST`
-  //   );
-  //   console.log(`Collection window: 8:45 AM - 3:30 PM IST, Monday-Friday`);
-  //   return;
-  // }
+  // Check if we're within the collection window (8:45 AM - 3:30 PM IST, weekdays only)
+  if (!isWithinCollectionWindow()) {
+    const nowIST = dayjs().tz("Asia/Kolkata");
+    console.log(
+      `Outside collection window. Current time: ${nowIST.format(
+        "YYYY-MM-DD HH:mm:ss"
+      )} IST`
+    );
+    console.log(`Collection window: 8:45 AM - 3:30 PM IST, Monday-Friday`);
+    return;
+  }
 
   // Log current time in UTC and IST
   const now = dayjs();
