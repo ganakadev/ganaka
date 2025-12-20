@@ -13,7 +13,7 @@
       "focus": true,
       "onlySingle": true,
       "execute": false,
-      "command": "nvm use 22 && pnpm --filter @ganaka/dashboard-r "
+      "command": "nvm use 22 && pnpm --filter @ganaka/dashboard "
     },
     {
       "name": "@ganaka/server",
