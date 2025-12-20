@@ -1,4 +1,4 @@
-import { QuoteData, isQuoteData } from "@/types";
+import type { QuoteData } from "@ganaka/db";
 import { Table } from "@mantine/core";
 
 export function QuoteDataTables({
@@ -8,7 +8,7 @@ export function QuoteDataTables({
   selectedDate: Date | null;
 }) {
   // Validate and extract quote data
-  if (!quoteData || !isQuoteData(quoteData)) {
+  if (!quoteData) {
     return (
       <div className="border rounded-md p-4">
         <p className="text-sm text-gray-500">No quote data available</p>
@@ -268,4 +268,3 @@ export function QuoteDataTables({
     </div>
   );
 }
-

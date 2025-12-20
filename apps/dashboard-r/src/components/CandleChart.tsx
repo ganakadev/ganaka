@@ -2,15 +2,15 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import {
-  CandlestickData,
+  type CandlestickData,
   CandlestickSeries,
-  CandlestickSeriesPartialOptions,
+  type CandlestickSeriesPartialOptions,
   createChart,
   createSeriesMarkers,
-  IChartApi,
-  ISeriesApi,
-  SeriesMarker,
-  Time,
+  type IChartApi,
+  type ISeriesApi,
+  type SeriesMarker,
+  type Time,
 } from "lightweight-charts";
 import { useEffect, useRef } from "react";
 
@@ -135,7 +135,10 @@ export function CandleChart({
     let closestCandle = candleData[0];
     const firstCandleIndex = Math.min(30, candleData.length - 1);
     const firstCandleTime = dayjs
-      .unix(candleData[firstCandleIndex]?.time as number || candleData[0]?.time as number)
+      .unix(
+        (candleData[firstCandleIndex]?.time as number) ||
+          (candleData[0]?.time as number)
+      )
       .utc()
       .format("YYYY-MM-DDTHH:mm");
     let minDiff = Math.abs(
@@ -191,4 +194,3 @@ export function CandleChart({
     </div>
   );
 }
-

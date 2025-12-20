@@ -1,11 +1,12 @@
 import { Drawer } from "@mantine/core";
-import { QuoteData, ShortlistEntry } from "@/types";
 import { CandleChart } from "./CandleChart";
 import { QuoteDataTables } from "./QuoteDataTables";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import dayjs from "dayjs";
 import { useGetCandlesQuery } from "@/store/api";
 import type { CandleData } from "./CandleChart";
+import type { QuoteData, ShortlistEntry } from "@ganaka/db";
+import type { Time } from "lightweight-charts";
 
 export function QuotePanel({
   quoteData,
@@ -16,15 +17,8 @@ export function QuotePanel({
   selectedEntry: ShortlistEntry | null;
   selectedDate: Date | null;
 }) {
-  const [candleData, setCandleData] = useState<CandleData[] | null>(null);
-  const [candleError, setCandleError] = useState<string | null>(null);
-
   // Use RTKQ hook for candles
-  const {
-    data: candlesResponse,
-    isLoading: loadingCandles,
-    error: candlesError,
-  } = useGetCandlesQuery(
+  const { data: candlesResponse, error: candlesError } = useGetCandlesQuery(
     {
       symbol: selectedEntry?.nseSymbol || "",
       date: selectedDate?.toISOString() || "",
@@ -35,28 +29,25 @@ export function QuotePanel({
     }
   );
 
-  // Update candle data when response changes
-  useEffect(() => {
-    if (candlesResponse) {
-      setCandleData(
-        candlesResponse.candles.map((candle) => ({
-          time: candle.time as number,
-          open: candle.open,
-          high: candle.high,
-          low: candle.low,
-          close: candle.close,
-        }))
-      );
-      setCandleError(null);
-    } else if (candlesError) {
-      setCandleError(
-        "error" in candlesError
-          ? String(candlesError.error)
-          : "Failed to fetch candle data"
-      );
-      setCandleData(null);
-    }
-  }, [candlesResponse, candlesError]);
+  // Transform candle data from API response
+  const candleData = useMemo<CandleData[] | null>(() => {
+    if (!candlesResponse) return null;
+    return candlesResponse.candles.map((candle) => ({
+      time: candle.time as Time,
+      open: candle.open,
+      high: candle.high,
+      low: candle.low,
+      close: candle.close,
+    }));
+  }, [candlesResponse]);
+
+  // Derive error message from query error
+  const candleError = useMemo<string | null>(() => {
+    if (!candlesError) return null;
+    return "error" in candlesError
+      ? String(candlesError.error)
+      : "Failed to fetch candle data";
+  }, [candlesError]);
 
   // DRAW
   return (
@@ -73,7 +64,7 @@ export function QuotePanel({
           <CandleChart
             selectedDate={selectedDate}
             candleData={candleData}
-            buyerControlPercentage={selectedEntry.buyerControlPercentage}
+            buyerControlPercentage={0}
           />
         </>
       )}
@@ -125,4 +116,3 @@ export function QuoteDrawer({
     </Drawer>
   );
 }
-
