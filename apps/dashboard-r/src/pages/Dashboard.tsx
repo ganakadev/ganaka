@@ -3,17 +3,18 @@ import { QuoteDrawer } from "@/components/QuoteDrawer";
 import { ShortlistTable } from "@/components/ShortlistTable";
 import {
   PersistentCompaniesTable,
-  PersistentCompany,
+  type PersistentCompany,
 } from "@/components/PersistentCompaniesTable";
 import { UniqueCompaniesCard } from "@/components/UniqueCompaniesCard";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   useGetShortlistsQuery,
   useGetDailyPersistentCompaniesQuery,
 } from "@/store/api";
+import type { ShortlistEntry } from "@ganaka/db";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -66,8 +67,23 @@ export default function DashboardPage() {
     setSelectedEntry(null);
   };
 
-  // Get the appropriate shortlist based on active tab
-  const currentShortlist = shortlistsData?.shortlist || null;
+  // Get the appropriate shortlist based on active tab, transforming to match ShortlistEntry type
+  const currentShortlist = useMemo(() => {
+    if (!shortlistsData?.shortlist) return null;
+    return {
+      id: shortlistsData.shortlist.id,
+      timestamp: shortlistsData.shortlist.timestamp,
+      shortlistType: shortlistsData.shortlist.shortlistType,
+      entries: shortlistsData.shortlist.entries.map(
+        (entry): ShortlistEntry => ({
+          nseSymbol: entry.nseSymbol,
+          name: entry.name,
+          price: entry.price,
+          quoteData: entry.quoteData as ShortlistEntry["quoteData"],
+        })
+      ),
+    };
+  }, [shortlistsData]);
 
   // Get the appropriate persistent companies based on active tab
   const currentPersistentCompanies: PersistentCompany[] =
