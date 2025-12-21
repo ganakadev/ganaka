@@ -17,22 +17,14 @@ export default defineConfig({
       formats: ["es", "cjs"],
     },
     rollupOptions: {
-      external: (id) => {
-        // Externalize @prisma/client and its dependencies
-        if (id === "@prisma/client" || id.startsWith("@prisma/")) {
-          return true;
-        }
-        // Externalize relative imports to generated Prisma files
-        // These will be resolved at runtime from dist/generated/prisma
-        if (id.startsWith("./generated/prisma") || id.startsWith("../generated/prisma")) {
-          return true;
-        }
-        return false;
-      },
+      external: [
+        "@prisma/client",
+        /^\.\/generated\/prisma/,
+        /^\.\.\/generated\/prisma/,
+      ],
       output: {
         exports: "named",
       },
     },
   },
 });
-
