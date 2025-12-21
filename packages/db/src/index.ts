@@ -1,10 +1,10 @@
 export type { QuoteData, ShortlistEntry } from "./types";
 
-export type {
-  ShortlistSnapshot,
-  QuoteSnapshot,
-  NiftyQuote,
-  DeveloperToken,
+export {
+  type ShortlistSnapshot,
+  type QuoteSnapshot,
+  type NiftyQuote,
+  type DeveloperToken,
   ShortlistType,
 } from "./generated/prisma";
 
