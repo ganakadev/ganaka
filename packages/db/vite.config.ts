@@ -13,6 +13,7 @@ export default defineConfig({
     lib: {
       entry: {
         index: resolve(__dirname, "src/index.ts"),
+        prisma: resolve(__dirname, "src/prisma.ts"),
       },
       formats: ["es", "cjs"],
     },

@@ -1,20 +1,15 @@
-export { PrismaClient } from "./generated/prisma/index";
 export type { QuoteData, ShortlistEntry } from "./types";
 
-// Re-export model types
 export type {
   ShortlistSnapshot,
   QuoteSnapshot,
   NiftyQuote,
   DeveloperToken,
+  ShortlistType,
 } from "./generated/prisma";
 
-// Re-export JsonValue type
-export type {
-  JsonValue,
+export {
   Decimal,
-  InputJsonValue,
+  type JsonValue,
+  type InputJsonValue,
 } from "./generated/prisma/runtime/library";
-
-// Re-export the type for TypeScript
-export { ShortlistType } from "./generated/prisma";

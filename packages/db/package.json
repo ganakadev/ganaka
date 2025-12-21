@@ -9,6 +9,11 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./prisma": {
+      "import": "./dist/prisma.mjs",
+      "require": "./dist/prisma.js",
+      "types": "./dist/prisma.d.ts"
     }
   },
   "scripts": {
