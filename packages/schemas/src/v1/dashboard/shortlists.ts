@@ -1,5 +1,5 @@
+import { shortlistTypeEnum } from "@ganaka/db";
 import { z } from "zod";
-import { ShortlistType } from "@ganaka/db";
 import { apiResponseSchema } from "../../common";
 
 // ==================== GET /shortlists ====================
@@ -68,7 +68,7 @@ const quoteDataSchema = z.object({
 export const getShortlists = {
   query: z.object({
     date: z.string(),
-    type: z.enum([ShortlistType.TOP_GAINERS, ShortlistType.VOLUME_SHOCKERS]),
+    type: z.enum(shortlistTypeEnum),
     method: buyerControlMethodSchema.optional(),
   }),
   response: apiResponseSchema.extend({
@@ -77,10 +77,7 @@ export const getShortlists = {
         .object({
           id: z.string(),
           timestamp: z.date(),
-          shortlistType: z.enum([
-            ShortlistType.TOP_GAINERS,
-            ShortlistType.VOLUME_SHOCKERS,
-          ]),
+          shortlistType: z.enum(shortlistTypeEnum),
           entries: z.array(
             z.object({
               nseSymbol: z.string(),

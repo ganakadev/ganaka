@@ -1,18 +1,18 @@
 import { z } from "zod";
 import { apiResponseSchema } from "../../common";
-import { ShortlistType } from "@ganaka/db";
+import { shortlistTypeEnum } from "@ganaka/db";
 
 // ==================== GET /daily-persistent-companies ====================
 
 export const getDailyPersistentCompanies = {
   query: z.object({
     date: z.string(),
-    type: z.enum([ShortlistType.TOP_GAINERS, ShortlistType.VOLUME_SHOCKERS]),
+    type: z.enum(shortlistTypeEnum),
   }),
   response: apiResponseSchema.extend({
     data: z.object({
       date: z.string(),
-      type: z.enum([ShortlistType.TOP_GAINERS, ShortlistType.VOLUME_SHOCKERS]),
+      type: z.enum(shortlistTypeEnum),
       totalSnapshots: z.number(),
       companies: z.array(
         z.object({

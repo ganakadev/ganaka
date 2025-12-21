@@ -4,7 +4,7 @@ import {
   QuoteSnapshot,
   ShortlistSnapshot,
 } from "@ganaka/db";
-import { Decimal } from "@ganaka/db";
+import { Decimal } from "@ganaka/db/prisma";
 import { chunk, shuffle } from "lodash";
 import { prisma } from "./utils/prisma";
 import { getCurrentISTTime } from "./utils/time";

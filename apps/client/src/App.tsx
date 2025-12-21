@@ -1,4 +1,4 @@
-import { type v1_dashboard_schemas } from "@ganaka/schemas";
+import type { v1_dashboard_schemas } from "@ganaka/schemas";
 import { z } from "zod";
 
 export const App = () => {
