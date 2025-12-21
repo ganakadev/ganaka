@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ganaka/db": "workspace:*",
+    "@ganaka/schemas": "workspace:*",
     "@mantine/charts": "^8.3.10",
     "@mantine/core": "^8.3.10",
     "@mantine/dates": "^8.3.10",

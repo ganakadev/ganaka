@@ -21,9 +21,9 @@ importers:
 
   apps/client:
     dependencies:
-      '@ganaka/db':
+      '@ganaka/schemas':
         specifier: workspace:*
-        version: link:../../packages/db
+        version: link:../../packages/schemas
       '@mantine/charts':
         specifier: ^8.3.10
         version: 8.3.10(@mantine/core@8.3.10(@mantine/hooks@8.3.10(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@mantine/hooks@8.3.10(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(recharts@3.6.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react-is@16.13.1)(react@19.2.3)(redux@5.0.1))
