@@ -78,14 +78,9 @@ const makeGrowwAPIRequest =
   };
 
 const growwRoutes: FastifyPluginAsync = async (fastify) => {
-  const redisManager = new RedisManager(fastify);
+  const redisManager = RedisManager.getInstance(fastify);
   const tokenManager = new TokenManager(redisManager.redis, fastify);
   const growwAPIRequest = makeGrowwAPIRequest(fastify, tokenManager);
-
-  // Register cleanup hook for graceful shutdown
-  fastify.addHook("preClose", async () => {
-    await redisManager.close();
-  });
 
   // Get latest token endpoint
   fastify.get("/token", async (request, reply) => {

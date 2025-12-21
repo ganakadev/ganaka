@@ -4,8 +4,9 @@ import Redis from "ioredis";
 export class RedisManager {
   public redis: Redis;
   private fastify: FastifyInstance;
+  private static instance: RedisManager | null = null;
 
-  constructor(fastify: FastifyInstance) {
+  private constructor(fastify: FastifyInstance) {
     this.fastify = fastify;
 
     const redisUrl = process.env.REDIS_URL;
@@ -22,6 +23,13 @@ export class RedisManager {
     });
   }
 
+  static getInstance(fastify: FastifyInstance): RedisManager {
+    if (!RedisManager.instance) {
+      RedisManager.instance = new RedisManager(fastify);
+    }
+    return RedisManager.instance;
+  }
+
   async get(key: string): Promise<string | null> {
     return this.redis.get(key);
   }
@@ -31,7 +39,25 @@ export class RedisManager {
   }
 
   async close(): Promise<void> {
-    await this.redis.quit();
-    this.fastify.log.info("Redis connection closed");
+    // Check if connection is already closed or closing
+    if (this.redis.status === "end" || this.redis.status === "close") {
+      return;
+    }
+
+    try {
+      await this.redis.quit();
+      this.fastify.log.info("Redis connection closed");
+    } catch (error) {
+      // If connection is already closed, ignore the error
+      if (
+        error instanceof Error &&
+        error.message.includes("Connection is closed")
+      ) {
+        this.fastify.log.info("Redis connection already closed");
+        return;
+      }
+      // Re-throw other errors
+      throw error;
+    }
   }
 }
