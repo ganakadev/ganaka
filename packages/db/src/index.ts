@@ -1,4 +1,4 @@
-export { PrismaClient } from "./generated/prisma";
+export { PrismaClient } from "./generated/prisma/index";
 export type { QuoteData, ShortlistEntry } from "./types";
 
 // Re-export model types
@@ -16,5 +16,5 @@ export type {
   InputJsonValue,
 } from "./generated/prisma/runtime/library";
 
-// Re-export enum types
+// Re-export the type for TypeScript
 export { ShortlistType } from "./generated/prisma";
