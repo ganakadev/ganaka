@@ -9,11 +9,11 @@
       "command": "nvm use 22 && pnpm --filter @ganaka/momentum-scalping "
     },
     {
-      "name": "@ganaka/dashboard",
+      "name": "@ganaka/client",
       "focus": true,
       "onlySingle": true,
       "execute": false,
-      "command": "nvm use 22 && pnpm --filter @ganaka/dashboard "
+      "command": "nvm use 22 && pnpm --filter @ganaka/client "
     },
     {
       "name": "@ganaka/server",
