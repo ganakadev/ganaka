@@ -1,19 +1,24 @@
-export { PrismaClient } from "./generated/prisma/client";
+import type { ShortlistType } from "./generated/prisma";
+
 export type { QuoteData, ShortlistEntry } from "./types";
-
-// Re-export model types
-export type {
-  ShortlistSnapshot,
-  QuoteSnapshot,
-  NiftyQuote,
-} from "./generated/prisma/client";
-
-// Re-export JsonValue type
-export type {
-  JsonValue,
-  Decimal,
-  InputJsonValue,
+export {
+  type ShortlistSnapshot,
+  type QuoteSnapshot,
+  type NiftyQuote,
+  type DeveloperToken,
+  type ShortlistType,
+} from "./generated/prisma";
+export {
+  type Decimal,
+  type JsonValue,
+  type InputJsonValue,
 } from "./generated/prisma/runtime/library";
 
-// Re-export enum types
-export { ShortlistType } from "./generated/prisma/client";
+// we have to re-define and export this
+// because this package is used within the schemas package
+// which is also used in the client package, which leads to
+// errors when trying to import the schemas package in the client package
+export const shortlistTypeEnum = [
+  "TOP_GAINERS",
+  "VOLUME_SHOCKERS",
+] as const satisfies readonly ShortlistType[];
