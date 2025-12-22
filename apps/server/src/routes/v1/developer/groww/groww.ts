@@ -117,7 +117,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         params: {
           exchange: "NSE",
           segment: "CASH",
-          trading_symbol: encodeURIComponent(validationResult.symbol),
+          trading_symbol: validationResult.symbol,
         },
       });
 
@@ -162,7 +162,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
           end_time: validationResult.end_time,
           exchange: "NSE",
           segment: "CASH",
-          groww_symbol: encodeURIComponent(`NSE-${validationResult.symbol}`),
+          groww_symbol: `NSE-${validationResult.symbol}`,
         },
       });
 
