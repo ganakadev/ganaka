@@ -1,9 +1,10 @@
-import { v1_developer_groww_schemas } from "@ganaka/schemas";
+import { v1_developer_groww_schemas, v1_developer_lists_schemas } from "@ganaka/schemas";
 import { randomUUID } from "crypto";
 import dotenv from "dotenv";
 import { z } from "zod";
 import { fetchCandles } from "./callbacks/fetchCandles";
 import { fetchQuote } from "./callbacks/fetchQuote";
+import { fetchShortlist } from "./callbacks/fetchShortlist";
 import { logger } from "./utils/logger";
 import { prisma } from "./utils/prisma";
 import { placeOrder, PlaceOrderData } from "./callbacks/placeOrder";
@@ -24,6 +25,11 @@ export interface RunContext {
     symbol: string
   ) => Promise<
     z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"]
+  >;
+  fetchShortlist: (
+    type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"]
+  ) => Promise<
+    z.infer<typeof v1_developer_lists_schemas.getLists.response>["data"]
   >;
 }
 
@@ -78,6 +84,10 @@ export async function ganaka<T>({
         apiDomain,
       }),
       fetchQuote: fetchQuote({
+        developerToken,
+        apiDomain,
+      }),
+      fetchShortlist: fetchShortlist({
         developerToken,
         apiDomain,
       }),

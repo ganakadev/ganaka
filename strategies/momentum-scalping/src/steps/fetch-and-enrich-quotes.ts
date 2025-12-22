@@ -8,29 +8,17 @@ import {
   detectVWAPCrossover,
 } from "../utils/indicators";
 import { calculateVWAP } from "../utils/vwap";
+import { RunContext } from "@ganaka/sdk";
 
 export async function fetchAndEnrichQuotes(
-  getGrowwShortlist: (
-    type: "volume-shockers" | "top-gainers"
-  ) => Promise<Array<{ nseSymbol: string; name: string }>>,
-  getGrowwQuote: (symbol: string) => Promise<{
-    status: "SUCCESS" | "FAILURE";
-    payload: ScoredQuote["payload"];
-  }>,
-  getGrowwCandles: (params: {
-    symbol: string;
-    interval: "5minute" | "15minute" | "30minute" | "1hour" | "4hour";
-    start_time: string;
-    end_time: string;
-  }) => Promise<{
-    status: "SUCCESS" | "FAILURE";
-    payload: { candles?: Candle[] };
-  }>
+  fetchShortlist: RunContext["fetchShortlist"],
+  fetchQuote: RunContext["fetchQuote"],
+  fetchCandles: RunContext["fetchCandles"]
 ): Promise<
   Omit<ScoredQuote, "score" | "scoreBreakdown" | "rejectionReason">[]
 > {
   // GET TOP GAINERS (limit to top 10)
-  const shortlist = await getGrowwShortlist("top-gainers");
+  const shortlist = await fetchShortlist("top-gainers");
   const topStocks = shortlist.slice(0, TOP_STOCKS_LIMIT);
   console.log(
     `\n📊 Processing top ${TOP_STOCKS_LIMIT} stocks from shortlist (${shortlist.length} total)`
@@ -45,7 +33,7 @@ export async function fetchAndEnrichQuotes(
   for await (const chunk of shortlistChunk) {
     const quotes: typeof quotesData = [];
     for await (const shortlistItem of chunk) {
-      const quote = await getGrowwQuote(shortlistItem.nseSymbol);
+      const quote = await fetchQuote(shortlistItem.nseSymbol);
       const totalDepthBuy = quote.payload.depth.buy.reduce(
         (acc, curr) => acc + curr.quantity,
         0
@@ -72,7 +60,7 @@ export async function fetchAndEnrichQuotes(
         const marketOpenTime = getMarketOpenTime();
 
         // Use market open time for intraday VWAP calculation
-        const candlesResponse = await getGrowwCandles({
+        const candlesResponse = await fetchCandles({
           symbol: shortlistItem.nseSymbol,
           interval: RSI_CANDLE_INTERVAL,
           start_time: marketOpenTime.toISOString(),

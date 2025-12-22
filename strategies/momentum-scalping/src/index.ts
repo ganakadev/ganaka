@@ -5,14 +5,14 @@ import { fetchAndEnrichQuotes } from "./steps/fetch-and-enrich-quotes";
 import { calculateScores } from "./steps/calculate-scores";
 import { logAnalysis } from "./steps/log-analysis";
 import { placeOrders } from "./steps/place-orders";
+import { getNiftyTrend } from "./utils/niftyTrend";
 
 async function main() {
   await ganaka({
     fn: async ({
-      getGrowwShortlist,
-      getGrowwQuote,
-      getGrowwCandles,
-      getNiftyTrend,
+      fetchShortlist,
+      fetchQuote,
+      fetchCandles,
       placeOrder,
     }) => {
       // Check time-of-day filter
@@ -21,15 +21,16 @@ async function main() {
       }
 
       // Check Nifty trend
-      if (!(await validateNiftyTrend(getNiftyTrend))) {
+      const getNiftyTrendWrapper = () => getNiftyTrend(fetchQuote);
+      if (!(await validateNiftyTrend(getNiftyTrendWrapper))) {
         return;
       }
 
       // Fetch and enrich quotes with indicators
       const quotesData = await fetchAndEnrichQuotes(
-        getGrowwShortlist,
-        getGrowwQuote,
-        getGrowwCandles
+        fetchShortlist,
+        fetchQuote,
+        fetchCandles
       );
 
       // Calculate scores for all quotes
