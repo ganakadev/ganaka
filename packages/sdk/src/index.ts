@@ -2,8 +2,15 @@ import dotenv from "dotenv";
 import { logger } from "./utils/logger";
 dotenv.config();
 
+export interface PlaceOrderData {
+  nseSymbol: string;
+  stopLossPrice: number;
+  takeProfitPrice: number;
+  entryPrice: number;
+}
+
 export interface RunContext {
-  placeOrder: (data: string) => void;
+  placeOrder: (data: PlaceOrderData) => void;
 }
 
 export async function ganaka<T>({
@@ -12,7 +19,7 @@ export async function ganaka<T>({
   fn: (context: RunContext) => Promise<T>;
 }) {
   // Create logMarketDepth function that writes asynchronously
-  const placeOrder = (data: string) => {
+  const placeOrder = (data: PlaceOrderData) => {
     console.log(data);
   };
 
