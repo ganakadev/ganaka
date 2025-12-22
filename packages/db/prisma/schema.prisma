@@ -60,6 +60,25 @@ model DeveloperToken {
   @@map("developer_tokens")
 }
 
+model Order {
+  id String @id @default(uuid())
+
+  nseSymbol       String
+  stopLossPrice   Decimal
+  takeProfitPrice Decimal
+  entryPrice      Decimal
+  timestamp       DateTime
+
+  runId    String
+  username String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([runId, username])
+  @@map("orders")
+}
+
 model CollectorError {
   id           String   @id @default(uuid())
   timestamp    DateTime

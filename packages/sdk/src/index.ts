@@ -1,54 +1,96 @@
+import { v1_developer_groww_schemas, v1_developer_lists_schemas } from "@ganaka/schemas";
+import { randomUUID } from "crypto";
 import dotenv from "dotenv";
-import { scrapeGrowwShortlist } from "./groww/scrape-shortlist";
+import { z } from "zod";
+import { fetchCandles } from "./callbacks/fetchCandles";
+import { fetchQuote } from "./callbacks/fetchQuote";
+import { fetchShortlist } from "./callbacks/fetchShortlist";
 import { logger } from "./utils/logger";
-import { PlaceOrderData, MarketDepthWriter } from "./utils/writer";
-import { getNiftyTrend } from "./groww/get-nifty-trend";
+import { prisma } from "./utils/prisma";
+import { placeOrder, PlaceOrderData } from "./callbacks/placeOrder";
 dotenv.config();
 
-export type { GrowwShortlistItem } from "./groww/scrape-shortlist";
-export type { PlaceOrderData } from "./utils/writer";
-export type { NiftyTrend } from "./groww/get-nifty-trend";
-
 export interface RunContext {
-  scrapeGrowwShortlist: typeof scrapeGrowwShortlist;
-  getNiftyTrend: typeof getNiftyTrend;
   placeOrder: (data: PlaceOrderData) => void;
+  fetchCandles: (
+    params: z.infer<
+      typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.query
+    >
+  ) => Promise<
+    z.infer<
+      typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response
+    >["data"]
+  >;
+  fetchQuote: (
+    symbol: string
+  ) => Promise<
+    z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"]
+  >;
+  fetchShortlist: (
+    type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"]
+  ) => Promise<
+    z.infer<typeof v1_developer_lists_schemas.getLists.response>["data"]
+  >;
 }
 
 export async function ganaka<T>({
   fn,
-  disableActivityFiles,
 }: {
   fn: (context: RunContext) => Promise<T>;
-  disableActivityFiles?: boolean;
 }) {
-  // Initialize market depth writer only if activity files are not disabled
-  let marketDepthWriter: MarketDepthWriter | null = null;
-  if (!disableActivityFiles) {
-    const projectRoot = process.cwd();
-    marketDepthWriter = new MarketDepthWriter(projectRoot);
-    await marketDepthWriter.initialize();
+  // Generate unique runId for this invocation
+  const runId = randomUUID();
+  logger.debug(`Generated runId: ${runId}`);
+
+  // Resolve username from developer token
+  let username: string | null = null;
+  const developerToken =
+    process.env.DEVELOPER_TOKEN || process.env.GANAKA_TOKEN;
+
+  if (developerToken) {
+    try {
+      const tokenRecord = await prisma.developerToken.findUnique({
+        where: { token: developerToken },
+      });
+      if (tokenRecord) {
+        username = tokenRecord.username;
+        logger.debug(`Resolved username: ${username} for runId: ${runId}`);
+      } else {
+        throw new Error(
+          `Developer token not found in database. Please set DEVELOPER_TOKEN environment variable.`
+        );
+      }
+    } catch (error) {
+      throw new Error(
+        `Error resolving username from developer token: ${error}`
+      );
+    }
+  } else {
+    throw new Error(
+      "No developer token found in environment variables (DEVELOPER_TOKEN). Please set DEVELOPER_TOKEN environment variable."
+    );
   }
 
-  // Create logMarketDepth function that writes asynchronously
-  const placeOrder = (data: PlaceOrderData) => {
-    if (marketDepthWriter) {
-      // Fire and forget - don't await to avoid blocking
-      marketDepthWriter.write(data).catch((error) => {
-        logger.error(`Failed to write market depth data: ${error}`);
-      });
-    }
-  };
+  // Get API domain from environment or use default
+  const apiDomain = process.env.API_DOMAIN || "https://api.ganaka.live";
 
   // Run the function immediately on first call
   try {
     logger.debug("Running function for the first time");
     await fn({
-      placeOrder,
-      getGrowwQuote,
-      getGrowwHistoricalCandles,
-      scrapeGrowwShortlist,
-      getNiftyTrend,
+      placeOrder: placeOrder({ username, runId }),
+      fetchCandles: fetchCandles({
+        developerToken,
+        apiDomain,
+      }),
+      fetchQuote: fetchQuote({
+        developerToken,
+        apiDomain,
+      }),
+      fetchShortlist: fetchShortlist({
+        developerToken,
+        apiDomain,
+      }),
     });
   } catch (error) {
     logger.error("Error running function for the first time");
