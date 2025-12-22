@@ -1,19 +1,30 @@
+import { v1_developer_groww_schemas } from "@ganaka/schemas";
 import { randomUUID } from "crypto";
 import dotenv from "dotenv";
+import { z } from "zod";
+import { fetchCandles } from "./callbacks/fetchCandles";
+import { fetchQuote } from "./callbacks/fetchQuote";
 import { logger } from "./utils/logger";
 import { prisma } from "./utils/prisma";
-import { Decimal } from "@ganaka/db/prisma";
+import { placeOrder, PlaceOrderData } from "./callbacks/placeOrder";
 dotenv.config();
-
-export interface PlaceOrderData {
-  nseSymbol: string;
-  stopLossPrice: number;
-  takeProfitPrice: number;
-  entryPrice: number;
-}
 
 export interface RunContext {
   placeOrder: (data: PlaceOrderData) => void;
+  fetchCandles: (
+    params: z.infer<
+      typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.query
+    >
+  ) => Promise<
+    z.infer<
+      typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response
+    >["data"]
+  >;
+  fetchQuote: (
+    symbol: string
+  ) => Promise<
+    z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"]
+  >;
 }
 
 export async function ganaka<T>({
@@ -39,59 +50,37 @@ export async function ganaka<T>({
         username = tokenRecord.username;
         logger.debug(`Resolved username: ${username} for runId: ${runId}`);
       } else {
-        logger.warn(
-          `Developer token not found in database. Orders will not be persisted for runId: ${runId}`
+        throw new Error(
+          `Developer token not found in database. Please set DEVELOPER_TOKEN environment variable.`
         );
       }
     } catch (error) {
-      logger.error(
-        `Error resolving username from developer token: ${error}. Orders will not be persisted for runId: ${runId}`
+      throw new Error(
+        `Error resolving username from developer token: ${error}`
       );
     }
   } else {
-    logger.warn(
-      `No developer token found in environment variables (DEVELOPER_TOKEN or GANAKA_TOKEN). Orders will not be persisted for runId: ${runId}`
+    throw new Error(
+      "No developer token found in environment variables (DEVELOPER_TOKEN). Please set DEVELOPER_TOKEN environment variable."
     );
   }
 
-  // Create placeOrder function that persists to database
-  const placeOrder = (data: PlaceOrderData) => {
-    // Keep existing console.log for backward compatibility
-    console.log(data);
-
-    // Persist to database if username is available
-    if (username) {
-      // Fire-and-forget async operation (don't await to maintain void signature)
-      prisma.order
-        .create({
-          data: {
-            nseSymbol: data.nseSymbol,
-            entryPrice: new Decimal(data.entryPrice),
-            stopLossPrice: new Decimal(data.stopLossPrice),
-            takeProfitPrice: new Decimal(data.takeProfitPrice),
-            timestamp: new Date(),
-            runId,
-            username,
-          },
-        })
-        .then(() => {
-          logger.debug(
-            `Order persisted for ${data.nseSymbol} in runId: ${runId}`
-          );
-        })
-        .catch((error) => {
-          logger.error(
-            `Failed to persist order for ${data.nseSymbol} in runId: ${runId}: ${error}`
-          );
-        });
-    }
-  };
+  // Get API domain from environment or use default
+  const apiDomain = process.env.API_DOMAIN || "https://api.ganaka.live";
 
   // Run the function immediately on first call
   try {
     logger.debug("Running function for the first time");
     await fn({
-      placeOrder,
+      placeOrder: placeOrder({ username, runId }),
+      fetchCandles: fetchCandles({
+        developerToken,
+        apiDomain,
+      }),
+      fetchQuote: fetchQuote({
+        developerToken,
+        apiDomain,
+      }),
     });
   } catch (error) {
     logger.error("Error running function for the first time");
