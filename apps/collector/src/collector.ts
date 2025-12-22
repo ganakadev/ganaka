@@ -5,13 +5,16 @@ import {
   ShortlistSnapshot,
 } from "@ganaka/db";
 import { Decimal } from "@ganaka/db/prisma";
-import { chunk, shuffle } from "lodash";
-import { prisma } from "./utils/prisma";
-import { getCurrentISTTime } from "./utils/time";
-import { RedisManager } from "./utils/redis";
-import { v1_developer_lists, v1_developer_groww } from "@ganaka/apis";
-import { v1_developer_groww_schemas } from "@ganaka/schemas";
+import {
+  v1_developer_groww_schemas,
+  v1_developer_lists_schemas,
+} from "@ganaka/schemas";
+import { chunk } from "lodash";
 import z from "zod";
+import { prisma } from "./utils/prisma";
+import { RedisManager } from "./utils/redis";
+import { getCurrentISTTime } from "./utils/time";
+import axios from "axios";
 
 // Enum matching Prisma schema (will be available from @prisma/client after generation)
 enum ShortlistType {
@@ -19,11 +22,47 @@ enum ShortlistType {
   VOLUME_SHOCKERS = "VOLUME_SHOCKERS",
 }
 
+const API_DOMAIN = process.env.API_DOMAIN ?? "https://api.ganaka.live";
+
 const NIFTY_SYMBOL = "NIFTY";
 const TOP_STOCKS_LIMIT = 5;
 const MAX_SYMBOLS_IN_BUCKET = 298; // 300/minute is the groww API rate limit
 const RATE_LIMIT_BATCH_SIZE = 8; // 10/second is the groww API rate limit
 const RATE_LIMIT_DELAY_MS = 1000; // 1 second
+
+export const getLists =
+  (developerKey: string) => async (type: "top-gainers" | "volume-shockers") => {
+    const params: z.infer<typeof v1_developer_lists_schemas.getLists.query> = {
+      type,
+    };
+
+    return axios.get<
+      z.infer<typeof v1_developer_lists_schemas.getLists.response>
+    >(`${API_DOMAIN}/v1/developer/lists`, {
+      params,
+      headers: {
+        Authorization: `Bearer ${developerKey}`,
+      },
+    });
+  };
+
+export const getGrowwQuote =
+  (developerKey: string) => async (symbol: string) => {
+    const params: z.infer<
+      typeof v1_developer_groww_schemas.getGrowwQuote.query
+    > = {
+      symbol: encodeURIComponent(symbol),
+    };
+
+    return axios.get<
+      z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>
+    >(`${API_DOMAIN}/v1/developer/groww/quote`, {
+      params,
+      headers: {
+        Authorization: `Bearer ${developerKey}`,
+      },
+    });
+  };
 
 async function fetchQuotesWithRateLimit(symbols: string[]) {
   const results = new Map<
@@ -34,8 +73,7 @@ async function fetchQuotesWithRateLimit(symbols: string[]) {
 
   for await (const batch of batches) {
     const promises = batch.map((symbol) =>
-      v1_developer_groww
-        .getGrowwQuote(process.env.DEVELOPER_KEY!)(symbol)
+      getGrowwQuote(process.env.DEVELOPER_KEY!)(symbol)
         .then((quote) => ({ symbol, quote }))
         .catch((error: unknown) => {
           console.error(`Failed to fetch quote for ${symbol}:`, error);
@@ -69,18 +107,18 @@ async function updateDailyBucket(): Promise<Set<string>> {
   // 1. Fetch both shortlists in parallel
   console.log("Fetching shortlists...");
   const [topGainers, volumeShockers] = await Promise.all([
-    v1_developer_lists
-      .getLists(process.env.DEVELOPER_KEY!)("top-gainers")
-      .catch((error: unknown) => {
+    getLists(process.env.DEVELOPER_KEY!)("top-gainers").catch(
+      (error: unknown) => {
         console.error("Failed to fetch top-gainers:", error);
         return null;
-      }),
-    v1_developer_lists
-      .getLists(process.env.DEVELOPER_KEY!)("volume-shockers")
-      .catch((error: unknown) => {
+      }
+    ),
+    getLists(process.env.DEVELOPER_KEY!)("volume-shockers").catch(
+      (error: unknown) => {
         console.error("Failed to fetch volume-shockers:", error);
         return null;
-      }),
+      }
+    ),
   ]);
 
   let currentRunSymbols: string[] = [];
@@ -198,12 +236,12 @@ async function collectMarketDataForBucket(
 
   // 2. Fetch NIFTY quote
   console.log("Fetching NIFTY quote...");
-  const niftybankQuote = await v1_developer_groww
-    .getGrowwQuote(process.env.DEVELOPER_KEY!)(NIFTY_SYMBOL)
-    .catch((error: unknown) => {
-      console.error("Failed to fetch NIFTY quote:", error);
-      return null;
-    });
+  const niftybankQuote = await getGrowwQuote(process.env.DEVELOPER_KEY!)(
+    NIFTY_SYMBOL
+  ).catch((error: unknown) => {
+    console.error("Failed to fetch NIFTY quote:", error);
+    return null;
+  });
 
   // 3. Fetch quotes with rate limiting
   console.log("Fetching quotes with rate limiting...");
