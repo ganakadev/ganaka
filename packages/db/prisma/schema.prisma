@@ -69,8 +69,7 @@ model Order {
   entryPrice      Decimal
   timestamp       DateTime
 
-  // unique identifier for the run
-  runId    String @unique
+  runId    String
   username String
 
   createdAt DateTime @default(now())

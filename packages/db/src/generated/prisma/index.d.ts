@@ -7960,7 +7960,6 @@ export namespace Prisma {
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    runId?: string
     AND?: OrderWhereInput | OrderWhereInput[]
     OR?: OrderWhereInput[]
     NOT?: OrderWhereInput | OrderWhereInput[]
@@ -7969,10 +7968,11 @@ export namespace Prisma {
     takeProfitPrice?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
     entryPrice?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
     timestamp?: DateTimeFilter<"Order"> | Date | string
+    runId?: StringFilter<"Order"> | string
     username?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
-  }, "id" | "runId">
+  }, "id">
 
   export type OrderOrderByWithAggregationInput = {
     id?: SortOrder
