@@ -37,7 +37,8 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
         method: methodParam,
       } = validationResult;
 
-      const selectedDateTime = dayjs(dateParam);
+      // Parse date with explicit UTC handling
+      const selectedDateTime = dayjs(dateParam).utc();
 
       // Set method to provided value or default to "hybrid"
       const method: BuyerControlMethod = methodParam || "hybrid";
@@ -55,7 +56,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
         where: {
           timestamp: {
             gte: selectedDateTime.toDate(),
-            lte: selectedDateTime.add(1, "s").toDate(),
+            lte: selectedDateTime.add(1, "m").toDate(),
           },
         },
       });
