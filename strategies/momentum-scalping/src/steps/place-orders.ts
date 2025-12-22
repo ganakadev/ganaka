@@ -5,15 +5,9 @@ export function placeOrders(
   scoredQuotes: ScoredQuote[],
   placeOrder: (order: {
     nseSymbol: string;
-    instrument: string;
-    buyDepth: { price: number; quantity: number }[];
-    sellDepth: { price: number; quantity: number }[];
-    entryPrice: number;
-    currentPrice: number;
     stopLossPrice: number;
     takeProfitPrice: number;
-    timestamp: Date;
-    buyerControlOfStockPercentage: number;
+    entryPrice: number;
   }) => void
 ): void {
   // FILTER STOCKS BY SCORE THRESHOLD
@@ -44,18 +38,12 @@ export function placeOrders(
       )}, Stop Loss: ₹${stopLossPrice.toFixed(2)}`
     );
 
-    // CALL placeOrder WITH MarketDepthData STRUCTURE
+    // CALL placeOrder WITH simplified structure
     placeOrder({
       nseSymbol: quote.nseSymbol,
-      instrument: quote.instrument,
-      buyDepth: quote.payload.depth.buy,
-      sellDepth: quote.payload.depth.sell,
       entryPrice,
-      currentPrice: quote.payload.last_price,
       stopLossPrice,
       takeProfitPrice,
-      timestamp: new Date(),
-      buyerControlOfStockPercentage: quote.buyerControlOfStockPercentage,
     });
   }
 

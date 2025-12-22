@@ -155,6 +155,19 @@ exports.Prisma.DeveloperTokenScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.OrderScalarFieldEnum = {
+  id: 'id',
+  nseSymbol: 'nseSymbol',
+  stopLossPrice: 'stopLossPrice',
+  takeProfitPrice: 'takeProfitPrice',
+  entryPrice: 'entryPrice',
+  timestamp: 'timestamp',
+  runId: 'runId',
+  username: 'username',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.CollectorErrorScalarFieldEnum = {
   id: 'id',
   timestamp: 'timestamp',
@@ -204,6 +217,7 @@ exports.Prisma.ModelName = {
   QuoteSnapshot: 'QuoteSnapshot',
   NiftyQuote: 'NiftyQuote',
   DeveloperToken: 'DeveloperToken',
+  Order: 'Order',
   CollectorError: 'CollectorError'
 };
 

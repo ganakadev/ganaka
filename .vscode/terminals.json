@@ -51,13 +51,6 @@
       "command": "nvm use 22 && pnpm --filter @ganaka/sdk "
     },
     {
-      "name": "@ganaka/apis",
-      "focus": true,
-      "onlySingle": true,
-      "execute": false,
-      "command": "nvm use 22 && pnpm --filter @ganaka/apis "
-    },
-    {
       "name": "@ganaka/groww_access_token_generator",
       "focus": true,
       "onlySingle": true,

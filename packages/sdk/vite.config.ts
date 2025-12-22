@@ -33,12 +33,15 @@ export default defineConfig({
       // Externalize dependencies that should not be bundled
       external: [
         "dotenv",
+        "@ganaka/db",
+        "@prisma/client",
         "path",
         "worker_threads",
         "url",
         "module",
         "fs",
         "stream",
+        "crypto",
       ],
     },
     // Generate sourcemaps
