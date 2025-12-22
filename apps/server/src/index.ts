@@ -6,6 +6,7 @@ import Fastify from "fastify";
 import path from "path";
 import authPlugin from "./plugins/auth";
 import { prisma } from "./utils/prisma";
+import { RedisManager } from "./utils/redis";
 
 dotenv.config();
 
@@ -31,6 +32,13 @@ async function main() {
     });
   });
 
+  // Dashboard routes (/v1/dashboard) - public, no authentication required
+  fastify.register(autoLoad, {
+    dir: path.join(__dirname, "routes/v1/dashboard"),
+    options: { prefix: "/v1/dashboard/" },
+    maxDepth: 5,
+  });
+
   // SERVER CONFIGURATION
   try {
     const port = parseInt(process.env.PORT || "4000", 10);
@@ -46,6 +54,14 @@ async function main() {
   // Graceful shutdown
   const shutdown = async (signal: string) => {
     fastify.log.info(`Received ${signal}, shutting down gracefully...`);
+    try {
+      // Close Redis connection if it exists
+      const redisManager = RedisManager.getInstance(fastify);
+      await redisManager.close();
+    } catch (error) {
+      // Ignore errors if Redis wasn't initialized or already closed
+      fastify.log.warn("Error closing Redis connection: %s", error);
+    }
     await prisma.$disconnect();
     await fastify.close();
     process.exit(0);

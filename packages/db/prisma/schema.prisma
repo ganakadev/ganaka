@@ -19,7 +19,7 @@ model ShortlistSnapshot {
 
   @@index([timestamp])
   @@map("shortlist_snapshots")
-} 
+}
 
 model QuoteSnapshot {
   id        String   @id @default(uuid())

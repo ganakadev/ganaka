@@ -17,7 +17,7 @@ export default defineConfig({
       formats: ["es", "cjs"],
     },
     rollupOptions: {
-      external: ["zod", "semver"],
+      external: ["zod", "semver", "@ganaka/db"],
       output: {
         exports: "named",
       },

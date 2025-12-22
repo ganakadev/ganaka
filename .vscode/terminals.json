@@ -9,25 +9,11 @@
       "command": "nvm use 22 && pnpm --filter @ganaka/momentum-scalping "
     },
     {
-      "name": "@ganaka/groww_access_token_generator",
-      "focus": true,
-      "onlySingle": true,
-      "cwd": "./packages/groww_access_token_generator",
-      "command": "uv run main.py"
-    },
-    {
-      "name": "@ganaka/collector",
+      "name": "@ganaka/client",
       "focus": true,
       "onlySingle": true,
       "execute": false,
-      "command": "nvm use 22 && pnpm --filter @ganaka/collector "
-    },
-    {
-      "name": "@ganaka/dashboard",
-      "focus": true,
-      "onlySingle": true,
-      "execute": false,
-      "command": "nvm use 22 && pnpm --filter @ganaka/dashboard "
+      "command": "nvm use 22 && pnpm --filter @ganaka/client "
     },
     {
       "name": "@ganaka/server",
@@ -35,6 +21,13 @@
       "onlySingle": true,
       "execute": false,
       "command": "nvm use 22 && pnpm --filter @ganaka/server "
+    },
+    {
+      "name": "@ganaka/collector",
+      "focus": true,
+      "onlySingle": true,
+      "execute": false,
+      "command": "nvm use 22 && pnpm --filter @ganaka/collector "
     },
     {
       "name": "@ganaka/db",
@@ -63,6 +56,13 @@
       "onlySingle": true,
       "execute": false,
       "command": "nvm use 22 && pnpm --filter @ganaka/apis "
+    },
+    {
+      "name": "@ganaka/groww_access_token_generator",
+      "focus": true,
+      "onlySingle": true,
+      "cwd": "./packages/groww_access_token_generator",
+      "command": "uv run main.py"
     }
   ]
 }
