@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "lint": "pnpm -r --parallel run lint",
-    "prepare:release": "pnpm --filter @ganaka/db prisma:migrate:deploy && pnpm --filter @ganaka/db prisma:generate && pnpm --filter @ganaka/db build && pnpm --filter @ganaka/schemas build && pnpm --filter @ganaka/apis build"
+    "prepare:release": "./scripts/prepare-release.sh"
   },
   "devDependencies": {
     "typescript": "^5.3.3"
