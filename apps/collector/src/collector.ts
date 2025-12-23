@@ -51,7 +51,7 @@ export const getGrowwQuote =
     const params: z.infer<
       typeof v1_developer_groww_schemas.getGrowwQuote.query
     > = {
-      symbol: encodeURIComponent(symbol),
+      symbol: symbol,
     };
 
     return axios.get<
