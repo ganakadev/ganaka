@@ -27,6 +27,19 @@ const authPlugin =
         // authenticate user or developer
         switch (type) {
           case "admin": {
+            const adminRecord = await prisma.developerToken.findUnique({
+              where: {
+                username: "admin",
+              },
+            });
+            if (!adminRecord || adminRecord.token !== token) {
+              fastify.log.info("Admin not found or inactive");
+              return reply.unauthorized(
+                "Authorization failed for this admin request. Please check your credentials and try again."
+              );
+            }
+
+            fastify.log.info(`Admin authenticated: ${adminRecord.username}`);
             break;
           }
           case "developer": {
