@@ -55,6 +55,14 @@ export function CandleChart({
       },
       width: chartContainerRef.current.clientWidth,
       height: 250,
+      leftPriceScale: {
+        visible: true,
+        borderColor: "rgba(255, 255, 255, 0.2)",
+      },
+      rightPriceScale: {
+        visible: true,
+        borderColor: "rgba(255, 255, 255, 0.2)",
+      },
       timeScale: {
         timeVisible: true,
         secondsVisible: false,
@@ -79,6 +87,7 @@ export function CandleChart({
       wickUpColor: "#26a69a",
       wickDownColor: "#ef5350",
       priceLineVisible: false,
+      priceScaleId: "left",
     } as CandlestickSeriesPartialOptions);
 
     seriesRef.current = candlestickSeries;
@@ -86,7 +95,7 @@ export function CandleChart({
     // Add line series for buyer control percentage
     const lineSeries = chart.addSeries(LineSeries, {
       color: "#ffa500",
-      lineWidth: 2,
+      lineWidth: 1,
       priceScaleId: "right",
       priceFormat: {
         type: "price",
