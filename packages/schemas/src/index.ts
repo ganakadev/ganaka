@@ -14,3 +14,6 @@ export * as v1_developer_lists_schemas from "./v1/developer/lists/lists";
 
 // Re-export dashboard endpoint schemas
 export * as v1_dashboard_schemas from "./v1/dashboard";
+
+// Re-export admin endpoint schemas
+export * as v1_admin_schemas from "./v1/admin";

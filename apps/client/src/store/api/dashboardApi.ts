@@ -16,6 +16,7 @@ export const dashboardAPI = createApi({
     "PersistentCompanies",
     "UniqueCompanies",
     "Candles",
+    "QuoteTimeline",
   ],
   endpoints: (builder) => ({
     // Get available datetimes
@@ -125,6 +126,29 @@ export const dashboardAPI = createApi({
         };
       },
       providesTags: ["Candles"],
+    }),
+
+    // Get quote snapshots
+    getQuoteTimeline: builder.query<
+      z.infer<
+        typeof v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.response
+      >,
+      z.infer<
+        typeof v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.query
+      >
+    >({
+      query: (params) => {
+        const validatedParams =
+          v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.query.parse(
+            params
+          );
+        return {
+          url: "/quote-timeline",
+          method: "GET",
+          params: validatedParams,
+        };
+      },
+      providesTags: ["QuoteTimeline"],
     }),
   }),
 });
