@@ -117,7 +117,7 @@ function QuotePanel({
             selectedDate={selectedDate}
             candleData={candleData}
             buyerControlPercentage={selectedEntry.buyerControlPercentage}
-            buyerControlData={[]}
+            buyerControlData={buyerControlData}
           />
         </>
       )}
