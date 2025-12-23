@@ -37,8 +37,8 @@ const quoteSnapshotsRoutes: FastifyPluginAsync = async (fastify) => {
       // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
       // Extract just the date part (YYYY-MM-DD) and create new dayjs object in IST
       const dateStr = selectedDate.format("YYYY-MM-DD");
-      const marketStart = dayjs.tz(`${dateStr} 09:00:00`, "Asia/Kolkata");
-      const marketEnd = dayjs.tz(`${dateStr} 15:35:00`, "Asia/Kolkata");
+      const marketStart = dayjs.tz(`${dateStr} 09:14:00`, "Asia/Kolkata");
+      const marketEnd = dayjs.tz(`${dateStr} 15:31:00`, "Asia/Kolkata");
       const marketStartUtc = marketStart.utc();
       const marketEndUtc = marketEnd.utc();
 

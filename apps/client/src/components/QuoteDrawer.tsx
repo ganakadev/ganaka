@@ -70,7 +70,7 @@ function QuotePanel({
             }) => {
               const buyerControlPercentage = calculateBuyerControlPercentage(
                 timeline.quoteData as QuoteData,
-                "hybrid"
+                "total"
               );
               if (buyerControlPercentage === null) {
                 return null;
