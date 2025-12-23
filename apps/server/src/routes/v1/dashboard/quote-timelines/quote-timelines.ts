@@ -37,13 +37,22 @@ const quoteSnapshotsRoutes: FastifyPluginAsync = async (fastify) => {
       // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
       // Extract just the date part (YYYY-MM-DD) and create new dayjs object in IST
       const dateStr = selectedDate.format("YYYY-MM-DD");
-      const marketStart = dayjs.tz(`${dateStr} 09:15:00`, "Asia/Kolkata");
-      const marketEnd = dayjs.tz(`${dateStr} 15:30:00`, "Asia/Kolkata");
+      const marketStart = dayjs.tz(`${dateStr} 09:00:00`, "Asia/Kolkata");
+      const marketEnd = dayjs.tz(`${dateStr} 15:35:00`, "Asia/Kolkata");
+      const marketStartUtc = marketStart.utc();
+      const marketEndUtc = marketEnd.utc();
 
       // Fetch quote snapshots from database for the symbol and date range
-      const quoteSnapshots = await prisma.quoteSnapshot.findFirst({
+      const quoteSnapshots = await prisma.quoteSnapshot.findMany({
+        where: {
+          timestamp: {
+            gte: marketStartUtc.toDate(),
+            lte: marketEndUtc.toDate(),
+          },
+          nseSymbol: symbol,
+        },
         orderBy: {
-          createdAt: "desc",
+          timestamp: "asc",
         },
       });
 
@@ -56,7 +65,7 @@ const quoteSnapshotsRoutes: FastifyPluginAsync = async (fastify) => {
         message: "Quote snapshots fetched successfully",
         data: {
           quoteTimeline: quoteSnapshots
-            ? [quoteSnapshots].map((snapshot) => ({
+            ? quoteSnapshots.map((snapshot) => ({
                 id: snapshot.id,
                 timestamp: snapshot.timestamp,
                 nseSymbol: snapshot.nseSymbol,
