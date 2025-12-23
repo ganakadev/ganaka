@@ -9,12 +9,12 @@ import {
   v1_developer_groww_schemas,
   v1_developer_lists_schemas,
 } from "@ganaka/schemas";
+import axios from "axios";
+import dayjs from "dayjs";
 import { chunk } from "lodash";
 import z from "zod";
 import { prisma } from "./utils/prisma";
 import { RedisManager } from "./utils/redis";
-import { getCurrentISTTime } from "./utils/time";
-import axios from "axios";
 
 // Enum matching Prisma schema (will be available from @prisma/client after generation)
 enum ShortlistType {
@@ -101,7 +101,7 @@ async function fetchQuotesWithRateLimit(symbols: string[]) {
  * Returns the symbolMap for the current run's top 5 companies
  */
 async function updateDailyBucket(): Promise<Set<string>> {
-  const timestamp = getCurrentISTTime();
+  const timestamp = dayjs().toDate();
   console.log("Updating daily bucket...");
 
   // 1. Fetch both shortlists in parallel
@@ -229,7 +229,7 @@ async function updateDailyBucket(): Promise<Set<string>> {
 async function collectMarketDataForBucket(
   currentRunSymbolMap: Set<string>
 ): Promise<void> {
-  const timestamp = getCurrentISTTime();
+  const timestamp = dayjs().toDate();
 
   // 1. Format symbols from current run symbol map
   const bucketSymbols = Array.from(currentRunSymbolMap.keys());
@@ -298,7 +298,7 @@ async function collectMarketDataForBucket(
 }
 
 export async function collectMarketData(): Promise<void> {
-  const timestamp = getCurrentISTTime();
+  const timestamp = dayjs().toDate();
   console.log(
     `\n[${timestamp.toISOString()}] Starting market data collection...`
   );
