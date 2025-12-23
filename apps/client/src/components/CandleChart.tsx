@@ -171,12 +171,27 @@ export function CandleChart({
         index === self.findIndex((t) => t.time === point.time)
     );
 
-    // Transform data to histogram format with color based on buyer control percentage
-    const histogramData = uniqueData.map((point) => ({
-      time: point.time,
-      value: point.value,
-      color: point.value > 50 ? "#1b5b55" : "#7f3130", // green if > 50%, red if ≤ 50%
-    }));
+    // Transform data to histogram format with color based on trend (up/down movement)
+    const histogramData = uniqueData.map((point, index) => {
+      // First point: use neutral color (no previous point to compare)
+      if (index === 0) {
+        return {
+          time: point.time,
+          value: point.value,
+          color: "#808080", // neutral gray for first point
+        };
+      }
+
+      // Compare to previous point to determine trend
+      const previousValue = uniqueData[index - 1].value;
+      const isTrendingUp = point.value > previousValue;
+
+      return {
+        time: point.time,
+        value: point.value,
+        color: isTrendingUp ? "#26a69a" : "#ef5350", // green if trending up, red if trending down
+      };
+    });
 
     // Set histogram data
     histogramSeriesRef.current.setData(histogramData);
