@@ -9,6 +9,8 @@ import {
   createSeriesMarkers,
   type IChartApi,
   type ISeriesApi,
+  LineSeries,
+  type LineSeriesPartialOptions,
   type SeriesMarker,
   type Time,
 } from "lightweight-charts";
@@ -23,15 +25,18 @@ export function CandleChart({
   selectedDate,
   candleData,
   buyerControlPercentage,
+  buyerControlData,
 }: {
   selectedDate: Date | null;
   candleData: CandleData[] | null;
   buyerControlPercentage: number | null | undefined;
+  buyerControlData: Array<{ time: Time; value: number }> | null;
 }) {
   // HOOKS
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const lineSeriesRef = useRef<ISeriesApi<"Line"> | null>(null);
   const markersRef = useRef<ReturnType<
     typeof createSeriesMarkers<Time>
   > | null>(null);
@@ -78,6 +83,28 @@ export function CandleChart({
 
     seriesRef.current = candlestickSeries;
 
+    // Add line series for buyer control percentage
+    const lineSeries = chart.addSeries(LineSeries, {
+      color: "#ffa500",
+      lineWidth: 2,
+      priceScaleId: "right",
+      priceFormat: {
+        type: "price",
+        precision: 2,
+        minMove: 0.01,
+      },
+    } as LineSeriesPartialOptions);
+
+    // Configure right price scale for buyer control percentage (0-100%)
+    chart.priceScale("right").applyOptions({
+      scaleMargins: {
+        top: 0.1,
+        bottom: 0.1,
+      },
+    });
+
+    lineSeriesRef.current = lineSeries;
+
     // Create series markers manager
     markersRef.current = createSeriesMarkers(candlestickSeries, []);
 
@@ -115,6 +142,25 @@ export function CandleChart({
       chartRef.current.timeScale().fitContent();
     }
   }, [candleData]);
+
+  // sets the buyer control line data
+  useEffect(() => {
+    if (
+      !lineSeriesRef.current ||
+      !buyerControlData ||
+      buyerControlData.length === 0
+    )
+      return;
+
+    // eliminate data points that have duplicate times
+    const uniqueData = buyerControlData.filter(
+      (point, index, self) =>
+        index === self.findIndex((t) => t.time === point.time)
+    );
+
+    // Set line data
+    lineSeriesRef.current.setData(uniqueData);
+  }, [buyerControlData]);
 
   // adds a marker at the selected time
   useEffect(() => {

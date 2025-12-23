@@ -65,14 +65,17 @@ const quoteSnapshotsRoutes: FastifyPluginAsync = async (fastify) => {
         message: "Quote snapshots fetched successfully",
         data: {
           quoteTimeline: quoteSnapshots
-            ? quoteSnapshots.map((snapshot) => ({
-                id: snapshot.id,
-                timestamp: snapshot.timestamp,
-                nseSymbol: snapshot.nseSymbol,
-                quoteData: snapshot.quoteData as unknown as QuoteData,
-                createdAt: snapshot.createdAt,
-                updatedAt: snapshot.updatedAt,
-              }))
+            ? quoteSnapshots.map((snapshot) => {
+                const data: z.infer<
+                  typeof v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.response
+                >["data"]["quoteTimeline"][0] = {
+                  id: snapshot.id,
+                  timestamp: snapshot.timestamp,
+                  nseSymbol: snapshot.nseSymbol,
+                  quoteData: snapshot.quoteData as unknown as QuoteData,
+                };
+                return data;
+              })
             : [],
         },
       });

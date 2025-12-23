@@ -128,7 +128,7 @@ export const dashboardAPI = createApi({
       providesTags: ["Candles"],
     }),
 
-    // Get quote snapshots
+    // Get quote timeline
     getQuoteTimeline: builder.query<
       z.infer<
         typeof v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.response
@@ -143,7 +143,7 @@ export const dashboardAPI = createApi({
             params
           );
         return {
-          url: "/quote-timeline",
+          url: "/quote-timelines",
           method: "GET",
           params: validatedParams,
         };
