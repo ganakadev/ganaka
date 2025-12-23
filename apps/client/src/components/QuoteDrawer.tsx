@@ -3,8 +3,14 @@ import type { QuoteData, ShortlistEntryWithQuote } from "../types";
 import { CandleChart, type CandleData } from "./CandleChart";
 import { QuoteDataTables } from "./QuoteDataTables";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import type { Time } from "lightweight-charts";
 import { dashboardAPI } from "../store/api/dashboardApi";
+import { calculateBuyerControlPercentage } from "../utils/buyerControl";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface QuotePanelProps {
   quoteData: QuoteData | null | undefined;
@@ -17,6 +23,7 @@ function QuotePanel({
   selectedEntry,
   selectedDate,
 }: QuotePanelProps) {
+  // API
   // Fetch candle data using RTK Query
   const { data: candlesData, error: candleError } =
     dashboardAPI.useGetCandlesQuery(
@@ -29,7 +36,18 @@ function QuotePanel({
         skip: !selectedEntry || !selectedDate,
       }
     );
+  // Fetch quote snapshots using RTK Query
+  const { data: quoteTimelineData } = dashboardAPI.useGetQuoteTimelineQuery(
+    {
+      symbol: selectedEntry?.nseSymbol || "",
+      date: selectedDate?.toISOString() || "",
+    },
+    {
+      skip: !selectedEntry || !selectedDate,
+    }
+  );
 
+  // VARIABLES
   const candleData: CandleData[] | null = candlesData?.data.candles
     ? candlesData.data.candles.map((candle) => ({
         time: candle.time as Time,
@@ -39,7 +57,41 @@ function QuotePanel({
         close: candle.close,
       }))
     : null;
-
+  // Process quote snapshots to calculate buyerControlPercentage for each
+  const buyerControlData: Array<{ time: Time; value: number }> | null =
+    quoteTimelineData?.data.quoteTimeline
+      ? quoteTimelineData.data.quoteTimeline
+          .map(
+            (timeline: {
+              id: string;
+              timestamp: Date;
+              nseSymbol: string;
+              quoteData: QuoteData;
+            }) => {
+              const buyerControlPercentage = calculateBuyerControlPercentage(
+                timeline.quoteData as QuoteData,
+                "hybrid"
+              );
+              if (buyerControlPercentage === null) {
+                return null;
+              }
+              // Convert timestamp to Unix timestamp (seconds)
+              const time = dayjs
+                .utc(timeline.timestamp)
+                .add(5, "hours")
+                .add(30, "minutes"); // Add 5 hours and 30 minutes to the UTC timestamp to get the IST timestamp
+              return {
+                time: time.unix() as Time,
+                value: buyerControlPercentage,
+              };
+            }
+          )
+          .filter(
+            (
+              item: { time: Time; value: number } | null
+            ): item is { time: Time; value: number } => item !== null
+          )
+      : null;
   const errorMessage = candleError
     ? "data" in candleError &&
       typeof candleError.data === "object" &&
@@ -65,6 +117,7 @@ function QuotePanel({
             selectedDate={selectedDate}
             candleData={candleData}
             buyerControlPercentage={selectedEntry.buyerControlPercentage}
+            buyerControlData={buyerControlData}
           />
         </>
       )}
