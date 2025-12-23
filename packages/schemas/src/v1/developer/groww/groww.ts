@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { apiResponseSchema } from "../../../common";
+import { apiResponseSchema, validCandleIntervals } from "../../../common";
 
 // ==================== Schemas ====================
 
@@ -73,7 +73,7 @@ export const growwQuoteSchema = z.object({
 export const getGrowwHistoricalCandles = {
   query: z.object({
     symbol: z.string(),
-    interval: z.enum(["5minute", "15minute", "30minute", "1hour", "4hour"]),
+    interval: z.enum(validCandleIntervals),
     start_time: z.string(),
     end_time: z.string(),
   }),

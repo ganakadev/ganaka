@@ -14,3 +14,15 @@ export const apiErrorResponseSchema = z.object({
   statusCode: z.number(),
   message: z.string(),
 });
+
+export const validCandleIntervals = [
+  "1minute",
+  "2minute",
+  "3minute",
+  "5minute",
+  "10minute",
+  "15minute",
+  "30minute",
+  "1hour",
+  "4hour",
+] as const;

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { apiResponseSchema } from "../../common";
+import { apiResponseSchema, validCandleIntervals } from "../../common";
 
 // ==================== GET /candles ====================
 
@@ -7,9 +7,7 @@ export const getCandles = {
   query: z.object({
     symbol: z.string(),
     date: z.string(),
-    interval: z
-      .enum(["5minute", "15minute", "30minute", "1hour", "4hour"])
-      .optional(),
+    interval: z.enum(validCandleIntervals).optional(),
   }),
   response: apiResponseSchema.extend({
     data: z.object({
