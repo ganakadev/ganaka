@@ -9,8 +9,8 @@ import {
   createSeriesMarkers,
   type IChartApi,
   type ISeriesApi,
-  LineSeries,
-  type LineSeriesPartialOptions,
+  HistogramSeries,
+  type HistogramSeriesPartialOptions,
   type SeriesMarker,
   type Time,
 } from "lightweight-charts";
@@ -36,7 +36,7 @@ export function CandleChart({
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
-  const lineSeriesRef = useRef<ISeriesApi<"Line"> | null>(null);
+  const histogramSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
   const markersRef = useRef<ReturnType<
     typeof createSeriesMarkers<Time>
   > | null>(null);
@@ -60,7 +60,7 @@ export function CandleChart({
         borderColor: "rgba(255, 255, 255, 0.2)",
       },
       rightPriceScale: {
-        visible: true,
+        visible: false,
         borderColor: "rgba(255, 255, 255, 0.2)",
       },
       timeScale: {
@@ -90,29 +90,33 @@ export function CandleChart({
       priceScaleId: "left",
     } as CandlestickSeriesPartialOptions);
 
-    seriesRef.current = candlestickSeries;
-
-    // Add line series for buyer control percentage
-    const lineSeries = chart.addSeries(LineSeries, {
-      color: "#ffa500",
-      lineWidth: 1,
-      priceScaleId: "right",
-      priceFormat: {
-        type: "price",
-        precision: 2,
-        minMove: 0.01,
-      },
-    } as LineSeriesPartialOptions);
-
-    // Configure right price scale for buyer control percentage (0-100%)
-    chart.priceScale("right").applyOptions({
+    // Configure left price scale margins to prevent overlap with histogram
+    candlestickSeries.priceScale().applyOptions({
       scaleMargins: {
         top: 0.1,
-        bottom: 0.1,
+        bottom: 0.4,
       },
     });
 
-    lineSeriesRef.current = lineSeries;
+    seriesRef.current = candlestickSeries;
+
+    // Add histogram series for buyer control percentage
+    const histogramSeries = chart.addSeries(HistogramSeries, {
+      priceFormat: {
+        type: "volume",
+      },
+      priceScaleId: "", // set as an overlay by setting a blank priceScaleId
+    } as HistogramSeriesPartialOptions);
+
+    // Configure histogram scale margins to position at bottom 30% of chart
+    histogramSeries.priceScale().applyOptions({
+      scaleMargins: {
+        top: 0.7, // highest point of the series will be 70% away from the top
+        bottom: 0, // lowest point will be at the very bottom
+      },
+    });
+
+    histogramSeriesRef.current = histogramSeries;
 
     // Create series markers manager
     markersRef.current = createSeriesMarkers(candlestickSeries, []);
@@ -152,10 +156,10 @@ export function CandleChart({
     }
   }, [candleData]);
 
-  // sets the buyer control line data
+  // sets the buyer control histogram data
   useEffect(() => {
     if (
-      !lineSeriesRef.current ||
+      !histogramSeriesRef.current ||
       !buyerControlData ||
       buyerControlData.length === 0
     )
@@ -167,8 +171,15 @@ export function CandleChart({
         index === self.findIndex((t) => t.time === point.time)
     );
 
-    // Set line data
-    lineSeriesRef.current.setData(uniqueData);
+    // Transform data to histogram format with color based on buyer control percentage
+    const histogramData = uniqueData.map((point) => ({
+      time: point.time,
+      value: point.value,
+      color: point.value > 50 ? "#1b5b55" : "#7f3130", // green if > 50%, red if ≤ 50%
+    }));
+
+    // Set histogram data
+    histogramSeriesRef.current.setData(histogramData);
   }, [buyerControlData]);
 
   // adds a marker at the selected time
