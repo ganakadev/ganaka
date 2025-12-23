@@ -157,7 +157,7 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
           end_time,
           exchange: "NSE",
           segment: "CASH",
-          groww_symbol: encodeURIComponent(`NSE-${symbol}`),
+          groww_symbol: `NSE-${symbol}`,
         },
       });
 
