@@ -32,9 +32,3 @@ export function isWithinCollectionWindow(): boolean {
     currentTimeInMinutes <= collectionWindowEndInMinutes
   );
 }
-
-export function getCurrentISTTime(): Date {
-  // Get current time in IST timezone and convert to Date object
-  const nowIST = dayjs().tz("Asia/Kolkata");
-  return nowIST.toDate();
-}
