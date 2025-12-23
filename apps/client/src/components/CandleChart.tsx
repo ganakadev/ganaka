@@ -229,7 +229,7 @@ export function CandleChart({
 
   // DRAW
   return (
-    <div className="border rounded-md p-4 pr-3 bg-black">
+    <div className="border rounded-md p-4 pr-4 bg-black">
       <div ref={chartContainerRef} className="w-full min-h-[200px]" />
     </div>
   );

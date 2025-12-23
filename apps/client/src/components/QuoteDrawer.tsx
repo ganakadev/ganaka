@@ -30,7 +30,7 @@ function QuotePanel({
       {
         symbol: selectedEntry?.nseSymbol || "",
         date: selectedDate?.toISOString() || "",
-        interval: "5minute",
+        interval: "1minute",
       },
       {
         skip: !selectedEntry || !selectedDate,
@@ -117,7 +117,7 @@ function QuotePanel({
             selectedDate={selectedDate}
             candleData={candleData}
             buyerControlPercentage={selectedEntry.buyerControlPercentage}
-            buyerControlData={buyerControlData}
+            buyerControlData={[]}
           />
         </>
       )}
@@ -155,7 +155,7 @@ export function QuoteDrawer({
       opened={opened}
       onClose={onClose}
       position="right"
-      size="xl"
+      size="90%"
       title={drawerTitle}
       padding="lg"
     >

@@ -73,6 +73,8 @@ const quoteSnapshotsRoutes: FastifyPluginAsync = async (fastify) => {
                   timestamp: snapshot.timestamp,
                   nseSymbol: snapshot.nseSymbol,
                   quoteData: snapshot.quoteData as unknown as QuoteData,
+                  createdAt: snapshot.createdAt,
+                  updatedAt: snapshot.updatedAt,
                 };
                 return data;
               })
