@@ -2,7 +2,6 @@ import {
   v1_developer_groww_schemas,
   v1_developer_lists_schemas,
 } from "@ganaka/schemas";
-import { randomUUID } from "crypto";
 import dotenv from "dotenv";
 import { z } from "zod";
 import { fetchCandles } from "./callbacks/fetchCandles";
@@ -38,34 +37,48 @@ export interface RunContext {
 
 export async function ganaka<T>({
   fn,
+  startTime,
+  endTime,
 }: {
   fn: (context: RunContext) => Promise<T>;
+  startTime: Date;
+  endTime: Date;
 }) {
-  // Generate unique runId for this invocation
-  const runId = randomUUID();
-  logger.debug(`Generated runId: ${runId}`);
-
   // Resolve username from developer token
-  let username: string | null = null;
+  let runId: string | null = null;
   const developerToken = process.env.DEVELOPER_KEY;
 
   if (developerToken) {
     try {
-      const tokenRecord = await prisma.developerToken.findUnique({
+      const developer = await prisma.developer.findUnique({
         where: { token: developerToken },
       });
-      if (tokenRecord) {
-        username = tokenRecord.username;
-        logger.debug(`Resolved username: ${username} for runId: ${runId}`);
+      if (developer) {
+        // create a new run
+        const run = await prisma.run.create({
+          data: {
+            startTime: startTime,
+            endTime: endTime,
+            developer: {
+              connect: {
+                id: developer.id,
+              },
+            },
+          },
+        });
+        if (run) {
+          logger.debug(`Created run: ${run.id}`);
+          runId = run.id;
+        } else {
+          throw new Error("Failed to create run");
+        }
       } else {
         throw new Error(
-          `Developer token not found in database. Please set DEVELOPER_TOKEN environment variable.`
+          `Developer not found in database. Please check your DEVELOPER_KEY environment variable.`
         );
       }
     } catch (error) {
-      throw new Error(
-        `Error resolving username from developer token: ${error}`
-      );
+      throw new Error(`Error creating run: ${error}`);
     }
   } else {
     throw new Error(
@@ -80,7 +93,7 @@ export async function ganaka<T>({
   try {
     logger.debug("Running function for the first time");
     await fn({
-      placeOrder: placeOrder({ username, runId }),
+      placeOrder: placeOrder({ runId }),
       fetchCandles: fetchCandles({
         developerToken,
         apiDomain,

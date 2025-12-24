@@ -5,7 +5,7 @@ export {
   type ShortlistSnapshot,
   type QuoteSnapshot,
   type NiftyQuote,
-  type DeveloperToken,
+  type Developer,
   type ShortlistType,
 } from "./generated/prisma";
 export {
