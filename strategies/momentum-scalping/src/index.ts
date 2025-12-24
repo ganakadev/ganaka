@@ -1,5 +1,7 @@
 import { ganaka } from "@ganaka/sdk";
 import dayjs from "dayjs";
+import dotenv from "dotenv";
+dotenv.config();
 
 const tradingWindowStart = dayjs()
   .set("date", 23)
@@ -18,6 +20,7 @@ async function main() {
     },
     startTime: tradingWindowStart.toDate(),
     endTime: tradingWindowEnd.toDate(),
+    deleteRunAfterCompletion: true,
   });
 }
 
