@@ -25,9 +25,11 @@ export interface RunContext {
     >["data"]
   >;
   fetchQuote: (
-    symbol: string
+    symbol: string,
+    datetime?: Date
   ) => Promise<
-    z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"]
+    | z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"]
+    | null
   >;
   fetchShortlist: (
     type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],

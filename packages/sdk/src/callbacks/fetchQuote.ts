@@ -12,22 +12,34 @@ export const fetchQuote =
     apiDomain: string;
   }) =>
   async (
-    symbol: string
+    symbol: string,
+    datetime?: Date
   ): Promise<
-    z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"]
+    | z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"]
+    | null
   > => {
     if (!developerToken) {
       throw new Error(
-        "Developer token not found. Please set DEVELOPER_TOKEN or GANAKA_TOKEN environment variable."
+        "Developer token not found. Please set DEVELOPER_TOKEN environment variable."
       );
     }
 
     try {
       // Validate input params
+      const params: {
+        symbol: string;
+        datetime?: string;
+      } = {
+        symbol,
+      };
+
+      // If datetime is provided, convert to ISO string and include in params
+      if (datetime) {
+        params.datetime = datetime.toISOString();
+      }
+
       const validatedParams =
-        v1_developer_groww_schemas.getGrowwQuote.query.parse({
-          symbol,
-        });
+        v1_developer_groww_schemas.getGrowwQuote.query.parse(params);
 
       const response = await axios.get<
         z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>

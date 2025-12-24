@@ -89,9 +89,10 @@ export const getGrowwQuote = {
     symbol: z.string(),
     exchange: z.enum(["NSE", "BSE"]).optional(),
     segment: z.enum(["CASH"]).optional(),
+    datetime: z.string().optional(), // ISO string format
   }),
   response: apiResponseSchema.extend({
-    data: growwQuoteSchema,
+    data: growwQuoteSchema.nullable(),
   }),
 };
 

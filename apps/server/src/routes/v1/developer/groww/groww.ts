@@ -2,10 +2,15 @@ import { v1_developer_groww_schemas } from "@ganaka/schemas";
 import axios, { AxiosError } from "axios";
 import { FastifyInstance, FastifyPluginAsync } from "fastify";
 import z from "zod";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { RedisManager } from "../../../../utils/redis";
 import { sendResponse } from "../../../../utils/sendResponse";
 import { TokenManager } from "../../../../utils/token-manager";
 import { validateRequest } from "../../../../utils/validator";
+import { prisma } from "../../../../utils/prisma";
+
+dayjs.extend(utc);
 
 /**
  * Helper function to make Groww API requests with automatic token refresh
@@ -108,6 +113,70 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
       return;
     }
 
+    console.log(validationResult);
+
+    // If datetime is provided, fetch from snapshot
+    const datetime = (validationResult as { datetime?: string }).datetime;
+    if (datetime) {
+      try {
+        const selectedDateTime = dayjs(datetime).utc();
+
+        const quoteSnapshots = await prisma.quoteSnapshot.findMany({
+          where: {
+            timestamp: {
+              gte: selectedDateTime.toDate(),
+              lte: selectedDateTime.add(1, "m").toDate(),
+            },
+            nseSymbol: validationResult.symbol,
+          },
+          orderBy: {
+            timestamp: "desc",
+          },
+        });
+
+        if (quoteSnapshots.length === 0) {
+          return sendResponse<
+            z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>
+          >({
+            statusCode: 200,
+            message: "Quote snapshot not found",
+            data: null as any,
+          });
+        }
+
+        const quoteSnapshot = quoteSnapshots[0];
+        const quoteData = quoteSnapshot.quoteData as z.infer<
+          typeof v1_developer_groww_schemas.growwQuoteSchema
+        > | null;
+
+        if (!quoteData) {
+          return sendResponse<
+            z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>
+          >({
+            statusCode: 200,
+            message: "Quote snapshot not found",
+            data: null as any,
+          });
+        }
+
+        return sendResponse<
+          z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>
+        >({
+          statusCode: 200,
+          message: "Quote fetched successfully",
+          data: quoteData,
+        });
+      } catch (error) {
+        fastify.log.error(
+          `Error fetching quote snapshot for ${validationResult.symbol} at ${datetime}: ${error}`
+        );
+        return reply.internalServerError(
+          "Failed to fetch quote snapshot. Please check server logs for more details."
+        );
+      }
+    }
+
+    // If no datetime, fetch live data from Groww API
     try {
       const response = await growwAPIRequest<
         z.infer<typeof v1_developer_groww_schemas.growwQuoteSchema>
