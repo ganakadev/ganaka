@@ -10,13 +10,13 @@ export interface PlaceOrderData {
 }
 
 export const placeOrder =
-  ({ username, runId }: { username: string; runId: string }) =>
+  ({ runId }: { runId: string }) =>
   (data: PlaceOrderData) => {
     // Keep existing console.log for backward compatibility
     console.log(data);
 
     // Persist to database if username is available
-    if (username) {
+    if (runId) {
       // Fire-and-forget async operation (don't await to maintain void signature)
       prisma.order
         .create({
@@ -26,8 +26,11 @@ export const placeOrder =
             stopLossPrice: new Decimal(data.stopLossPrice),
             takeProfitPrice: new Decimal(data.takeProfitPrice),
             timestamp: new Date(),
-            runId,
-            username,
+            run: {
+              connect: {
+                id: runId,
+              },
+            },
           },
         })
         .then(() => {
