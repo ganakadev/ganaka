@@ -27,7 +27,9 @@ export const PageHeader = ({
       (d) => d.date === dateKey
     );
     if (!dateData) return [];
-    return dateData.timestamps.map((ts) => dayjs(ts).format("HH:mm"));
+    return Array.from(
+      new Set(dateData.timestamps.map((ts) => dayjs(ts).format("HH:mm")))
+    );
   };
 
   // Check if a date has any available data
@@ -35,7 +37,6 @@ export const PageHeader = ({
     const dateKey = dayjs(date).format("YYYY-MM-DD");
     return (
       availableDatetimes?.data.dates?.some((d) => {
-        console.log(d.date, dateKey);
         return d.date === dateKey;
       }) ?? false
     );
