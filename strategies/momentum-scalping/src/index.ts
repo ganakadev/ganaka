@@ -5,12 +5,12 @@ dotenv.config();
 
 const tradingWindowStart = dayjs()
   .set("date", 23)
-  .set("hour", 10)
+  .set("hour", 9)
   .set("minute", 0);
 const tradingWindowEnd = dayjs()
   .set("date", 23)
-  .set("hour", 15)
-  .set("minute", 30);
+  .set("hour", 10)
+  .set("minute", 0);
 
 async function main() {
   await ganaka({
@@ -23,16 +23,32 @@ async function main() {
     }) => {
       const currentTime = dayjs(currentTimestamp);
 
+      const shortlist = await fetchShortlist("top-gainers", currentTimestamp);
+      console.log(shortlist);
+
+      if (!shortlist) {
+        return;
+      }
+
+      const firstCompany = shortlist[0];
+      console.log(firstCompany);
+      if (!firstCompany) {
+        return;
+      }
+
+      const quote = await fetchQuote(firstCompany.nseSymbol, currentTimestamp);
+      console.log(quote);
+      if (!quote) {
+        return;
+      }
+
       // place order if time is 11AM or 1:30PM
-      if (
-        (currentTime.hour() === 11 && currentTime.minute() === 0) ||
-        (currentTime.hour() === 13 && currentTime.minute() === 30)
-      ) {
+      if (currentTime.hour() === 9 && currentTime.minute() === 50) {
         placeOrder({
-          entryPrice: 100,
-          nseSymbol: "VIPIND",
-          stopLossPrice: 95,
-          takeProfitPrice: 105,
+          entryPrice: quote.payload.last_price,
+          nseSymbol: firstCompany.nseSymbol,
+          stopLossPrice: quote.payload.last_price * 0.95,
+          takeProfitPrice: quote.payload.last_price * 1.05,
         });
       }
 
