@@ -5,11 +5,11 @@ dotenv.config();
 
 const tradingWindowStart = dayjs()
   .set("date", 23)
-  .set("hour", 10)
+  .set("hour", 16)
   .set("minute", 0);
 const tradingWindowEnd = dayjs()
   .set("date", 23)
-  .set("hour", 15)
+  .set("hour", 18)
   .set("minute", 30);
 
 async function main() {
@@ -21,27 +21,13 @@ async function main() {
       placeOrder,
       currentTimestamp,
     }) => {
-      const currentTime = dayjs(currentTimestamp);
-
-      // place order if time is 11AM or 1:30PM
-      if (
-        (currentTime.hour() === 11 && currentTime.minute() === 0) ||
-        (currentTime.hour() === 13 && currentTime.minute() === 30)
-      ) {
-        placeOrder({
-          entryPrice: 100,
-          nseSymbol: "VIPIND",
-          stopLossPrice: 95,
-          takeProfitPrice: 105,
-        });
-      }
-
+      console.log(dayjs(currentTimestamp).format("YYYY-MM-DD HH:mm:ss"));
       return;
     },
-    intervalMinutes: 5,
+    intervalMinutes: 60,
     startTime: tradingWindowStart.toDate(),
     endTime: tradingWindowEnd.toDate(),
-    deleteRunAfterCompletion: false,
+    deleteRunAfterCompletion: true,
   });
 }
 
