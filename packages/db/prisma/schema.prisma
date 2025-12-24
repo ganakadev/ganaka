@@ -71,7 +71,7 @@ model Run {
 
   completed Boolean    @default(false)
   orders    Order[]
-  developer Developer? @relation(fields: [developerId], references: [id])
+  developer Developer? @relation(fields: [developerId], references: [id], onDelete: Cascade)
 
   developerId String?
   createdAt   DateTime @default(now())
@@ -84,7 +84,7 @@ model Run {
 model Order {
   id String @id @default(uuid())
 
-  run Run @relation(fields: [runId], references: [id])
+  run Run @relation(fields: [runId], references: [id], onDelete: Cascade)
 
   nseSymbol       String
   stopLossPrice   Decimal

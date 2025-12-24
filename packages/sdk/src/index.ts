@@ -39,10 +39,17 @@ export async function ganaka<T>({
   fn,
   startTime,
   endTime,
+  deleteRunAfterCompletion = false,
 }: {
   fn: (context: RunContext) => Promise<T>;
   startTime: Date;
   endTime: Date;
+  /**
+   * Delete run after completion.
+   * Used to test the function without keeping the run and related data in the database
+   * @default false
+   */
+  deleteRunAfterCompletion?: boolean;
 }) {
   // Resolve username from developer token
   let runId: string | null = null;
@@ -115,5 +122,12 @@ export async function ganaka<T>({
   } catch (error) {
     logger.error("Error running function for the first time");
     throw error;
+  } finally {
+    if (deleteRunAfterCompletion) {
+      logger.info(`Deleting run after completion: ${runId}`);
+      await prisma.run.delete({
+        where: { id: runId },
+      });
+    }
   }
 }
