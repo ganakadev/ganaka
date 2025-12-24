@@ -14,6 +14,7 @@ async function main() {
   await ganaka({
     fn: async ({ fetchShortlist, fetchQuote, fetchCandles, placeOrder }) => {
       console.log(tradingWindowStart.toDate(), tradingWindowEnd.toDate());
+      return;
     },
     startTime: tradingWindowStart.toDate(),
     endTime: tradingWindowEnd.toDate(),

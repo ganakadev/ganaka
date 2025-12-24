@@ -105,6 +105,13 @@ export async function ganaka<T>({
         apiDomain,
       }),
     });
+
+    // Mark the run as completed
+    logger.info(`Marking run as completed: ${runId}`);
+    await prisma.run.update({
+      where: { id: runId },
+      data: { completed: true },
+    });
   } catch (error) {
     logger.error("Error running function for the first time");
     throw error;
