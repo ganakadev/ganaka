@@ -89,9 +89,7 @@ export async function ganaka<T>({
   // Get API domain from environment or use default
   const apiDomain = process.env.API_DOMAIN || "https://api.ganaka.live";
 
-  // Run the function immediately on first call
   try {
-    logger.debug("Running function for the first time");
     await fn({
       placeOrder: placeOrder({ runId }),
       fetchCandles: fetchCandles({
