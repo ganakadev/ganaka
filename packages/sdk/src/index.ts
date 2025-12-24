@@ -1,4 +1,7 @@
-import { v1_developer_groww_schemas, v1_developer_lists_schemas } from "@ganaka/schemas";
+import {
+  v1_developer_groww_schemas,
+  v1_developer_lists_schemas,
+} from "@ganaka/schemas";
 import { randomUUID } from "crypto";
 import dotenv from "dotenv";
 import { z } from "zod";
@@ -44,8 +47,7 @@ export async function ganaka<T>({
 
   // Resolve username from developer token
   let username: string | null = null;
-  const developerToken =
-    process.env.DEVELOPER_TOKEN || process.env.GANAKA_TOKEN;
+  const developerToken = process.env.DEVELOPER_KEY;
 
   if (developerToken) {
     try {

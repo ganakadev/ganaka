@@ -42,6 +42,17 @@ export default defineConfig({
         "fs",
         "stream",
         "crypto",
+        // Node.js built-in modules (node: prefix)
+        /^node:/,
+        // Also externalize without node: prefix for compatibility
+        "util",
+        "os",
+        "tty",
+        "child_process",
+        "fs/promises",
+        "process",
+        "async_hooks",
+        "events",
       ],
     },
     // Generate sourcemaps
