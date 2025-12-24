@@ -10,6 +10,7 @@ import { fetchShortlist } from "./callbacks/fetchShortlist";
 import { logger } from "./utils/logger";
 import { prisma } from "./utils/prisma";
 import { placeOrder, PlaceOrderData } from "./callbacks/placeOrder";
+import { runMinuteLoop } from "./utils/minute-loop";
 dotenv.config();
 
 export interface RunContext {
@@ -33,17 +34,20 @@ export interface RunContext {
   ) => Promise<
     z.infer<typeof v1_developer_lists_schemas.getLists.response>["data"]
   >;
+  currentTimestamp: Date;
 }
 
 export async function ganaka<T>({
   fn,
   startTime,
   endTime,
+  intervalMinutes = 1,
   deleteRunAfterCompletion = false,
 }: {
   fn: (context: RunContext) => Promise<T>;
   startTime: Date;
   endTime: Date;
+  intervalMinutes: number;
   /**
    * Delete run after completion.
    * Used to test the function without keeping the run and related data in the database
@@ -97,20 +101,28 @@ export async function ganaka<T>({
   const apiDomain = process.env.API_DOMAIN || "https://api.ganaka.live";
 
   try {
-    await fn({
-      placeOrder: placeOrder({ runId }),
-      fetchCandles: fetchCandles({
-        developerToken,
-        apiDomain,
-      }),
-      fetchQuote: fetchQuote({
-        developerToken,
-        apiDomain,
-      }),
-      fetchShortlist: fetchShortlist({
-        developerToken,
-        apiDomain,
-      }),
+    await runMinuteLoop({
+      startTime,
+      endTime,
+      intervalMinutes,
+      callback: async (currentTimestamp) => {
+        await fn({
+          placeOrder: placeOrder({ runId }),
+          fetchCandles: fetchCandles({
+            developerToken,
+            apiDomain,
+          }),
+          fetchQuote: fetchQuote({
+            developerToken,
+            apiDomain,
+          }),
+          fetchShortlist: fetchShortlist({
+            developerToken,
+            apiDomain,
+          }),
+          currentTimestamp,
+        });
+      },
     });
 
     // Mark the run as completed
