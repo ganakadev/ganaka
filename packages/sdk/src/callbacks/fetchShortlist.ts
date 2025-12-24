@@ -12,21 +12,33 @@ export const fetchShortlist =
     apiDomain: string;
   }) =>
   async (
-    type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"]
+    type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
+    datetime?: Date
   ): Promise<
-    z.infer<typeof v1_developer_lists_schemas.getLists.response>["data"]
+    z.infer<typeof v1_developer_lists_schemas.getLists.response>["data"] | null
   > => {
     if (!developerToken) {
       throw new Error(
-        "Developer token not found. Please set DEVELOPER_TOKEN or GANAKA_TOKEN environment variable."
+        "Developer token not found. Please set DEVELOPER_TOKEN environment variable."
       );
     }
 
     try {
       // Validate input params
-      const validatedParams = v1_developer_lists_schemas.getLists.query.parse({
+      const params: {
+        type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"];
+        datetime?: string;
+      } = {
         type,
-      });
+      };
+
+      // If datetime is provided, convert to ISO string and include in params
+      if (datetime) {
+        params.datetime = datetime.toISOString();
+      }
+
+      const validatedParams =
+        v1_developer_lists_schemas.getLists.query.parse(params);
 
       const response = await axios.get<
         z.infer<typeof v1_developer_lists_schemas.getLists.response>

@@ -14,8 +14,9 @@ export const listSchema = z.object({
 export const getLists = {
   query: z.object({
     type: z.enum(["top-gainers", "volume-shockers"]),
+    datetime: z.string().optional(), // ISO string format
   }),
   response: apiResponseSchema.extend({
-    data: z.array(listSchema),
+    data: z.array(listSchema).nullable(),
   }),
 };

@@ -30,9 +30,10 @@ export interface RunContext {
     z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"]
   >;
   fetchShortlist: (
-    type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"]
+    type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
+    datetime?: Date
   ) => Promise<
-    z.infer<typeof v1_developer_lists_schemas.getLists.response>["data"]
+    z.infer<typeof v1_developer_lists_schemas.getLists.response>["data"] | null
   >;
   currentTimestamp: Date;
 }
