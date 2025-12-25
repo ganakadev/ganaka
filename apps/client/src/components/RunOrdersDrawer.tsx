@@ -217,16 +217,24 @@ function RunOrdersPanel({ selectedRun }: RunOrdersPanelProps) {
 interface StockChartProps {
   symbol: string;
   orders: Order[];
-  runStartTime: Date | null;
+  runStartTime: Date | string | null;
 }
 
 function StockChart({ symbol, orders, runStartTime }: StockChartProps) {
   // API - Fetch candle data
+  // Normalize runStartTime to ISO string: handle both Date objects and string values
+  const runStartTimeISO =
+    runStartTime === null || runStartTime === undefined
+      ? ""
+      : typeof runStartTime === "string"
+      ? runStartTime
+      : runStartTime.toISOString();
+
   const { data: candlesData, error: candleError } =
     dashboardAPI.useGetCandlesQuery(
       {
         symbol: symbol,
-        date: runStartTime?.toISOString() || "",
+        date: runStartTimeISO,
         interval: "1minute",
       },
       {
@@ -279,9 +287,17 @@ function StockChart({ symbol, orders, runStartTime }: StockChartProps) {
     );
   }
 
+  // Normalize runStartTime to Date for OrderCandleChart (convert string to Date if needed)
+  const normalizedRunStartTime =
+    runStartTime === null || runStartTime === undefined
+      ? null
+      : typeof runStartTime === "string"
+      ? new Date(runStartTime)
+      : runStartTime;
+
   return (
     <OrderCandleChart
-      selectedDate={runStartTime}
+      selectedDate={normalizedRunStartTime}
       candleData={candleData}
       orders={orders}
     />
