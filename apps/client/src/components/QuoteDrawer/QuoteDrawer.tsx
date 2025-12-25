@@ -4,11 +4,17 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import type { Time } from "lightweight-charts";
+import { useMemo } from "react";
 import { dashboardAPI } from "../../store/api/dashboardApi";
 import type { ShortlistEntryWithQuote } from "../../types";
 import { calculateBuyerControlPercentage } from "../../utils/buyerControl";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
-import { CandleChart, type CandleData } from "./CandleChart";
+import {
+  CandleChart,
+  type CandleData,
+  type HistogramSeriesConfig,
+  type SeriesMarkerConfig,
+} from "../CandleChart";
 import { QuoteDataTables } from "./QuoteDataTables";
 
 dayjs.extend(utc);
@@ -113,6 +119,95 @@ function QuotePanel({
       : "Failed to fetch candle data"
     : null;
 
+  // Transform buyerControlData into histogram series format with trend-based coloring
+  const histogramSeries: HistogramSeriesConfig[] = useMemo(() => {
+    if (!buyerControlData || buyerControlData.length === 0) return [];
+
+    // eliminate data points that have duplicate times
+    const uniqueData = buyerControlData.filter(
+      (point, index, self) =>
+        index === self.findIndex((t) => t.time === point.time)
+    );
+
+    // Transform data to histogram format with color based on trend (up/down movement)
+    const histogramData = uniqueData.map((point, index) => {
+      // First point: use neutral color (no previous point to compare)
+      if (index === 0) {
+        return {
+          time: point.time,
+          value: point.value,
+          color: "#808080", // neutral gray for first point
+        };
+      }
+
+      // Compare to previous point to determine trend
+      const previousValue = uniqueData[index - 1].value;
+      const isTrendingUp = point.value > previousValue;
+
+      return {
+        time: point.time,
+        value: point.value,
+        color: isTrendingUp ? "#13413b" : "#5C2121", // green if trending up, red if trending down
+      };
+    });
+
+    return [
+      {
+        data: histogramData,
+        priceScaleId: "", // set as an overlay by setting a blank priceScaleId
+        scaleMargins: {
+          top: 0.7, // highest point of the series will be 70% away from the top
+          bottom: 0, // lowest point will be at the very bottom
+        },
+        priceFormat: {
+          type: "volume",
+        },
+      },
+    ];
+  }, [buyerControlData]);
+
+  // Transform selectedDate into series markers format
+  const seriesMarkers: SeriesMarkerConfig[] = useMemo(() => {
+    if (!selectedDate || !candleData || candleData.length === 0) return [];
+
+    // Convert selectedDate to dayjs object
+    const selectedTime = dayjs(selectedDate).format("YYYY-MM-DDTHH:mm");
+    let closestCandle = candleData[0];
+    const referenceIndex = Math.min(30, candleData.length - 1);
+    const firstCandleTime = dayjs
+      .unix(candleData[referenceIndex].time as number)
+      .utc()
+      .format("YYYY-MM-DDTHH:mm");
+    let minDiff = Math.abs(
+      dayjs(selectedTime).diff(dayjs(firstCandleTime), "minutes")
+    );
+
+    for (const candle of candleData) {
+      const candleTime = dayjs
+        .unix(candle.time as number)
+        .utc()
+        .format("YYYY-MM-DDTHH:mm");
+      const diff = dayjs(selectedTime).diff(dayjs(candleTime), "minutes");
+
+      if (Math.abs(diff) < minDiff) {
+        minDiff = Math.abs(diff);
+        closestCandle = candle;
+      }
+    }
+
+    // Create marker at the selected time
+    return [
+      {
+        time: closestCandle.time,
+        position: "belowBar",
+        color: "orange",
+        size: 1,
+        shape: "circle",
+        text: `${dayjs(selectedTime).format("HH:mm")}`,
+      },
+    ];
+  }, [selectedDate, candleData]);
+
   // DRAW
   return (
     <div className="flex flex-col gap-4">
@@ -126,9 +221,9 @@ function QuotePanel({
             </div>
           )}
           <CandleChart
-            selectedDate={selectedDate}
             candleData={candleData}
-            buyerControlData={buyerControlData}
+            histogramSeries={histogramSeries}
+            seriesMarkers={seriesMarkers}
           />
         </>
       )}
