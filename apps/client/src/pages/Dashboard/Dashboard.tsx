@@ -1,21 +1,21 @@
-import { PageHeader } from "../components/PageHeader";
-import { QuoteDrawer } from "../components/QuoteDrawer";
-import { ShortlistTable } from "../components/ShortlistTable";
+import { Header } from "./components/Header";
+import { QuoteDrawer } from "../../components/QuoteDrawer";
 import {
   PersistentCompaniesTable,
   type PersistentCompany,
-} from "../components/PersistentCompaniesTable";
-import { UniqueCompaniesCard } from "../components/UniqueCompaniesCard";
-import { RunsSidebar } from "../components/RunsSidebar";
-import { RunOrdersDrawer } from "../components/RunOrdersDrawer";
+} from "./components/PersistentCompaniesTable";
+import { RunOrdersDrawer } from "../../components/RunOrdersDrawer";
 import { useState } from "react";
 import type {
   ShortlistEntryWithQuote,
   ShortlistSnapshotWithEntries,
   Run,
-} from "../types";
-import { dashboardAPI } from "../store/api/dashboardApi";
-import { useRTKNotifier } from "../utils/hooks/useRTKNotifier";
+} from "../../types";
+import { dashboardAPI } from "../../store/api/dashboardApi";
+import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
+import { UniqueCompaniesCard } from "./components/UniqueCompaniesCard";
+import { ShortlistTable } from "./components/ShortlistTable";
+import { RunsSidebar } from "./components/RunsSidebar";
 
 export const Dashboard = () => {
   // STATE
@@ -110,8 +110,8 @@ export const Dashboard = () => {
     <div className="flex h-screen">
       <RunsSidebar onRunClick={handleRunClick} />
       <div className="flex-1 overflow-auto">
-        <div className="max-w-5xl mx-auto min-h-full py-8 px-4 grid grid-rows-[auto_1fr] gap-4">
-          <PageHeader
+        <div className="max-w-5xl mx-auto min-h-full py-8 pt-4 px-4 grid grid-rows-[auto_1fr] gap-4">
+          <Header
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
             activeTab={activeTab}

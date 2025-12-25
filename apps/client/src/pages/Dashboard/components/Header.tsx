@@ -8,12 +8,12 @@ import {
   useRef,
   useState,
 } from "react";
-import { dashboardAPI } from "../store/api/dashboardApi";
-import { useRTKNotifier } from "../utils/hooks/useRTKNotifier";
+import { dashboardAPI } from "../../../store/api/dashboardApi";
+import { useRTKNotifier } from "../../../utils/hooks/useRTKNotifier";
 import { useSearchParams } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
 
-export const PageHeader = ({
+export const Header = ({
   activeTab,
   setActiveTab,
   selectedDate,

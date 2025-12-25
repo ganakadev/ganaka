@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Dashboard } from "./pages/Dashboard";
+import { Dashboard } from "./pages/Dashboard/Dashboard";
 import { SignIn } from "./pages/SignIn";
 import { authLocalStorage } from "./utils/authLocalStorage";
 
