@@ -1,5 +1,5 @@
 import { Drawer, Table, Collapse, Button, Group, Text } from "@mantine/core";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import type { Run, Order } from "../../types";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -7,7 +7,11 @@ import utc from "dayjs/plugin/utc";
 import type { Time } from "lightweight-charts";
 import { dashboardAPI } from "../../store/api/dashboardApi";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
-import { OrderCandleChart, type CandleData } from "./OrderCandleChart";
+import {
+  CandleChart,
+  type CandleData,
+  type SeriesMarkerConfig,
+} from "../CandleChart";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -257,6 +261,53 @@ function StockChart({ symbol, orders, runStartTime }: StockChartProps) {
       }))
     : null;
 
+  // Transform orders into series markers format
+  // Note: This hook must be called unconditionally (before early returns)
+  // but it safely handles null/empty candleData
+  const seriesMarkers: SeriesMarkerConfig[] = useMemo(() => {
+    if (!orders || orders.length === 0 || !candleData || candleData.length === 0) {
+      return [];
+    }
+
+    // Colors array for cycling through different orders
+    const colors = ["#FFA500", "#00FFFF", "#FF00FF", "#FFFF00", "#00FF00"];
+
+    // Create markers for each order
+    return orders.map((order, index) => {
+      // Convert order timestamp to dayjs and find closest candle
+      const orderTime = dayjs(order.timestamp).format("YYYY-MM-DDTHH:mm");
+      let closestCandle = candleData[0];
+      let minDiff = Infinity;
+
+      for (const candle of candleData) {
+        const candleTime = dayjs
+          .unix(candle.time as number)
+          .utc()
+          .format("YYYY-MM-DDTHH:mm");
+        const diff = Math.abs(
+          dayjs(orderTime).diff(dayjs(candleTime), "minutes")
+        );
+
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestCandle = candle;
+        }
+      }
+
+      // Use different colors for multiple orders
+      const color = colors[index % colors.length];
+
+      return {
+        time: closestCandle.time,
+        position: "belowBar" as const,
+        color: color,
+        size: 1,
+        shape: "circle" as const,
+        text: `Order ${index + 1}: ₹${order.entryPrice.toFixed(2)}`,
+      };
+    });
+  }, [orders, candleData]);
+
   const errorMessage = candleError
     ? "data" in candleError &&
       typeof candleError.data === "object" &&
@@ -266,7 +317,6 @@ function StockChart({ symbol, orders, runStartTime }: StockChartProps) {
       : "Failed to fetch candle data"
     : null;
 
-  // DRAW
   if (errorMessage) {
     return (
       <div className="border rounded-md p-4 bg-red-50">
@@ -287,19 +337,13 @@ function StockChart({ symbol, orders, runStartTime }: StockChartProps) {
     );
   }
 
-  // Normalize runStartTime to Date for OrderCandleChart (convert string to Date if needed)
-  const normalizedRunStartTime =
-    runStartTime === null || runStartTime === undefined
-      ? null
-      : typeof runStartTime === "string"
-      ? new Date(runStartTime)
-      : runStartTime;
-
+  // DRAW
+  // Use a key based on symbol to force chart re-initialization when data becomes available
   return (
-    <OrderCandleChart
-      selectedDate={normalizedRunStartTime}
+    <CandleChart
+      key={symbol}
       candleData={candleData}
-      orders={orders}
+      seriesMarkers={seriesMarkers}
     />
   );
 }
