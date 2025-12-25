@@ -24,12 +24,10 @@ export type CandleData = CandlestickData<Time>;
 export function CandleChart({
   selectedDate,
   candleData,
-  buyerControlPercentage,
   buyerControlData,
 }: {
   selectedDate: Date | null;
   candleData: CandleData[] | null;
-  buyerControlPercentage: number | null | undefined;
   buyerControlData: Array<{ time: Time; value: number }> | null;
 }) {
   // HOOKS
@@ -189,7 +187,7 @@ export function CandleChart({
       return {
         time: point.time,
         value: point.value,
-        color: isTrendingUp ? "#26a69a" : "#ef5350", // green if trending up, red if trending down
+        color: isTrendingUp ? "#13413b" : "#5C2121", // green if trending up, red if trending down
       };
     });
 
@@ -242,25 +240,12 @@ export function CandleChart({
       shape: "circle",
       text: `${dayjs(selectedTime).format("HH:mm")}`,
     };
-    const buyerControlMarker: SeriesMarker<Time> = {
-      time: closestCandle.time,
-      position: "aboveBar",
-      color:
-        buyerControlPercentage && buyerControlPercentage > 50
-          ? "lightGreen"
-          : "red",
-      size: 1,
-      shape: "circle",
-      text: `${
-        buyerControlPercentage ? buyerControlPercentage.toFixed(2) : "N/A"
-      }%`,
-    };
 
     // Set markers using the markers manager (v5 API)
     if (markersRef.current) {
-      markersRef.current.setMarkers([selectedTimeMarker, buyerControlMarker]);
+      markersRef.current.setMarkers([selectedTimeMarker]);
     }
-  }, [selectedDate, candleData, buyerControlPercentage]);
+  }, [selectedDate, candleData]);
 
   // DRAW
   return (
