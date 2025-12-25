@@ -21,20 +21,42 @@ dayjs.extend(timezone);
 
 export type CandleData = CandlestickData<Time>;
 
-export function CandleChart({
-  selectedDate,
-  candleData,
-  buyerControlData,
-}: {
-  selectedDate: Date | null;
+export interface HistogramSeriesConfig {
+  data: Array<{ time: Time; value: number; color?: string }>;
+  priceScaleId?: string; // empty string for overlay
+  scaleMargins?: { top: number; bottom: number };
+  priceFormat?: { type: "volume" | "price" };
+}
+
+export interface SeriesMarkerConfig {
+  time: Time;
+  position: "aboveBar" | "belowBar" | "inBar";
+  color: string;
+  size: number;
+  shape: "circle" | "square" | "arrowUp" | "arrowDown";
+  text?: string;
+}
+
+export interface CandleChartProps {
   candleData: CandleData[] | null;
-  buyerControlData: Array<{ time: Time; value: number }> | null;
-}) {
+  histogramSeries?: HistogramSeriesConfig[];
+  seriesMarkers?: SeriesMarkerConfig[];
+  height?: number;
+}
+
+export function CandleChart({
+  candleData,
+  histogramSeries = [],
+  seriesMarkers = [],
+  height = 250,
+}: CandleChartProps) {
   // HOOKS
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
-  const histogramSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
+  const histogramSeriesRefsRef = useRef<
+    Array<ISeriesApi<"Histogram"> | null>
+  >([]);
   const markersRef = useRef<ReturnType<
     typeof createSeriesMarkers<Time>
   > | null>(null);
@@ -52,7 +74,7 @@ export function CandleChart({
         background: { color: "black" },
       },
       width: chartContainerRef.current.clientWidth,
-      height: 250,
+      height: height,
       leftPriceScale: {
         visible: true,
         borderColor: "rgba(255, 255, 255, 0.2)",
@@ -88,33 +110,7 @@ export function CandleChart({
       priceScaleId: "left",
     } as CandlestickSeriesPartialOptions);
 
-    // Configure left price scale margins to prevent overlap with histogram
-    candlestickSeries.priceScale().applyOptions({
-      scaleMargins: {
-        top: 0.1,
-        bottom: 0.4,
-      },
-    });
-
     seriesRef.current = candlestickSeries;
-
-    // Add histogram series for buyer control percentage
-    const histogramSeries = chart.addSeries(HistogramSeries, {
-      priceFormat: {
-        type: "volume",
-      },
-      priceScaleId: "", // set as an overlay by setting a blank priceScaleId
-    } as HistogramSeriesPartialOptions);
-
-    // Configure histogram scale margins to position at bottom 30% of chart
-    histogramSeries.priceScale().applyOptions({
-      scaleMargins: {
-        top: 0.7, // highest point of the series will be 70% away from the top
-        bottom: 0, // lowest point will be at the very bottom
-      },
-    });
-
-    histogramSeriesRef.current = histogramSeries;
 
     // Create series markers manager
     markersRef.current = createSeriesMarkers(candlestickSeries, []);
@@ -133,7 +129,68 @@ export function CandleChart({
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [height]);
+
+  // updates candlestick scale margins based on histogram series presence
+  useEffect(() => {
+    if (!seriesRef.current) return;
+
+    // Configure left price scale margins to prevent overlap with histogram
+    // Only apply if there are histogram series
+    if (histogramSeries.length > 0) {
+      seriesRef.current.priceScale().applyOptions({
+        scaleMargins: {
+          top: 0.1,
+          bottom: 0.4,
+        },
+      });
+    } else {
+      // Reset margins when no histogram series
+      seriesRef.current.priceScale().applyOptions({
+        scaleMargins: {
+          top: 0,
+          bottom: 0,
+        },
+      });
+    }
+  }, [histogramSeries.length]);
+
+  // creates histogram series dynamically
+  useEffect(() => {
+    if (!chartRef.current || !seriesRef.current) return;
+
+    const chart = chartRef.current;
+    
+    // Cleanup: remove existing histogram series first
+    histogramSeriesRefsRef.current.forEach((series) => {
+      if (series && chart) {
+        chart.removeSeries(series);
+      }
+    });
+
+    const histogramSeriesRefs: Array<ISeriesApi<"Histogram"> | null> = [];
+
+    // Create histogram series for each config
+    histogramSeries.forEach((config) => {
+      const histogramSeries = chart.addSeries(HistogramSeries, {
+        priceFormat: config.priceFormat || {
+          type: "volume",
+        },
+        priceScaleId: config.priceScaleId ?? "", // default to overlay
+      } as HistogramSeriesPartialOptions);
+
+      // Configure scale margins if provided
+      if (config.scaleMargins) {
+        histogramSeries.priceScale().applyOptions({
+          scaleMargins: config.scaleMargins,
+        });
+      }
+
+      histogramSeriesRefs.push(histogramSeries);
+    });
+
+    histogramSeriesRefsRef.current = histogramSeriesRefs;
+  }, [histogramSeries]);
 
   // sets the candle data
   useEffect(() => {
@@ -154,98 +211,73 @@ export function CandleChart({
     }
   }, [candleData]);
 
-  // sets the buyer control histogram data
+  // sets histogram series data
   useEffect(() => {
     if (
-      !histogramSeriesRef.current ||
-      !buyerControlData ||
-      buyerControlData.length === 0
+      !histogramSeriesRefsRef.current ||
+      histogramSeriesRefsRef.current.length === 0 ||
+      !histogramSeries ||
+      histogramSeries.length === 0
     )
       return;
 
-    // eliminate data points that have duplicate times
-    const uniqueData = buyerControlData.filter(
-      (point, index, self) =>
-        index === self.findIndex((t) => t.time === point.time)
-    );
-
-    // Transform data to histogram format with color based on trend (up/down movement)
-    const histogramData = uniqueData.map((point, index) => {
-      // First point: use neutral color (no previous point to compare)
-      if (index === 0) {
-        return {
-          time: point.time,
-          value: point.value,
-          color: "#808080", // neutral gray for first point
-        };
+    histogramSeries.forEach((config, index) => {
+      const histogramSeriesRef = histogramSeriesRefsRef.current[index];
+      if (
+        !histogramSeriesRef ||
+        !config.data ||
+        config.data.length === 0
+      ) {
+        return;
       }
 
-      // Compare to previous point to determine trend
-      const previousValue = uniqueData[index - 1].value;
-      const isTrendingUp = point.value > previousValue;
+      // eliminate data points that have duplicate times
+      const uniqueData = config.data.filter(
+        (point, idx, self) =>
+          idx === self.findIndex((t) => t.time === point.time)
+      );
 
-      return {
+      // Transform data to histogram format
+      // If color is provided in data, use it; otherwise use a default color
+      const histogramData = uniqueData.map((point) => ({
         time: point.time,
         value: point.value,
-        color: isTrendingUp ? "#13413b" : "#5C2121", // green if trending up, red if trending down
-      };
+        color: point.color || "#808080", // default gray if no color provided
+      }));
+
+      // Set histogram data
+      histogramSeriesRef.setData(histogramData);
     });
+  }, [histogramSeries]);
 
-    // Set histogram data
-    histogramSeriesRef.current.setData(histogramData);
-  }, [buyerControlData]);
-
-  // adds a marker at the selected time
+  // sets series markers
   useEffect(() => {
     if (
       !seriesRef.current ||
-      !selectedDate ||
-      !candleData ||
-      candleData.length === 0
+      !markersRef.current ||
+      !seriesMarkers ||
+      seriesMarkers.length === 0
     ) {
+      // Clear markers if none provided
+      if (markersRef.current) {
+        markersRef.current.setMarkers([]);
+      }
       return;
     }
 
-    // Convert selectedDate to dayjs object
-    const selectedTime = dayjs(selectedDate).format("YYYY-MM-DDTHH:mm");
-    let closestCandle = candleData[0];
-    const referenceIndex = Math.min(30, candleData.length - 1);
-    const firstCandleTime = dayjs
-      .unix(candleData[referenceIndex].time as number)
-      .utc()
-      .format("YYYY-MM-DDTHH:mm");
-    let minDiff = Math.abs(
-      dayjs(selectedTime).diff(dayjs(firstCandleTime), "minutes")
-    );
+    // Convert marker configs to SeriesMarker format
+    const markers: SeriesMarker<Time>[] = seriesMarkers.map((config) => ({
+      time: config.time,
+      position: config.position,
+      color: config.color,
+      size: config.size,
+      shape: config.shape,
+      text: config.text,
+    }));
 
-    for (const candle of candleData) {
-      const candleTime = dayjs
-        .unix(candle.time as number)
-        .utc()
-        .format("YYYY-MM-DDTHH:mm");
-      const diff = dayjs(selectedTime).diff(dayjs(candleTime), "minutes");
-
-      if (Math.abs(diff) < minDiff) {
-        minDiff = Math.abs(diff);
-        closestCandle = candle;
-      }
-    }
-
-    // Create marker at the selected time
-    const selectedTimeMarker: SeriesMarker<Time> = {
-      time: closestCandle.time,
-      position: "belowBar",
-      color: "orange",
-      size: 1,
-      shape: "circle",
-      text: `${dayjs(selectedTime).format("HH:mm")}`,
-    };
-
-    // Set markers using the markers manager (v5 API)
-    if (markersRef.current) {
-      markersRef.current.setMarkers([selectedTimeMarker]);
-    }
-  }, [selectedDate, candleData]);
+    // Set markers using the markers manager
+    markersRef.current.setMarkers(markers);
+  }, [seriesMarkers]);
 
   // DRAW
   return (
@@ -254,3 +286,4 @@ export function CandleChart({
     </div>
   );
 }
+
