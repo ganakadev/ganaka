@@ -8,9 +8,10 @@ import {
   Title,
 } from "@mantine/core";
 import dayjs from "dayjs";
-import { dashboardAPI } from "../store/api/dashboardApi";
-import { useRTKNotifier } from "../utils/hooks/useRTKNotifier";
-import type { Run } from "../types";
+import { dashboardAPI } from "../../../store/api/dashboardApi";
+import type { Run } from "../../../types";
+import { useRTKNotifier } from "../../../utils/hooks/useRTKNotifier";
+
 
 export const RunsSidebar = ({
   onRunClick,

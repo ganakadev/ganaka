@@ -1,14 +1,15 @@
+import type { QuoteData } from "@ganaka/db";
 import { Drawer } from "@mantine/core";
-import type { QuoteData, ShortlistEntryWithQuote } from "../types";
-import { CandleChart, type CandleData } from "./CandleChart";
-import { QuoteDataTables } from "./QuoteDataTables";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import type { Time } from "lightweight-charts";
-import { dashboardAPI } from "../store/api/dashboardApi";
-import { calculateBuyerControlPercentage } from "../utils/buyerControl";
-import { useRTKNotifier } from "../utils/hooks/useRTKNotifier";
+import { dashboardAPI } from "../../store/api/dashboardApi";
+import type { ShortlistEntryWithQuote } from "../../types";
+import { calculateBuyerControlPercentage } from "../../utils/buyerControl";
+import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
+import { CandleChart, type CandleData } from "./CandleChart";
+import { QuoteDataTables } from "./QuoteDataTables";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

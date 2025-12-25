@@ -1,6 +1,6 @@
-import type { QuoteData } from "../types";
-import { isQuoteData } from "../utils/buyerControl";
+import type { QuoteData } from "@ganaka/db";
 import { Table } from "@mantine/core";
+import { isQuoteData } from "../../utils/buyerControl";
 
 export function QuoteDataTables({
   quoteData,

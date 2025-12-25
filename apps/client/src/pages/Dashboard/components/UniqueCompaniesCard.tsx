@@ -1,6 +1,6 @@
 import { Card, Skeleton } from "@mantine/core";
-import { dashboardAPI } from "../store/api/dashboardApi";
-import { useRTKNotifier } from "../utils/hooks/useRTKNotifier";
+import { dashboardAPI } from "../../../store/api/dashboardApi";
+import { useRTKNotifier } from "../../../utils/hooks/useRTKNotifier";
 
 export const UniqueCompaniesCard = ({
   selectedDate,
