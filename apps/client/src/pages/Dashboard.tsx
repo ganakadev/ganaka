@@ -6,12 +6,14 @@ import {
   type PersistentCompany,
 } from "../components/PersistentCompaniesTable";
 import { UniqueCompaniesCard } from "../components/UniqueCompaniesCard";
+import { RunsSidebar } from "../components/RunsSidebar";
 import { useState } from "react";
 import type {
   ShortlistEntryWithQuote,
   ShortlistSnapshotWithEntries,
 } from "../types";
 import { dashboardAPI } from "../store/api/dashboardApi";
+import { useRTKNotifier } from "../utils/hooks/useRTKNotifier";
 
 export const Dashboard = () => {
   // STATE
@@ -24,21 +26,28 @@ export const Dashboard = () => {
   const [selectedEntry, setSelectedEntry] =
     useState<ShortlistEntryWithQuote | null>(null);
 
-  // RTK Query hooks
-  const { data: shortlistsData, isLoading: loadingShortlists } =
-    dashboardAPI.useGetShortlistsQuery(
-      {
-        date: selectedDate?.toISOString() || "",
-        type: activeTab || "TOP_GAINERS",
-      },
-      {
-        skip: !selectedDate || !activeTab,
-      }
-    );
-
+  // API
+  const {
+    data: shortlistsData,
+    isLoading: loadingShortlists,
+    error: getShortlistsAPIError,
+  } = dashboardAPI.useGetShortlistsQuery(
+    {
+      date: selectedDate?.toISOString() || "",
+      type: activeTab || "TOP_GAINERS",
+    },
+    {
+      skip: !selectedDate || !activeTab,
+    }
+  );
+  useRTKNotifier({
+    requestName: "Get Shortlists",
+    error: getShortlistsAPIError,
+  });
   const {
     data: persistentCompaniesData,
     isLoading: loadingPersistentCompanies,
+    error: getPersistentCompaniesAPIError,
   } = dashboardAPI.useGetDailyPersistentCompaniesQuery(
     {
       date: selectedDate?.toISOString() || "",
@@ -48,6 +57,10 @@ export const Dashboard = () => {
       skip: !selectedDate || !activeTab,
     }
   );
+  useRTKNotifier({
+    requestName: "Get Daily Persistent Companies",
+    error: getPersistentCompaniesAPIError,
+  });
 
   // Transform shortlist data
   const shortlist: ShortlistSnapshotWithEntries | null = shortlistsData?.data
@@ -79,46 +92,51 @@ export const Dashboard = () => {
 
   // DRAW
   return (
-    <div className="max-w-5xl mx-auto min-h-full py-8 px-4 grid grid-rows-[auto_1fr] gap-4">
-      <PageHeader
-        onDateChange={setSelectedDate}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-      />
-      <div className="w-full">
-        {activeTab === "TOP_GAINERS" && (
-          <ShortlistTable
-            shortlist={shortlist}
-            loading={loadingShortlists}
-            onRowClick={handleRowClick}
-            selectedDate={selectedDate}
+    <div className="flex h-screen">
+      <RunsSidebar />
+      <div className="flex-1 overflow-auto">
+        <div className="max-w-5xl mx-auto min-h-full py-8 px-4 grid grid-rows-[auto_1fr] gap-4">
+          <PageHeader
+            onDateChange={setSelectedDate}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
           />
-        )}
+          <div className="w-full">
+            {activeTab === "TOP_GAINERS" && (
+              <ShortlistTable
+                shortlist={shortlist}
+                loading={loadingShortlists}
+                onRowClick={handleRowClick}
+                selectedDate={selectedDate}
+              />
+            )}
 
-        {activeTab === "VOLUME_SHOCKERS" && (
-          <ShortlistTable
-            shortlist={shortlist}
-            onRowClick={handleRowClick}
-            loading={loadingShortlists}
-            selectedDate={selectedDate}
-          />
-        )}
-        <UniqueCompaniesCard
-          selectedDate={selectedDate}
-          activeTab={activeTab}
-        />
-        <PersistentCompaniesTable
-          companies={persistentCompanies}
-          loading={loadingPersistentCompanies}
-          selectedDate={selectedDate}
-          totalSnapshots={totalSnapshots}
-        />
-        <QuoteDrawer
-          opened={drawerOpened}
-          onClose={handleDrawerClose}
-          selectedEntry={selectedEntry}
-          selectedDate={selectedDate}
-        />
+            {activeTab === "VOLUME_SHOCKERS" && (
+              <ShortlistTable
+                shortlist={shortlist}
+                onRowClick={handleRowClick}
+                loading={loadingShortlists}
+                selectedDate={selectedDate}
+              />
+            )}
+            <UniqueCompaniesCard
+              selectedDate={selectedDate}
+              activeTab={activeTab}
+            />
+            <PersistentCompaniesTable
+              companies={persistentCompanies}
+              loading={loadingPersistentCompanies}
+              selectedDate={selectedDate}
+              totalSnapshots={totalSnapshots}
+            />
+            <QuoteDrawer
+              opened={drawerOpened}
+              onClose={handleDrawerClose}
+              selectedEntry={selectedEntry}
+              selectedDate={selectedDate}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

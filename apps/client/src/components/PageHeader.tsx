@@ -3,6 +3,7 @@ import { DateTimePicker } from "@mantine/dates";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { dashboardAPI } from "../store/api/dashboardApi";
+import { useRTKNotifier } from "../utils/hooks/useRTKNotifier";
 
 export const PageHeader = ({
   onDateChange,
@@ -14,9 +15,18 @@ export const PageHeader = ({
   onDateChange: (date: Date) => void;
 }) => {
   // STATE
-  const { data: availableDatetimes, isLoading: loading } =
-    dashboardAPI.useGetAvailableDatetimesQuery({});
   const [timePresets, setTimePresets] = useState<string[]>([]);
+
+  // API
+  const {
+    data: availableDatetimes,
+    isLoading: loading,
+    error: getAvailableDatetimesAPIError,
+  } = dashboardAPI.useGetAvailableDatetimesQuery({});
+  useRTKNotifier({
+    requestName: "Get Available Datetimes",
+    error: getAvailableDatetimesAPIError,
+  });
 
   // HANDLERS
   // Get available times for a specific date
