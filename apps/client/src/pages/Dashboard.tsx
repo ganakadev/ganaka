@@ -97,7 +97,8 @@ export const Dashboard = () => {
       <div className="flex-1 overflow-auto">
         <div className="max-w-5xl mx-auto min-h-full py-8 px-4 grid grid-rows-[auto_1fr] gap-4">
           <PageHeader
-            onDateChange={setSelectedDate}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />
