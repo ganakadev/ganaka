@@ -127,7 +127,6 @@ function QuotePanel({
           <CandleChart
             selectedDate={selectedDate}
             candleData={candleData}
-            buyerControlPercentage={selectedEntry.buyerControlPercentage}
             buyerControlData={buyerControlData}
           />
         </>
