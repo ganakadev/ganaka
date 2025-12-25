@@ -18,22 +18,20 @@ export const PageHeader = ({
   const [timePresets, setTimePresets] = useState<string[]>([]);
 
   // API
-  const {
-    data: availableDatetimes,
-    isLoading: loading,
-    error: getAvailableDatetimesAPIError,
-  } = dashboardAPI.useGetAvailableDatetimesQuery({});
+  const getAvailableDatetimesAPI = dashboardAPI.useGetAvailableDatetimesQuery(
+    {}
+  );
   useRTKNotifier({
     requestName: "Get Available Datetimes",
-    error: getAvailableDatetimesAPIError,
+    error: getAvailableDatetimesAPI.error,
   });
 
   // HANDLERS
   // Get available times for a specific date
   const getAvailableTimesForDate = (date: string | null): string[] => {
-    if (!date || !availableDatetimes) return [];
+    if (!date || !getAvailableDatetimesAPI.data) return [];
     const dateKey = dayjs(date).format("YYYY-MM-DD");
-    const dateData = availableDatetimes.data.dates.find(
+    const dateData = getAvailableDatetimesAPI.data.data.dates.find(
       (d) => d.date === dateKey
     );
     if (!dateData) return [];
@@ -46,7 +44,7 @@ export const PageHeader = ({
   const isDateAvailable = (date: Date): boolean => {
     const dateKey = dayjs(date).format("YYYY-MM-DD");
     return (
-      availableDatetimes?.data.dates?.some((d) => {
+      getAvailableDatetimesAPI.data?.data.dates?.some((d) => {
         return d.date === dateKey;
       }) ?? false
     );
@@ -74,7 +72,7 @@ export const PageHeader = ({
     if (day === 6 || day === 0) return true;
 
     // Exclude dates without data
-    if (availableDatetimes && !isDateAvailable(dateDayjs.toDate())) {
+    if (getAvailableDatetimesAPI.data && !isDateAvailable(dateDayjs.toDate())) {
       return true;
     }
     return false;
@@ -98,7 +96,7 @@ export const PageHeader = ({
             format: "12h",
             presets: timePresets,
           }}
-          disabled={loading}
+          disabled={getAvailableDatetimesAPI.isLoading}
         />
       </div>
       <SegmentedControl
