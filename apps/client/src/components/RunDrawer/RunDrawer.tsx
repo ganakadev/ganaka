@@ -1,13 +1,13 @@
 import { Drawer, Table, Collapse, Button, Group, Text } from "@mantine/core";
 import { useState } from "react";
-import type { Run, Order } from "../types";
-import { OrderCandleChart, type CandleData } from "./OrderCandleChart";
+import type { Run, Order } from "../../types";
+import { OrderCandleChart, type CandleData } from "../OrderCandleChart";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import type { Time } from "lightweight-charts";
-import { dashboardAPI } from "../store/api/dashboardApi";
-import { useRTKNotifier } from "../utils/hooks/useRTKNotifier";
+import { dashboardAPI } from "../../store/api/dashboardApi";
+import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
