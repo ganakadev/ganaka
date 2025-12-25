@@ -22,3 +22,24 @@ export const getRuns = {
   }),
 };
 
+// ==================== GET /runs/:runId/orders ====================
+
+const orderSchema = z.object({
+  id: z.uuid(),
+  nseSymbol: z.string(),
+  entryPrice: z.coerce.number(),
+  stopLossPrice: z.coerce.number(),
+  takeProfitPrice: z.coerce.number(),
+  timestamp: z.coerce.date(),
+  runId: z.uuid(),
+});
+
+export const getRunOrders = {
+  params: z.object({
+    runId: z.uuid(),
+  }),
+  response: apiResponseSchema.extend({
+    data: z.array(orderSchema),
+  }),
+};
+

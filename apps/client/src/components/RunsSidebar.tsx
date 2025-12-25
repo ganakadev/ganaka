@@ -10,8 +10,13 @@ import {
 import dayjs from "dayjs";
 import { dashboardAPI } from "../store/api/dashboardApi";
 import { useRTKNotifier } from "../utils/hooks/useRTKNotifier";
+import type { Run } from "../types";
 
-export const RunsSidebar = () => {
+export const RunsSidebar = ({
+  onRunClick,
+}: {
+  onRunClick?: (run: Run) => void;
+}) => {
   // API
   const {
     data: runsData,
@@ -61,7 +66,14 @@ export const RunsSidebar = () => {
                 {dayjs(date).format("MMM DD, YYYY")}
               </Text>
               {runs.map((run) => (
-                <Card key={run.id} padding="sm" radius="md" withBorder>
+                <Card
+                  key={run.id}
+                  padding="sm"
+                  radius="md"
+                  withBorder
+                  className={onRunClick ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" : ""}
+                  onClick={() => onRunClick?.(run)}
+                >
                   <Stack gap="xs">
                     <Group justify="space-between" align="flex-start">
                       <div className="flex-1 min-w-0">

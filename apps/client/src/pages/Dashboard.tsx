@@ -7,10 +7,12 @@ import {
 } from "../components/PersistentCompaniesTable";
 import { UniqueCompaniesCard } from "../components/UniqueCompaniesCard";
 import { RunsSidebar } from "../components/RunsSidebar";
+import { RunOrdersDrawer } from "../components/RunOrdersDrawer";
 import { useState } from "react";
 import type {
   ShortlistEntryWithQuote,
   ShortlistSnapshotWithEntries,
+  Run,
 } from "../types";
 import { dashboardAPI } from "../store/api/dashboardApi";
 import { useRTKNotifier } from "../utils/hooks/useRTKNotifier";
@@ -25,6 +27,9 @@ export const Dashboard = () => {
   const [drawerOpened, setDrawerOpened] = useState(false);
   const [selectedEntry, setSelectedEntry] =
     useState<ShortlistEntryWithQuote | null>(null);
+  // Run orders drawer state
+  const [runDrawerOpened, setRunDrawerOpened] = useState(false);
+  const [selectedRun, setSelectedRun] = useState<Run | null>(null);
 
   // API
   const {
@@ -90,10 +95,20 @@ export const Dashboard = () => {
     setSelectedEntry(null);
   };
 
+  const handleRunClick = (run: Run) => {
+    setSelectedRun(run);
+    setRunDrawerOpened(true);
+  };
+
+  const handleRunDrawerClose = () => {
+    setRunDrawerOpened(false);
+    setSelectedRun(null);
+  };
+
   // DRAW
   return (
     <div className="flex h-screen">
-      <RunsSidebar />
+      <RunsSidebar onRunClick={handleRunClick} />
       <div className="flex-1 overflow-auto">
         <div className="max-w-5xl mx-auto min-h-full py-8 px-4 grid grid-rows-[auto_1fr] gap-4">
           <PageHeader
@@ -135,6 +150,11 @@ export const Dashboard = () => {
               onClose={handleDrawerClose}
               selectedEntry={selectedEntry}
               selectedDate={selectedDate}
+            />
+            <RunOrdersDrawer
+              opened={runDrawerOpened}
+              onClose={handleRunDrawerClose}
+              selectedRun={selectedRun}
             />
           </div>
         </div>
