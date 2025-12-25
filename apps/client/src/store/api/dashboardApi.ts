@@ -190,5 +190,27 @@ export const dashboardAPI = createApi({
       }),
       providesTags: ["Runs"],
     }),
+
+    // Get run orders
+    getRunOrders: builder.query<
+      z.infer<
+        typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response
+      >,
+      z.infer<
+        typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params
+      >
+    >({
+      query: (params) => {
+        const validatedParams =
+          v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params.parse(
+            params
+          );
+        return {
+          url: `/runs/${validatedParams.runId}/orders`,
+          method: "GET",
+        };
+      },
+      providesTags: ["Runs"],
+    }),
   }),
 });

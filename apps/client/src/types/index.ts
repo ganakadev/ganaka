@@ -28,3 +28,14 @@ export interface Run {
 
 // Type for runs grouped by date
 export type GroupedRuns = Record<string, Run[]>;
+
+// Type for order
+export interface Order {
+  id: string;
+  nseSymbol: string;
+  entryPrice: number;
+  stopLossPrice: number;
+  takeProfitPrice: number;
+  timestamp: Date;
+  runId: string;
+}

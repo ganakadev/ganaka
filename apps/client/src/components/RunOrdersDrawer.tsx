@@ -1,0 +1,327 @@
+import { Drawer, Table, Collapse, Button, Group, Text } from "@mantine/core";
+import { useState } from "react";
+import type { Run, Order } from "../types";
+import { OrderCandleChart, type CandleData } from "./OrderCandleChart";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import type { Time } from "lightweight-charts";
+import { dashboardAPI } from "../store/api/dashboardApi";
+import { useRTKNotifier } from "../utils/hooks/useRTKNotifier";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+interface RunOrdersPanelProps {
+  selectedRun: Run | null;
+}
+
+function RunOrdersPanel({ selectedRun }: RunOrdersPanelProps) {
+  // API
+  const {
+    data: ordersData,
+    isLoading: loadingOrders,
+    error: ordersError,
+  } = dashboardAPI.useGetRunOrdersQuery(
+    { runId: selectedRun?.id || "" },
+    {
+      skip: !selectedRun,
+    }
+  );
+  useRTKNotifier({
+    requestName: "Get Run Orders",
+    error: ordersError,
+  });
+
+  // STATE
+  const [expandedStocks, setExpandedStocks] = useState<Set<string>>(new Set());
+
+  // VARIABLES
+  const orders: Order[] = ordersData?.data || [];
+
+  // Group orders by nseSymbol
+  const ordersByStock = orders.reduce(
+    (acc, order) => {
+      if (!acc[order.nseSymbol]) {
+        acc[order.nseSymbol] = [];
+      }
+      acc[order.nseSymbol].push(order);
+      return acc;
+    },
+    {} as Record<string, Order[]>
+  );
+
+  const stockSymbols = Object.keys(ordersByStock).sort();
+
+  const toggleStock = (symbol: string) => {
+    const newExpanded = new Set(expandedStocks);
+    if (newExpanded.has(symbol)) {
+      newExpanded.delete(symbol);
+    } else {
+      newExpanded.add(symbol);
+    }
+    setExpandedStocks(newExpanded);
+  };
+
+  // DRAW
+  if (loadingOrders) {
+    return (
+      <div className="p-4">
+        <Text size="sm" c="dimmed">
+          Loading orders...
+        </Text>
+      </div>
+    );
+  }
+
+  if (ordersError) {
+    const errorMessage =
+      "data" in ordersError &&
+      typeof ordersError.data === "object" &&
+      ordersError.data !== null &&
+      "error" in ordersError.data
+        ? String(ordersError.data.error)
+        : "Failed to fetch orders";
+    return (
+      <div className="border rounded-md p-4 bg-red-50">
+        <p className="text-sm text-red-600">Error: {errorMessage}</p>
+      </div>
+    );
+  }
+
+  if (orders.length === 0) {
+    return (
+      <div className="p-4">
+        <Text size="sm" c="dimmed">
+          No orders found for this run
+        </Text>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Orders Table */}
+      <div>
+        <h3 className="text-lg font-semibold mb-2">All Orders</h3>
+        <Table
+          striped
+          highlightOnHover
+          withTableBorder
+          withColumnBorders
+          tabularNums
+          style={{ tableLayout: "fixed" }}
+        >
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th className="w-[15%]">Symbol</Table.Th>
+              <Table.Th className="w-[20%]">Entry Price</Table.Th>
+              <Table.Th className="w-[20%]">Stop Loss</Table.Th>
+              <Table.Th className="w-[20%]">Take Profit</Table.Th>
+              <Table.Th className="w-[25%]">Timestamp</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {orders.map((order) => (
+              <Table.Tr key={order.id}>
+                <Table.Td>
+                  <span className="font-medium">{order.nseSymbol}</span>
+                </Table.Td>
+                <Table.Td>
+                  <span className="text-sm">
+                    ₹
+                    {order.entryPrice.toLocaleString("en-IN", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
+                </Table.Td>
+                <Table.Td>
+                  <span className="text-sm">
+                    ₹
+                    {order.stopLossPrice.toLocaleString("en-IN", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
+                </Table.Td>
+                <Table.Td>
+                  <span className="text-sm">
+                    ₹
+                    {order.takeProfitPrice.toLocaleString("en-IN", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
+                </Table.Td>
+                <Table.Td>
+                  <span className="text-sm">
+                    {dayjs(order.timestamp).format("DD-MM-YYYY HH:mm:ss")}
+                  </span>
+                </Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </div>
+
+      {/* Expandable Charts by Stock */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Charts by Stock</h3>
+        <div className="flex flex-col gap-4">
+          {stockSymbols.map((symbol) => {
+            const stockOrders = ordersByStock[symbol];
+            const isExpanded = expandedStocks.has(symbol);
+            return (
+              <div key={symbol} className="border rounded-md">
+                <Button
+                  variant="subtle"
+                  fullWidth
+                  onClick={() => toggleStock(symbol)}
+                  styles={{
+                    root: {
+                      justifyContent: "space-between",
+                      padding: "12px 16px",
+                    },
+                  }}
+                >
+                  <Group gap="xs">
+                    <Text fw={600}>{symbol}</Text>
+                    <Text size="sm" c="dimmed">
+                      ({stockOrders.length}{" "}
+                      {stockOrders.length === 1 ? "order" : "orders"})
+                    </Text>
+                  </Group>
+                  <Text size="sm" c="dimmed">
+                    {isExpanded ? "▲" : "▼"}
+                  </Text>
+                </Button>
+                <Collapse in={isExpanded}>
+                  <div className="p-4">
+                    <StockChart
+                      symbol={symbol}
+                      orders={stockOrders}
+                      runStartTime={selectedRun?.startTime || null}
+                    />
+                  </div>
+                </Collapse>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface StockChartProps {
+  symbol: string;
+  orders: Order[];
+  runStartTime: Date | null;
+}
+
+function StockChart({ symbol, orders, runStartTime }: StockChartProps) {
+  // API - Fetch candle data
+  const { data: candlesData, error: candleError } =
+    dashboardAPI.useGetCandlesQuery(
+      {
+        symbol: symbol,
+        date: runStartTime?.toISOString() || "",
+        interval: "1minute",
+      },
+      {
+        skip: !runStartTime,
+      }
+    );
+  useRTKNotifier({
+    requestName: "Get Candles",
+    error: candleError,
+  });
+
+  // VARIABLES
+  const candleData: CandleData[] | null = candlesData?.data.candles
+    ? candlesData.data.candles.map((candle) => ({
+        time: candle.time as Time,
+        open: candle.open,
+        high: candle.high,
+        low: candle.low,
+        close: candle.close,
+      }))
+    : null;
+
+  const errorMessage = candleError
+    ? "data" in candleError &&
+      typeof candleError.data === "object" &&
+      candleError.data !== null &&
+      "error" in candleError.data
+      ? String(candleError.data.error)
+      : "Failed to fetch candle data"
+    : null;
+
+  // DRAW
+  if (errorMessage) {
+    return (
+      <div className="border rounded-md p-4 bg-red-50">
+        <p className="text-sm text-red-600">
+          Error loading chart: {errorMessage}
+        </p>
+      </div>
+    );
+  }
+
+  if (!candleData || candleData.length === 0) {
+    return (
+      <div className="border rounded-md p-4">
+        <Text size="sm" c="dimmed">
+          Loading chart data...
+        </Text>
+      </div>
+    );
+  }
+
+  return (
+    <OrderCandleChart
+      selectedDate={runStartTime}
+      candleData={candleData}
+      orders={orders}
+    />
+  );
+}
+
+export function RunOrdersDrawer({
+  opened,
+  onClose,
+  selectedRun,
+}: {
+  opened: boolean;
+  onClose: () => void;
+  selectedRun: Run | null;
+}) {
+  // VARIABLES
+  const drawerTitle = selectedRun ? (
+    <div className="flex flex-col gap-1">
+      <h4 className="text-lg font-semibold">Run Orders</h4>
+      <span className="text-sm text-gray-500">
+        {dayjs(selectedRun.startTime).format("DD-MM-YYYY HH:mm")} -{" "}
+        {dayjs(selectedRun.endTime).format("HH:mm")}
+      </span>
+    </div>
+  ) : (
+    "Run Orders"
+  );
+
+  // DRAW
+  return (
+    <Drawer
+      opened={opened}
+      onClose={onClose}
+      position="right"
+      size="90%"
+      title={drawerTitle}
+      padding="lg"
+    >
+      {selectedRun && <RunOrdersPanel selectedRun={selectedRun} />}
+    </Drawer>
+  );
+}
+
