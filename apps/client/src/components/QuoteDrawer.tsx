@@ -8,6 +8,7 @@ import utc from "dayjs/plugin/utc";
 import type { Time } from "lightweight-charts";
 import { dashboardAPI } from "../store/api/dashboardApi";
 import { calculateBuyerControlPercentage } from "../utils/buyerControl";
+import { useRTKNotifier } from "../utils/hooks/useRTKNotifier";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -36,16 +37,26 @@ function QuotePanel({
         skip: !selectedEntry || !selectedDate,
       }
     );
+  useRTKNotifier({
+    requestName: "Get Candles",
+    error: candleError,
+  });
+
   // Fetch quote snapshots using RTK Query
-  const { data: quoteTimelineData } = dashboardAPI.useGetQuoteTimelineQuery(
-    {
-      symbol: selectedEntry?.nseSymbol || "",
-      date: selectedDate?.toISOString() || "",
-    },
-    {
-      skip: !selectedEntry || !selectedDate,
-    }
-  );
+  const { data: quoteTimelineData, error: quoteTimelineError } =
+    dashboardAPI.useGetQuoteTimelineQuery(
+      {
+        symbol: selectedEntry?.nseSymbol || "",
+        date: selectedDate?.toISOString() || "",
+      },
+      {
+        skip: !selectedEntry || !selectedDate,
+      }
+    );
+  useRTKNotifier({
+    requestName: "Get Quote Timeline",
+    error: quoteTimelineError,
+  });
 
   // VARIABLES
   const candleData: CandleData[] | null = candlesData?.data.candles

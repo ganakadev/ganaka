@@ -1,5 +1,6 @@
 import { Card, Skeleton } from "@mantine/core";
 import { dashboardAPI } from "../store/api/dashboardApi";
+import { useRTKNotifier } from "../utils/hooks/useRTKNotifier";
 
 export const UniqueCompaniesCard = ({
   selectedDate,
@@ -8,6 +9,7 @@ export const UniqueCompaniesCard = ({
   selectedDate: Date | null;
   activeTab: "TOP_GAINERS" | "VOLUME_SHOCKERS" | null;
 }) => {
+  // API
   // Fetch unique companies count
   const {
     data,
@@ -22,7 +24,12 @@ export const UniqueCompaniesCard = ({
       skip: !selectedDate || !activeTab,
     }
   );
+  useRTKNotifier({
+    requestName: "Get Daily Unique Companies",
+    error: error,
+  });
 
+  // VARIABLES
   const uniqueCount = data?.data.uniqueCount ?? null;
   const errorMessage = error
     ? "data" in error &&

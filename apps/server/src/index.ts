@@ -31,11 +31,14 @@ async function main() {
     });
   });
 
-  // Dashboard routes (/v1/dashboard) - public, no authentication required
-  fastify.register(autoLoad, {
-    dir: path.join(__dirname, "routes/v1/dashboard"),
-    options: { prefix: "/v1/dashboard/" },
-    maxDepth: 5,
+  // Dashboard routes (/v1/dashboard) - protected with developer token
+  fastify.register(async function (fastify, opts) {
+    await authPlugin("developer")(fastify, opts);
+    fastify.register(autoLoad, {
+      dir: path.join(__dirname, "routes/v1/dashboard"),
+      options: { prefix: "/v1/dashboard/" },
+      maxDepth: 5,
+    });
   });
 
   // Admin routes (/v1/admin) - protected with admin token
