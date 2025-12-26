@@ -1,14 +1,6 @@
-import {
-  InputJsonValue,
-  NiftyQuote,
-  QuoteSnapshot,
-  ShortlistSnapshot,
-} from "@ganaka/db";
+import { InputJsonValue, NiftyQuote, QuoteSnapshot, ShortlistSnapshot } from "@ganaka/db";
 import { Decimal } from "@ganaka/db/prisma";
-import {
-  v1_developer_groww_schemas,
-  v1_developer_lists_schemas,
-} from "@ganaka/schemas";
+import { v1_developer_groww_schemas, v1_developer_lists_schemas } from "@ganaka/schemas";
 import axios from "axios";
 import dayjs from "dayjs";
 import { chunk } from "lodash";
@@ -36,33 +28,32 @@ export const getLists =
       type,
     };
 
-    return axios.get<
-      z.infer<typeof v1_developer_lists_schemas.getLists.response>
-    >(`${API_DOMAIN}/v1/developer/lists`, {
+    return axios.get<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(
+      `${API_DOMAIN}/v1/developer/lists`,
+      {
+        params,
+        headers: {
+          Authorization: `Bearer ${developerKey}`,
+        },
+      }
+    );
+  };
+
+export const getGrowwQuote = (developerKey: string) => async (symbol: string) => {
+  const params: z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.query> = {
+    symbol: symbol,
+  };
+
+  return axios.get<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(
+    `${API_DOMAIN}/v1/developer/groww/quote`,
+    {
       params,
       headers: {
         Authorization: `Bearer ${developerKey}`,
       },
-    });
-  };
-
-export const getGrowwQuote =
-  (developerKey: string) => async (symbol: string) => {
-    const params: z.infer<
-      typeof v1_developer_groww_schemas.getGrowwQuote.query
-    > = {
-      symbol: symbol,
-    };
-
-    return axios.get<
-      z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>
-    >(`${API_DOMAIN}/v1/developer/groww/quote`, {
-      params,
-      headers: {
-        Authorization: `Bearer ${developerKey}`,
-      },
-    });
-  };
+    }
+  );
+};
 
 async function fetchQuotesWithRateLimit(symbols: string[]) {
   const results = new Map<
@@ -107,18 +98,14 @@ async function updateDailyBucket(): Promise<Set<string>> {
   // 1. Fetch both shortlists in parallel
   console.log("Fetching shortlists...");
   const [topGainers, volumeShockers] = await Promise.all([
-    getLists(process.env.DEVELOPER_KEY!)("top-gainers").catch(
-      (error: unknown) => {
-        console.error("Failed to fetch top-gainers:", error);
-        return null;
-      }
-    ),
-    getLists(process.env.DEVELOPER_KEY!)("volume-shockers").catch(
-      (error: unknown) => {
-        console.error("Failed to fetch volume-shockers:", error);
-        return null;
-      }
-    ),
+    getLists(process.env.DEVELOPER_KEY!)("top-gainers").catch((error: unknown) => {
+      console.error("Failed to fetch top-gainers:", error);
+      return null;
+    }),
+    getLists(process.env.DEVELOPER_KEY!)("volume-shockers").catch((error: unknown) => {
+      console.error("Failed to fetch volume-shockers:", error);
+      return null;
+    }),
   ]);
 
   let currentRunSymbols: string[] = [];
@@ -127,14 +114,12 @@ async function updateDailyBucket(): Promise<Set<string>> {
   if (
     topGainers &&
     volumeShockers &&
-    topGainers.data?.data?.length > 0 &&
-    volumeShockers.data?.data?.length > 0
+    (topGainers.data?.data ?? []).length > 0 &&
+    (volumeShockers.data?.data ?? []).length > 0
   ) {
     // 2. Limit each to top items
-    const topGainersLimited =
-      topGainers.data?.data?.slice(0, TOP_STOCKS_LIMIT) ?? [];
-    const volumeShockersLimited =
-      volumeShockers.data?.data?.slice(0, TOP_STOCKS_LIMIT) ?? [];
+    const topGainersLimited = topGainers.data?.data?.slice(0, TOP_STOCKS_LIMIT) ?? [];
+    const volumeShockersLimited = volumeShockers.data?.data?.slice(0, TOP_STOCKS_LIMIT) ?? [];
     // shuffle for testing in local development
     // const topGainersLimited =
     //   shuffle(topGainers.data?.data ?? [])?.slice(0, TOP_STOCKS_LIMIT) ?? [];
@@ -146,10 +131,9 @@ async function updateDailyBucket(): Promise<Set<string>> {
 
     // 3. Store shortlists in database
     console.log("Storing shortlists in database...");
-    const shortlistData: (Omit<
-      ShortlistSnapshot,
-      "id" | "createdAt" | "entries" | "updatedAt"
-    > & { entries: InputJsonValue })[] = [];
+    const shortlistData: (Omit<ShortlistSnapshot, "id" | "createdAt" | "entries" | "updatedAt"> & {
+      entries: InputJsonValue;
+    })[] = [];
     if (topGainersLimited.length > 0) {
       shortlistData.push({
         timestamp,
@@ -200,9 +184,7 @@ async function updateDailyBucket(): Promise<Set<string>> {
   }
 
   // 6. Find new symbols not in bucket
-  const newSymbols = currentRunSymbols.filter(
-    (symbol) => !existingBucket.has(symbol)
-  );
+  const newSymbols = currentRunSymbols.filter((symbol) => !existingBucket.has(symbol));
   console.log(`New symbols to add: ${newSymbols.length}`);
 
   // 7. Add new symbols to bucket
@@ -226,9 +208,7 @@ async function updateDailyBucket(): Promise<Set<string>> {
  * Collect market data for all companies in the daily bucket
  * Fetches quotes for all bucket companies and stores them in database
  */
-async function collectMarketDataForBucket(
-  currentRunSymbolMap: Set<string>
-): Promise<void> {
+async function collectMarketDataForBucket(currentRunSymbolMap: Set<string>): Promise<void> {
   const timestamp = dayjs().toDate();
 
   // 1. Format symbols from current run symbol map
@@ -236,12 +216,12 @@ async function collectMarketDataForBucket(
 
   // 2. Fetch NIFTY quote
   console.log("Fetching NIFTY quote...");
-  const niftybankQuote = await getGrowwQuote(process.env.DEVELOPER_KEY!)(
-    NIFTY_SYMBOL
-  ).catch((error: unknown) => {
-    console.error("Failed to fetch NIFTY quote:", error);
-    return null;
-  });
+  const niftybankQuote = await getGrowwQuote(process.env.DEVELOPER_KEY!)(NIFTY_SYMBOL).catch(
+    (error: unknown) => {
+      console.error("Failed to fetch NIFTY quote:", error);
+      return null;
+    }
+  );
 
   // 3. Fetch quotes with rate limiting
   console.log("Fetching quotes with rate limiting...");
@@ -252,10 +232,7 @@ async function collectMarketDataForBucket(
   console.log("Storing quotes in database...");
 
   // Prepare quote snapshot data array
-  const quoteData: (Omit<
-    QuoteSnapshot,
-    "id" | "createdAt" | "updatedAt" | "quoteData"
-  > & {
+  const quoteData: (Omit<QuoteSnapshot, "id" | "createdAt" | "updatedAt" | "quoteData"> & {
     quoteData: InputJsonValue;
   })[] = [];
 
@@ -268,19 +245,14 @@ async function collectMarketDataForBucket(
   }
 
   // Prepare NIFTY quote data array
-  const niftyData: (Omit<
-    NiftyQuote,
-    "id" | "createdAt" | "updatedAt" | "quoteData"
-  > & {
+  const niftyData: (Omit<NiftyQuote, "id" | "createdAt" | "updatedAt" | "quoteData"> & {
     quoteData: InputJsonValue;
   })[] = [];
   if (niftybankQuote && niftybankQuote.data?.data?.status === "SUCCESS") {
     niftyData.push({
       timestamp,
       quoteData: niftybankQuote.data.data as unknown as InputJsonValue,
-      dayChangePerc: new Decimal(
-        niftybankQuote.data.data.payload.day_change_perc
-      ),
+      dayChangePerc: new Decimal(niftybankQuote.data.data.payload.day_change_perc),
     });
   }
 
@@ -299,9 +271,7 @@ async function collectMarketDataForBucket(
 
 export async function collectMarketData(): Promise<void> {
   const timestamp = dayjs().toDate();
-  console.log(
-    `\n[${timestamp.toISOString()}] Starting market data collection...`
-  );
+  console.log(`\n[${timestamp.toISOString()}] Starting market data collection...`);
 
   try {
     // 1. Update daily bucket with new companies from shortlists
