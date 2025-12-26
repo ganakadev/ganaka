@@ -302,9 +302,6 @@ importers:
 
   packages/sdk:
     dependencies:
-      '@ganaka/db':
-        specifier: workspace:*
-        version: link:../db
       '@ganaka/schemas':
         specifier: workspace:*
         version: link:../schemas

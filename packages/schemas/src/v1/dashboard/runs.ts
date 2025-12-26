@@ -43,3 +43,89 @@ export const getRunOrders = {
   }),
 };
 
+// ==================== POST /runs ====================
+
+const createRunBodySchema = z.object({
+  startTime: z.coerce.date(),
+  endTime: z.coerce.date(),
+});
+
+const createRunResponseSchema = z.object({
+  id: z.string().uuid(),
+  startTime: z.coerce.date(),
+  endTime: z.coerce.date(),
+  completed: z.boolean(),
+});
+
+export const createRun = {
+  body: createRunBodySchema,
+  response: apiResponseSchema.extend({
+    data: createRunResponseSchema,
+  }),
+};
+
+// ==================== PATCH /runs/:runId ====================
+
+const updateRunBodySchema = z.object({
+  completed: z.boolean().optional(),
+});
+
+const updateRunResponseSchema = z.object({
+  id: z.uuid(),
+  startTime: z.coerce.date(),
+  endTime: z.coerce.date(),
+  completed: z.boolean(),
+});
+
+export const updateRun = {
+  params: z.object({
+    runId: z.uuid(),
+  }),
+  body: updateRunBodySchema,
+  response: apiResponseSchema.extend({
+    data: updateRunResponseSchema,
+  }),
+};
+
+// ==================== DELETE /runs/:runId ====================
+
+export const deleteRun = {
+  params: z.object({
+    runId: z.uuid(),
+  }),
+  response: apiResponseSchema.extend({
+    data: z.object({
+      id: z.string().uuid(),
+    }),
+  }),
+};
+
+// ==================== POST /runs/:runId/orders ====================
+
+const createOrderBodySchema = z.object({
+  nseSymbol: z.string(),
+  entryPrice: z.coerce.number(),
+  stopLossPrice: z.coerce.number(),
+  takeProfitPrice: z.coerce.number(),
+  timestamp: z.coerce.date(),
+});
+
+const createOrderResponseSchema = z.object({
+  id: z.uuid(),
+  nseSymbol: z.string(),
+  entryPrice: z.coerce.number(),
+  stopLossPrice: z.coerce.number(),
+  takeProfitPrice: z.coerce.number(),
+  timestamp: z.coerce.date(),
+  runId: z.uuid(),
+});
+
+export const createOrder = {
+  params: z.object({
+    runId: z.uuid(),
+  }),
+  body: createOrderBodySchema,
+  response: apiResponseSchema.extend({
+    data: createOrderResponseSchema,
+  }),
+};
