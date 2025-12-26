@@ -7,6 +7,7 @@ export interface PlaceOrderData {
   stopLossPrice: number;
   takeProfitPrice: number;
   entryPrice: number;
+  timestamp: Date;
 }
 
 export const placeOrder =
@@ -25,7 +26,7 @@ export const placeOrder =
             entryPrice: new Decimal(data.entryPrice),
             stopLossPrice: new Decimal(data.stopLossPrice),
             takeProfitPrice: new Decimal(data.takeProfitPrice),
-            timestamp: new Date(),
+            timestamp: data.timestamp,
             run: {
               connect: {
                 id: runId,
@@ -34,9 +35,7 @@ export const placeOrder =
           },
         })
         .then(() => {
-          logger.debug(
-            `Order persisted for ${data.nseSymbol} in runId: ${runId}`
-          );
+          logger.debug(`Order persisted for ${data.nseSymbol} in runId: ${runId}`);
         })
         .catch((error) => {
           logger.error(

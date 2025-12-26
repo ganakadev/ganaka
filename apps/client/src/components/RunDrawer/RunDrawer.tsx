@@ -57,8 +57,6 @@ const StockChart = ({
     : null;
 
   // Transform orders into series markers format
-  // Note: This hook must be called unconditionally (before early returns)
-  // but it safely handles null/empty candleData
   const seriesMarkers: SeriesMarkerConfig[] = useMemo(() => {
     if (!orders || orders.length === 0 || !candleData || candleData.length === 0) {
       return [];
@@ -71,6 +69,8 @@ const StockChart = ({
     return orders.map((order, index) => {
       // Convert order timestamp to dayjs and find closest candle
       const orderTime = dayjs(order.timestamp).format("YYYY-MM-DDTHH:mm");
+      console.log(order.timestamp);
+      console.log(orderTime);
       let closestCandle = candleData[0];
       let minDiff = Infinity;
 
