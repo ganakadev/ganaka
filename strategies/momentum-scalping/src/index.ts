@@ -31,7 +31,16 @@ async function main() {
       }
 
       // place order if time is 11AM or 1:30PM
-      if (currentTime.hour() === 9 && currentTime.minute() === 50) {
+      if (currentTime.hour() === 9 && currentTime.minute() === 15) {
+        placeOrder({
+          entryPrice: quote.payload.last_price,
+          nseSymbol: firstCompany.nseSymbol,
+          stopLossPrice: quote.payload.last_price * 0.95,
+          takeProfitPrice: quote.payload.last_price * 1.05,
+          timestamp: currentTimestamp,
+        });
+      }
+      if (currentTime.hour() === 9 && currentTime.minute() === 30) {
         placeOrder({
           entryPrice: quote.payload.last_price,
           nseSymbol: firstCompany.nseSymbol,
