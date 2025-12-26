@@ -43,7 +43,7 @@ async function main() {
 
   // Admin routes (/v1/admin) - protected with admin token
   fastify.register(async function (fastify, opts) {
-    // await authPlugin("admin")(fastify, opts);
+    await authPlugin("admin")(fastify, opts);
     fastify.register(autoLoad, {
       dir: path.join(__dirname, "routes/v1/admin"),
       options: { prefix: "/v1/admin/" },
