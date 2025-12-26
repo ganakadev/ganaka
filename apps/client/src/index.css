@@ -11,7 +11,8 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
+body,
+#root {
   margin: 0;
   height: 100vh;
   width: 100vw;

@@ -120,9 +120,20 @@ exports.Prisma.NiftyQuoteScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.DeveloperTokenScalarFieldEnum = {
+exports.Prisma.DeveloperScalarFieldEnum = {
+  id: 'id',
   username: 'username',
   token: 'token',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RunScalarFieldEnum = {
+  id: 'id',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  completed: 'completed',
+  developerId: 'developerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -135,7 +146,6 @@ exports.Prisma.OrderScalarFieldEnum = {
   entryPrice: 'entryPrice',
   timestamp: 'timestamp',
   runId: 'runId',
-  username: 'username',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -188,7 +198,8 @@ exports.Prisma.ModelName = {
   ShortlistSnapshot: 'ShortlistSnapshot',
   QuoteSnapshot: 'QuoteSnapshot',
   NiftyQuote: 'NiftyQuote',
-  DeveloperToken: 'DeveloperToken',
+  Developer: 'Developer',
+  Run: 'Run',
   Order: 'Order',
   CollectorError: 'CollectorError'
 };
@@ -203,7 +214,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/rraj/eureka-plus-ai/packages/db/src/generated/prisma",
+      "value": "/Users/rraj/ganaka/packages/db/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -217,7 +228,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/rraj/eureka-plus-ai/packages/db/prisma/schema.prisma",
+    "sourceFilePath": "/Users/rraj/ganaka/packages/db/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -239,13 +250,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel ShortlistSnapshot {\n  id            String        @id @default(uuid())\n  timestamp     DateTime\n  shortlistType ShortlistType\n  entries       Json // Array of shortlist items with nseSymbol, name, price\n\n  createdAt DateTime @default(now()) @db.Timestamptz(6)\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@map(\"shortlist_snapshots\")\n}\n\nmodel QuoteSnapshot {\n  id        String   @id @default(uuid())\n  timestamp DateTime\n  nseSymbol String\n  quoteData Json // Full quote payload from Groww API\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@index([nseSymbol])\n  @@index([timestamp, nseSymbol])\n  @@map(\"quote_snapshots\")\n}\n\nmodel NiftyQuote {\n  id            String   @id @default(uuid())\n  timestamp     DateTime\n  quoteData     Json // Full NIFTY quote payload\n  dayChangePerc Decimal\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@map(\"nifty_quotes\")\n}\n\nmodel DeveloperToken {\n  username String @id @unique\n  token    String @unique\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([token])\n  @@map(\"developer_tokens\")\n}\n\nmodel Order {\n  id String @id @default(uuid())\n\n  nseSymbol       String\n  stopLossPrice   Decimal\n  takeProfitPrice Decimal\n  entryPrice      Decimal\n  timestamp       DateTime\n\n  runId    String\n  username String\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([runId, username])\n  @@map(\"orders\")\n}\n\nmodel CollectorError {\n  id           String   @id @default(uuid())\n  timestamp    DateTime\n  errorMessage String\n  errorStack   String?\n  errorContext Json?\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@map(\"collector_errors\")\n}\n\nenum ShortlistType {\n  TOP_GAINERS\n  VOLUME_SHOCKERS\n}\n",
-  "inlineSchemaHash": "70d4c765609bec4d04a1e5cd2e0c8c53bac62b20c4394e539bb8ab8c3f868592",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel ShortlistSnapshot {\n  id            String        @id @default(uuid())\n  timestamp     DateTime\n  shortlistType ShortlistType\n  entries       Json // Array of shortlist items with nseSymbol, name, price\n\n  createdAt DateTime @default(now()) @db.Timestamptz(6)\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@map(\"shortlist_snapshots\")\n}\n\nmodel QuoteSnapshot {\n  id        String   @id @default(uuid())\n  timestamp DateTime\n  nseSymbol String\n  quoteData Json // Full quote payload from Groww API\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@index([nseSymbol])\n  @@index([timestamp, nseSymbol])\n  @@map(\"quote_snapshots\")\n}\n\nmodel NiftyQuote {\n  id            String   @id @default(uuid())\n  timestamp     DateTime\n  quoteData     Json // Full NIFTY quote payload\n  dayChangePerc Decimal\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@map(\"nifty_quotes\")\n}\n\nmodel Developer {\n  id       String @unique @default(uuid())\n  username String @id @unique\n\n  runs  Run[]\n  token String @unique\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([token, username])\n  @@map(\"developers\")\n}\n\nmodel Run {\n  id String @id @default(uuid())\n\n  startTime DateTime\n  endTime   DateTime\n\n  completed Boolean    @default(false)\n  orders    Order[]\n  developer Developer? @relation(fields: [developerId], references: [id], onDelete: Cascade)\n\n  developerId String?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  @@index([startTime, endTime, completed])\n  @@map(\"runs\")\n}\n\nmodel Order {\n  id String @id @default(uuid())\n\n  run Run @relation(fields: [runId], references: [id], onDelete: Cascade)\n\n  nseSymbol       String\n  stopLossPrice   Decimal\n  takeProfitPrice Decimal\n  entryPrice      Decimal\n  timestamp       DateTime\n\n  runId     String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([runId, nseSymbol])\n  @@map(\"orders\")\n}\n\nmodel CollectorError {\n  id           String   @id @default(uuid())\n  timestamp    DateTime\n  errorMessage String\n  errorStack   String?\n  errorContext Json?\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@map(\"collector_errors\")\n}\n\nenum ShortlistType {\n  TOP_GAINERS\n  VOLUME_SHOCKERS\n}\n",
+  "inlineSchemaHash": "f470ae944c749e406136c93216745808599ed78406b3199a67a93d46efbbcccb",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"ShortlistSnapshot\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"shortlistType\",\"kind\":\"enum\",\"type\":\"ShortlistType\"},{\"name\":\"entries\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"shortlist_snapshots\"},\"QuoteSnapshot\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"nseSymbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quoteData\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"quote_snapshots\"},\"NiftyQuote\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"quoteData\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"dayChangePerc\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"nifty_quotes\"},\"DeveloperToken\":{\"fields\":[{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"developer_tokens\"},\"Order\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"nseSymbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"stopLossPrice\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"takeProfitPrice\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"entryPrice\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"runId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"orders\"},\"CollectorError\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"errorMessage\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"errorStack\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"errorContext\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"collector_errors\"}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"ShortlistSnapshot\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"shortlistType\",\"kind\":\"enum\",\"type\":\"ShortlistType\"},{\"name\":\"entries\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"shortlist_snapshots\"},\"QuoteSnapshot\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"nseSymbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quoteData\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"quote_snapshots\"},\"NiftyQuote\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"quoteData\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"dayChangePerc\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"nifty_quotes\"},\"Developer\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"runs\",\"kind\":\"object\",\"type\":\"Run\",\"relationName\":\"DeveloperToRun\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"developers\"},\"Run\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"startTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"endTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"completed\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"orders\",\"kind\":\"object\",\"type\":\"Order\",\"relationName\":\"OrderToRun\"},{\"name\":\"developer\",\"kind\":\"object\",\"type\":\"Developer\",\"relationName\":\"DeveloperToRun\"},{\"name\":\"developerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"runs\"},\"Order\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"run\",\"kind\":\"object\",\"type\":\"Run\",\"relationName\":\"OrderToRun\"},{\"name\":\"nseSymbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"stopLossPrice\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"takeProfitPrice\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"entryPrice\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"runId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"orders\"},\"CollectorError\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"errorMessage\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"errorStack\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"errorContext\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"collector_errors\"}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

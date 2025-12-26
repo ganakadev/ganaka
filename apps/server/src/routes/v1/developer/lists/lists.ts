@@ -2,12 +2,34 @@ import { FastifyInstance, FastifyPluginAsync } from "fastify";
 import { validateRequest } from "../../../../utils/validator";
 import { v1_developer_lists_schemas } from "@ganaka/schemas";
 import { sendResponse } from "../../../../utils/sendResponse";
+import { prisma } from "../../../../utils/prisma";
+import { ShortlistType } from "@ganaka/db/prisma";
 import z from "zod";
 import * as cheerio from "cheerio";
 import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse } from "axios";
 import { isEmpty, shuffle } from "lodash";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 const MAX_LIST_FETCH_RETRIES = 3;
+
+/**
+ * Maps API type format to database enum format
+ */
+function mapTypeToShortlistType(
+  type: "top-gainers" | "volume-shockers"
+): ShortlistType {
+  switch (type) {
+    case "top-gainers":
+      return ShortlistType.TOP_GAINERS;
+    case "volume-shockers":
+      return ShortlistType.VOLUME_SHOCKERS;
+    default:
+      throw new Error(`Unknown shortlist type: ${type}`);
+  }
+}
 
 const getProxyList = async (fastify: FastifyInstance) => {
   try {
@@ -73,6 +95,67 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
       return;
     }
 
+    // If datetime is provided, fetch from snapshot
+    if (validationResult.datetime) {
+      try {
+        const shortlistType = mapTypeToShortlistType(validationResult.type);
+        const selectedDateTime = dayjs(validationResult.datetime).utc();
+
+        const shortlists = await prisma.shortlistSnapshot.findMany({
+          where: {
+            timestamp: {
+              gte: selectedDateTime.toDate(),
+              lte: selectedDateTime.add(1, "s").toDate(),
+            },
+            shortlistType: shortlistType,
+          },
+        });
+
+        if (shortlists.length === 0) {
+          return sendResponse<
+            z.infer<typeof v1_developer_lists_schemas.getLists.response>
+          >({
+            statusCode: 200,
+            message: "Shortlist snapshot not found",
+            data: null,
+          });
+        }
+
+        const shortlistFromDb = shortlists[0];
+        const entries = shortlistFromDb.entries as Array<{
+          nseSymbol: string;
+          name: string;
+          price: number;
+        }> | null;
+
+        if (!entries) {
+          return sendResponse<
+            z.infer<typeof v1_developer_lists_schemas.getLists.response>
+          >({
+            statusCode: 200,
+            message: "Shortlist snapshot not found",
+            data: null,
+          });
+        }
+
+        return sendResponse<
+          z.infer<typeof v1_developer_lists_schemas.getLists.response>
+        >({
+          statusCode: 200,
+          message: "Lists fetched successfully",
+          data: entries,
+        });
+      } catch (error) {
+        fastify.log.error(
+          `Error fetching shortlist snapshot for ${validationResult.type} at ${validationResult.datetime}: ${error}`
+        );
+        return reply.internalServerError(
+          "Failed to fetch shortlist snapshot. Please check server logs for more details."
+        );
+      }
+    }
+
+    // If no datetime, fetch live data from Groww
     const proxyList = await getProxyList(fastify);
     const shuffledProxyList =
       proxyList.length > 0

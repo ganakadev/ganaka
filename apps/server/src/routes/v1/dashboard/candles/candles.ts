@@ -8,7 +8,7 @@ import { RedisManager } from "../../../../utils/redis";
 import { sendResponse } from "../../../../utils/sendResponse";
 import { TokenManager } from "../../../../utils/token-manager";
 import { validateRequest } from "../../../../utils/validator";
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_dashboard_schemas, validCandleIntervals } from "@ganaka/schemas";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -120,21 +120,14 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
       const end_time = marketEnd.format("YYYY-MM-DDTHH:mm:ss");
 
       // Validate interval
-      const validIntervals = [
-        "5minute",
-        "15minute",
-        "30minute",
-        "1hour",
-        "4hour",
-      ];
-      if (interval && !validIntervals.includes(interval)) {
+      if (interval && !validCandleIntervals.includes(interval)) {
         return reply.badRequest(
-          `Invalid interval. Must be one of: ${validIntervals.join(", ")}`
+          `Invalid interval. Must be one of: ${validCandleIntervals.join(", ")}`
         );
       }
 
-      // Use interval from query or default to 5minute
-      const candleInterval = interval || "5minute";
+      // Use interval from query or default to 1minute
+      const candleInterval = interval || "1minute";
 
       // Make API request
       const response = await growwAPIRequest<{

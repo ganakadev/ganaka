@@ -1,0 +1,194 @@
+import { SegmentedControl } from "@mantine/core";
+import { DateTimePicker } from "@mantine/dates";
+import dayjs from "dayjs";
+import { startTransition, useCallback, useEffect, useRef, useState } from "react";
+import { dashboardAPI } from "../../../store/api/dashboardApi";
+import { useRTKNotifier } from "../../../utils/hooks/useRTKNotifier";
+import { useSearchParams } from "react-router-dom";
+import { notifications } from "@mantine/notifications";
+
+export const Header = ({
+  activeTab,
+  setActiveTab,
+  selectedDate,
+  setSelectedDate,
+}: {
+  activeTab: "TOP_GAINERS" | "VOLUME_SHOCKERS" | null;
+  setActiveTab: (value: "TOP_GAINERS" | "VOLUME_SHOCKERS") => void;
+  selectedDate: Date | null;
+  setSelectedDate: (date: Date | null) => void;
+}) => {
+  // HOOKS
+  const [searchParams, setSearchParams] = useSearchParams();
+  const shouldProcessSearchParamDate = useRef(true);
+
+  // STATE
+  const [localSelectedDate, setLocalSelectedDate] = useState<Date | null>(null);
+  const [timePresets, setTimePresets] = useState<string[]>([]);
+
+  // API
+  const getAvailableDatetimesAPI = dashboardAPI.useGetAvailableDatetimesQuery({});
+  useRTKNotifier({
+    requestName: "Get Available Datetimes",
+    error: getAvailableDatetimesAPI.error,
+  });
+
+  // HANDLERS
+  // Get available times for a specific date
+  const getAvailableTimesForDate = useCallback(
+    (date: string | null): string[] => {
+      if (!date || !getAvailableDatetimesAPI.data) return [];
+      const dateKey = dayjs(date).format("YYYY-MM-DD");
+      const dateData = getAvailableDatetimesAPI.data.data.dates.find((d) => d.date === dateKey);
+      if (!dateData) return [];
+      return Array.from(new Set(dateData.timestamps.map((ts) => dayjs(ts).format("HH:mm"))));
+    },
+    [getAvailableDatetimesAPI.data]
+  );
+  // Check if a date has any available data
+  const isDateAvailable = (date: Date): boolean => {
+    const dateKey = dayjs(date).format("YYYY-MM-DD");
+    return (
+      getAvailableDatetimesAPI.data?.data.dates?.some((d) => {
+        return d.date === dateKey;
+      }) ?? false
+    );
+  };
+  // Handle date/time change with validation
+  const handleChange = (value: string | null) => {
+    if (value) {
+      const valueDayjs = dayjs(value);
+      setLocalSelectedDate(valueDayjs.toDate());
+      setTimePresets(getAvailableTimesForDate(dayjs(valueDayjs).format("YYYY-MM-DD")));
+
+      // only update state if the time is not at default (00:00)
+      if (valueDayjs.format("HH:mm") !== "00:00") {
+        searchParams.set("date", valueDayjs.format("YYYY-MM-DDTHH:mm"));
+        setSearchParams(searchParams);
+        setSelectedDate(valueDayjs.toDate());
+        setLocalSelectedDate(valueDayjs.toDate());
+      }
+    }
+  };
+  const excludeDate = (date: string): boolean => {
+    const dateDayjs = dayjs(date);
+    // Exclude weekends
+    const day = dateDayjs.day();
+    if (day === 6 || day === 0) return true;
+
+    // Exclude dates without data
+    if (getAvailableDatetimesAPI.data && !isDateAvailable(dateDayjs.toDate())) {
+      return true;
+    }
+    return false;
+  };
+  const processSearchParamDate = useCallback(
+    (date: string) => {
+      try {
+        const dateDayjs = dayjs(date);
+        if (!dateDayjs.isValid()) {
+          notifications.show({
+            title: "Invalid date",
+            message: "The date you provided is invalid",
+            color: "red",
+          });
+          return;
+        }
+
+        if (
+          !getAvailableDatetimesAPI.data?.data.dates?.some(
+            (d) => d.date === dateDayjs.format("YYYY-MM-DD")
+          )
+        ) {
+          notifications.show({
+            title: "No data available",
+            message: "No data available for the date you provided",
+            color: "red",
+          });
+          searchParams.delete("date");
+          setSearchParams(searchParams);
+          return;
+        }
+
+        if (
+          !getAvailableDatetimesAPI.data?.data.dates
+            ?.find((d) => d.date === dateDayjs.format("YYYY-MM-DD"))
+            // timestamp is in UTC with format 2025-12-23T03:39:00.031Z
+            ?.timestamps.find((timestamp) => {
+              return dayjs(timestamp).format("HH:mm") === dateDayjs.format("HH:mm");
+            })
+        ) {
+          notifications.show({
+            title: "No data available",
+            message: "No data available for the time you provided",
+            color: "red",
+          });
+          searchParams.delete("date");
+          setSearchParams(searchParams);
+          return;
+        }
+
+        setTimePresets(getAvailableTimesForDate(dayjs(dateDayjs).format("YYYY-MM-DD")));
+        setSelectedDate(dateDayjs.toDate());
+        setLocalSelectedDate(dateDayjs.toDate());
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [
+      getAvailableDatetimesAPI.data,
+      getAvailableTimesForDate,
+      setSearchParams,
+      setSelectedDate,
+      searchParams,
+    ]
+  );
+
+  // EFFECTS
+  useEffect(() => {
+    if (getAvailableDatetimesAPI.data && shouldProcessSearchParamDate.current) {
+      shouldProcessSearchParamDate.current = false;
+      const date = searchParams.get("date");
+      if (date) {
+        startTransition(() => {
+          processSearchParamDate(date);
+        });
+      }
+    }
+  }, [searchParams, getAvailableDatetimesAPI.data, processSearchParamDate]);
+
+  // DRAW
+  return (
+    <div className="flex gap-4 items-end mb-4 sticky top-0 bg-(--mantine-color-body) z-10">
+      <div className="w-full max-w-xs">
+        <DateTimePicker
+          label="Pick date and time"
+          placeholder="Pick date and time"
+          valueFormat="DD MMM YYYY hh:mm A"
+          className="w-full"
+          value={selectedDate ?? localSelectedDate}
+          onChange={handleChange}
+          excludeDate={excludeDate}
+          hideOutsideDates={true}
+          highlightToday
+          timePickerProps={{
+            withDropdown: true,
+            format: "12h",
+            presets: timePresets,
+          }}
+          disabled={getAvailableDatetimesAPI.isLoading}
+        />
+      </div>
+      <SegmentedControl
+        value={activeTab ?? undefined}
+        onChange={(value) => {
+          setActiveTab(value as "TOP_GAINERS" | "VOLUME_SHOCKERS");
+        }}
+        data={[
+          { value: "TOP_GAINERS", label: "Top Gainers" },
+          { value: "VOLUME_SHOCKERS", label: "Volume Shockers" },
+        ]}
+      />
+    </div>
+  );
+};

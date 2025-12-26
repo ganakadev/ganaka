@@ -16,3 +16,26 @@ export interface ShortlistSnapshotWithEntries {
   shortlistType: "TOP_GAINERS" | "VOLUME_SHOCKERS";
   entries: ShortlistEntryWithQuote[];
 }
+
+// Type for run
+export interface Run {
+  id: string;
+  startTime: Date;
+  endTime: Date;
+  completed: boolean;
+  orderCount: number;
+}
+
+// Type for runs grouped by date
+export type GroupedRuns = Record<string, Run[]>;
+
+// Type for order
+export interface Order {
+  id: string;
+  nseSymbol: string;
+  entryPrice: number;
+  stopLossPrice: number;
+  takeProfitPrice: number;
+  timestamp: Date;
+  runId: string;
+}

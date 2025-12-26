@@ -9,181 +9,280 @@ import {
   createSeriesMarkers,
   type IChartApi,
   type ISeriesApi,
+  HistogramSeries,
+  type HistogramSeriesPartialOptions,
   type SeriesMarker,
   type Time,
 } from "lightweight-charts";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export type CandleData = CandlestickData<Time>;
 
-export function CandleChart({
-  selectedDate,
-  candleData,
-  buyerControlPercentage,
-}: {
-  selectedDate: Date | null;
+export interface HistogramSeriesConfig {
+  data: Array<{ time: Time; value: number; color?: string }>;
+  priceScaleId?: string; // empty string for overlay
+  scaleMargins?: { top: number; bottom: number };
+  priceFormat?: { type: "volume" | "price" };
+}
+
+export interface SeriesMarkerConfig {
+  time: Time;
+  position: "aboveBar" | "belowBar" | "inBar";
+  color: string;
+  size: number;
+  shape: "circle" | "square" | "arrowUp" | "arrowDown";
+  text?: string;
+}
+
+export interface CandleChartProps {
   candleData: CandleData[] | null;
-  buyerControlPercentage: number | null | undefined;
-}) {
+  histogramSeries?: HistogramSeriesConfig[];
+  seriesMarkers?: SeriesMarkerConfig[];
+  height?: number;
+}
+
+export function CandleChart({
+  candleData,
+  histogramSeries = [],
+  seriesMarkers = [],
+  height = 250,
+}: CandleChartProps) {
   // HOOKS
   const chartContainerRef = useRef<HTMLDivElement>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
-  const markersRef = useRef<ReturnType<
-    typeof createSeriesMarkers<Time>
-  > | null>(null);
+  const histogramSeriesRefsRef = useRef<Array<ISeriesApi<"Histogram"> | null>>([]);
+  const markersRef = useRef<ReturnType<typeof createSeriesMarkers<Time>> | null>(null);
 
-  // EFFECTS
-  // creates the chart
-  useEffect(() => {
-    if (!chartContainerRef.current || chartRef.current) return;
+  // STATE
+  const [containerReady, setContainerReady] = useState(false);
+  // Set up ResizeObserver to detect when container has dimensions
+  useLayoutEffect(() => {
+    const container = chartContainerRef.current;
+    if (!container) return;
 
-    // Create chart
-    const chart = createChart(chartContainerRef.current, {
-      layout: {
-        textColor: "white",
-        attributionLogo: false,
-        background: { color: "black" },
-      },
-      width: chartContainerRef.current.clientWidth,
-      height: 250,
-      timeScale: {
-        timeVisible: true,
-        secondsVisible: false,
-      },
-      grid: {
-        horzLines: {
-          visible: false,
-        },
-        vertLines: {
-          visible: false,
-        },
-      },
+    // Set up ResizeObserver to track container dimensions
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0) {
+          setContainerReady(true);
+        }
+      }
     });
 
-    chartRef.current = chart;
+    resizeObserver.observe(container);
+    resizeObserverRef.current = resizeObserver;
 
-    // Add candlestick series
-    const candlestickSeries = chart.addSeries(CandlestickSeries, {
-      upColor: "#26a69a",
-      downColor: "#ef5350",
-      borderVisible: true,
-      wickUpColor: "#26a69a",
-      wickDownColor: "#ef5350",
-      priceLineVisible: false,
-    } as CandlestickSeriesPartialOptions);
-
-    seriesRef.current = candlestickSeries;
-
-    // Create series markers manager
-    markersRef.current = createSeriesMarkers(candlestickSeries, []);
-
-    // Handle resize
-    const handleResize = () => {
-      if (chartContainerRef.current && chart) {
-        chart.applyOptions({
-          width: chartContainerRef.current.clientWidth,
-        });
+    // Check if container already has dimensions (defer to avoid synchronous setState)
+    requestAnimationFrame(() => {
+      if (container.clientWidth > 0) {
+        setContainerReady(true);
       }
-    };
+    });
 
-    window.addEventListener("resize", handleResize);
-
+    // Cleanup
     return () => {
-      window.removeEventListener("resize", handleResize);
+      resizeObserver.disconnect();
+      resizeObserverRef.current = null;
     };
   }, []);
 
-  // sets the candle data
-  useEffect(() => {
-    if (!seriesRef.current || !candleData || candleData.length === 0) return;
+  // Initialize or update chart when container is ready and data is available
+  const initializeChart = useCallback(() => {
+    if (!chartContainerRef.current || !candleData || candleData.length === 0) return;
 
+    const chart = chartRef.current;
+
+    // CREATE CHART if it doesn't exist
+    if (!chart) {
+      const newChart = createChart(chartContainerRef.current, {
+        layout: {
+          textColor: "white",
+          attributionLogo: false,
+          background: { color: "black" },
+        },
+        width: chartContainerRef.current.clientWidth,
+        height: height,
+        leftPriceScale: {
+          visible: true,
+          borderColor: "rgba(255, 255, 255, 0.2)",
+        },
+        rightPriceScale: {
+          visible: false,
+          borderColor: "rgba(255, 255, 255, 0.2)",
+        },
+        timeScale: {
+          timeVisible: true,
+          secondsVisible: false,
+        },
+        grid: {
+          horzLines: {
+            visible: false,
+          },
+          vertLines: {
+            visible: false,
+          },
+        },
+      });
+      chartRef.current = newChart;
+
+      // ADDING CANDLESTICK SERIES
+      const newCandlestickSeries = newChart.addSeries(CandlestickSeries, {
+        upColor: "#26a69a",
+        downColor: "#ef5350",
+        borderVisible: true,
+        wickUpColor: "#26a69a",
+        wickDownColor: "#ef5350",
+        priceLineVisible: false,
+        priceScaleId: "left",
+      } as CandlestickSeriesPartialOptions);
+      seriesRef.current = newCandlestickSeries;
+
+      // CREATE MARKERS MANAGER
+      markersRef.current = createSeriesMarkers(newCandlestickSeries, []);
+    }
+
+    // Get current chart and series (either newly created or existing)
+    const currentChart = chartRef.current!;
+    const currentCandlestickSeries = seriesRef.current!;
+
+    // SETTING/UPDATE CANDLE DATA
     // eliminate candles that have duplicate times
     const uniqueCandles = candleData.filter(
-      (candle, index, self) =>
-        index === self.findIndex((t) => t.time === candle.time)
+      (candle, index, self) => index === self.findIndex((t) => t.time === candle.time)
     );
+    currentCandlestickSeries.setData(uniqueCandles);
 
-    // Set candle data
-    seriesRef.current.setData(uniqueCandles);
-
-    // Fit content to show all candles
-    if (chartRef.current) {
-      chartRef.current.timeScale().fitContent();
-    }
-  }, [candleData]);
-
-  // adds a marker at the selected time
-  useEffect(() => {
-    if (
-      !seriesRef.current ||
-      !selectedDate ||
-      !candleData ||
-      candleData.length === 0
-    ) {
-      return;
-    }
-
-    // Convert selectedDate to dayjs object
-    const selectedTime = dayjs(selectedDate).format("YYYY-MM-DDTHH:mm");
-    let closestCandle = candleData[0];
-    const referenceIndex = Math.min(30, candleData.length - 1);
-    const firstCandleTime = dayjs
-      .unix(candleData[referenceIndex].time as number)
-      .utc()
-      .format("YYYY-MM-DDTHH:mm");
-    let minDiff = Math.abs(
-      dayjs(selectedTime).diff(dayjs(firstCandleTime), "minutes")
-    );
-
-    for (const candle of candleData) {
-      const candleTime = dayjs
-        .unix(candle.time as number)
-        .utc()
-        .format("YYYY-MM-DDTHH:mm");
-      const diff = dayjs(selectedTime).diff(dayjs(candleTime), "minutes");
-
-      if (Math.abs(diff) < minDiff) {
-        minDiff = Math.abs(diff);
-        closestCandle = candle;
+    // SETTING/UPDATE SERIES MARKERS
+    if (markersRef.current) {
+      if (seriesMarkers && seriesMarkers.length > 0) {
+        const markers: SeriesMarker<Time>[] = seriesMarkers.map((config) => ({
+          time: config.time,
+          position: config.position,
+          color: config.color,
+          size: config.size,
+          shape: config.shape,
+          text: config.text,
+        }));
+        markersRef.current.setMarkers(markers);
+      } else {
+        markersRef.current.setMarkers([]);
       }
     }
 
-    // Create marker at the selected time
-    const selectedTimeMarker: SeriesMarker<Time> = {
-      time: closestCandle.time,
-      position: "belowBar",
-      color: "orange",
-      size: 1,
-      shape: "circle",
-      text: `${dayjs(selectedTime).format("HH:mm")}`,
-    };
-    const buyerControlMarker: SeriesMarker<Time> = {
-      time: closestCandle.time,
-      position: "aboveBar",
-      color:
-        buyerControlPercentage && buyerControlPercentage > 50
-          ? "lightGreen"
-          : "red",
-      size: 1,
-      shape: "circle",
-      text: `${
-        buyerControlPercentage ? buyerControlPercentage.toFixed(2) : "N/A"
-      }%`,
-    };
+    // UPDATE HISTOGRAM SERIES
+    const currentHistogramRefs = histogramSeriesRefsRef.current;
+    if (histogramSeries && histogramSeries.length > 0) {
+      // Remove existing histogram series if count doesn't match
+      if (currentHistogramRefs.length !== histogramSeries.length) {
+        currentHistogramRefs.forEach((ref) => {
+          if (ref) currentChart.removeSeries(ref);
+        });
+        histogramSeriesRefsRef.current = [];
 
-    // Set markers using the markers manager (v5 API)
-    if (markersRef.current) {
-      markersRef.current.setMarkers([selectedTimeMarker, buyerControlMarker]);
+        // Recreate histogram series
+        const histogramSeriesRefs: Array<ISeriesApi<"Histogram"> | null> = [];
+        histogramSeries.forEach((config) => {
+          const histogramSeriesInstance = currentChart.addSeries(HistogramSeries, {
+            priceFormat: config.priceFormat || {
+              type: "volume",
+            },
+            priceScaleId: config.priceScaleId ?? "", // default to overlay
+          } as HistogramSeriesPartialOptions);
+
+          // Configure scale margins if provided
+          if (config.scaleMargins) {
+            histogramSeriesInstance.priceScale().applyOptions({
+              scaleMargins: config.scaleMargins,
+            });
+          }
+
+          histogramSeriesRefs.push(histogramSeriesInstance);
+        });
+        histogramSeriesRefsRef.current = histogramSeriesRefs;
+      }
+
+      // SETTING/UPDATE HISTOGRAM DATA
+      histogramSeries.forEach((config, index) => {
+        const histogramSeriesRef = histogramSeriesRefsRef.current[index];
+        if (!histogramSeriesRef || !config.data || config.data.length === 0) {
+          return;
+        }
+
+        // eliminate data points that have duplicate times
+        const uniqueData = config.data.filter(
+          (point, idx, self) => idx === self.findIndex((t) => t.time === point.time)
+        );
+
+        // Transform data to histogram format
+        const histogramData = uniqueData.map((point) => ({
+          time: point.time,
+          value: point.value,
+          color: point.color || "#808080", // default gray if no color provided
+        }));
+
+        // Set histogram data
+        histogramSeriesRef.setData(histogramData);
+      });
+
+      // Configure candlestick scale margins to prevent overlap with histogram
+      currentCandlestickSeries.priceScale().applyOptions({
+        scaleMargins: {
+          top: 0.1,
+          bottom: 0.4,
+        },
+      });
+    } else {
+      // Remove histogram series if none provided
+      currentHistogramRefs.forEach((ref) => {
+        if (ref) currentChart.removeSeries(ref);
+      });
+      histogramSeriesRefsRef.current = [];
+
+      // Reset margins when no histogram series
+      currentCandlestickSeries.priceScale().applyOptions({
+        scaleMargins: {
+          top: 0,
+          bottom: 0,
+        },
+      });
     }
-  }, [selectedDate, candleData, buyerControlPercentage]);
+
+    // FITTING CONTENT
+    currentChart.timeScale().fitContent();
+  }, [candleData, histogramSeries, seriesMarkers, height]);
+
+  // Initialize or update chart when container is ready and data is available
+  useEffect(() => {
+    if (containerReady && candleData && candleData.length > 0) {
+      initializeChart();
+    }
+  }, [containerReady, candleData, initializeChart]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (chartRef.current) {
+        chartRef.current.remove();
+        chartRef.current = null;
+      }
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+        resizeObserverRef.current = null;
+      }
+      seriesRef.current = null;
+      histogramSeriesRefsRef.current = [];
+      markersRef.current = null;
+    };
+  }, []);
 
   // DRAW
   return (
-    <div className="border rounded-md p-4 pr-3 bg-black">
+    <div className="border rounded-md p-4 pr-4 bg-black">
       <div ref={chartContainerRef} className="w-full min-h-[200px]" />
     </div>
   );

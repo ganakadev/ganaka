@@ -49,19 +49,42 @@ model NiftyQuote {
   @@map("nifty_quotes")
 }
 
-model DeveloperToken {
+model Developer {
+  id       String @unique @default(uuid())
   username String @id @unique
-  token    String @unique
+
+  runs  Run[]
+  token String @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([token])
-  @@map("developer_tokens")
+  @@index([token, username])
+  @@map("developers")
+}
+
+model Run {
+  id String @id @default(uuid())
+
+  startTime DateTime
+  endTime   DateTime
+
+  completed Boolean    @default(false)
+  orders    Order[]
+  developer Developer? @relation(fields: [developerId], references: [id], onDelete: Cascade)
+
+  developerId String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([startTime, endTime, completed])
+  @@map("runs")
 }
 
 model Order {
   id String @id @default(uuid())
+
+  run Run @relation(fields: [runId], references: [id], onDelete: Cascade)
 
   nseSymbol       String
   stopLossPrice   Decimal
@@ -69,13 +92,11 @@ model Order {
   entryPrice      Decimal
   timestamp       DateTime
 
-  runId    String
-  username String
-
+  runId     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([runId, username])
+  @@index([runId, nseSymbol])
   @@map("orders")
 }
 

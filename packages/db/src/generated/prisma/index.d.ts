@@ -29,10 +29,15 @@ export type QuoteSnapshot = $Result.DefaultSelection<Prisma.$QuoteSnapshotPayloa
  */
 export type NiftyQuote = $Result.DefaultSelection<Prisma.$NiftyQuotePayload>
 /**
- * Model DeveloperToken
+ * Model Developer
  * 
  */
-export type DeveloperToken = $Result.DefaultSelection<Prisma.$DeveloperTokenPayload>
+export type Developer = $Result.DefaultSelection<Prisma.$DeveloperPayload>
+/**
+ * Model Run
+ * 
+ */
+export type Run = $Result.DefaultSelection<Prisma.$RunPayload>
 /**
  * Model Order
  * 
@@ -210,14 +215,24 @@ export class PrismaClient<
   get niftyQuote(): Prisma.NiftyQuoteDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.developerToken`: Exposes CRUD operations for the **DeveloperToken** model.
+   * `prisma.developer`: Exposes CRUD operations for the **Developer** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more DeveloperTokens
-    * const developerTokens = await prisma.developerToken.findMany()
+    * // Fetch zero or more Developers
+    * const developers = await prisma.developer.findMany()
     * ```
     */
-  get developerToken(): Prisma.DeveloperTokenDelegate<ExtArgs, ClientOptions>;
+  get developer(): Prisma.DeveloperDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.run`: Exposes CRUD operations for the **Run** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Runs
+    * const runs = await prisma.run.findMany()
+    * ```
+    */
+  get run(): Prisma.RunDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.order`: Exposes CRUD operations for the **Order** model.
@@ -682,7 +697,8 @@ export namespace Prisma {
     ShortlistSnapshot: 'ShortlistSnapshot',
     QuoteSnapshot: 'QuoteSnapshot',
     NiftyQuote: 'NiftyQuote',
-    DeveloperToken: 'DeveloperToken',
+    Developer: 'Developer',
+    Run: 'Run',
     Order: 'Order',
     CollectorError: 'CollectorError'
   };
@@ -703,7 +719,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "shortlistSnapshot" | "quoteSnapshot" | "niftyQuote" | "developerToken" | "order" | "collectorError"
+      modelProps: "shortlistSnapshot" | "quoteSnapshot" | "niftyQuote" | "developer" | "run" | "order" | "collectorError"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -929,77 +945,151 @@ export namespace Prisma {
           }
         }
       }
-      DeveloperToken: {
-        payload: Prisma.$DeveloperTokenPayload<ExtArgs>
-        fields: Prisma.DeveloperTokenFieldRefs
+      Developer: {
+        payload: Prisma.$DeveloperPayload<ExtArgs>
+        fields: Prisma.DeveloperFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.DeveloperTokenFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload> | null
+            args: Prisma.DeveloperFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.DeveloperTokenFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>
+            args: Prisma.DeveloperFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperPayload>
           }
           findFirst: {
-            args: Prisma.DeveloperTokenFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload> | null
+            args: Prisma.DeveloperFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.DeveloperTokenFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>
+            args: Prisma.DeveloperFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperPayload>
           }
           findMany: {
-            args: Prisma.DeveloperTokenFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>[]
+            args: Prisma.DeveloperFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperPayload>[]
           }
           create: {
-            args: Prisma.DeveloperTokenCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>
+            args: Prisma.DeveloperCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperPayload>
           }
           createMany: {
-            args: Prisma.DeveloperTokenCreateManyArgs<ExtArgs>
+            args: Prisma.DeveloperCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.DeveloperTokenCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>[]
+            args: Prisma.DeveloperCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperPayload>[]
           }
           delete: {
-            args: Prisma.DeveloperTokenDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>
+            args: Prisma.DeveloperDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperPayload>
           }
           update: {
-            args: Prisma.DeveloperTokenUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>
+            args: Prisma.DeveloperUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperPayload>
           }
           deleteMany: {
-            args: Prisma.DeveloperTokenDeleteManyArgs<ExtArgs>
+            args: Prisma.DeveloperDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.DeveloperTokenUpdateManyArgs<ExtArgs>
+            args: Prisma.DeveloperUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.DeveloperTokenUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>[]
+            args: Prisma.DeveloperUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperPayload>[]
           }
           upsert: {
-            args: Prisma.DeveloperTokenUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DeveloperTokenPayload>
+            args: Prisma.DeveloperUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeveloperPayload>
           }
           aggregate: {
-            args: Prisma.DeveloperTokenAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateDeveloperToken>
+            args: Prisma.DeveloperAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDeveloper>
           }
           groupBy: {
-            args: Prisma.DeveloperTokenGroupByArgs<ExtArgs>
-            result: $Utils.Optional<DeveloperTokenGroupByOutputType>[]
+            args: Prisma.DeveloperGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DeveloperGroupByOutputType>[]
           }
           count: {
-            args: Prisma.DeveloperTokenCountArgs<ExtArgs>
-            result: $Utils.Optional<DeveloperTokenCountAggregateOutputType> | number
+            args: Prisma.DeveloperCountArgs<ExtArgs>
+            result: $Utils.Optional<DeveloperCountAggregateOutputType> | number
+          }
+        }
+      }
+      Run: {
+        payload: Prisma.$RunPayload<ExtArgs>
+        fields: Prisma.RunFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RunFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RunPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RunFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RunPayload>
+          }
+          findFirst: {
+            args: Prisma.RunFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RunPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RunFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RunPayload>
+          }
+          findMany: {
+            args: Prisma.RunFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RunPayload>[]
+          }
+          create: {
+            args: Prisma.RunCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RunPayload>
+          }
+          createMany: {
+            args: Prisma.RunCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RunCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RunPayload>[]
+          }
+          delete: {
+            args: Prisma.RunDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RunPayload>
+          }
+          update: {
+            args: Prisma.RunUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RunPayload>
+          }
+          deleteMany: {
+            args: Prisma.RunDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RunUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RunUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RunPayload>[]
+          }
+          upsert: {
+            args: Prisma.RunUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RunPayload>
+          }
+          aggregate: {
+            args: Prisma.RunAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRun>
+          }
+          groupBy: {
+            args: Prisma.RunGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RunGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RunCountArgs<ExtArgs>
+            result: $Utils.Optional<RunCountAggregateOutputType> | number
           }
         }
       }
@@ -1250,7 +1340,8 @@ export namespace Prisma {
     shortlistSnapshot?: ShortlistSnapshotOmit
     quoteSnapshot?: QuoteSnapshotOmit
     niftyQuote?: NiftyQuoteOmit
-    developerToken?: DeveloperTokenOmit
+    developer?: DeveloperOmit
+    run?: RunOmit
     order?: OrderOmit
     collectorError?: CollectorErrorOmit
   }
@@ -1327,6 +1418,67 @@ export namespace Prisma {
    * Count Types
    */
 
+
+  /**
+   * Count Type DeveloperCountOutputType
+   */
+
+  export type DeveloperCountOutputType = {
+    runs: number
+  }
+
+  export type DeveloperCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    runs?: boolean | DeveloperCountOutputTypeCountRunsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * DeveloperCountOutputType without action
+   */
+  export type DeveloperCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeveloperCountOutputType
+     */
+    select?: DeveloperCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * DeveloperCountOutputType without action
+   */
+  export type DeveloperCountOutputTypeCountRunsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RunWhereInput
+  }
+
+
+  /**
+   * Count Type RunCountOutputType
+   */
+
+  export type RunCountOutputType = {
+    orders: number
+  }
+
+  export type RunCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    orders?: boolean | RunCountOutputTypeCountOrdersArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * RunCountOutputType without action
+   */
+  export type RunCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RunCountOutputType
+     */
+    select?: RunCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * RunCountOutputType without action
+   */
+  export type RunCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderWhereInput
+  }
 
 
   /**
@@ -4380,30 +4532,33 @@ export namespace Prisma {
 
 
   /**
-   * Model DeveloperToken
+   * Model Developer
    */
 
-  export type AggregateDeveloperToken = {
-    _count: DeveloperTokenCountAggregateOutputType | null
-    _min: DeveloperTokenMinAggregateOutputType | null
-    _max: DeveloperTokenMaxAggregateOutputType | null
+  export type AggregateDeveloper = {
+    _count: DeveloperCountAggregateOutputType | null
+    _min: DeveloperMinAggregateOutputType | null
+    _max: DeveloperMaxAggregateOutputType | null
   }
 
-  export type DeveloperTokenMinAggregateOutputType = {
+  export type DeveloperMinAggregateOutputType = {
+    id: string | null
     username: string | null
     token: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type DeveloperTokenMaxAggregateOutputType = {
+  export type DeveloperMaxAggregateOutputType = {
+    id: string | null
     username: string | null
     token: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type DeveloperTokenCountAggregateOutputType = {
+  export type DeveloperCountAggregateOutputType = {
+    id: number
     username: number
     token: number
     createdAt: number
@@ -4412,21 +4567,24 @@ export namespace Prisma {
   }
 
 
-  export type DeveloperTokenMinAggregateInputType = {
+  export type DeveloperMinAggregateInputType = {
+    id?: true
     username?: true
     token?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type DeveloperTokenMaxAggregateInputType = {
+  export type DeveloperMaxAggregateInputType = {
+    id?: true
     username?: true
     token?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type DeveloperTokenCountAggregateInputType = {
+  export type DeveloperCountAggregateInputType = {
+    id?: true
     username?: true
     token?: true
     createdAt?: true
@@ -4434,271 +4592,287 @@ export namespace Prisma {
     _all?: true
   }
 
-  export type DeveloperTokenAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type DeveloperAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which DeveloperToken to aggregate.
+     * Filter which Developer to aggregate.
      */
-    where?: DeveloperTokenWhereInput
+    where?: DeveloperWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of DeveloperTokens to fetch.
+     * Determine the order of Developers to fetch.
      */
-    orderBy?: DeveloperTokenOrderByWithRelationInput | DeveloperTokenOrderByWithRelationInput[]
+    orderBy?: DeveloperOrderByWithRelationInput | DeveloperOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: DeveloperTokenWhereUniqueInput
+    cursor?: DeveloperWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` DeveloperTokens from the position of the cursor.
+     * Take `±n` Developers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` DeveloperTokens.
+     * Skip the first `n` Developers.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned DeveloperTokens
+     * Count returned Developers
     **/
-    _count?: true | DeveloperTokenCountAggregateInputType
+    _count?: true | DeveloperCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: DeveloperTokenMinAggregateInputType
+    _min?: DeveloperMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: DeveloperTokenMaxAggregateInputType
+    _max?: DeveloperMaxAggregateInputType
   }
 
-  export type GetDeveloperTokenAggregateType<T extends DeveloperTokenAggregateArgs> = {
-        [P in keyof T & keyof AggregateDeveloperToken]: P extends '_count' | 'count'
+  export type GetDeveloperAggregateType<T extends DeveloperAggregateArgs> = {
+        [P in keyof T & keyof AggregateDeveloper]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateDeveloperToken[P]>
-      : GetScalarType<T[P], AggregateDeveloperToken[P]>
+        : GetScalarType<T[P], AggregateDeveloper[P]>
+      : GetScalarType<T[P], AggregateDeveloper[P]>
   }
 
 
 
 
-  export type DeveloperTokenGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: DeveloperTokenWhereInput
-    orderBy?: DeveloperTokenOrderByWithAggregationInput | DeveloperTokenOrderByWithAggregationInput[]
-    by: DeveloperTokenScalarFieldEnum[] | DeveloperTokenScalarFieldEnum
-    having?: DeveloperTokenScalarWhereWithAggregatesInput
+  export type DeveloperGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DeveloperWhereInput
+    orderBy?: DeveloperOrderByWithAggregationInput | DeveloperOrderByWithAggregationInput[]
+    by: DeveloperScalarFieldEnum[] | DeveloperScalarFieldEnum
+    having?: DeveloperScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: DeveloperTokenCountAggregateInputType | true
-    _min?: DeveloperTokenMinAggregateInputType
-    _max?: DeveloperTokenMaxAggregateInputType
+    _count?: DeveloperCountAggregateInputType | true
+    _min?: DeveloperMinAggregateInputType
+    _max?: DeveloperMaxAggregateInputType
   }
 
-  export type DeveloperTokenGroupByOutputType = {
+  export type DeveloperGroupByOutputType = {
+    id: string
     username: string
     token: string
     createdAt: Date
     updatedAt: Date
-    _count: DeveloperTokenCountAggregateOutputType | null
-    _min: DeveloperTokenMinAggregateOutputType | null
-    _max: DeveloperTokenMaxAggregateOutputType | null
+    _count: DeveloperCountAggregateOutputType | null
+    _min: DeveloperMinAggregateOutputType | null
+    _max: DeveloperMaxAggregateOutputType | null
   }
 
-  type GetDeveloperTokenGroupByPayload<T extends DeveloperTokenGroupByArgs> = Prisma.PrismaPromise<
+  type GetDeveloperGroupByPayload<T extends DeveloperGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<DeveloperTokenGroupByOutputType, T['by']> &
+      PickEnumerable<DeveloperGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof DeveloperTokenGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof DeveloperGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], DeveloperTokenGroupByOutputType[P]>
-            : GetScalarType<T[P], DeveloperTokenGroupByOutputType[P]>
+              : GetScalarType<T[P], DeveloperGroupByOutputType[P]>
+            : GetScalarType<T[P], DeveloperGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type DeveloperTokenSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type DeveloperSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
     username?: boolean
     token?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-  }, ExtArgs["result"]["developerToken"]>
+    runs?: boolean | Developer$runsArgs<ExtArgs>
+    _count?: boolean | DeveloperCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["developer"]>
 
-  export type DeveloperTokenSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type DeveloperSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
     username?: boolean
     token?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-  }, ExtArgs["result"]["developerToken"]>
+  }, ExtArgs["result"]["developer"]>
 
-  export type DeveloperTokenSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type DeveloperSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
     username?: boolean
     token?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-  }, ExtArgs["result"]["developerToken"]>
+  }, ExtArgs["result"]["developer"]>
 
-  export type DeveloperTokenSelectScalar = {
+  export type DeveloperSelectScalar = {
+    id?: boolean
     username?: boolean
     token?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type DeveloperTokenOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"username" | "token" | "createdAt" | "updatedAt", ExtArgs["result"]["developerToken"]>
+  export type DeveloperOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "token" | "createdAt" | "updatedAt", ExtArgs["result"]["developer"]>
+  export type DeveloperInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    runs?: boolean | Developer$runsArgs<ExtArgs>
+    _count?: boolean | DeveloperCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type DeveloperIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type DeveloperIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
-  export type $DeveloperTokenPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "DeveloperToken"
-    objects: {}
+  export type $DeveloperPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Developer"
+    objects: {
+      runs: Prisma.$RunPayload<ExtArgs>[]
+    }
     scalars: $Extensions.GetPayloadResult<{
+      id: string
       username: string
       token: string
       createdAt: Date
       updatedAt: Date
-    }, ExtArgs["result"]["developerToken"]>
+    }, ExtArgs["result"]["developer"]>
     composites: {}
   }
 
-  type DeveloperTokenGetPayload<S extends boolean | null | undefined | DeveloperTokenDefaultArgs> = $Result.GetResult<Prisma.$DeveloperTokenPayload, S>
+  type DeveloperGetPayload<S extends boolean | null | undefined | DeveloperDefaultArgs> = $Result.GetResult<Prisma.$DeveloperPayload, S>
 
-  type DeveloperTokenCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<DeveloperTokenFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: DeveloperTokenCountAggregateInputType | true
+  type DeveloperCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DeveloperFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DeveloperCountAggregateInputType | true
     }
 
-  export interface DeveloperTokenDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DeveloperToken'], meta: { name: 'DeveloperToken' } }
+  export interface DeveloperDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Developer'], meta: { name: 'Developer' } }
     /**
-     * Find zero or one DeveloperToken that matches the filter.
-     * @param {DeveloperTokenFindUniqueArgs} args - Arguments to find a DeveloperToken
+     * Find zero or one Developer that matches the filter.
+     * @param {DeveloperFindUniqueArgs} args - Arguments to find a Developer
      * @example
-     * // Get one DeveloperToken
-     * const developerToken = await prisma.developerToken.findUnique({
+     * // Get one Developer
+     * const developer = await prisma.developer.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends DeveloperTokenFindUniqueArgs>(args: SelectSubset<T, DeveloperTokenFindUniqueArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends DeveloperFindUniqueArgs>(args: SelectSubset<T, DeveloperFindUniqueArgs<ExtArgs>>): Prisma__DeveloperClient<$Result.GetResult<Prisma.$DeveloperPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one DeveloperToken that matches the filter or throw an error with `error.code='P2025'`
+     * Find one Developer that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {DeveloperTokenFindUniqueOrThrowArgs} args - Arguments to find a DeveloperToken
+     * @param {DeveloperFindUniqueOrThrowArgs} args - Arguments to find a Developer
      * @example
-     * // Get one DeveloperToken
-     * const developerToken = await prisma.developerToken.findUniqueOrThrow({
+     * // Get one Developer
+     * const developer = await prisma.developer.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends DeveloperTokenFindUniqueOrThrowArgs>(args: SelectSubset<T, DeveloperTokenFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends DeveloperFindUniqueOrThrowArgs>(args: SelectSubset<T, DeveloperFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DeveloperClient<$Result.GetResult<Prisma.$DeveloperPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first DeveloperToken that matches the filter.
+     * Find the first Developer that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {DeveloperTokenFindFirstArgs} args - Arguments to find a DeveloperToken
+     * @param {DeveloperFindFirstArgs} args - Arguments to find a Developer
      * @example
-     * // Get one DeveloperToken
-     * const developerToken = await prisma.developerToken.findFirst({
+     * // Get one Developer
+     * const developer = await prisma.developer.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends DeveloperTokenFindFirstArgs>(args?: SelectSubset<T, DeveloperTokenFindFirstArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends DeveloperFindFirstArgs>(args?: SelectSubset<T, DeveloperFindFirstArgs<ExtArgs>>): Prisma__DeveloperClient<$Result.GetResult<Prisma.$DeveloperPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first DeveloperToken that matches the filter or
+     * Find the first Developer that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {DeveloperTokenFindFirstOrThrowArgs} args - Arguments to find a DeveloperToken
+     * @param {DeveloperFindFirstOrThrowArgs} args - Arguments to find a Developer
      * @example
-     * // Get one DeveloperToken
-     * const developerToken = await prisma.developerToken.findFirstOrThrow({
+     * // Get one Developer
+     * const developer = await prisma.developer.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends DeveloperTokenFindFirstOrThrowArgs>(args?: SelectSubset<T, DeveloperTokenFindFirstOrThrowArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends DeveloperFindFirstOrThrowArgs>(args?: SelectSubset<T, DeveloperFindFirstOrThrowArgs<ExtArgs>>): Prisma__DeveloperClient<$Result.GetResult<Prisma.$DeveloperPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more DeveloperTokens that matches the filter.
+     * Find zero or more Developers that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {DeveloperTokenFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {DeveloperFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all DeveloperTokens
-     * const developerTokens = await prisma.developerToken.findMany()
+     * // Get all Developers
+     * const developers = await prisma.developer.findMany()
      * 
-     * // Get first 10 DeveloperTokens
-     * const developerTokens = await prisma.developerToken.findMany({ take: 10 })
+     * // Get first 10 Developers
+     * const developers = await prisma.developer.findMany({ take: 10 })
      * 
-     * // Only select the `username`
-     * const developerTokenWithUsernameOnly = await prisma.developerToken.findMany({ select: { username: true } })
+     * // Only select the `id`
+     * const developerWithIdOnly = await prisma.developer.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends DeveloperTokenFindManyArgs>(args?: SelectSubset<T, DeveloperTokenFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends DeveloperFindManyArgs>(args?: SelectSubset<T, DeveloperFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeveloperPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a DeveloperToken.
-     * @param {DeveloperTokenCreateArgs} args - Arguments to create a DeveloperToken.
+     * Create a Developer.
+     * @param {DeveloperCreateArgs} args - Arguments to create a Developer.
      * @example
-     * // Create one DeveloperToken
-     * const DeveloperToken = await prisma.developerToken.create({
+     * // Create one Developer
+     * const Developer = await prisma.developer.create({
      *   data: {
-     *     // ... data to create a DeveloperToken
+     *     // ... data to create a Developer
      *   }
      * })
      * 
      */
-    create<T extends DeveloperTokenCreateArgs>(args: SelectSubset<T, DeveloperTokenCreateArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends DeveloperCreateArgs>(args: SelectSubset<T, DeveloperCreateArgs<ExtArgs>>): Prisma__DeveloperClient<$Result.GetResult<Prisma.$DeveloperPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many DeveloperTokens.
-     * @param {DeveloperTokenCreateManyArgs} args - Arguments to create many DeveloperTokens.
+     * Create many Developers.
+     * @param {DeveloperCreateManyArgs} args - Arguments to create many Developers.
      * @example
-     * // Create many DeveloperTokens
-     * const developerToken = await prisma.developerToken.createMany({
+     * // Create many Developers
+     * const developer = await prisma.developer.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends DeveloperTokenCreateManyArgs>(args?: SelectSubset<T, DeveloperTokenCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends DeveloperCreateManyArgs>(args?: SelectSubset<T, DeveloperCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many DeveloperTokens and returns the data saved in the database.
-     * @param {DeveloperTokenCreateManyAndReturnArgs} args - Arguments to create many DeveloperTokens.
+     * Create many Developers and returns the data saved in the database.
+     * @param {DeveloperCreateManyAndReturnArgs} args - Arguments to create many Developers.
      * @example
-     * // Create many DeveloperTokens
-     * const developerToken = await prisma.developerToken.createManyAndReturn({
+     * // Create many Developers
+     * const developer = await prisma.developer.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many DeveloperTokens and only return the `username`
-     * const developerTokenWithUsernameOnly = await prisma.developerToken.createManyAndReturn({
-     *   select: { username: true },
+     * // Create many Developers and only return the `id`
+     * const developerWithIdOnly = await prisma.developer.createManyAndReturn({
+     *   select: { id: true },
      *   data: [
      *     // ... provide data here
      *   ]
@@ -4707,28 +4881,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends DeveloperTokenCreateManyAndReturnArgs>(args?: SelectSubset<T, DeveloperTokenCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends DeveloperCreateManyAndReturnArgs>(args?: SelectSubset<T, DeveloperCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeveloperPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Delete a DeveloperToken.
-     * @param {DeveloperTokenDeleteArgs} args - Arguments to delete one DeveloperToken.
+     * Delete a Developer.
+     * @param {DeveloperDeleteArgs} args - Arguments to delete one Developer.
      * @example
-     * // Delete one DeveloperToken
-     * const DeveloperToken = await prisma.developerToken.delete({
+     * // Delete one Developer
+     * const Developer = await prisma.developer.delete({
      *   where: {
-     *     // ... filter to delete one DeveloperToken
+     *     // ... filter to delete one Developer
      *   }
      * })
      * 
      */
-    delete<T extends DeveloperTokenDeleteArgs>(args: SelectSubset<T, DeveloperTokenDeleteArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends DeveloperDeleteArgs>(args: SelectSubset<T, DeveloperDeleteArgs<ExtArgs>>): Prisma__DeveloperClient<$Result.GetResult<Prisma.$DeveloperPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one DeveloperToken.
-     * @param {DeveloperTokenUpdateArgs} args - Arguments to update one DeveloperToken.
+     * Update one Developer.
+     * @param {DeveloperUpdateArgs} args - Arguments to update one Developer.
      * @example
-     * // Update one DeveloperToken
-     * const developerToken = await prisma.developerToken.update({
+     * // Update one Developer
+     * const developer = await prisma.developer.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -4738,30 +4912,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends DeveloperTokenUpdateArgs>(args: SelectSubset<T, DeveloperTokenUpdateArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends DeveloperUpdateArgs>(args: SelectSubset<T, DeveloperUpdateArgs<ExtArgs>>): Prisma__DeveloperClient<$Result.GetResult<Prisma.$DeveloperPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more DeveloperTokens.
-     * @param {DeveloperTokenDeleteManyArgs} args - Arguments to filter DeveloperTokens to delete.
+     * Delete zero or more Developers.
+     * @param {DeveloperDeleteManyArgs} args - Arguments to filter Developers to delete.
      * @example
-     * // Delete a few DeveloperTokens
-     * const { count } = await prisma.developerToken.deleteMany({
+     * // Delete a few Developers
+     * const { count } = await prisma.developer.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends DeveloperTokenDeleteManyArgs>(args?: SelectSubset<T, DeveloperTokenDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends DeveloperDeleteManyArgs>(args?: SelectSubset<T, DeveloperDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more DeveloperTokens.
+     * Update zero or more Developers.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {DeveloperTokenUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {DeveloperUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many DeveloperTokens
-     * const developerToken = await prisma.developerToken.updateMany({
+     * // Update many Developers
+     * const developer = await prisma.developer.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -4771,14 +4945,14 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends DeveloperTokenUpdateManyArgs>(args: SelectSubset<T, DeveloperTokenUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends DeveloperUpdateManyArgs>(args: SelectSubset<T, DeveloperUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more DeveloperTokens and returns the data updated in the database.
-     * @param {DeveloperTokenUpdateManyAndReturnArgs} args - Arguments to update many DeveloperTokens.
+     * Update zero or more Developers and returns the data updated in the database.
+     * @param {DeveloperUpdateManyAndReturnArgs} args - Arguments to update many Developers.
      * @example
-     * // Update many DeveloperTokens
-     * const developerToken = await prisma.developerToken.updateManyAndReturn({
+     * // Update many Developers
+     * const developer = await prisma.developer.updateManyAndReturn({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -4787,9 +4961,9 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more DeveloperTokens and only return the `username`
-     * const developerTokenWithUsernameOnly = await prisma.developerToken.updateManyAndReturn({
-     *   select: { username: true },
+     * // Update zero or more Developers and only return the `id`
+     * const developerWithIdOnly = await prisma.developer.updateManyAndReturn({
+     *   select: { id: true },
      *   where: {
      *     // ... provide filter here
      *   },
@@ -4801,56 +4975,56 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends DeveloperTokenUpdateManyAndReturnArgs>(args: SelectSubset<T, DeveloperTokenUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends DeveloperUpdateManyAndReturnArgs>(args: SelectSubset<T, DeveloperUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeveloperPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Create or update one DeveloperToken.
-     * @param {DeveloperTokenUpsertArgs} args - Arguments to update or create a DeveloperToken.
+     * Create or update one Developer.
+     * @param {DeveloperUpsertArgs} args - Arguments to update or create a Developer.
      * @example
-     * // Update or create a DeveloperToken
-     * const developerToken = await prisma.developerToken.upsert({
+     * // Update or create a Developer
+     * const developer = await prisma.developer.upsert({
      *   create: {
-     *     // ... data to create a DeveloperToken
+     *     // ... data to create a Developer
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the DeveloperToken we want to update
+     *     // ... the filter for the Developer we want to update
      *   }
      * })
      */
-    upsert<T extends DeveloperTokenUpsertArgs>(args: SelectSubset<T, DeveloperTokenUpsertArgs<ExtArgs>>): Prisma__DeveloperTokenClient<$Result.GetResult<Prisma.$DeveloperTokenPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends DeveloperUpsertArgs>(args: SelectSubset<T, DeveloperUpsertArgs<ExtArgs>>): Prisma__DeveloperClient<$Result.GetResult<Prisma.$DeveloperPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of DeveloperTokens.
+     * Count the number of Developers.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {DeveloperTokenCountArgs} args - Arguments to filter DeveloperTokens to count.
+     * @param {DeveloperCountArgs} args - Arguments to filter Developers to count.
      * @example
-     * // Count the number of DeveloperTokens
-     * const count = await prisma.developerToken.count({
+     * // Count the number of Developers
+     * const count = await prisma.developer.count({
      *   where: {
-     *     // ... the filter for the DeveloperTokens we want to count
+     *     // ... the filter for the Developers we want to count
      *   }
      * })
     **/
-    count<T extends DeveloperTokenCountArgs>(
-      args?: Subset<T, DeveloperTokenCountArgs>,
+    count<T extends DeveloperCountArgs>(
+      args?: Subset<T, DeveloperCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], DeveloperTokenCountAggregateOutputType>
+          : GetScalarType<T['select'], DeveloperCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a DeveloperToken.
+     * Allows you to perform aggregations operations on a Developer.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {DeveloperTokenAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {DeveloperAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -4870,13 +5044,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends DeveloperTokenAggregateArgs>(args: Subset<T, DeveloperTokenAggregateArgs>): Prisma.PrismaPromise<GetDeveloperTokenAggregateType<T>>
+    aggregate<T extends DeveloperAggregateArgs>(args: Subset<T, DeveloperAggregateArgs>): Prisma.PrismaPromise<GetDeveloperAggregateType<T>>
 
     /**
-     * Group by DeveloperToken.
+     * Group by Developer.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {DeveloperTokenGroupByArgs} args - Group by arguments.
+     * @param {DeveloperGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -4891,14 +5065,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends DeveloperTokenGroupByArgs,
+      T extends DeveloperGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: DeveloperTokenGroupByArgs['orderBy'] }
-        : { orderBy?: DeveloperTokenGroupByArgs['orderBy'] },
+        ? { orderBy: DeveloperGroupByArgs['orderBy'] }
+        : { orderBy?: DeveloperGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -4947,21 +5121,22 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, DeveloperTokenGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDeveloperTokenGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, DeveloperGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDeveloperGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the DeveloperToken model
+   * Fields of the Developer model
    */
-  readonly fields: DeveloperTokenFieldRefs;
+  readonly fields: DeveloperFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for DeveloperToken.
+   * The delegate class that acts as a "Promise-like" for Developer.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__DeveloperTokenClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__DeveloperClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    runs<T extends Developer$runsArgs<ExtArgs> = {}>(args?: Subset<T, Developer$runsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4988,376 +5163,1574 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the DeveloperToken model
+   * Fields of the Developer model
    */
-  interface DeveloperTokenFieldRefs {
-    readonly username: FieldRef<"DeveloperToken", 'String'>
-    readonly token: FieldRef<"DeveloperToken", 'String'>
-    readonly createdAt: FieldRef<"DeveloperToken", 'DateTime'>
-    readonly updatedAt: FieldRef<"DeveloperToken", 'DateTime'>
+  interface DeveloperFieldRefs {
+    readonly id: FieldRef<"Developer", 'String'>
+    readonly username: FieldRef<"Developer", 'String'>
+    readonly token: FieldRef<"Developer", 'String'>
+    readonly createdAt: FieldRef<"Developer", 'DateTime'>
+    readonly updatedAt: FieldRef<"Developer", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * DeveloperToken findUnique
+   * Developer findUnique
    */
-  export type DeveloperTokenFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type DeveloperFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the DeveloperToken
+     * Select specific fields to fetch from the Developer
      */
-    select?: DeveloperTokenSelect<ExtArgs> | null
+    select?: DeveloperSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the DeveloperToken
+     * Omit specific fields from the Developer
      */
-    omit?: DeveloperTokenOmit<ExtArgs> | null
+    omit?: DeveloperOmit<ExtArgs> | null
     /**
-     * Filter, which DeveloperToken to fetch.
+     * Choose, which related nodes to fetch as well
      */
-    where: DeveloperTokenWhereUniqueInput
+    include?: DeveloperInclude<ExtArgs> | null
+    /**
+     * Filter, which Developer to fetch.
+     */
+    where: DeveloperWhereUniqueInput
   }
 
   /**
-   * DeveloperToken findUniqueOrThrow
+   * Developer findUniqueOrThrow
    */
-  export type DeveloperTokenFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type DeveloperFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the DeveloperToken
+     * Select specific fields to fetch from the Developer
      */
-    select?: DeveloperTokenSelect<ExtArgs> | null
+    select?: DeveloperSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the DeveloperToken
+     * Omit specific fields from the Developer
      */
-    omit?: DeveloperTokenOmit<ExtArgs> | null
+    omit?: DeveloperOmit<ExtArgs> | null
     /**
-     * Filter, which DeveloperToken to fetch.
+     * Choose, which related nodes to fetch as well
      */
-    where: DeveloperTokenWhereUniqueInput
+    include?: DeveloperInclude<ExtArgs> | null
+    /**
+     * Filter, which Developer to fetch.
+     */
+    where: DeveloperWhereUniqueInput
   }
 
   /**
-   * DeveloperToken findFirst
+   * Developer findFirst
    */
-  export type DeveloperTokenFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type DeveloperFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the DeveloperToken
+     * Select specific fields to fetch from the Developer
      */
-    select?: DeveloperTokenSelect<ExtArgs> | null
+    select?: DeveloperSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the DeveloperToken
+     * Omit specific fields from the Developer
      */
-    omit?: DeveloperTokenOmit<ExtArgs> | null
+    omit?: DeveloperOmit<ExtArgs> | null
     /**
-     * Filter, which DeveloperToken to fetch.
+     * Choose, which related nodes to fetch as well
      */
-    where?: DeveloperTokenWhereInput
+    include?: DeveloperInclude<ExtArgs> | null
+    /**
+     * Filter, which Developer to fetch.
+     */
+    where?: DeveloperWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of DeveloperTokens to fetch.
+     * Determine the order of Developers to fetch.
      */
-    orderBy?: DeveloperTokenOrderByWithRelationInput | DeveloperTokenOrderByWithRelationInput[]
+    orderBy?: DeveloperOrderByWithRelationInput | DeveloperOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for DeveloperTokens.
+     * Sets the position for searching for Developers.
      */
-    cursor?: DeveloperTokenWhereUniqueInput
+    cursor?: DeveloperWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` DeveloperTokens from the position of the cursor.
+     * Take `±n` Developers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` DeveloperTokens.
+     * Skip the first `n` Developers.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of DeveloperTokens.
+     * Filter by unique combinations of Developers.
      */
-    distinct?: DeveloperTokenScalarFieldEnum | DeveloperTokenScalarFieldEnum[]
+    distinct?: DeveloperScalarFieldEnum | DeveloperScalarFieldEnum[]
   }
 
   /**
-   * DeveloperToken findFirstOrThrow
+   * Developer findFirstOrThrow
    */
-  export type DeveloperTokenFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type DeveloperFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the DeveloperToken
+     * Select specific fields to fetch from the Developer
      */
-    select?: DeveloperTokenSelect<ExtArgs> | null
+    select?: DeveloperSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the DeveloperToken
+     * Omit specific fields from the Developer
      */
-    omit?: DeveloperTokenOmit<ExtArgs> | null
+    omit?: DeveloperOmit<ExtArgs> | null
     /**
-     * Filter, which DeveloperToken to fetch.
+     * Choose, which related nodes to fetch as well
      */
-    where?: DeveloperTokenWhereInput
+    include?: DeveloperInclude<ExtArgs> | null
+    /**
+     * Filter, which Developer to fetch.
+     */
+    where?: DeveloperWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of DeveloperTokens to fetch.
+     * Determine the order of Developers to fetch.
      */
-    orderBy?: DeveloperTokenOrderByWithRelationInput | DeveloperTokenOrderByWithRelationInput[]
+    orderBy?: DeveloperOrderByWithRelationInput | DeveloperOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for DeveloperTokens.
+     * Sets the position for searching for Developers.
      */
-    cursor?: DeveloperTokenWhereUniqueInput
+    cursor?: DeveloperWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` DeveloperTokens from the position of the cursor.
+     * Take `±n` Developers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` DeveloperTokens.
+     * Skip the first `n` Developers.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of DeveloperTokens.
+     * Filter by unique combinations of Developers.
      */
-    distinct?: DeveloperTokenScalarFieldEnum | DeveloperTokenScalarFieldEnum[]
+    distinct?: DeveloperScalarFieldEnum | DeveloperScalarFieldEnum[]
   }
 
   /**
-   * DeveloperToken findMany
+   * Developer findMany
    */
-  export type DeveloperTokenFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type DeveloperFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the DeveloperToken
+     * Select specific fields to fetch from the Developer
      */
-    select?: DeveloperTokenSelect<ExtArgs> | null
+    select?: DeveloperSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the DeveloperToken
+     * Omit specific fields from the Developer
      */
-    omit?: DeveloperTokenOmit<ExtArgs> | null
+    omit?: DeveloperOmit<ExtArgs> | null
     /**
-     * Filter, which DeveloperTokens to fetch.
+     * Choose, which related nodes to fetch as well
      */
-    where?: DeveloperTokenWhereInput
+    include?: DeveloperInclude<ExtArgs> | null
+    /**
+     * Filter, which Developers to fetch.
+     */
+    where?: DeveloperWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of DeveloperTokens to fetch.
+     * Determine the order of Developers to fetch.
      */
-    orderBy?: DeveloperTokenOrderByWithRelationInput | DeveloperTokenOrderByWithRelationInput[]
+    orderBy?: DeveloperOrderByWithRelationInput | DeveloperOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing DeveloperTokens.
+     * Sets the position for listing Developers.
      */
-    cursor?: DeveloperTokenWhereUniqueInput
+    cursor?: DeveloperWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` DeveloperTokens from the position of the cursor.
+     * Take `±n` Developers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` DeveloperTokens.
+     * Skip the first `n` Developers.
      */
     skip?: number
-    distinct?: DeveloperTokenScalarFieldEnum | DeveloperTokenScalarFieldEnum[]
+    distinct?: DeveloperScalarFieldEnum | DeveloperScalarFieldEnum[]
   }
 
   /**
-   * DeveloperToken create
+   * Developer create
    */
-  export type DeveloperTokenCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type DeveloperCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the DeveloperToken
+     * Select specific fields to fetch from the Developer
      */
-    select?: DeveloperTokenSelect<ExtArgs> | null
+    select?: DeveloperSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the DeveloperToken
+     * Omit specific fields from the Developer
      */
-    omit?: DeveloperTokenOmit<ExtArgs> | null
+    omit?: DeveloperOmit<ExtArgs> | null
     /**
-     * The data needed to create a DeveloperToken.
+     * Choose, which related nodes to fetch as well
      */
-    data: XOR<DeveloperTokenCreateInput, DeveloperTokenUncheckedCreateInput>
+    include?: DeveloperInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Developer.
+     */
+    data: XOR<DeveloperCreateInput, DeveloperUncheckedCreateInput>
   }
 
   /**
-   * DeveloperToken createMany
+   * Developer createMany
    */
-  export type DeveloperTokenCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type DeveloperCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many DeveloperTokens.
+     * The data used to create many Developers.
      */
-    data: DeveloperTokenCreateManyInput | DeveloperTokenCreateManyInput[]
+    data: DeveloperCreateManyInput | DeveloperCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * DeveloperToken createManyAndReturn
+   * Developer createManyAndReturn
    */
-  export type DeveloperTokenCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type DeveloperCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the DeveloperToken
+     * Select specific fields to fetch from the Developer
      */
-    select?: DeveloperTokenSelectCreateManyAndReturn<ExtArgs> | null
+    select?: DeveloperSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the DeveloperToken
+     * Omit specific fields from the Developer
      */
-    omit?: DeveloperTokenOmit<ExtArgs> | null
+    omit?: DeveloperOmit<ExtArgs> | null
     /**
-     * The data used to create many DeveloperTokens.
+     * The data used to create many Developers.
      */
-    data: DeveloperTokenCreateManyInput | DeveloperTokenCreateManyInput[]
+    data: DeveloperCreateManyInput | DeveloperCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * DeveloperToken update
+   * Developer update
    */
-  export type DeveloperTokenUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type DeveloperUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the DeveloperToken
+     * Select specific fields to fetch from the Developer
      */
-    select?: DeveloperTokenSelect<ExtArgs> | null
+    select?: DeveloperSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the DeveloperToken
+     * Omit specific fields from the Developer
      */
-    omit?: DeveloperTokenOmit<ExtArgs> | null
+    omit?: DeveloperOmit<ExtArgs> | null
     /**
-     * The data needed to update a DeveloperToken.
+     * Choose, which related nodes to fetch as well
      */
-    data: XOR<DeveloperTokenUpdateInput, DeveloperTokenUncheckedUpdateInput>
+    include?: DeveloperInclude<ExtArgs> | null
     /**
-     * Choose, which DeveloperToken to update.
+     * The data needed to update a Developer.
      */
-    where: DeveloperTokenWhereUniqueInput
+    data: XOR<DeveloperUpdateInput, DeveloperUncheckedUpdateInput>
+    /**
+     * Choose, which Developer to update.
+     */
+    where: DeveloperWhereUniqueInput
   }
 
   /**
-   * DeveloperToken updateMany
+   * Developer updateMany
    */
-  export type DeveloperTokenUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type DeveloperUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update DeveloperTokens.
+     * The data used to update Developers.
      */
-    data: XOR<DeveloperTokenUpdateManyMutationInput, DeveloperTokenUncheckedUpdateManyInput>
+    data: XOR<DeveloperUpdateManyMutationInput, DeveloperUncheckedUpdateManyInput>
     /**
-     * Filter which DeveloperTokens to update
+     * Filter which Developers to update
      */
-    where?: DeveloperTokenWhereInput
+    where?: DeveloperWhereInput
     /**
-     * Limit how many DeveloperTokens to update.
+     * Limit how many Developers to update.
      */
     limit?: number
   }
 
   /**
-   * DeveloperToken updateManyAndReturn
+   * Developer updateManyAndReturn
    */
-  export type DeveloperTokenUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type DeveloperUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the DeveloperToken
+     * Select specific fields to fetch from the Developer
      */
-    select?: DeveloperTokenSelectUpdateManyAndReturn<ExtArgs> | null
+    select?: DeveloperSelectUpdateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the DeveloperToken
+     * Omit specific fields from the Developer
      */
-    omit?: DeveloperTokenOmit<ExtArgs> | null
+    omit?: DeveloperOmit<ExtArgs> | null
     /**
-     * The data used to update DeveloperTokens.
+     * The data used to update Developers.
      */
-    data: XOR<DeveloperTokenUpdateManyMutationInput, DeveloperTokenUncheckedUpdateManyInput>
+    data: XOR<DeveloperUpdateManyMutationInput, DeveloperUncheckedUpdateManyInput>
     /**
-     * Filter which DeveloperTokens to update
+     * Filter which Developers to update
      */
-    where?: DeveloperTokenWhereInput
+    where?: DeveloperWhereInput
     /**
-     * Limit how many DeveloperTokens to update.
+     * Limit how many Developers to update.
      */
     limit?: number
   }
 
   /**
-   * DeveloperToken upsert
+   * Developer upsert
    */
-  export type DeveloperTokenUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type DeveloperUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the DeveloperToken
+     * Select specific fields to fetch from the Developer
      */
-    select?: DeveloperTokenSelect<ExtArgs> | null
+    select?: DeveloperSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the DeveloperToken
+     * Omit specific fields from the Developer
      */
-    omit?: DeveloperTokenOmit<ExtArgs> | null
+    omit?: DeveloperOmit<ExtArgs> | null
     /**
-     * The filter to search for the DeveloperToken to update in case it exists.
+     * Choose, which related nodes to fetch as well
      */
-    where: DeveloperTokenWhereUniqueInput
+    include?: DeveloperInclude<ExtArgs> | null
     /**
-     * In case the DeveloperToken found by the `where` argument doesn't exist, create a new DeveloperToken with this data.
+     * The filter to search for the Developer to update in case it exists.
      */
-    create: XOR<DeveloperTokenCreateInput, DeveloperTokenUncheckedCreateInput>
+    where: DeveloperWhereUniqueInput
     /**
-     * In case the DeveloperToken was found with the provided `where` argument, update it with this data.
+     * In case the Developer found by the `where` argument doesn't exist, create a new Developer with this data.
      */
-    update: XOR<DeveloperTokenUpdateInput, DeveloperTokenUncheckedUpdateInput>
+    create: XOR<DeveloperCreateInput, DeveloperUncheckedCreateInput>
+    /**
+     * In case the Developer was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DeveloperUpdateInput, DeveloperUncheckedUpdateInput>
   }
 
   /**
-   * DeveloperToken delete
+   * Developer delete
    */
-  export type DeveloperTokenDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type DeveloperDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the DeveloperToken
+     * Select specific fields to fetch from the Developer
      */
-    select?: DeveloperTokenSelect<ExtArgs> | null
+    select?: DeveloperSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the DeveloperToken
+     * Omit specific fields from the Developer
      */
-    omit?: DeveloperTokenOmit<ExtArgs> | null
+    omit?: DeveloperOmit<ExtArgs> | null
     /**
-     * Filter which DeveloperToken to delete.
+     * Choose, which related nodes to fetch as well
      */
-    where: DeveloperTokenWhereUniqueInput
+    include?: DeveloperInclude<ExtArgs> | null
+    /**
+     * Filter which Developer to delete.
+     */
+    where: DeveloperWhereUniqueInput
   }
 
   /**
-   * DeveloperToken deleteMany
+   * Developer deleteMany
    */
-  export type DeveloperTokenDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type DeveloperDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which DeveloperTokens to delete
+     * Filter which Developers to delete
      */
-    where?: DeveloperTokenWhereInput
+    where?: DeveloperWhereInput
     /**
-     * Limit how many DeveloperTokens to delete.
+     * Limit how many Developers to delete.
      */
     limit?: number
   }
 
   /**
-   * DeveloperToken without action
+   * Developer.runs
    */
-  export type DeveloperTokenDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Developer$runsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the DeveloperToken
+     * Select specific fields to fetch from the Run
      */
-    select?: DeveloperTokenSelect<ExtArgs> | null
+    select?: RunSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the DeveloperToken
+     * Omit specific fields from the Run
      */
-    omit?: DeveloperTokenOmit<ExtArgs> | null
+    omit?: RunOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RunInclude<ExtArgs> | null
+    where?: RunWhereInput
+    orderBy?: RunOrderByWithRelationInput | RunOrderByWithRelationInput[]
+    cursor?: RunWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RunScalarFieldEnum | RunScalarFieldEnum[]
+  }
+
+  /**
+   * Developer without action
+   */
+  export type DeveloperDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Developer
+     */
+    select?: DeveloperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Developer
+     */
+    omit?: DeveloperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeveloperInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Run
+   */
+
+  export type AggregateRun = {
+    _count: RunCountAggregateOutputType | null
+    _min: RunMinAggregateOutputType | null
+    _max: RunMaxAggregateOutputType | null
+  }
+
+  export type RunMinAggregateOutputType = {
+    id: string | null
+    startTime: Date | null
+    endTime: Date | null
+    completed: boolean | null
+    developerId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type RunMaxAggregateOutputType = {
+    id: string | null
+    startTime: Date | null
+    endTime: Date | null
+    completed: boolean | null
+    developerId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type RunCountAggregateOutputType = {
+    id: number
+    startTime: number
+    endTime: number
+    completed: number
+    developerId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type RunMinAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+    completed?: true
+    developerId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type RunMaxAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+    completed?: true
+    developerId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type RunCountAggregateInputType = {
+    id?: true
+    startTime?: true
+    endTime?: true
+    completed?: true
+    developerId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type RunAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Run to aggregate.
+     */
+    where?: RunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Runs to fetch.
+     */
+    orderBy?: RunOrderByWithRelationInput | RunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Runs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Runs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Runs
+    **/
+    _count?: true | RunCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RunMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RunMaxAggregateInputType
+  }
+
+  export type GetRunAggregateType<T extends RunAggregateArgs> = {
+        [P in keyof T & keyof AggregateRun]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRun[P]>
+      : GetScalarType<T[P], AggregateRun[P]>
+  }
+
+
+
+
+  export type RunGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RunWhereInput
+    orderBy?: RunOrderByWithAggregationInput | RunOrderByWithAggregationInput[]
+    by: RunScalarFieldEnum[] | RunScalarFieldEnum
+    having?: RunScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RunCountAggregateInputType | true
+    _min?: RunMinAggregateInputType
+    _max?: RunMaxAggregateInputType
+  }
+
+  export type RunGroupByOutputType = {
+    id: string
+    startTime: Date
+    endTime: Date
+    completed: boolean
+    developerId: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: RunCountAggregateOutputType | null
+    _min: RunMinAggregateOutputType | null
+    _max: RunMaxAggregateOutputType | null
+  }
+
+  type GetRunGroupByPayload<T extends RunGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RunGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RunGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RunGroupByOutputType[P]>
+            : GetScalarType<T[P], RunGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RunSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    completed?: boolean
+    developerId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    orders?: boolean | Run$ordersArgs<ExtArgs>
+    developer?: boolean | Run$developerArgs<ExtArgs>
+    _count?: boolean | RunCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["run"]>
+
+  export type RunSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    completed?: boolean
+    developerId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    developer?: boolean | Run$developerArgs<ExtArgs>
+  }, ExtArgs["result"]["run"]>
+
+  export type RunSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    completed?: boolean
+    developerId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    developer?: boolean | Run$developerArgs<ExtArgs>
+  }, ExtArgs["result"]["run"]>
+
+  export type RunSelectScalar = {
+    id?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    completed?: boolean
+    developerId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type RunOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "startTime" | "endTime" | "completed" | "developerId" | "createdAt" | "updatedAt", ExtArgs["result"]["run"]>
+  export type RunInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    orders?: boolean | Run$ordersArgs<ExtArgs>
+    developer?: boolean | Run$developerArgs<ExtArgs>
+    _count?: boolean | RunCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type RunIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    developer?: boolean | Run$developerArgs<ExtArgs>
+  }
+  export type RunIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    developer?: boolean | Run$developerArgs<ExtArgs>
+  }
+
+  export type $RunPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Run"
+    objects: {
+      orders: Prisma.$OrderPayload<ExtArgs>[]
+      developer: Prisma.$DeveloperPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      startTime: Date
+      endTime: Date
+      completed: boolean
+      developerId: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["run"]>
+    composites: {}
+  }
+
+  type RunGetPayload<S extends boolean | null | undefined | RunDefaultArgs> = $Result.GetResult<Prisma.$RunPayload, S>
+
+  type RunCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RunFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RunCountAggregateInputType | true
+    }
+
+  export interface RunDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Run'], meta: { name: 'Run' } }
+    /**
+     * Find zero or one Run that matches the filter.
+     * @param {RunFindUniqueArgs} args - Arguments to find a Run
+     * @example
+     * // Get one Run
+     * const run = await prisma.run.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RunFindUniqueArgs>(args: SelectSubset<T, RunFindUniqueArgs<ExtArgs>>): Prisma__RunClient<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Run that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RunFindUniqueOrThrowArgs} args - Arguments to find a Run
+     * @example
+     * // Get one Run
+     * const run = await prisma.run.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RunFindUniqueOrThrowArgs>(args: SelectSubset<T, RunFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RunClient<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Run that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RunFindFirstArgs} args - Arguments to find a Run
+     * @example
+     * // Get one Run
+     * const run = await prisma.run.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RunFindFirstArgs>(args?: SelectSubset<T, RunFindFirstArgs<ExtArgs>>): Prisma__RunClient<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Run that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RunFindFirstOrThrowArgs} args - Arguments to find a Run
+     * @example
+     * // Get one Run
+     * const run = await prisma.run.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RunFindFirstOrThrowArgs>(args?: SelectSubset<T, RunFindFirstOrThrowArgs<ExtArgs>>): Prisma__RunClient<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Runs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RunFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Runs
+     * const runs = await prisma.run.findMany()
+     * 
+     * // Get first 10 Runs
+     * const runs = await prisma.run.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const runWithIdOnly = await prisma.run.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RunFindManyArgs>(args?: SelectSubset<T, RunFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Run.
+     * @param {RunCreateArgs} args - Arguments to create a Run.
+     * @example
+     * // Create one Run
+     * const Run = await prisma.run.create({
+     *   data: {
+     *     // ... data to create a Run
+     *   }
+     * })
+     * 
+     */
+    create<T extends RunCreateArgs>(args: SelectSubset<T, RunCreateArgs<ExtArgs>>): Prisma__RunClient<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Runs.
+     * @param {RunCreateManyArgs} args - Arguments to create many Runs.
+     * @example
+     * // Create many Runs
+     * const run = await prisma.run.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RunCreateManyArgs>(args?: SelectSubset<T, RunCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Runs and returns the data saved in the database.
+     * @param {RunCreateManyAndReturnArgs} args - Arguments to create many Runs.
+     * @example
+     * // Create many Runs
+     * const run = await prisma.run.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Runs and only return the `id`
+     * const runWithIdOnly = await prisma.run.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RunCreateManyAndReturnArgs>(args?: SelectSubset<T, RunCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Run.
+     * @param {RunDeleteArgs} args - Arguments to delete one Run.
+     * @example
+     * // Delete one Run
+     * const Run = await prisma.run.delete({
+     *   where: {
+     *     // ... filter to delete one Run
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RunDeleteArgs>(args: SelectSubset<T, RunDeleteArgs<ExtArgs>>): Prisma__RunClient<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Run.
+     * @param {RunUpdateArgs} args - Arguments to update one Run.
+     * @example
+     * // Update one Run
+     * const run = await prisma.run.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RunUpdateArgs>(args: SelectSubset<T, RunUpdateArgs<ExtArgs>>): Prisma__RunClient<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Runs.
+     * @param {RunDeleteManyArgs} args - Arguments to filter Runs to delete.
+     * @example
+     * // Delete a few Runs
+     * const { count } = await prisma.run.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RunDeleteManyArgs>(args?: SelectSubset<T, RunDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Runs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RunUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Runs
+     * const run = await prisma.run.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RunUpdateManyArgs>(args: SelectSubset<T, RunUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Runs and returns the data updated in the database.
+     * @param {RunUpdateManyAndReturnArgs} args - Arguments to update many Runs.
+     * @example
+     * // Update many Runs
+     * const run = await prisma.run.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Runs and only return the `id`
+     * const runWithIdOnly = await prisma.run.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RunUpdateManyAndReturnArgs>(args: SelectSubset<T, RunUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Run.
+     * @param {RunUpsertArgs} args - Arguments to update or create a Run.
+     * @example
+     * // Update or create a Run
+     * const run = await prisma.run.upsert({
+     *   create: {
+     *     // ... data to create a Run
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Run we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RunUpsertArgs>(args: SelectSubset<T, RunUpsertArgs<ExtArgs>>): Prisma__RunClient<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Runs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RunCountArgs} args - Arguments to filter Runs to count.
+     * @example
+     * // Count the number of Runs
+     * const count = await prisma.run.count({
+     *   where: {
+     *     // ... the filter for the Runs we want to count
+     *   }
+     * })
+    **/
+    count<T extends RunCountArgs>(
+      args?: Subset<T, RunCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RunCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Run.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RunAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RunAggregateArgs>(args: Subset<T, RunAggregateArgs>): Prisma.PrismaPromise<GetRunAggregateType<T>>
+
+    /**
+     * Group by Run.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RunGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RunGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RunGroupByArgs['orderBy'] }
+        : { orderBy?: RunGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RunGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRunGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Run model
+   */
+  readonly fields: RunFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Run.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RunClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    orders<T extends Run$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Run$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    developer<T extends Run$developerArgs<ExtArgs> = {}>(args?: Subset<T, Run$developerArgs<ExtArgs>>): Prisma__DeveloperClient<$Result.GetResult<Prisma.$DeveloperPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Run model
+   */
+  interface RunFieldRefs {
+    readonly id: FieldRef<"Run", 'String'>
+    readonly startTime: FieldRef<"Run", 'DateTime'>
+    readonly endTime: FieldRef<"Run", 'DateTime'>
+    readonly completed: FieldRef<"Run", 'Boolean'>
+    readonly developerId: FieldRef<"Run", 'String'>
+    readonly createdAt: FieldRef<"Run", 'DateTime'>
+    readonly updatedAt: FieldRef<"Run", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Run findUnique
+   */
+  export type RunFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Run
+     */
+    select?: RunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Run
+     */
+    omit?: RunOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RunInclude<ExtArgs> | null
+    /**
+     * Filter, which Run to fetch.
+     */
+    where: RunWhereUniqueInput
+  }
+
+  /**
+   * Run findUniqueOrThrow
+   */
+  export type RunFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Run
+     */
+    select?: RunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Run
+     */
+    omit?: RunOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RunInclude<ExtArgs> | null
+    /**
+     * Filter, which Run to fetch.
+     */
+    where: RunWhereUniqueInput
+  }
+
+  /**
+   * Run findFirst
+   */
+  export type RunFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Run
+     */
+    select?: RunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Run
+     */
+    omit?: RunOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RunInclude<ExtArgs> | null
+    /**
+     * Filter, which Run to fetch.
+     */
+    where?: RunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Runs to fetch.
+     */
+    orderBy?: RunOrderByWithRelationInput | RunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Runs.
+     */
+    cursor?: RunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Runs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Runs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Runs.
+     */
+    distinct?: RunScalarFieldEnum | RunScalarFieldEnum[]
+  }
+
+  /**
+   * Run findFirstOrThrow
+   */
+  export type RunFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Run
+     */
+    select?: RunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Run
+     */
+    omit?: RunOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RunInclude<ExtArgs> | null
+    /**
+     * Filter, which Run to fetch.
+     */
+    where?: RunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Runs to fetch.
+     */
+    orderBy?: RunOrderByWithRelationInput | RunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Runs.
+     */
+    cursor?: RunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Runs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Runs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Runs.
+     */
+    distinct?: RunScalarFieldEnum | RunScalarFieldEnum[]
+  }
+
+  /**
+   * Run findMany
+   */
+  export type RunFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Run
+     */
+    select?: RunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Run
+     */
+    omit?: RunOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RunInclude<ExtArgs> | null
+    /**
+     * Filter, which Runs to fetch.
+     */
+    where?: RunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Runs to fetch.
+     */
+    orderBy?: RunOrderByWithRelationInput | RunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Runs.
+     */
+    cursor?: RunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Runs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Runs.
+     */
+    skip?: number
+    distinct?: RunScalarFieldEnum | RunScalarFieldEnum[]
+  }
+
+  /**
+   * Run create
+   */
+  export type RunCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Run
+     */
+    select?: RunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Run
+     */
+    omit?: RunOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RunInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Run.
+     */
+    data: XOR<RunCreateInput, RunUncheckedCreateInput>
+  }
+
+  /**
+   * Run createMany
+   */
+  export type RunCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Runs.
+     */
+    data: RunCreateManyInput | RunCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Run createManyAndReturn
+   */
+  export type RunCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Run
+     */
+    select?: RunSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Run
+     */
+    omit?: RunOmit<ExtArgs> | null
+    /**
+     * The data used to create many Runs.
+     */
+    data: RunCreateManyInput | RunCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RunIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Run update
+   */
+  export type RunUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Run
+     */
+    select?: RunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Run
+     */
+    omit?: RunOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RunInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Run.
+     */
+    data: XOR<RunUpdateInput, RunUncheckedUpdateInput>
+    /**
+     * Choose, which Run to update.
+     */
+    where: RunWhereUniqueInput
+  }
+
+  /**
+   * Run updateMany
+   */
+  export type RunUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Runs.
+     */
+    data: XOR<RunUpdateManyMutationInput, RunUncheckedUpdateManyInput>
+    /**
+     * Filter which Runs to update
+     */
+    where?: RunWhereInput
+    /**
+     * Limit how many Runs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Run updateManyAndReturn
+   */
+  export type RunUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Run
+     */
+    select?: RunSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Run
+     */
+    omit?: RunOmit<ExtArgs> | null
+    /**
+     * The data used to update Runs.
+     */
+    data: XOR<RunUpdateManyMutationInput, RunUncheckedUpdateManyInput>
+    /**
+     * Filter which Runs to update
+     */
+    where?: RunWhereInput
+    /**
+     * Limit how many Runs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RunIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Run upsert
+   */
+  export type RunUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Run
+     */
+    select?: RunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Run
+     */
+    omit?: RunOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RunInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Run to update in case it exists.
+     */
+    where: RunWhereUniqueInput
+    /**
+     * In case the Run found by the `where` argument doesn't exist, create a new Run with this data.
+     */
+    create: XOR<RunCreateInput, RunUncheckedCreateInput>
+    /**
+     * In case the Run was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RunUpdateInput, RunUncheckedUpdateInput>
+  }
+
+  /**
+   * Run delete
+   */
+  export type RunDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Run
+     */
+    select?: RunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Run
+     */
+    omit?: RunOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RunInclude<ExtArgs> | null
+    /**
+     * Filter which Run to delete.
+     */
+    where: RunWhereUniqueInput
+  }
+
+  /**
+   * Run deleteMany
+   */
+  export type RunDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Runs to delete
+     */
+    where?: RunWhereInput
+    /**
+     * Limit how many Runs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Run.orders
+   */
+  export type Run$ordersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+    orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
+    cursor?: OrderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
+  }
+
+  /**
+   * Run.developer
+   */
+  export type Run$developerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Developer
+     */
+    select?: DeveloperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Developer
+     */
+    omit?: DeveloperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeveloperInclude<ExtArgs> | null
+    where?: DeveloperWhereInput
+  }
+
+  /**
+   * Run without action
+   */
+  export type RunDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Run
+     */
+    select?: RunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Run
+     */
+    omit?: RunOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RunInclude<ExtArgs> | null
   }
 
 
@@ -5393,7 +6766,6 @@ export namespace Prisma {
     entryPrice: Decimal | null
     timestamp: Date | null
     runId: string | null
-    username: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5406,7 +6778,6 @@ export namespace Prisma {
     entryPrice: Decimal | null
     timestamp: Date | null
     runId: string | null
-    username: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5419,7 +6790,6 @@ export namespace Prisma {
     entryPrice: number
     timestamp: number
     runId: number
-    username: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -5446,7 +6816,6 @@ export namespace Prisma {
     entryPrice?: true
     timestamp?: true
     runId?: true
-    username?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5459,7 +6828,6 @@ export namespace Prisma {
     entryPrice?: true
     timestamp?: true
     runId?: true
-    username?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5472,7 +6840,6 @@ export namespace Prisma {
     entryPrice?: true
     timestamp?: true
     runId?: true
-    username?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -5572,7 +6939,6 @@ export namespace Prisma {
     entryPrice: Decimal
     timestamp: Date
     runId: string
-    username: string
     createdAt: Date
     updatedAt: Date
     _count: OrderCountAggregateOutputType | null
@@ -5604,9 +6970,9 @@ export namespace Prisma {
     entryPrice?: boolean
     timestamp?: boolean
     runId?: boolean
-    username?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    run?: boolean | RunDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5617,9 +6983,9 @@ export namespace Prisma {
     entryPrice?: boolean
     timestamp?: boolean
     runId?: boolean
-    username?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    run?: boolean | RunDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5630,9 +6996,9 @@ export namespace Prisma {
     entryPrice?: boolean
     timestamp?: boolean
     runId?: boolean
-    username?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    run?: boolean | RunDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectScalar = {
@@ -5643,16 +7009,26 @@ export namespace Prisma {
     entryPrice?: boolean
     timestamp?: boolean
     runId?: boolean
-    username?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "nseSymbol" | "stopLossPrice" | "takeProfitPrice" | "entryPrice" | "timestamp" | "runId" | "username" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "nseSymbol" | "stopLossPrice" | "takeProfitPrice" | "entryPrice" | "timestamp" | "runId" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    run?: boolean | RunDefaultArgs<ExtArgs>
+  }
+  export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    run?: boolean | RunDefaultArgs<ExtArgs>
+  }
+  export type OrderIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    run?: boolean | RunDefaultArgs<ExtArgs>
+  }
 
   export type $OrderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Order"
-    objects: {}
+    objects: {
+      run: Prisma.$RunPayload<ExtArgs>
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       nseSymbol: string
@@ -5661,7 +7037,6 @@ export namespace Prisma {
       entryPrice: Prisma.Decimal
       timestamp: Date
       runId: string
-      username: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["order"]>
@@ -6058,6 +7433,7 @@ export namespace Prisma {
    */
   export interface Prisma__OrderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    run<T extends RunDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RunDefaultArgs<ExtArgs>>): Prisma__RunClient<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6094,7 +7470,6 @@ export namespace Prisma {
     readonly entryPrice: FieldRef<"Order", 'Decimal'>
     readonly timestamp: FieldRef<"Order", 'DateTime'>
     readonly runId: FieldRef<"Order", 'String'>
-    readonly username: FieldRef<"Order", 'String'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
   }
@@ -6114,6 +7489,10 @@ export namespace Prisma {
      */
     omit?: OrderOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    /**
      * Filter, which Order to fetch.
      */
     where: OrderWhereUniqueInput
@@ -6132,6 +7511,10 @@ export namespace Prisma {
      */
     omit?: OrderOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    /**
      * Filter, which Order to fetch.
      */
     where: OrderWhereUniqueInput
@@ -6149,6 +7532,10 @@ export namespace Prisma {
      * Omit specific fields from the Order
      */
     omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
     /**
      * Filter, which Order to fetch.
      */
@@ -6198,6 +7585,10 @@ export namespace Prisma {
      */
     omit?: OrderOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    /**
      * Filter, which Order to fetch.
      */
     where?: OrderWhereInput
@@ -6246,6 +7637,10 @@ export namespace Prisma {
      */
     omit?: OrderOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    /**
      * Filter, which Orders to fetch.
      */
     where?: OrderWhereInput
@@ -6289,6 +7684,10 @@ export namespace Prisma {
      */
     omit?: OrderOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    /**
      * The data needed to create a Order.
      */
     data: XOR<OrderCreateInput, OrderUncheckedCreateInput>
@@ -6322,6 +7721,10 @@ export namespace Prisma {
      */
     data: OrderCreateManyInput | OrderCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -6336,6 +7739,10 @@ export namespace Prisma {
      * Omit specific fields from the Order
      */
     omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
     /**
      * The data needed to update a Order.
      */
@@ -6388,6 +7795,10 @@ export namespace Prisma {
      * Limit how many Orders to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -6402,6 +7813,10 @@ export namespace Prisma {
      * Omit specific fields from the Order
      */
     omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
     /**
      * The filter to search for the Order to update in case it exists.
      */
@@ -6428,6 +7843,10 @@ export namespace Prisma {
      * Omit specific fields from the Order
      */
     omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
     /**
      * Filter which Order to delete.
      */
@@ -6460,6 +7879,10 @@ export namespace Prisma {
      * Omit specific fields from the Order
      */
     omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
   }
 
 
@@ -7530,14 +8953,28 @@ export namespace Prisma {
   export type NiftyQuoteScalarFieldEnum = (typeof NiftyQuoteScalarFieldEnum)[keyof typeof NiftyQuoteScalarFieldEnum]
 
 
-  export const DeveloperTokenScalarFieldEnum: {
+  export const DeveloperScalarFieldEnum: {
+    id: 'id',
     username: 'username',
     token: 'token',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
-  export type DeveloperTokenScalarFieldEnum = (typeof DeveloperTokenScalarFieldEnum)[keyof typeof DeveloperTokenScalarFieldEnum]
+  export type DeveloperScalarFieldEnum = (typeof DeveloperScalarFieldEnum)[keyof typeof DeveloperScalarFieldEnum]
+
+
+  export const RunScalarFieldEnum: {
+    id: 'id',
+    startTime: 'startTime',
+    endTime: 'endTime',
+    completed: 'completed',
+    developerId: 'developerId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type RunScalarFieldEnum = (typeof RunScalarFieldEnum)[keyof typeof RunScalarFieldEnum]
 
 
   export const OrderScalarFieldEnum: {
@@ -7548,7 +8985,6 @@ export namespace Prisma {
     entryPrice: 'entryPrice',
     timestamp: 'timestamp',
     runId: 'runId',
-    username: 'username',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -7689,6 +9125,13 @@ export namespace Prisma {
    * Reference to a field of type 'Decimal[]'
    */
   export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -7882,51 +9325,127 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"NiftyQuote"> | Date | string
   }
 
-  export type DeveloperTokenWhereInput = {
-    AND?: DeveloperTokenWhereInput | DeveloperTokenWhereInput[]
-    OR?: DeveloperTokenWhereInput[]
-    NOT?: DeveloperTokenWhereInput | DeveloperTokenWhereInput[]
-    username?: StringFilter<"DeveloperToken"> | string
-    token?: StringFilter<"DeveloperToken"> | string
-    createdAt?: DateTimeFilter<"DeveloperToken"> | Date | string
-    updatedAt?: DateTimeFilter<"DeveloperToken"> | Date | string
+  export type DeveloperWhereInput = {
+    AND?: DeveloperWhereInput | DeveloperWhereInput[]
+    OR?: DeveloperWhereInput[]
+    NOT?: DeveloperWhereInput | DeveloperWhereInput[]
+    id?: StringFilter<"Developer"> | string
+    username?: StringFilter<"Developer"> | string
+    token?: StringFilter<"Developer"> | string
+    createdAt?: DateTimeFilter<"Developer"> | Date | string
+    updatedAt?: DateTimeFilter<"Developer"> | Date | string
+    runs?: RunListRelationFilter
   }
 
-  export type DeveloperTokenOrderByWithRelationInput = {
+  export type DeveloperOrderByWithRelationInput = {
+    id?: SortOrder
     username?: SortOrder
     token?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    runs?: RunOrderByRelationAggregateInput
   }
 
-  export type DeveloperTokenWhereUniqueInput = Prisma.AtLeast<{
+  export type DeveloperWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
     username?: string
     token?: string
-    AND?: DeveloperTokenWhereInput | DeveloperTokenWhereInput[]
-    OR?: DeveloperTokenWhereInput[]
-    NOT?: DeveloperTokenWhereInput | DeveloperTokenWhereInput[]
-    createdAt?: DateTimeFilter<"DeveloperToken"> | Date | string
-    updatedAt?: DateTimeFilter<"DeveloperToken"> | Date | string
-  }, "username" | "username" | "token">
+    AND?: DeveloperWhereInput | DeveloperWhereInput[]
+    OR?: DeveloperWhereInput[]
+    NOT?: DeveloperWhereInput | DeveloperWhereInput[]
+    createdAt?: DateTimeFilter<"Developer"> | Date | string
+    updatedAt?: DateTimeFilter<"Developer"> | Date | string
+    runs?: RunListRelationFilter
+  }, "username" | "id" | "username" | "token">
 
-  export type DeveloperTokenOrderByWithAggregationInput = {
+  export type DeveloperOrderByWithAggregationInput = {
+    id?: SortOrder
     username?: SortOrder
     token?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    _count?: DeveloperTokenCountOrderByAggregateInput
-    _max?: DeveloperTokenMaxOrderByAggregateInput
-    _min?: DeveloperTokenMinOrderByAggregateInput
+    _count?: DeveloperCountOrderByAggregateInput
+    _max?: DeveloperMaxOrderByAggregateInput
+    _min?: DeveloperMinOrderByAggregateInput
   }
 
-  export type DeveloperTokenScalarWhereWithAggregatesInput = {
-    AND?: DeveloperTokenScalarWhereWithAggregatesInput | DeveloperTokenScalarWhereWithAggregatesInput[]
-    OR?: DeveloperTokenScalarWhereWithAggregatesInput[]
-    NOT?: DeveloperTokenScalarWhereWithAggregatesInput | DeveloperTokenScalarWhereWithAggregatesInput[]
-    username?: StringWithAggregatesFilter<"DeveloperToken"> | string
-    token?: StringWithAggregatesFilter<"DeveloperToken"> | string
-    createdAt?: DateTimeWithAggregatesFilter<"DeveloperToken"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"DeveloperToken"> | Date | string
+  export type DeveloperScalarWhereWithAggregatesInput = {
+    AND?: DeveloperScalarWhereWithAggregatesInput | DeveloperScalarWhereWithAggregatesInput[]
+    OR?: DeveloperScalarWhereWithAggregatesInput[]
+    NOT?: DeveloperScalarWhereWithAggregatesInput | DeveloperScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Developer"> | string
+    username?: StringWithAggregatesFilter<"Developer"> | string
+    token?: StringWithAggregatesFilter<"Developer"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Developer"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Developer"> | Date | string
+  }
+
+  export type RunWhereInput = {
+    AND?: RunWhereInput | RunWhereInput[]
+    OR?: RunWhereInput[]
+    NOT?: RunWhereInput | RunWhereInput[]
+    id?: StringFilter<"Run"> | string
+    startTime?: DateTimeFilter<"Run"> | Date | string
+    endTime?: DateTimeFilter<"Run"> | Date | string
+    completed?: BoolFilter<"Run"> | boolean
+    developerId?: StringNullableFilter<"Run"> | string | null
+    createdAt?: DateTimeFilter<"Run"> | Date | string
+    updatedAt?: DateTimeFilter<"Run"> | Date | string
+    orders?: OrderListRelationFilter
+    developer?: XOR<DeveloperNullableScalarRelationFilter, DeveloperWhereInput> | null
+  }
+
+  export type RunOrderByWithRelationInput = {
+    id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    completed?: SortOrder
+    developerId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    orders?: OrderOrderByRelationAggregateInput
+    developer?: DeveloperOrderByWithRelationInput
+  }
+
+  export type RunWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: RunWhereInput | RunWhereInput[]
+    OR?: RunWhereInput[]
+    NOT?: RunWhereInput | RunWhereInput[]
+    startTime?: DateTimeFilter<"Run"> | Date | string
+    endTime?: DateTimeFilter<"Run"> | Date | string
+    completed?: BoolFilter<"Run"> | boolean
+    developerId?: StringNullableFilter<"Run"> | string | null
+    createdAt?: DateTimeFilter<"Run"> | Date | string
+    updatedAt?: DateTimeFilter<"Run"> | Date | string
+    orders?: OrderListRelationFilter
+    developer?: XOR<DeveloperNullableScalarRelationFilter, DeveloperWhereInput> | null
+  }, "id">
+
+  export type RunOrderByWithAggregationInput = {
+    id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    completed?: SortOrder
+    developerId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: RunCountOrderByAggregateInput
+    _max?: RunMaxOrderByAggregateInput
+    _min?: RunMinOrderByAggregateInput
+  }
+
+  export type RunScalarWhereWithAggregatesInput = {
+    AND?: RunScalarWhereWithAggregatesInput | RunScalarWhereWithAggregatesInput[]
+    OR?: RunScalarWhereWithAggregatesInput[]
+    NOT?: RunScalarWhereWithAggregatesInput | RunScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Run"> | string
+    startTime?: DateTimeWithAggregatesFilter<"Run"> | Date | string
+    endTime?: DateTimeWithAggregatesFilter<"Run"> | Date | string
+    completed?: BoolWithAggregatesFilter<"Run"> | boolean
+    developerId?: StringNullableWithAggregatesFilter<"Run"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Run"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Run"> | Date | string
   }
 
   export type OrderWhereInput = {
@@ -7940,9 +9459,9 @@ export namespace Prisma {
     entryPrice?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
     timestamp?: DateTimeFilter<"Order"> | Date | string
     runId?: StringFilter<"Order"> | string
-    username?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
+    run?: XOR<RunScalarRelationFilter, RunWhereInput>
   }
 
   export type OrderOrderByWithRelationInput = {
@@ -7953,9 +9472,9 @@ export namespace Prisma {
     entryPrice?: SortOrder
     timestamp?: SortOrder
     runId?: SortOrder
-    username?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    run?: RunOrderByWithRelationInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -7969,9 +9488,9 @@ export namespace Prisma {
     entryPrice?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
     timestamp?: DateTimeFilter<"Order"> | Date | string
     runId?: StringFilter<"Order"> | string
-    username?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
+    run?: XOR<RunScalarRelationFilter, RunWhereInput>
   }, "id">
 
   export type OrderOrderByWithAggregationInput = {
@@ -7982,7 +9501,6 @@ export namespace Prisma {
     entryPrice?: SortOrder
     timestamp?: SortOrder
     runId?: SortOrder
-    username?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: OrderCountOrderByAggregateInput
@@ -8003,7 +9521,6 @@ export namespace Prisma {
     entryPrice?: DecimalWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string
     timestamp?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     runId?: StringWithAggregatesFilter<"Order"> | string
-    username?: StringWithAggregatesFilter<"Order"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
   }
@@ -8259,51 +9776,135 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type DeveloperTokenCreateInput = {
+  export type DeveloperCreateInput = {
+    id?: string
+    username: string
+    token: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    runs?: RunCreateNestedManyWithoutDeveloperInput
+  }
+
+  export type DeveloperUncheckedCreateInput = {
+    id?: string
+    username: string
+    token: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    runs?: RunUncheckedCreateNestedManyWithoutDeveloperInput
+  }
+
+  export type DeveloperUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    runs?: RunUpdateManyWithoutDeveloperNestedInput
+  }
+
+  export type DeveloperUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    runs?: RunUncheckedUpdateManyWithoutDeveloperNestedInput
+  }
+
+  export type DeveloperCreateManyInput = {
+    id?: string
     username: string
     token: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type DeveloperTokenUncheckedCreateInput = {
-    username: string
-    token: string
+  export type DeveloperUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DeveloperUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RunCreateInput = {
+    id?: string
+    startTime: Date | string
+    endTime: Date | string
+    completed?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderCreateNestedManyWithoutRunInput
+    developer?: DeveloperCreateNestedOneWithoutRunsInput
+  }
+
+  export type RunUncheckedCreateInput = {
+    id?: string
+    startTime: Date | string
+    endTime: Date | string
+    completed?: boolean
+    developerId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutRunInput
+  }
+
+  export type RunUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    completed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUpdateManyWithoutRunNestedInput
+    developer?: DeveloperUpdateOneWithoutRunsNestedInput
+  }
+
+  export type RunUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    completed?: BoolFieldUpdateOperationsInput | boolean
+    developerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutRunNestedInput
+  }
+
+  export type RunCreateManyInput = {
+    id?: string
+    startTime: Date | string
+    endTime: Date | string
+    completed?: boolean
+    developerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type DeveloperTokenUpdateInput = {
-    username?: StringFieldUpdateOperationsInput | string
-    token?: StringFieldUpdateOperationsInput | string
+  export type RunUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    completed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type DeveloperTokenUncheckedUpdateInput = {
-    username?: StringFieldUpdateOperationsInput | string
-    token?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DeveloperTokenCreateManyInput = {
-    username: string
-    token: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type DeveloperTokenUpdateManyMutationInput = {
-    username?: StringFieldUpdateOperationsInput | string
-    token?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DeveloperTokenUncheckedUpdateManyInput = {
-    username?: StringFieldUpdateOperationsInput | string
-    token?: StringFieldUpdateOperationsInput | string
+  export type RunUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    completed?: BoolFieldUpdateOperationsInput | boolean
+    developerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8315,10 +9916,9 @@ export namespace Prisma {
     takeProfitPrice: Decimal | DecimalJsLike | number | string
     entryPrice: Decimal | DecimalJsLike | number | string
     timestamp: Date | string
-    runId: string
-    username: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    run: RunCreateNestedOneWithoutOrdersInput
   }
 
   export type OrderUncheckedCreateInput = {
@@ -8329,7 +9929,6 @@ export namespace Prisma {
     entryPrice: Decimal | DecimalJsLike | number | string
     timestamp: Date | string
     runId: string
-    username: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -8341,10 +9940,9 @@ export namespace Prisma {
     takeProfitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     entryPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-    runId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    run?: RunUpdateOneRequiredWithoutOrdersNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
@@ -8355,7 +9953,6 @@ export namespace Prisma {
     entryPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     runId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8368,7 +9965,6 @@ export namespace Prisma {
     entryPrice: Decimal | DecimalJsLike | number | string
     timestamp: Date | string
     runId: string
-    username: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -8380,8 +9976,6 @@ export namespace Prisma {
     takeProfitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     entryPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-    runId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8394,7 +9988,6 @@ export namespace Prisma {
     entryPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     runId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8703,25 +10296,139 @@ export namespace Prisma {
     _max?: NestedDecimalFilter<$PrismaModel>
   }
 
-  export type DeveloperTokenCountOrderByAggregateInput = {
+  export type RunListRelationFilter = {
+    every?: RunWhereInput
+    some?: RunWhereInput
+    none?: RunWhereInput
+  }
+
+  export type RunOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DeveloperCountOrderByAggregateInput = {
+    id?: SortOrder
     username?: SortOrder
     token?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type DeveloperTokenMaxOrderByAggregateInput = {
+  export type DeveloperMaxOrderByAggregateInput = {
+    id?: SortOrder
     username?: SortOrder
     token?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type DeveloperTokenMinOrderByAggregateInput = {
+  export type DeveloperMinOrderByAggregateInput = {
+    id?: SortOrder
     username?: SortOrder
     token?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type OrderListRelationFilter = {
+    every?: OrderWhereInput
+    some?: OrderWhereInput
+    none?: OrderWhereInput
+  }
+
+  export type DeveloperNullableScalarRelationFilter = {
+    is?: DeveloperWhereInput | null
+    isNot?: DeveloperWhereInput | null
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
+  export type OrderOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type RunCountOrderByAggregateInput = {
+    id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    completed?: SortOrder
+    developerId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RunMaxOrderByAggregateInput = {
+    id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    completed?: SortOrder
+    developerId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RunMinOrderByAggregateInput = {
+    id?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    completed?: SortOrder
+    developerId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type RunScalarRelationFilter = {
+    is?: RunWhereInput
+    isNot?: RunWhereInput
   }
 
   export type OrderCountOrderByAggregateInput = {
@@ -8732,7 +10439,6 @@ export namespace Prisma {
     entryPrice?: SortOrder
     timestamp?: SortOrder
     runId?: SortOrder
-    username?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8751,7 +10457,6 @@ export namespace Prisma {
     entryPrice?: SortOrder
     timestamp?: SortOrder
     runId?: SortOrder
-    username?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8764,7 +10469,6 @@ export namespace Prisma {
     entryPrice?: SortOrder
     timestamp?: SortOrder
     runId?: SortOrder
-    username?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8773,21 +10477,6 @@ export namespace Prisma {
     stopLossPrice?: SortOrder
     takeProfitPrice?: SortOrder
     entryPrice?: SortOrder
-  }
-
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
   export type JsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -8811,11 +10500,6 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
   }
 
   export type CollectorErrorCountOrderByAggregateInput = {
@@ -8844,24 +10528,6 @@ export namespace Prisma {
     errorStack?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
   export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -8910,8 +10576,126 @@ export namespace Prisma {
     divide?: Decimal | DecimalJsLike | number | string
   }
 
+  export type RunCreateNestedManyWithoutDeveloperInput = {
+    create?: XOR<RunCreateWithoutDeveloperInput, RunUncheckedCreateWithoutDeveloperInput> | RunCreateWithoutDeveloperInput[] | RunUncheckedCreateWithoutDeveloperInput[]
+    connectOrCreate?: RunCreateOrConnectWithoutDeveloperInput | RunCreateOrConnectWithoutDeveloperInput[]
+    createMany?: RunCreateManyDeveloperInputEnvelope
+    connect?: RunWhereUniqueInput | RunWhereUniqueInput[]
+  }
+
+  export type RunUncheckedCreateNestedManyWithoutDeveloperInput = {
+    create?: XOR<RunCreateWithoutDeveloperInput, RunUncheckedCreateWithoutDeveloperInput> | RunCreateWithoutDeveloperInput[] | RunUncheckedCreateWithoutDeveloperInput[]
+    connectOrCreate?: RunCreateOrConnectWithoutDeveloperInput | RunCreateOrConnectWithoutDeveloperInput[]
+    createMany?: RunCreateManyDeveloperInputEnvelope
+    connect?: RunWhereUniqueInput | RunWhereUniqueInput[]
+  }
+
+  export type RunUpdateManyWithoutDeveloperNestedInput = {
+    create?: XOR<RunCreateWithoutDeveloperInput, RunUncheckedCreateWithoutDeveloperInput> | RunCreateWithoutDeveloperInput[] | RunUncheckedCreateWithoutDeveloperInput[]
+    connectOrCreate?: RunCreateOrConnectWithoutDeveloperInput | RunCreateOrConnectWithoutDeveloperInput[]
+    upsert?: RunUpsertWithWhereUniqueWithoutDeveloperInput | RunUpsertWithWhereUniqueWithoutDeveloperInput[]
+    createMany?: RunCreateManyDeveloperInputEnvelope
+    set?: RunWhereUniqueInput | RunWhereUniqueInput[]
+    disconnect?: RunWhereUniqueInput | RunWhereUniqueInput[]
+    delete?: RunWhereUniqueInput | RunWhereUniqueInput[]
+    connect?: RunWhereUniqueInput | RunWhereUniqueInput[]
+    update?: RunUpdateWithWhereUniqueWithoutDeveloperInput | RunUpdateWithWhereUniqueWithoutDeveloperInput[]
+    updateMany?: RunUpdateManyWithWhereWithoutDeveloperInput | RunUpdateManyWithWhereWithoutDeveloperInput[]
+    deleteMany?: RunScalarWhereInput | RunScalarWhereInput[]
+  }
+
+  export type RunUncheckedUpdateManyWithoutDeveloperNestedInput = {
+    create?: XOR<RunCreateWithoutDeveloperInput, RunUncheckedCreateWithoutDeveloperInput> | RunCreateWithoutDeveloperInput[] | RunUncheckedCreateWithoutDeveloperInput[]
+    connectOrCreate?: RunCreateOrConnectWithoutDeveloperInput | RunCreateOrConnectWithoutDeveloperInput[]
+    upsert?: RunUpsertWithWhereUniqueWithoutDeveloperInput | RunUpsertWithWhereUniqueWithoutDeveloperInput[]
+    createMany?: RunCreateManyDeveloperInputEnvelope
+    set?: RunWhereUniqueInput | RunWhereUniqueInput[]
+    disconnect?: RunWhereUniqueInput | RunWhereUniqueInput[]
+    delete?: RunWhereUniqueInput | RunWhereUniqueInput[]
+    connect?: RunWhereUniqueInput | RunWhereUniqueInput[]
+    update?: RunUpdateWithWhereUniqueWithoutDeveloperInput | RunUpdateWithWhereUniqueWithoutDeveloperInput[]
+    updateMany?: RunUpdateManyWithWhereWithoutDeveloperInput | RunUpdateManyWithWhereWithoutDeveloperInput[]
+    deleteMany?: RunScalarWhereInput | RunScalarWhereInput[]
+  }
+
+  export type OrderCreateNestedManyWithoutRunInput = {
+    create?: XOR<OrderCreateWithoutRunInput, OrderUncheckedCreateWithoutRunInput> | OrderCreateWithoutRunInput[] | OrderUncheckedCreateWithoutRunInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutRunInput | OrderCreateOrConnectWithoutRunInput[]
+    createMany?: OrderCreateManyRunInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type DeveloperCreateNestedOneWithoutRunsInput = {
+    create?: XOR<DeveloperCreateWithoutRunsInput, DeveloperUncheckedCreateWithoutRunsInput>
+    connectOrCreate?: DeveloperCreateOrConnectWithoutRunsInput
+    connect?: DeveloperWhereUniqueInput
+  }
+
+  export type OrderUncheckedCreateNestedManyWithoutRunInput = {
+    create?: XOR<OrderCreateWithoutRunInput, OrderUncheckedCreateWithoutRunInput> | OrderCreateWithoutRunInput[] | OrderUncheckedCreateWithoutRunInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutRunInput | OrderCreateOrConnectWithoutRunInput[]
+    createMany?: OrderCreateManyRunInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type OrderUpdateManyWithoutRunNestedInput = {
+    create?: XOR<OrderCreateWithoutRunInput, OrderUncheckedCreateWithoutRunInput> | OrderCreateWithoutRunInput[] | OrderUncheckedCreateWithoutRunInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutRunInput | OrderCreateOrConnectWithoutRunInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutRunInput | OrderUpsertWithWhereUniqueWithoutRunInput[]
+    createMany?: OrderCreateManyRunInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutRunInput | OrderUpdateWithWhereUniqueWithoutRunInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutRunInput | OrderUpdateManyWithWhereWithoutRunInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type DeveloperUpdateOneWithoutRunsNestedInput = {
+    create?: XOR<DeveloperCreateWithoutRunsInput, DeveloperUncheckedCreateWithoutRunsInput>
+    connectOrCreate?: DeveloperCreateOrConnectWithoutRunsInput
+    upsert?: DeveloperUpsertWithoutRunsInput
+    disconnect?: DeveloperWhereInput | boolean
+    delete?: DeveloperWhereInput | boolean
+    connect?: DeveloperWhereUniqueInput
+    update?: XOR<XOR<DeveloperUpdateToOneWithWhereWithoutRunsInput, DeveloperUpdateWithoutRunsInput>, DeveloperUncheckedUpdateWithoutRunsInput>
+  }
+
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
+  }
+
+  export type OrderUncheckedUpdateManyWithoutRunNestedInput = {
+    create?: XOR<OrderCreateWithoutRunInput, OrderUncheckedCreateWithoutRunInput> | OrderCreateWithoutRunInput[] | OrderUncheckedCreateWithoutRunInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutRunInput | OrderCreateOrConnectWithoutRunInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutRunInput | OrderUpsertWithWhereUniqueWithoutRunInput[]
+    createMany?: OrderCreateManyRunInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutRunInput | OrderUpdateWithWhereUniqueWithoutRunInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutRunInput | OrderUpdateManyWithWhereWithoutRunInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type RunCreateNestedOneWithoutOrdersInput = {
+    create?: XOR<RunCreateWithoutOrdersInput, RunUncheckedCreateWithoutOrdersInput>
+    connectOrCreate?: RunCreateOrConnectWithoutOrdersInput
+    connect?: RunWhereUniqueInput
+  }
+
+  export type RunUpdateOneRequiredWithoutOrdersNestedInput = {
+    create?: XOR<RunCreateWithoutOrdersInput, RunUncheckedCreateWithoutOrdersInput>
+    connectOrCreate?: RunCreateOrConnectWithoutOrdersInput
+    upsert?: RunUpsertWithoutOrdersInput
+    connect?: RunWhereUniqueInput
+    update?: XOR<XOR<RunUpdateToOneWithWhereWithoutOrdersInput, RunUpdateWithoutOrdersInput>, RunUncheckedUpdateWithoutOrdersInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -9048,6 +10832,11 @@ export namespace Prisma {
     _max?: NestedDecimalFilter<$PrismaModel>
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -9060,6 +10849,14 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -9111,6 +10908,314 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type RunCreateWithoutDeveloperInput = {
+    id?: string
+    startTime: Date | string
+    endTime: Date | string
+    completed?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderCreateNestedManyWithoutRunInput
+  }
+
+  export type RunUncheckedCreateWithoutDeveloperInput = {
+    id?: string
+    startTime: Date | string
+    endTime: Date | string
+    completed?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutRunInput
+  }
+
+  export type RunCreateOrConnectWithoutDeveloperInput = {
+    where: RunWhereUniqueInput
+    create: XOR<RunCreateWithoutDeveloperInput, RunUncheckedCreateWithoutDeveloperInput>
+  }
+
+  export type RunCreateManyDeveloperInputEnvelope = {
+    data: RunCreateManyDeveloperInput | RunCreateManyDeveloperInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type RunUpsertWithWhereUniqueWithoutDeveloperInput = {
+    where: RunWhereUniqueInput
+    update: XOR<RunUpdateWithoutDeveloperInput, RunUncheckedUpdateWithoutDeveloperInput>
+    create: XOR<RunCreateWithoutDeveloperInput, RunUncheckedCreateWithoutDeveloperInput>
+  }
+
+  export type RunUpdateWithWhereUniqueWithoutDeveloperInput = {
+    where: RunWhereUniqueInput
+    data: XOR<RunUpdateWithoutDeveloperInput, RunUncheckedUpdateWithoutDeveloperInput>
+  }
+
+  export type RunUpdateManyWithWhereWithoutDeveloperInput = {
+    where: RunScalarWhereInput
+    data: XOR<RunUpdateManyMutationInput, RunUncheckedUpdateManyWithoutDeveloperInput>
+  }
+
+  export type RunScalarWhereInput = {
+    AND?: RunScalarWhereInput | RunScalarWhereInput[]
+    OR?: RunScalarWhereInput[]
+    NOT?: RunScalarWhereInput | RunScalarWhereInput[]
+    id?: StringFilter<"Run"> | string
+    startTime?: DateTimeFilter<"Run"> | Date | string
+    endTime?: DateTimeFilter<"Run"> | Date | string
+    completed?: BoolFilter<"Run"> | boolean
+    developerId?: StringNullableFilter<"Run"> | string | null
+    createdAt?: DateTimeFilter<"Run"> | Date | string
+    updatedAt?: DateTimeFilter<"Run"> | Date | string
+  }
+
+  export type OrderCreateWithoutRunInput = {
+    id?: string
+    nseSymbol: string
+    stopLossPrice: Decimal | DecimalJsLike | number | string
+    takeProfitPrice: Decimal | DecimalJsLike | number | string
+    entryPrice: Decimal | DecimalJsLike | number | string
+    timestamp: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderUncheckedCreateWithoutRunInput = {
+    id?: string
+    nseSymbol: string
+    stopLossPrice: Decimal | DecimalJsLike | number | string
+    takeProfitPrice: Decimal | DecimalJsLike | number | string
+    entryPrice: Decimal | DecimalJsLike | number | string
+    timestamp: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderCreateOrConnectWithoutRunInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutRunInput, OrderUncheckedCreateWithoutRunInput>
+  }
+
+  export type OrderCreateManyRunInputEnvelope = {
+    data: OrderCreateManyRunInput | OrderCreateManyRunInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DeveloperCreateWithoutRunsInput = {
+    id?: string
+    username: string
+    token: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DeveloperUncheckedCreateWithoutRunsInput = {
+    id?: string
+    username: string
+    token: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DeveloperCreateOrConnectWithoutRunsInput = {
+    where: DeveloperWhereUniqueInput
+    create: XOR<DeveloperCreateWithoutRunsInput, DeveloperUncheckedCreateWithoutRunsInput>
+  }
+
+  export type OrderUpsertWithWhereUniqueWithoutRunInput = {
+    where: OrderWhereUniqueInput
+    update: XOR<OrderUpdateWithoutRunInput, OrderUncheckedUpdateWithoutRunInput>
+    create: XOR<OrderCreateWithoutRunInput, OrderUncheckedCreateWithoutRunInput>
+  }
+
+  export type OrderUpdateWithWhereUniqueWithoutRunInput = {
+    where: OrderWhereUniqueInput
+    data: XOR<OrderUpdateWithoutRunInput, OrderUncheckedUpdateWithoutRunInput>
+  }
+
+  export type OrderUpdateManyWithWhereWithoutRunInput = {
+    where: OrderScalarWhereInput
+    data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyWithoutRunInput>
+  }
+
+  export type OrderScalarWhereInput = {
+    AND?: OrderScalarWhereInput | OrderScalarWhereInput[]
+    OR?: OrderScalarWhereInput[]
+    NOT?: OrderScalarWhereInput | OrderScalarWhereInput[]
+    id?: StringFilter<"Order"> | string
+    nseSymbol?: StringFilter<"Order"> | string
+    stopLossPrice?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    takeProfitPrice?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    entryPrice?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    timestamp?: DateTimeFilter<"Order"> | Date | string
+    runId?: StringFilter<"Order"> | string
+    createdAt?: DateTimeFilter<"Order"> | Date | string
+    updatedAt?: DateTimeFilter<"Order"> | Date | string
+  }
+
+  export type DeveloperUpsertWithoutRunsInput = {
+    update: XOR<DeveloperUpdateWithoutRunsInput, DeveloperUncheckedUpdateWithoutRunsInput>
+    create: XOR<DeveloperCreateWithoutRunsInput, DeveloperUncheckedCreateWithoutRunsInput>
+    where?: DeveloperWhereInput
+  }
+
+  export type DeveloperUpdateToOneWithWhereWithoutRunsInput = {
+    where?: DeveloperWhereInput
+    data: XOR<DeveloperUpdateWithoutRunsInput, DeveloperUncheckedUpdateWithoutRunsInput>
+  }
+
+  export type DeveloperUpdateWithoutRunsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DeveloperUncheckedUpdateWithoutRunsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RunCreateWithoutOrdersInput = {
+    id?: string
+    startTime: Date | string
+    endTime: Date | string
+    completed?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    developer?: DeveloperCreateNestedOneWithoutRunsInput
+  }
+
+  export type RunUncheckedCreateWithoutOrdersInput = {
+    id?: string
+    startTime: Date | string
+    endTime: Date | string
+    completed?: boolean
+    developerId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RunCreateOrConnectWithoutOrdersInput = {
+    where: RunWhereUniqueInput
+    create: XOR<RunCreateWithoutOrdersInput, RunUncheckedCreateWithoutOrdersInput>
+  }
+
+  export type RunUpsertWithoutOrdersInput = {
+    update: XOR<RunUpdateWithoutOrdersInput, RunUncheckedUpdateWithoutOrdersInput>
+    create: XOR<RunCreateWithoutOrdersInput, RunUncheckedCreateWithoutOrdersInput>
+    where?: RunWhereInput
+  }
+
+  export type RunUpdateToOneWithWhereWithoutOrdersInput = {
+    where?: RunWhereInput
+    data: XOR<RunUpdateWithoutOrdersInput, RunUncheckedUpdateWithoutOrdersInput>
+  }
+
+  export type RunUpdateWithoutOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    completed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developer?: DeveloperUpdateOneWithoutRunsNestedInput
+  }
+
+  export type RunUncheckedUpdateWithoutOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    completed?: BoolFieldUpdateOperationsInput | boolean
+    developerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RunCreateManyDeveloperInput = {
+    id?: string
+    startTime: Date | string
+    endTime: Date | string
+    completed?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RunUpdateWithoutDeveloperInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    completed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUpdateManyWithoutRunNestedInput
+  }
+
+  export type RunUncheckedUpdateWithoutDeveloperInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    completed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutRunNestedInput
+  }
+
+  export type RunUncheckedUpdateManyWithoutDeveloperInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    completed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderCreateManyRunInput = {
+    id?: string
+    nseSymbol: string
+    stopLossPrice: Decimal | DecimalJsLike | number | string
+    takeProfitPrice: Decimal | DecimalJsLike | number | string
+    entryPrice: Decimal | DecimalJsLike | number | string
+    timestamp: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderUpdateWithoutRunInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nseSymbol?: StringFieldUpdateOperationsInput | string
+    stopLossPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    takeProfitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    entryPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderUncheckedUpdateWithoutRunInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nseSymbol?: StringFieldUpdateOperationsInput | string
+    stopLossPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    takeProfitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    entryPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderUncheckedUpdateManyWithoutRunInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nseSymbol?: StringFieldUpdateOperationsInput | string
+    stopLossPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    takeProfitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    entryPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

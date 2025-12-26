@@ -1,5 +1,7 @@
-import { v1_developer_groww_schemas, v1_developer_lists_schemas } from "@ganaka/schemas";
-import { randomUUID } from "crypto";
+import {
+  v1_developer_groww_schemas,
+  v1_developer_lists_schemas,
+} from "@ganaka/schemas";
 import dotenv from "dotenv";
 import { z } from "zod";
 import { fetchCandles } from "./callbacks/fetchCandles";
@@ -8,6 +10,7 @@ import { fetchShortlist } from "./callbacks/fetchShortlist";
 import { logger } from "./utils/logger";
 import { prisma } from "./utils/prisma";
 import { placeOrder, PlaceOrderData } from "./callbacks/placeOrder";
+import { runMinuteLoop } from "./utils/minute-loop";
 dotenv.config();
 
 export interface RunContext {
@@ -22,48 +25,74 @@ export interface RunContext {
     >["data"]
   >;
   fetchQuote: (
-    symbol: string
+    symbol: string,
+    datetime?: Date
   ) => Promise<
-    z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"]
+    | z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"]
+    | null
   >;
   fetchShortlist: (
-    type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"]
+    type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
+    datetime?: Date
   ) => Promise<
-    z.infer<typeof v1_developer_lists_schemas.getLists.response>["data"]
+    z.infer<typeof v1_developer_lists_schemas.getLists.response>["data"] | null
   >;
+  currentTimestamp: Date;
 }
 
 export async function ganaka<T>({
   fn,
+  startTime,
+  endTime,
+  intervalMinutes = 1,
+  deleteRunAfterCompletion = false,
 }: {
   fn: (context: RunContext) => Promise<T>;
+  startTime: Date;
+  endTime: Date;
+  intervalMinutes: number;
+  /**
+   * Delete run after completion.
+   * Used to test the function without keeping the run and related data in the database
+   * @default false
+   */
+  deleteRunAfterCompletion?: boolean;
 }) {
-  // Generate unique runId for this invocation
-  const runId = randomUUID();
-  logger.debug(`Generated runId: ${runId}`);
-
   // Resolve username from developer token
-  let username: string | null = null;
-  const developerToken =
-    process.env.DEVELOPER_TOKEN || process.env.GANAKA_TOKEN;
+  let runId: string | null = null;
+  const developerToken = process.env.DEVELOPER_KEY;
 
   if (developerToken) {
     try {
-      const tokenRecord = await prisma.developerToken.findUnique({
+      const developer = await prisma.developer.findUnique({
         where: { token: developerToken },
       });
-      if (tokenRecord) {
-        username = tokenRecord.username;
-        logger.debug(`Resolved username: ${username} for runId: ${runId}`);
+      if (developer) {
+        // create a new run
+        const run = await prisma.run.create({
+          data: {
+            startTime: startTime,
+            endTime: endTime,
+            developer: {
+              connect: {
+                id: developer.id,
+              },
+            },
+          },
+        });
+        if (run) {
+          logger.debug(`Created run: ${run.id}`);
+          runId = run.id;
+        } else {
+          throw new Error("Failed to create run");
+        }
       } else {
         throw new Error(
-          `Developer token not found in database. Please set DEVELOPER_TOKEN environment variable.`
+          `Developer not found in database. Please check your DEVELOPER_KEY environment variable.`
         );
       }
     } catch (error) {
-      throw new Error(
-        `Error resolving username from developer token: ${error}`
-      );
+      throw new Error(`Error creating run: ${error}`);
     }
   } else {
     throw new Error(
@@ -74,26 +103,46 @@ export async function ganaka<T>({
   // Get API domain from environment or use default
   const apiDomain = process.env.API_DOMAIN || "https://api.ganaka.live";
 
-  // Run the function immediately on first call
   try {
-    logger.debug("Running function for the first time");
-    await fn({
-      placeOrder: placeOrder({ username, runId }),
-      fetchCandles: fetchCandles({
-        developerToken,
-        apiDomain,
-      }),
-      fetchQuote: fetchQuote({
-        developerToken,
-        apiDomain,
-      }),
-      fetchShortlist: fetchShortlist({
-        developerToken,
-        apiDomain,
-      }),
+    await runMinuteLoop({
+      startTime,
+      endTime,
+      intervalMinutes,
+      callback: async (currentTimestamp) => {
+        await fn({
+          placeOrder: placeOrder({ runId }),
+          fetchCandles: fetchCandles({
+            developerToken,
+            apiDomain,
+          }),
+          fetchQuote: fetchQuote({
+            developerToken,
+            apiDomain,
+          }),
+          fetchShortlist: fetchShortlist({
+            developerToken,
+            apiDomain,
+          }),
+          currentTimestamp,
+        });
+      },
+    });
+
+    // Mark the run as completed
+    logger.info(`Marking run as completed: ${runId}`);
+    await prisma.run.update({
+      where: { id: runId },
+      data: { completed: true },
     });
   } catch (error) {
     logger.error("Error running function for the first time");
     throw error;
+  } finally {
+    if (deleteRunAfterCompletion) {
+      logger.info(`Deleting run after completion: ${runId}`);
+      await prisma.run.delete({
+        where: { id: runId },
+      });
+    }
   }
 }

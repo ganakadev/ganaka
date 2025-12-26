@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
 import { z } from "zod";
+import { authLocalStorage } from "../../utils/authLocalStorage";
 
 // Get base URL from environment variable
 const baseUrl = import.meta.env.VITE_API_DOMAIN || "http://localhost:4000";
@@ -9,6 +10,13 @@ export const dashboardAPI = createApi({
   reducerPath: "dashboardApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${baseUrl}/v1/dashboard`,
+    prepareHeaders: (headers) => {
+      const token = authLocalStorage.getToken();
+      if (token) {
+        headers.set("authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
   }),
   tagTypes: [
     "Shortlists",
@@ -16,6 +24,8 @@ export const dashboardAPI = createApi({
     "PersistentCompanies",
     "UniqueCompanies",
     "Candles",
+    "QuoteTimeline",
+    "Runs",
   ],
   endpoints: (builder) => ({
     // Get available datetimes
@@ -125,6 +135,82 @@ export const dashboardAPI = createApi({
         };
       },
       providesTags: ["Candles"],
+    }),
+
+    // Get quote timeline
+    getQuoteTimeline: builder.query<
+      z.infer<
+        typeof v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.response
+      >,
+      z.infer<
+        typeof v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.query
+      >
+    >({
+      query: (params) => {
+        const validatedParams =
+          v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.query.parse(
+            params
+          );
+        return {
+          url: "/quote-timelines",
+          method: "GET",
+          params: validatedParams,
+        };
+      },
+      providesTags: ["QuoteTimeline"],
+    }),
+
+    // Sign in
+    signIn: builder.query<
+      z.infer<
+        typeof v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.response
+      >,
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.body>
+    >({
+      query: (body) => ({
+        url: "/auth/sign-in",
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${body.developerToken}`,
+        },
+        body,
+      }),
+    }),
+
+    // Get runs
+    getRuns: builder.query<
+      z.infer<
+        typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response
+      >,
+      void
+    >({
+      query: () => ({
+        url: "/runs",
+        method: "GET",
+      }),
+      providesTags: ["Runs"],
+    }),
+
+    // Get run orders
+    getRunOrders: builder.query<
+      z.infer<
+        typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response
+      >,
+      z.infer<
+        typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params
+      >
+    >({
+      query: (params) => {
+        const validatedParams =
+          v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params.parse(
+            params
+          );
+        return {
+          url: `/runs/${validatedParams.runId}/orders`,
+          method: "GET",
+        };
+      },
+      providesTags: ["Runs"],
     }),
   }),
 });
