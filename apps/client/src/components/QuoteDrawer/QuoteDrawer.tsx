@@ -26,24 +26,19 @@ interface QuotePanelProps {
   selectedDate: Date | null;
 }
 
-function QuotePanel({
-  quoteData,
-  selectedEntry,
-  selectedDate,
-}: QuotePanelProps) {
+function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps) {
   // API
   // Fetch candle data using RTK Query
-  const { data: candlesData, error: candleError } =
-    dashboardAPI.useGetCandlesQuery(
-      {
-        symbol: selectedEntry?.nseSymbol || "",
-        date: selectedDate?.toISOString() || "",
-        interval: "1minute",
-      },
-      {
-        skip: !selectedEntry || !selectedDate,
-      }
-    );
+  const { data: candlesData, error: candleError } = dashboardAPI.useGetCandlesQuery(
+    {
+      symbol: selectedEntry?.nseSymbol || "",
+      date: selectedDate?.toISOString() || "",
+      interval: "1minute",
+    },
+    {
+      skip: !selectedEntry || !selectedDate,
+    }
+  );
   useRTKNotifier({
     requestName: "Get Candles",
     error: candleError,
@@ -76,40 +71,31 @@ function QuotePanel({
       }))
     : null;
   // Process quote snapshots to calculate buyerControlPercentage for each
-  const buyerControlData: Array<{ time: Time; value: number }> | null =
-    quoteTimelineData?.data.quoteTimeline
-      ? quoteTimelineData.data.quoteTimeline
-          .map(
-            (timeline: {
-              id: string;
-              timestamp: Date;
-              nseSymbol: string;
-              quoteData: QuoteData;
-            }) => {
-              const buyerControlPercentage = calculateBuyerControlPercentage(
-                timeline.quoteData as QuoteData,
-                "total"
-              );
-              if (buyerControlPercentage === null) {
-                return null;
-              }
-              // Convert timestamp to Unix timestamp (seconds)
-              const time = dayjs
-                .utc(timeline.timestamp)
-                .add(5, "hours")
-                .add(30, "minutes"); // Add 5 hours and 30 minutes to the UTC timestamp to get the IST timestamp
-              return {
-                time: time.unix() as Time,
-                value: buyerControlPercentage,
-              };
+  const buyerControlData: Array<{ time: Time; value: number }> | null = quoteTimelineData?.data
+    .quoteTimeline
+    ? quoteTimelineData.data.quoteTimeline
+        .map(
+          (timeline: { id: string; timestamp: Date; nseSymbol: string; quoteData: QuoteData }) => {
+            const buyerControlPercentage = calculateBuyerControlPercentage(
+              timeline.quoteData,
+              "total"
+            );
+            if (buyerControlPercentage === null) {
+              return null;
             }
-          )
-          .filter(
-            (
-              item: { time: Time; value: number } | null
-            ): item is { time: Time; value: number } => item !== null
-          )
-      : null;
+            // Convert timestamp to Unix timestamp (seconds)
+            const time = dayjs.utc(timeline.timestamp).add(5, "hours").add(30, "minutes"); // Add 5 hours and 30 minutes to the UTC timestamp to get the IST timestamp
+            return {
+              time: time.unix() as Time,
+              value: buyerControlPercentage,
+            };
+          }
+        )
+        .filter(
+          (item: { time: Time; value: number } | null): item is { time: Time; value: number } =>
+            item !== null
+        )
+    : null;
   const errorMessage = candleError
     ? "data" in candleError &&
       typeof candleError.data === "object" &&
@@ -125,8 +111,7 @@ function QuotePanel({
 
     // eliminate data points that have duplicate times
     const uniqueData = buyerControlData.filter(
-      (point, index, self) =>
-        index === self.findIndex((t) => t.time === point.time)
+      (point, index, self) => index === self.findIndex((t) => t.time === point.time)
     );
 
     // Transform data to histogram format with color based on trend (up/down movement)
@@ -178,9 +163,7 @@ function QuotePanel({
       .unix(candleData[referenceIndex].time as number)
       .utc()
       .format("YYYY-MM-DDTHH:mm");
-    let minDiff = Math.abs(
-      dayjs(selectedTime).diff(dayjs(firstCandleTime), "minutes")
-    );
+    let minDiff = Math.abs(dayjs(selectedTime).diff(dayjs(firstCandleTime), "minutes"));
 
     for (const candle of candleData) {
       const candleTime = dayjs
@@ -215,9 +198,7 @@ function QuotePanel({
         <>
           {errorMessage && (
             <div className="border rounded-md p-4 bg-red-50">
-              <p className="text-sm text-red-600">
-                Error loading chart: {errorMessage}
-              </p>
+              <p className="text-sm text-red-600">Error loading chart: {errorMessage}</p>
             </div>
           )}
           <CandleChart
@@ -247,9 +228,9 @@ export function QuoteDrawer({
   const drawerTitle = selectedEntry ? (
     <div className="flex flex-col gap-1">
       <h4 className="text-lg font-semibold">{selectedEntry.name}</h4>
-      <span className="text-sm text-gray-500">{`${
-        selectedEntry.nseSymbol
-      } at ${dayjs(selectedDate).format("DD-MM-YYYY HH:mm")}`}</span>
+      <span className="text-sm text-gray-500">{`${selectedEntry.nseSymbol} at ${dayjs(
+        selectedDate
+      ).format("DD-MM-YYYY HH:mm")}`}</span>
     </div>
   ) : (
     "Quote Details"

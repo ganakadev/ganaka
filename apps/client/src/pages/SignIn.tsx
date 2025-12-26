@@ -36,9 +36,7 @@ export const SignIn = () => {
       const result = await signIn(data);
 
       if (result.error) {
-        console.error(
-          "Invalid developer key. Please check your credentials and try again."
-        );
+        console.error("Invalid developer key. Please check your credentials and try again.");
         return;
       }
 
@@ -48,7 +46,7 @@ export const SignIn = () => {
         authLocalStorage.setUsername(result.data.data.username);
 
         // Redirect to dashboard
-        navigate("/");
+        await navigate("/");
       } else {
         console.error("Failed to fetch user details. Please try again.");
       }
@@ -58,7 +56,9 @@ export const SignIn = () => {
   });
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      onSubmit();
+      onSubmit().catch((error) => {
+        console.error(error);
+      });
     }
   };
 
@@ -79,7 +79,11 @@ export const SignIn = () => {
         />
         <Button
           fullWidth
-          onClick={onSubmit}
+          onClick={() => {
+            onSubmit().catch((error) => {
+              console.error(error);
+            });
+          }}
           loading={signInAPI.isLoading || signInAPI.isFetching}
         >
           Sign In

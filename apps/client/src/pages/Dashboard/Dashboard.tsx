@@ -5,11 +5,7 @@ import {
 } from "./components/PersistentCompaniesTable";
 import { RunOrdersDrawer } from "../../components/RunDrawer/RunDrawer";
 import { useState } from "react";
-import type {
-  ShortlistEntryWithQuote,
-  ShortlistSnapshotWithEntries,
-  Run,
-} from "../../types";
+import type { ShortlistEntryWithQuote, ShortlistSnapshotWithEntries, Run } from "../../types";
 import { dashboardAPI } from "../../store/api/dashboardApi";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
 import { UniqueCompaniesCard } from "./components/UniqueCompaniesCard";
@@ -20,13 +16,12 @@ import { QuoteDrawer } from "../../components/QuoteDrawer/QuoteDrawer";
 export const Dashboard = () => {
   // STATE
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [activeTab, setActiveTab] = useState<
-    "TOP_GAINERS" | "VOLUME_SHOCKERS" | null
-  >("TOP_GAINERS");
+  const [activeTab, setActiveTab] = useState<"TOP_GAINERS" | "VOLUME_SHOCKERS" | null>(
+    "TOP_GAINERS"
+  );
   // Drawer state
   const [drawerOpened, setDrawerOpened] = useState(false);
-  const [selectedEntry, setSelectedEntry] =
-    useState<ShortlistEntryWithQuote | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<ShortlistEntryWithQuote | null>(null);
   // Run orders drawer state
   const [runDrawerOpened, setRunDrawerOpened] = useState(false);
   const [selectedRun, setSelectedRun] = useState<Run | null>(null);
@@ -68,21 +63,17 @@ export const Dashboard = () => {
   });
 
   // Transform shortlist data
-  const shortlist: ShortlistSnapshotWithEntries | null = shortlistsData?.data
-    .shortlist
+  const shortlist: ShortlistSnapshotWithEntries | null = shortlistsData?.data.shortlist
     ? {
         id: shortlistsData.data.shortlist.id,
         timestamp: new Date(shortlistsData.data.shortlist.timestamp),
-        shortlistType: shortlistsData.data.shortlist.shortlistType as
-          | "TOP_GAINERS"
-          | "VOLUME_SHOCKERS",
+        shortlistType: shortlistsData.data.shortlist.shortlistType,
         entries: shortlistsData.data.shortlist.entries,
       }
     : null;
 
   // Transform persistent companies data
-  const persistentCompanies: PersistentCompany[] =
-    persistentCompaniesData?.data.companies || [];
+  const persistentCompanies: PersistentCompany[] = persistentCompaniesData?.data.companies || [];
   const totalSnapshots = persistentCompaniesData?.data.totalSnapshots;
 
   const handleRowClick = (entry: ShortlistEntryWithQuote) => {
@@ -135,10 +126,7 @@ export const Dashboard = () => {
                 selectedDate={selectedDate}
               />
             )}
-            <UniqueCompaniesCard
-              selectedDate={selectedDate}
-              activeTab={activeTab}
-            />
+            <UniqueCompaniesCard selectedDate={selectedDate} activeTab={activeTab} />
             <PersistentCompaniesTable
               companies={persistentCompanies}
               loading={loadingPersistentCompanies}

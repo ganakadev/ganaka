@@ -1,9 +1,6 @@
 import { Skeleton, Table } from "@mantine/core";
 import { times } from "lodash";
-import type {
-  ShortlistSnapshotWithEntries,
-  ShortlistEntryWithQuote,
-} from "../types";
+import type { ShortlistSnapshotWithEntries, ShortlistEntryWithQuote } from "../../../types";
 
 export const ShortlistTable = ({
   shortlist,

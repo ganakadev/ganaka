@@ -4,7 +4,7 @@ import { z } from "zod";
 import { authLocalStorage } from "../../utils/authLocalStorage";
 
 // Get base URL from environment variable
-const baseUrl = import.meta.env.VITE_API_DOMAIN || "http://localhost:4000";
+const baseUrl = `${import.meta.env.VITE_API_DOMAIN}` || "http://localhost:4000";
 
 export const dashboardAPI = createApi({
   reducerPath: "dashboardApi",
@@ -46,19 +46,13 @@ export const dashboardAPI = createApi({
 
     // Get shortlists
     getShortlists: builder.query<
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response
-      >,
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query
-      >
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response>,
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query>
     >({
       query: (params) => {
         // Validate query params using Zod schema
         const validatedParams =
-          v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query.parse(
-            params
-          );
+          v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query.parse(params);
         return {
           url: "/shortlists",
           method: "GET",
@@ -116,18 +110,12 @@ export const dashboardAPI = createApi({
 
     // Get candles
     getCandles: builder.query<
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.response
-      >,
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.query
-      >
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.response>,
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.query>
     >({
       query: (params) => {
         const validatedParams =
-          v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.query.parse(
-            params
-          );
+          v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.query.parse(params);
         return {
           url: "/candles",
           method: "GET",
@@ -162,9 +150,7 @@ export const dashboardAPI = createApi({
 
     // Sign in
     signIn: builder.query<
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.response
-      >,
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.response>,
       z.infer<typeof v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.body>
     >({
       query: (body) => ({
@@ -179,9 +165,7 @@ export const dashboardAPI = createApi({
 
     // Get runs
     getRuns: builder.query<
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response
-      >,
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response>,
       void
     >({
       query: () => ({
@@ -193,18 +177,12 @@ export const dashboardAPI = createApi({
 
     // Get run orders
     getRunOrders: builder.query<
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response
-      >,
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params
-      >
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response>,
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params>
     >({
       query: (params) => {
         const validatedParams =
-          v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params.parse(
-            params
-          );
+          v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params.parse(params);
         return {
           url: `/runs/${validatedParams.runId}/orders`,
           method: "GET",
