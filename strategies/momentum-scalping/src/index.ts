@@ -3,24 +3,12 @@ import dayjs from "dayjs";
 import dotenv from "dotenv";
 dotenv.config();
 
-const tradingWindowStart = dayjs()
-  .set("date", 23)
-  .set("hour", 9)
-  .set("minute", 0);
-const tradingWindowEnd = dayjs()
-  .set("date", 23)
-  .set("hour", 10)
-  .set("minute", 0);
+const tradingWindowStart = dayjs().set("date", 23).set("hour", 9).set("minute", 0);
+const tradingWindowEnd = dayjs().set("date", 23).set("hour", 10).set("minute", 0);
 
 async function main() {
   await ganaka({
-    fn: async ({
-      fetchShortlist,
-      fetchQuote,
-      fetchCandles,
-      placeOrder,
-      currentTimestamp,
-    }) => {
+    fn: async ({ fetchShortlist, fetchQuote, fetchCandles, placeOrder, currentTimestamp }) => {
       const currentTime = dayjs(currentTimestamp);
 
       const shortlist = await fetchShortlist("top-gainers", currentTimestamp);
@@ -49,6 +37,7 @@ async function main() {
           nseSymbol: firstCompany.nseSymbol,
           stopLossPrice: quote.payload.last_price * 0.95,
           takeProfitPrice: quote.payload.last_price * 1.05,
+          timestamp: currentTimestamp,
         });
       }
 

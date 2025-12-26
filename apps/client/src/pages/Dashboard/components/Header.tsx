@@ -1,13 +1,7 @@
 import { SegmentedControl } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import dayjs from "dayjs";
-import {
-  startTransition,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { startTransition, useCallback, useEffect, useRef, useState } from "react";
 import { dashboardAPI } from "../../../store/api/dashboardApi";
 import { useRTKNotifier } from "../../../utils/hooks/useRTKNotifier";
 import { useSearchParams } from "react-router-dom";
@@ -33,9 +27,7 @@ export const Header = ({
   const [timePresets, setTimePresets] = useState<string[]>([]);
 
   // API
-  const getAvailableDatetimesAPI = dashboardAPI.useGetAvailableDatetimesQuery(
-    {}
-  );
+  const getAvailableDatetimesAPI = dashboardAPI.useGetAvailableDatetimesQuery({});
   useRTKNotifier({
     requestName: "Get Available Datetimes",
     error: getAvailableDatetimesAPI.error,
@@ -45,16 +37,11 @@ export const Header = ({
   // Get available times for a specific date
   const getAvailableTimesForDate = useCallback(
     (date: string | null): string[] => {
-      console.log("date", date);
       if (!date || !getAvailableDatetimesAPI.data) return [];
       const dateKey = dayjs(date).format("YYYY-MM-DD");
-      const dateData = getAvailableDatetimesAPI.data.data.dates.find(
-        (d) => d.date === dateKey
-      );
+      const dateData = getAvailableDatetimesAPI.data.data.dates.find((d) => d.date === dateKey);
       if (!dateData) return [];
-      return Array.from(
-        new Set(dateData.timestamps.map((ts) => dayjs(ts).format("HH:mm")))
-      );
+      return Array.from(new Set(dateData.timestamps.map((ts) => dayjs(ts).format("HH:mm"))));
     },
     [getAvailableDatetimesAPI.data]
   );
@@ -69,13 +56,10 @@ export const Header = ({
   };
   // Handle date/time change with validation
   const handleChange = (value: string | null) => {
-    console.log("value", value);
     if (value) {
       const valueDayjs = dayjs(value);
       setLocalSelectedDate(valueDayjs.toDate());
-      setTimePresets(
-        getAvailableTimesForDate(dayjs(valueDayjs).format("YYYY-MM-DD"))
-      );
+      setTimePresets(getAvailableTimesForDate(dayjs(valueDayjs).format("YYYY-MM-DD")));
 
       // only update state if the time is not at default (00:00)
       if (valueDayjs.format("HH:mm") !== "00:00") {
@@ -131,9 +115,7 @@ export const Header = ({
             ?.find((d) => d.date === dateDayjs.format("YYYY-MM-DD"))
             // timestamp is in UTC with format 2025-12-23T03:39:00.031Z
             ?.timestamps.find((timestamp) => {
-              return (
-                dayjs(timestamp).format("HH:mm") === dateDayjs.format("HH:mm")
-              );
+              return dayjs(timestamp).format("HH:mm") === dateDayjs.format("HH:mm");
             })
         ) {
           notifications.show({
@@ -146,9 +128,7 @@ export const Header = ({
           return;
         }
 
-        setTimePresets(
-          getAvailableTimesForDate(dayjs(dateDayjs).format("YYYY-MM-DD"))
-        );
+        setTimePresets(getAvailableTimesForDate(dayjs(dateDayjs).format("YYYY-MM-DD")));
         setSelectedDate(dateDayjs.toDate());
         setLocalSelectedDate(dateDayjs.toDate());
       } catch (error) {
