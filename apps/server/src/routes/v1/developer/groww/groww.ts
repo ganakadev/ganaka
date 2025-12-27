@@ -53,8 +53,7 @@ const makeGrowwAPIRequest =
 
         // Check if it's a 401 Unauthorized error
         const isUnauthorized =
-          axios.isAxiosError(error) &&
-          (error as AxiosError).response?.status === 401;
+          axios.isAxiosError(error) && (error as AxiosError).response?.status === 401;
 
         if (isUnauthorized && attempt < maxAttempts) {
           // Invalidate token and retry
@@ -64,15 +63,18 @@ const makeGrowwAPIRequest =
 
         // Log the error response for debugging
         if (axios.isAxiosError(error) && error.response) {
-          fastify.log.error("Groww API Error: %s", {
-            status: error.response.status,
-            statusText: error.response.statusText,
-            data: error.response.data,
-            config: {
-              url: error.config?.url,
-              params: error.config?.params,
-            },
-          });
+          fastify.log.error(
+            "Groww API Error: %s",
+            JSON.stringify({
+              status: error.response.status,
+              statusText: error.response.statusText,
+              data: error.response.data,
+              config: {
+                url: error.config?.url,
+                params: error.config?.params,
+              },
+            })
+          );
         }
 
         throw error;
@@ -90,9 +92,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
   // Get latest token endpoint
   fastify.get("/token", async (request, reply) => {
     const token = await tokenManager.getToken();
-    return sendResponse<
-      z.infer<typeof v1_developer_groww_schemas.getGrowwToken.response>
-    >({
+    return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwToken.response>>({
       statusCode: 200,
       message: "Token fetched successfully",
       data: token,
@@ -135,9 +135,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         });
 
         if (quoteSnapshots.length === 0) {
-          return sendResponse<
-            z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>
-          >({
+          return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>({
             statusCode: 200,
             message: "Quote snapshot not found",
             data: null as any,
@@ -150,25 +148,23 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         > | null;
 
         if (!quoteData) {
-          return sendResponse<
-            z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>
-          >({
+          return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>({
             statusCode: 200,
             message: "Quote snapshot not found",
             data: null as any,
           });
         }
 
-        return sendResponse<
-          z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>
-        >({
+        return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>({
           statusCode: 200,
           message: "Quote fetched successfully",
           data: quoteData,
         });
       } catch (error) {
         fastify.log.error(
-          `Error fetching quote snapshot for ${validationResult.symbol} at ${datetime}: ${error}`
+          `Error fetching quote snapshot for ${
+            validationResult.symbol
+          } at ${datetime}: ${JSON.stringify(error)}`
         );
         return reply.internalServerError(
           "Failed to fetch quote snapshot. Please check server logs for more details."
@@ -190,15 +186,13 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
 
-      return sendResponse<
-        z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>
-      >({
+      return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>({
         statusCode: 200,
         message: "Quote fetched successfully",
         data: response,
       });
     } catch (error) {
-      fastify.log.error("Error fetching quote: %s", error);
+      fastify.log.error("Error fetching quote: %s", JSON.stringify(error));
       return reply.internalServerError(
         "Failed to fetch quote. Please check server logs for more details."
       );
@@ -236,16 +230,14 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
       });
 
       return sendResponse<
-        z.infer<
-          typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response
-        >
+        z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response>
       >({
         statusCode: 200,
         message: "Historical candles fetched successfully",
         data: response,
       });
     } catch (error) {
-      fastify.log.error("Error fetching historical candles: %s", error);
+      fastify.log.error("Error fetching historical candles: %s", JSON.stringify(error));
       return reply.internalServerError(
         "Failed to fetch historical candles. Please check server logs for more details."
       );

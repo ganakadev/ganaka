@@ -10,9 +10,7 @@ const dbScriptsRoutes: FastifyPluginAsync = async (fastify) => {
       fastify.log.info(`Executing DB script: fix-timestamps`);
 
       return sendResponse<
-        z.infer<
-          typeof v1_admin_schemas.v1_admin_db_scripts_schemas.dbScriptsSchema.response
-        >
+        z.infer<typeof v1_admin_schemas.v1_admin_db_scripts_schemas.dbScriptsSchema.response>
       >({
         statusCode: 200,
         message: "DB script executed successfully",
@@ -23,15 +21,12 @@ const dbScriptsRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      fastify.log.error("Error executing DB script: %s", error);
+      fastify.log.error("Error executing DB script: %s", JSON.stringify(error));
 
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to execute DB script";
+      const errorMessage = error instanceof Error ? error.message : "Failed to execute DB script";
 
       return sendResponse<
-        z.infer<
-          typeof v1_admin_schemas.v1_admin_db_scripts_schemas.dbScriptsSchema.response
-        >
+        z.infer<typeof v1_admin_schemas.v1_admin_db_scripts_schemas.dbScriptsSchema.response>
       >({
         statusCode: 500,
         message: "DB script execution failed",

@@ -59,10 +59,8 @@ const authPlugin =
           }
         }
       } catch (error) {
-        fastify.log.error(error);
-        return reply.internalServerError(
-          "Authentication failed due to an internal error."
-        );
+        fastify.log.error(JSON.stringify(error));
+        return reply.internalServerError("Authentication failed due to an internal error.");
       }
     });
 

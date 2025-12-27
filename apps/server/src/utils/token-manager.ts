@@ -29,7 +29,7 @@ export class TokenManager {
       });
       return response.status === 200;
     } catch (error) {
-      this.fastify.log.error("Token validation failed");
+      this.fastify.log.error("Token validation failed: %s", JSON.stringify(error));
       return false;
     }
   }
@@ -85,13 +85,10 @@ export class TokenManager {
     }
 
     try {
-      const response = (await axios.post(
-        "https://groww-access-token-generator.onrender.com",
-        {
-          api_key: apiKey,
-          api_secret: apiSecret,
-        }
-      )) as AxiosResponse<{ access_token: string }>;
+      const response = (await axios.post("https://groww-access-token-generator.onrender.com", {
+        api_key: apiKey,
+        api_secret: apiSecret,
+      })) as AxiosResponse<{ access_token: string }>;
 
       const token = response.data.access_token;
 

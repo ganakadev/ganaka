@@ -17,8 +17,7 @@ const quoteSnapshotsRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.query,
       reply,
-      v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline
-        .query,
+      v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.query,
       "query"
     );
     if (!validationResult) {
@@ -82,7 +81,7 @@ const quoteSnapshotsRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      fastify.log.error("Error fetching quote snapshots: %s", error);
+      fastify.log.error("Error fetching quote snapshots: %s", JSON.stringify(error));
 
       let errorMessage = "Failed to fetch quote snapshots";
       if (error instanceof Error) {

@@ -35,9 +35,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
       ]);
 
       return sendResponse<
-        z.infer<
-          typeof v1_admin_schemas.v1_admin_developers_schemas.getDevelopers.response
-        >
+        z.infer<typeof v1_admin_schemas.v1_admin_developers_schemas.getDevelopers.response>
       >({
         statusCode: 200,
         message: "Developers fetched successfully",
@@ -47,7 +45,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      fastify.log.error("Error fetching developers: %s", error);
+      fastify.log.error("Error fetching developers: %s", JSON.stringify(error));
       return reply.internalServerError(
         "Failed to fetch developers. Please check server logs for more details."
       );
@@ -79,16 +77,14 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
       }
 
       return sendResponse<
-        z.infer<
-          typeof v1_admin_schemas.v1_admin_developers_schemas.getDeveloper.response
-        >
+        z.infer<typeof v1_admin_schemas.v1_admin_developers_schemas.getDeveloper.response>
       >({
         statusCode: 200,
         message: "Developer fetched successfully",
         data: developer,
       });
     } catch (error) {
-      fastify.log.error("Error fetching developer: %s", error);
+      fastify.log.error("Error fetching developer: %s", JSON.stringify(error));
       return reply.internalServerError(
         "Failed to fetch developer. Please check server logs for more details."
       );
@@ -133,24 +129,17 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
       });
 
       return sendResponse<
-        z.infer<
-          typeof v1_admin_schemas.v1_admin_developers_schemas.createDeveloper.response
-        >
+        z.infer<typeof v1_admin_schemas.v1_admin_developers_schemas.createDeveloper.response>
       >({
         statusCode: 201,
         message: "Developer created successfully",
         data: developer,
       });
     } catch (error) {
-      fastify.log.error("Error creating developer: %s", error);
+      fastify.log.error("Error creating developer: %s", JSON.stringify(error));
 
       // Handle Prisma unique constraint errors
-      if (
-        error &&
-        typeof error === "object" &&
-        "code" in error &&
-        error.code === "P2002"
-      ) {
+      if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
         return reply.conflict("Username already exists");
       }
 
@@ -196,24 +185,17 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
       });
 
       return sendResponse<
-        z.infer<
-          typeof v1_admin_schemas.v1_admin_developers_schemas.refreshDeveloperKey.response
-        >
+        z.infer<typeof v1_admin_schemas.v1_admin_developers_schemas.refreshDeveloperKey.response>
       >({
         statusCode: 200,
         message: "Developer key refreshed successfully",
         data: developer,
       });
     } catch (error) {
-      fastify.log.error("Error refreshing developer key: %s", error);
+      fastify.log.error("Error refreshing developer key: %s", JSON.stringify(error));
 
       // Handle Prisma not found errors
-      if (
-        error &&
-        typeof error === "object" &&
-        "code" in error &&
-        error.code === "P2025"
-      ) {
+      if (error && typeof error === "object" && "code" in error && error.code === "P2025") {
         return reply.notFound("Developer not found");
       }
 
@@ -254,9 +236,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
       });
 
       return sendResponse<
-        z.infer<
-          typeof v1_admin_schemas.v1_admin_developers_schemas.deleteDeveloper.response
-        >
+        z.infer<typeof v1_admin_schemas.v1_admin_developers_schemas.deleteDeveloper.response>
       >({
         statusCode: 200,
         message: "Developer deleted successfully",
@@ -266,25 +246,15 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      fastify.log.error("Error deleting developer: %s", error);
+      fastify.log.error("Error deleting developer: %s", JSON.stringify(error));
 
       // Handle Prisma not found errors
-      if (
-        error &&
-        typeof error === "object" &&
-        "code" in error &&
-        error.code === "P2025"
-      ) {
+      if (error && typeof error === "object" && "code" in error && error.code === "P2025") {
         return reply.notFound("Developer not found");
       }
 
       // Handle foreign key constraint errors
-      if (
-        error &&
-        typeof error === "object" &&
-        "code" in error &&
-        error.code === "P2003"
-      ) {
+      if (error && typeof error === "object" && "code" in error && error.code === "P2003") {
         return reply.conflict(
           "Cannot delete developer. There are associated records that reference this developer."
         );

@@ -54,8 +54,7 @@ const makeGrowwAPIRequest =
 
         // Check if it's a 401 Unauthorized error
         const isUnauthorized =
-          axios.isAxiosError(error) &&
-          (error as AxiosError).response?.status === 401;
+          axios.isAxiosError(error) && (error as AxiosError).response?.status === 401;
 
         if (isUnauthorized && attempt < maxAttempts) {
           // Invalidate token and retry
@@ -65,15 +64,18 @@ const makeGrowwAPIRequest =
 
         // Log the error response for debugging
         if (axios.isAxiosError(error) && error.response) {
-          fastify.log.error("Groww API Error: %s", {
-            status: error.response.status,
-            statusText: error.response.statusText,
-            data: error.response.data,
-            config: {
-              url: error.config?.url,
-              params: error.config?.params,
-            },
-          });
+          fastify.log.error(
+            "Groww API Error: %s",
+            JSON.stringify({
+              status: error.response.status,
+              statusText: error.response.statusText,
+              data: error.response.data,
+              config: {
+                url: error.config?.url,
+                params: error.config?.params,
+              },
+            })
+          );
         }
 
         throw error;
@@ -133,9 +135,7 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
       const response = await growwAPIRequest<{
         status: "SUCCESS" | "FAILURE";
         payload: {
-          candles: Array<
-            [string, number, number, number, number, number, number | null]
-          >;
+          candles: Array<[string, number, number, number, number, number, number | null]>;
           closing_price: number | null;
           start_time: string;
           end_time: string;
@@ -182,9 +182,7 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
       });
 
       return sendResponse<
-        z.infer<
-          typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.response
-        >
+        z.infer<typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.response>
       >({
         statusCode: 200,
         message: "Candles fetched successfully",
@@ -196,7 +194,7 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      fastify.log.error("Error fetching candles: %s", error);
+      fastify.log.error("Error fetching candles: %s", JSON.stringify(error));
 
       // Provide more detailed error information
       let errorMessage = "Failed to fetch candles";
@@ -207,7 +205,7 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
             error.response.data?.message ||
             error.response.data?.error ||
             `API Error: ${error.response.status} ${error.response.statusText}`;
-          fastify.log.error("API Error Details: %s", error.response.data);
+          fastify.log.error("API Error Details: %s", JSON.stringify(error.response.data));
         } else if (error.request) {
           errorMessage = "No response from API";
         } else {

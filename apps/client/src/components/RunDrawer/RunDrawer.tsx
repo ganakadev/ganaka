@@ -69,8 +69,6 @@ const StockChart = ({
     return orders.map((order, index) => {
       // Convert order timestamp to dayjs and find closest candle
       const orderTime = dayjs(order.timestamp).format("YYYY-MM-DDTHH:mm");
-      console.log(order.timestamp);
-      console.log(orderTime);
       let closestCandle = candleData[0];
       let minDiff = Infinity;
 
@@ -285,14 +283,14 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
         <Accordion
           multiple
           value={accordionValue}
-          variant="contained"
+          variant="separated"
           onChange={handleAccordionChange}
           className="flex flex-col gap-4"
         >
           {stockSymbols.map((symbol) => {
             const stockOrders = ordersByStock[symbol];
             return (
-              <Accordion.Item key={symbol} value={symbol} className="border rounded-md">
+              <Accordion.Item key={symbol} value={symbol} className="mt-0!">
                 <Accordion.Control>
                   <div className="flex items-center justify-between w-full h-full pr-4">
                     <Text fw={600}>{symbol}</Text>

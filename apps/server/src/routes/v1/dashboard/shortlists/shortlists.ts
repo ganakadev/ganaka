@@ -31,11 +31,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const {
-        date: dateParam,
-        type: typeParam,
-        method: methodParam,
-      } = validationResult;
+      const { date: dateParam, type: typeParam, method: methodParam } = validationResult;
 
       // Parse date with explicit UTC handling
       const selectedDateTime = dayjs(dateParam).utc();
@@ -76,9 +72,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
       }
 
       const shortlistFromDb = shortlists[0];
-      const shortlistEntries = shortlistFromDb.entries as
-        | ShortlistEntry[]
-        | null;
+      const shortlistEntries = shortlistFromDb.entries as ShortlistEntry[] | null;
       let entries: Array<{
         nseSymbol: string;
         name: string;
@@ -104,8 +98,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
           // If method is specified, calculate on-the-fly
           // Otherwise, use stored value if available
           if (methodParam !== null && methodParam !== undefined) {
-            buyerControlPercentage =
-              calculateBuyerControlPercentage(validQuoteData, method) ?? 0;
+            buyerControlPercentage = calculateBuyerControlPercentage(validQuoteData, method) ?? 0;
           } else {
             // Use stored value from database if available
             buyerControlPercentage =
@@ -132,9 +125,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
       }
 
       return sendResponse<
-        z.infer<
-          typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response
-        >
+        z.infer<typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response>
       >({
         statusCode: 200,
         message: "Shortlist fetched successfully",
@@ -148,9 +139,8 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      fastify.log.error("Error fetching shortlists: %s", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to fetch shortlists";
+      fastify.log.error("Error fetching shortlists: %s", JSON.stringify(error));
+      const errorMessage = error instanceof Error ? error.message : "Failed to fetch shortlists";
       return reply.internalServerError(errorMessage);
     }
   });

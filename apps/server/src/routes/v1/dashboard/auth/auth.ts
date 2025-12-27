@@ -31,9 +31,7 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
       }
 
       return sendResponse<
-        z.infer<
-          typeof v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.response
-        >
+        z.infer<typeof v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.response>
       >({
         statusCode: 200,
         message: "Developer signed in successfully",
@@ -43,7 +41,7 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      fastify.log.error("Error fetching developer details: %s", error);
+      fastify.log.error("Error fetching developer details: %s", JSON.stringify(error));
       return reply.internalServerError(
         "Failed to fetch developer details. Please check server logs for more details."
       );
