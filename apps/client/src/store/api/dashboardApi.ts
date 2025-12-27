@@ -208,5 +208,21 @@ export const dashboardAPI = createApi({
       },
       providesTags: ["Runs"],
     }),
+
+    // Delete run
+    deleteRun: builder.mutation<
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.response>,
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.params>
+    >({
+      query: (params) => {
+        const validatedParams =
+          v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.params.parse(params);
+        return {
+          url: `/runs/${validatedParams.runId}`,
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: ["Runs"],
+    }),
   }),
 });

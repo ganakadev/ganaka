@@ -1,36 +1,37 @@
-import {
-  ScrollArea,
-  Card,
-  Badge,
-  Text,
-  Group,
-  Stack,
-  Title,
-} from "@mantine/core";
+import { ScrollArea, Card, Badge, Text, Group, Stack, Title, ActionIcon } from "@mantine/core";
+import { Icon } from "@iconify/react";
 import dayjs from "dayjs";
 import { dashboardAPI } from "../../../store/api/dashboardApi";
 import type { Run } from "../../../types";
 import { useRTKNotifier } from "../../../utils/hooks/useRTKNotifier";
-
+import { useDeleteConfirmModal } from "../../../utils/hooks/useDeleteConfirmModal";
 
 export const RunsSidebar = ({
   onRunClick,
+  onRunDelete,
 }: {
   onRunClick?: (run: Run) => void;
+  onRunDelete?: (runId: string) => void;
 }) => {
   // API
-  const {
-    data: runsData,
-    isLoading,
-    error: getRunsAPIError,
-  } = dashboardAPI.useGetRunsQuery();
+  const getRunsAPI = dashboardAPI.useGetRunsQuery();
   useRTKNotifier({
     requestName: "Get Runs",
-    error: getRunsAPIError,
+    error: getRunsAPI.error,
+  });
+  // Delete mutation
+  const [deleteRun, deleteRunAPI] = dashboardAPI.useDeleteRunMutation();
+  useRTKNotifier({
+    requestName: "Delete Run",
+    error: deleteRunAPI.error,
   });
 
+  // HOOKS
+  // Delete confirmation modal
+  const { invokeModal } = useDeleteConfirmModal();
+
   // GUARDS
-  if (isLoading) {
+  if (getRunsAPI.isLoading) {
     return (
       <div className="w-80 border-r border-gray-700 p-4">
         <Text size="sm" c="dimmed">
@@ -40,7 +41,7 @@ export const RunsSidebar = ({
     );
   }
 
-  if (!runsData?.data || Object.keys(runsData.data).length === 0) {
+  if (!getRunsAPI.data?.data || Object.keys(getRunsAPI.data.data).length === 0) {
     return (
       <div className="w-80 border-r border-gray-700 p-4">
         <Text size="sm" c="dimmed">
@@ -50,8 +51,25 @@ export const RunsSidebar = ({
     );
   }
 
+  // HANDLERS
+  const handleDelete = (run: Run, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    const runTimeRange = `${dayjs(run.startTime).format("YYYY-MM-DD")} ${dayjs(
+      run.startTime
+    ).format("HH:mm")} - ${dayjs(run.endTime).format("HH:mm")}`;
+    invokeModal({
+      artifact: "run",
+      value: runTimeRange,
+      isLoading: deleteRunAPI.isLoading,
+      onConfirm: async () => {
+        await deleteRun({ runId: run.id }).unwrap();
+        onRunDelete?.(run.id);
+      },
+    });
+  };
+
   // VARIABLES
-  const groupedRuns = runsData.data;
+  const groupedRuns = getRunsAPI.data?.data;
 
   // DRAW
   return (
@@ -72,7 +90,11 @@ export const RunsSidebar = ({
                   padding="sm"
                   radius="md"
                   withBorder
-                  className={onRunClick ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" : ""}
+                  className={
+                    onRunClick
+                      ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                      : ""
+                  }
                   onClick={() => onRunClick?.(run)}
                 >
                   <Stack gap="xs">
@@ -83,17 +105,24 @@ export const RunsSidebar = ({
                           {dayjs(run.endTime).format("HH:mm")}
                         </Text>
                       </div>
-                      <Badge
-                        color={run.completed ? "green" : "yellow"}
-                        size="xs"
-                        variant="light"
-                      >
-                        {run.completed ? "Completed" : "In Progress"}
-                      </Badge>
+                      <Group gap="xs">
+                        <Badge color={run.completed ? "green" : "yellow"} size="xs" variant="light">
+                          {run.completed ? "Completed" : "In Progress"}
+                        </Badge>
+                        <ActionIcon
+                          variant="subtle"
+                          color="red"
+                          size="sm"
+                          onClick={(e) => handleDelete(run, e)}
+                          loading={deleteRunAPI.isLoading}
+                          title="Delete run"
+                        >
+                          <Icon icon="mdi:delete" width={16} height={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
                     <Text size="xs" c="dimmed">
-                      {run.orderCount}{" "}
-                      {run.orderCount === 1 ? "order" : "orders"}
+                      {run.orderCount} {run.orderCount === 1 ? "order" : "orders"}
                     </Text>
                   </Stack>
                 </Card>

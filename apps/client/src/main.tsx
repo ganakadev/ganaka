@@ -10,13 +10,16 @@ import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/charts/styles.css";
 import "./index.css";
+import { ModalsProvider } from "@mantine/modals";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
       <MantineProvider defaultColorScheme="dark">
-        <Notifications />
-        <App />
+        <ModalsProvider>
+          <Notifications />
+          <App />
+        </ModalsProvider>
       </MantineProvider>
     </Provider>
   </StrictMode>
