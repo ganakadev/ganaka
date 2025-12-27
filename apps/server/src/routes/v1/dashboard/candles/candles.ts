@@ -27,7 +27,7 @@ const makeGrowwAPIRequest =
     method: string;
     params?: Record<string, any>;
   }): Promise<T> => {
-    const maxAttempts = 2;
+    const maxAttempts = 3;
     let lastError: unknown;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -51,6 +51,7 @@ const makeGrowwAPIRequest =
         return response.data;
       } catch (error) {
         lastError = error;
+        console.dir(error, { depth: null });
 
         // Check if it's a 401 Unauthorized error
         const isUnauthorized =
@@ -64,18 +65,27 @@ const makeGrowwAPIRequest =
 
         // Log the error response for debugging
         if (axios.isAxiosError(error) && error.response) {
-          fastify.log.error(
-            "Groww API Error: %s",
-            JSON.stringify({
-              status: error.response.status,
-              statusText: error.response.statusText,
-              data: error.response.data,
-              config: {
-                url: error.config?.url,
-                params: error.config?.params,
-              },
-            })
-          );
+          const errorResponse = {
+            status: error.response.status,
+            statusText: error.response.statusText,
+            data: error.response.data,
+            config: {
+              url: error.config?.url,
+              params: error.config?.params,
+            },
+          };
+          fastify.log.error("Groww API Error: %s", JSON.stringify(errorResponse));
+
+          // For 500 errors, log additional details
+          if (error.response.status === 500) {
+            fastify.log.error(
+              "Groww API 500 Error Details - URL: %s, Params: %s, Response Data: %s",
+              error.config?.url,
+              JSON.stringify(error.config?.params),
+              JSON.stringify(error.response.data)
+            );
+            continue;
+          }
         }
 
         throw error;
@@ -194,18 +204,47 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      fastify.log.error("Error fetching candles: %s", JSON.stringify(error));
+      const { symbol, date: dateParam } = validationResult;
+      fastify.log.error(
+        "Error fetching candles - Symbol: %s, Date: %s, Error: %s",
+        symbol,
+        dateParam,
+        JSON.stringify(error)
+      );
 
       // Provide more detailed error information
       let errorMessage = "Failed to fetch candles";
       if (axios.isAxiosError(error)) {
         if (error.response) {
-          // API responded with error
-          errorMessage =
-            error.response.data?.message ||
-            error.response.data?.error ||
-            `API Error: ${error.response.status} ${error.response.statusText}`;
-          fastify.log.error("API Error Details: %s", JSON.stringify(error.response.data));
+          const status = error.response.status;
+
+          // Special handling for 500 errors from Groww API
+          if (status === 500) {
+            const growwErrorMessage =
+              error.response.data?.message ||
+              error.response.data?.error ||
+              error.response.data?.errorMessage;
+
+            errorMessage = growwErrorMessage
+              ? `Groww API error: ${JSON.stringify(
+                  growwErrorMessage
+                )}. Please verify the date (${dateParam}) and symbol (${symbol}) are valid.`
+              : `Groww API returned a server error. Please verify the date (${dateParam}) and symbol (${symbol}) are valid. Historical data may not be available for this date.`;
+
+            fastify.log.error(
+              "Groww API 500 Error - Symbol: %s, Date: %s, Response: %s",
+              symbol,
+              dateParam,
+              JSON.stringify(error.response.data)
+            );
+          } else {
+            // For other status codes, use existing logic
+            errorMessage =
+              error.response.data?.message ||
+              error.response.data?.error ||
+              `API Error: ${status} ${error.response.statusText}`;
+            fastify.log.error("API Error Details: %s", JSON.stringify(error.response.data));
+          }
         } else if (error.request) {
           errorMessage = "No response from API";
         } else {
