@@ -45,11 +45,18 @@
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-typescript": "^12.3.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^11.1.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^9.2.6",
+    "@semantic-release/npm": "^11.0.2",
+    "@semantic-release/release-notes-generator": "^12.1.0",
     "@types/cheerio": "^0.22.35",
     "@types/node": "^20.10.0",
     "@vitest/ui": "^2.1.8",
     "esbuild": "^0.27.0",
     "rollup": "^4.53.3",
+    "semantic-release": "^23.0.2",
     "typescript": "^5.3.3",
     "vite": "^5.0.0",
     "vite-plugin-dts": "^3.6.0",
@@ -57,17 +64,17 @@
   },
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://npm.pkg.github.com"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/workingsignature/ganaka.git",
+    "url": "git+https://github.com/shimorojune/ganaka.git",
     "directory": "packages/sdk"
   },
   "bugs": {
-    "url": "https://github.com/workingsignature/ganaka/issues"
+    "url": "https://github.com/shimorojune/ganaka/issues"
   },
-  "homepage": "https://github.com/workingsignature/ganaka#readme",
+  "homepage": "https://github.com/shimorojune/ganaka#readme",
   "engines": {
     "node": ">=18.0.0"
   },
