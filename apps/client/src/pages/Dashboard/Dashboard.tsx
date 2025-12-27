@@ -96,10 +96,18 @@ export const Dashboard = () => {
     setSelectedRun(null);
   };
 
+  const handleRunDelete = (runId: string) => {
+    // Close drawer if the deleted run is currently selected
+    if (selectedRun?.id === runId) {
+      setRunDrawerOpened(false);
+      setSelectedRun(null);
+    }
+  };
+
   // DRAW
   return (
     <div className="flex h-screen">
-      <RunsSidebar onRunClick={handleRunClick} />
+      <RunsSidebar onRunClick={handleRunClick} onRunDelete={handleRunDelete} />
       <div className="flex-1 overflow-auto">
         <div className="max-w-5xl mx-auto min-h-full py-8 pt-4 px-4 grid grid-rows-[auto_1fr] gap-4">
           <Header

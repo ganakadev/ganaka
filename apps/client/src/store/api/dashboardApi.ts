@@ -6,18 +6,36 @@ import { authLocalStorage } from "../../utils/authLocalStorage";
 // Get base URL from environment variable
 const baseUrl = `${import.meta.env.VITE_API_DOMAIN}` || "http://localhost:4000";
 
+// Create base query with 401 error handling
+const baseQueryWithAuth = fetchBaseQuery({
+  baseUrl: `${baseUrl}/v1/dashboard`,
+  prepareHeaders: (headers) => {
+    const token = authLocalStorage.getToken();
+    if (token) {
+      headers.set("authorization", `Bearer ${token}`);
+    }
+    return headers;
+  },
+});
+
+// Wrap baseQuery to handle 401 errors globally
+const baseQueryWithReauth: typeof baseQueryWithAuth = async (args, api, extraOptions) => {
+  const result = await baseQueryWithAuth(args, api, extraOptions);
+
+  // Handle 401 Unauthorized errors
+  if (result.error && "status" in result.error && result.error.status === 401) {
+    // Clear authentication data
+    authLocalStorage.clearAuth();
+    // Redirect to sign in page
+    window.location.href = "/signin";
+  }
+
+  return result;
+};
+
 export const dashboardAPI = createApi({
   reducerPath: "dashboardApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${baseUrl}/v1/dashboard`,
-    prepareHeaders: (headers) => {
-      const token = authLocalStorage.getToken();
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: [
     "Shortlists",
     "AvailableDatetimes",
@@ -189,6 +207,22 @@ export const dashboardAPI = createApi({
         };
       },
       providesTags: ["Runs"],
+    }),
+
+    // Delete run
+    deleteRun: builder.mutation<
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.response>,
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.params>
+    >({
+      query: (params) => {
+        const validatedParams =
+          v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.params.parse(params);
+        return {
+          url: `/runs/${validatedParams.runId}`,
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: ["Runs"],
     }),
   }),
 });

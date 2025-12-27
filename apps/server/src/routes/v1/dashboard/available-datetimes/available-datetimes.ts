@@ -50,7 +50,7 @@ const availableDatetimesRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      fastify.log.error("Error fetching available datetimes: %s", error);
+      fastify.log.error("Error fetching available datetimes: %s", JSON.stringify(error));
       return reply.internalServerError(
         "Failed to fetch available datetimes. Please check server logs for more details."
       );

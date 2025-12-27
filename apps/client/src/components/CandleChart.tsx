@@ -157,23 +157,6 @@ export function CandleChart({
     );
     currentCandlestickSeries.setData(uniqueCandles);
 
-    // SETTING/UPDATE SERIES MARKERS
-    if (markersRef.current) {
-      if (seriesMarkers && seriesMarkers.length > 0) {
-        const markers: SeriesMarker<Time>[] = seriesMarkers.map((config) => ({
-          time: config.time,
-          position: config.position,
-          color: config.color,
-          size: config.size,
-          shape: config.shape,
-          text: config.text,
-        }));
-        markersRef.current.setMarkers(markers);
-      } else {
-        markersRef.current.setMarkers([]);
-      }
-    }
-
     // UPDATE HISTOGRAM SERIES
     const currentHistogramRefs = histogramSeriesRefsRef.current;
     if (histogramSeries && histogramSeries.length > 0) {
@@ -254,6 +237,32 @@ export function CandleChart({
 
     // FITTING CONTENT
     currentChart.timeScale().fitContent();
+
+    // SETTING/UPDATE SERIES MARKERS (after fitContent to ensure proper viewport)
+    // Use requestAnimationFrame to ensure chart has rendered before setting markers
+    requestAnimationFrame(() => {
+      if (markersRef.current) {
+        if (seriesMarkers && seriesMarkers.length > 0) {
+          // Create a Set of valid candle times for validation
+          const validCandleTimes = new Set(uniqueCandles.map((candle) => candle.time));
+
+          // Filter and map markers, only including those with times that exist in candle data
+          const markers: SeriesMarker<Time>[] = seriesMarkers
+            .filter((config) => validCandleTimes.has(config.time))
+            .map((config) => ({
+              time: config.time,
+              position: config.position,
+              color: config.color,
+              size: config.size,
+              shape: config.shape,
+              text: config.text,
+            }));
+          markersRef.current.setMarkers(markers);
+        } else {
+          markersRef.current.setMarkers([]);
+        }
+      }
+    });
   }, [candleData, histogramSeries, seriesMarkers, height]);
 
   // Initialize or update chart when container is ready and data is available

@@ -39,10 +39,7 @@ function findPersistentCompanies(
     for (const entry of entries) {
       // Only count each symbol once per snapshot
       if (!seenInThisSnapshot.has(entry.nseSymbol)) {
-        symbolCounts.set(
-          entry.nseSymbol,
-          (symbolCounts.get(entry.nseSymbol) || 0) + 1
-        );
+        symbolCounts.set(entry.nseSymbol, (symbolCounts.get(entry.nseSymbol) || 0) + 1);
         seenInThisSnapshot.add(entry.nseSymbol);
       }
       // Store name from first occurrence
@@ -135,11 +132,9 @@ const dailyPersistentCompaniesRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      fastify.log.error("Error fetching daily persistent companies: %s", error);
+      fastify.log.error("Error fetching daily persistent companies: %s", JSON.stringify(error));
       const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to fetch daily persistent companies";
+        error instanceof Error ? error.message : "Failed to fetch daily persistent companies";
       return reply.internalServerError(errorMessage);
     }
   });

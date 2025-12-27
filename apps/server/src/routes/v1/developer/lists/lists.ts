@@ -18,9 +18,7 @@ const MAX_LIST_FETCH_RETRIES = 3;
 /**
  * Maps API type format to database enum format
  */
-function mapTypeToShortlistType(
-  type: "top-gainers" | "volume-shockers"
-): ShortlistType {
+function mapTypeToShortlistType(type: "top-gainers" | "volume-shockers"): ShortlistType {
   switch (type) {
     case "top-gainers":
       return ShortlistType.TOP_GAINERS;
@@ -33,19 +31,16 @@ function mapTypeToShortlistType(
 
 const getProxyList = async (fastify: FastifyInstance) => {
   try {
-    const response = (await axios.get(
-      "https://proxy.webshare.io/api/v2/proxy/list",
-      {
-        params: {
-          page: 1,
-          page_size: 5,
-          mode: "direct",
-        },
-        headers: {
-          Authorization: `Token ${process.env.WEBSHARE_API_KEY}`,
-        },
-      }
-    )) as AxiosResponse<{
+    const response = (await axios.get("https://proxy.webshare.io/api/v2/proxy/list", {
+      params: {
+        page: 1,
+        page_size: 5,
+        mode: "direct",
+      },
+      headers: {
+        Authorization: `Token ${process.env.WEBSHARE_API_KEY}`,
+      },
+    })) as AxiosResponse<{
       count: number;
       next: string | null;
       previous: string | null;
@@ -78,7 +73,7 @@ const getProxyList = async (fastify: FastifyInstance) => {
       return [];
     });
   } catch (error) {
-    fastify.log.error("Error getting proxy list: %s", error);
+    fastify.log.error("Error getting proxy list: %s", JSON.stringify(error));
     return [];
   }
 };
@@ -112,9 +107,7 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
         });
 
         if (shortlists.length === 0) {
-          return sendResponse<
-            z.infer<typeof v1_developer_lists_schemas.getLists.response>
-          >({
+          return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>({
             statusCode: 200,
             message: "Shortlist snapshot not found",
             data: null,
@@ -129,25 +122,23 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
         }> | null;
 
         if (!entries) {
-          return sendResponse<
-            z.infer<typeof v1_developer_lists_schemas.getLists.response>
-          >({
+          return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>({
             statusCode: 200,
             message: "Shortlist snapshot not found",
             data: null,
           });
         }
 
-        return sendResponse<
-          z.infer<typeof v1_developer_lists_schemas.getLists.response>
-        >({
+        return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>({
           statusCode: 200,
           message: "Lists fetched successfully",
           data: entries,
         });
       } catch (error) {
         fastify.log.error(
-          `Error fetching shortlist snapshot for ${validationResult.type} at ${validationResult.datetime}: ${error}`
+          `Error fetching shortlist snapshot for ${validationResult.type} at ${
+            validationResult.datetime
+          }: ${JSON.stringify(error)}`
         );
         return reply.internalServerError(
           "Failed to fetch shortlist snapshot. Please check server logs for more details."
@@ -175,9 +166,7 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
         : `https://groww.in/markets/top-gainers?index=GIDXNIFTYTOTALMCAP`;
 
     for await (const [tryCount, proxy] of shuffledProxyList.entries()) {
-      fastify.log.info(
-        `Trying proxy: ${proxy ? `${proxy.host}:${proxy.port}` : "None"}`
-      );
+      fastify.log.info(`Trying proxy: ${proxy ? `${proxy.host}:${proxy.port}` : "None"}`);
 
       try {
         // block to simulate proxy blocking
@@ -240,7 +229,7 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
         try {
           nextData = JSON.parse(nextDataScript);
         } catch (error) {
-          fastify.log.error(error, "Error parsing JSON");
+          fastify.log.error("Error parsing JSON: %s", JSON.stringify(error));
 
           if (tryCount < MAX_LIST_FETCH_RETRIES) {
             continue;
@@ -258,9 +247,7 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
           break;
         }
 
-        return sendResponse<
-          z.infer<typeof v1_developer_lists_schemas.getLists.response>
-        >({
+        return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>({
           statusCode: 200,
           message: "Lists fetched successfully",
           data: stocks
@@ -270,17 +257,12 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
               nseSymbol: stock.nseScriptCode || "",
             }))
             .filter(
-              (shortlistItem: {
-                name?: string;
-                nseSymbol?: string;
-                price?: number;
-              }) =>
-                !isEmpty(shortlistItem.name) &&
-                !isEmpty(shortlistItem.nseSymbol)
+              (shortlistItem: { name?: string; nseSymbol?: string; price?: number }) =>
+                !isEmpty(shortlistItem.name) && !isEmpty(shortlistItem.nseSymbol)
             ),
         });
       } catch (error) {
-        fastify.log.error(error, "Error fetching lists");
+        fastify.log.error("Error fetching lists: %s", JSON.stringify(error));
 
         if (tryCount < MAX_LIST_FETCH_RETRIES) {
           continue;
@@ -290,12 +272,9 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
       }
     }
 
-    return sendResponse<
-      z.infer<typeof v1_developer_lists_schemas.getLists.response>
-    >({
+    return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>({
       statusCode: 200,
-      message:
-        "Lists unable to be fetched. Please check server logs for more details.",
+      message: "Lists unable to be fetched. Please check server logs for more details.",
       data: [],
     });
   });

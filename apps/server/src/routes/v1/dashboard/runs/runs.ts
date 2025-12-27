@@ -80,7 +80,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         data: sortedGroupedRuns,
       });
     } catch (error) {
-      fastify.log.error("Error fetching runs: %s", error);
+      fastify.log.error("Error fetching runs: %s", JSON.stringify(error));
       return reply.internalServerError(
         "Failed to fetch runs. Please check server logs for more details."
       );
@@ -144,7 +144,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         })),
       });
     } catch (error) {
-      fastify.log.error("Error fetching orders: %s", error);
+      fastify.log.error("Error fetching orders: %s", JSON.stringify(error));
       return reply.internalServerError(
         "Failed to fetch orders. Please check server logs for more details."
       );
@@ -203,7 +203,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      fastify.log.error("Error creating run: %s", error);
+      fastify.log.error("Error creating run: %s", JSON.stringify(error));
       return reply.internalServerError(
         "Failed to create run. Please check server logs for more details."
       );
@@ -273,7 +273,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      fastify.log.error("Error updating run: %s", error);
+      fastify.log.error("Error updating run: %s", JSON.stringify(error));
       return reply.internalServerError(
         "Failed to update run. Please check server logs for more details."
       );
@@ -326,7 +326,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      fastify.log.error("Error deleting run: %s", error);
+      fastify.log.error("Error deleting run: %s", JSON.stringify(error));
       return reply.internalServerError(
         "Failed to delete run. Please check server logs for more details."
       );
@@ -408,7 +408,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      fastify.log.error("Error creating order: %s", error);
+      fastify.log.error("Error creating order: %s", JSON.stringify(error));
       return reply.internalServerError(
         "Failed to create order. Please check server logs for more details."
       );

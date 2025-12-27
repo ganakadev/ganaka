@@ -16,7 +16,7 @@ export class RedisManager {
     this.redis = new Redis(redisUrl);
 
     this.redis.on("error", (error) => {
-      fastify.log.error(error, "Redis connection error");
+      fastify.log.error("Redis connection error: %s", JSON.stringify(error));
     });
     this.redis.on("connect", () => {
       fastify.log.info("Connected to Redis");
@@ -49,10 +49,7 @@ export class RedisManager {
       this.fastify.log.info("Redis connection closed");
     } catch (error) {
       // If connection is already closed, ignore the error
-      if (
-        error instanceof Error &&
-        error.message.includes("Connection is closed")
-      ) {
+      if (error instanceof Error && error.message.includes("Connection is closed")) {
         this.fastify.log.info("Redis connection already closed");
         return;
       }

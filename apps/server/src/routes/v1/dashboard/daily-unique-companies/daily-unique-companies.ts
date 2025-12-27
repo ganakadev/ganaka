@@ -37,8 +37,8 @@ const dailyUniqueCompaniesRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.query,
       reply,
-      v1_dashboard_schemas.v1_dashboard_daily_unique_companies_schemas
-        .getDailyUniqueCompanies.query,
+      v1_dashboard_schemas.v1_dashboard_daily_unique_companies_schemas.getDailyUniqueCompanies
+        .query,
       "query"
     );
     if (!validationResult) {
@@ -86,11 +86,9 @@ const dailyUniqueCompaniesRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      fastify.log.error("Error fetching daily unique companies: %s", error);
+      fastify.log.error("Error fetching daily unique companies: %s", JSON.stringify(error));
       const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to fetch daily unique companies";
+        error instanceof Error ? error.message : "Failed to fetch daily unique companies";
       return reply.internalServerError(errorMessage);
     }
   });
