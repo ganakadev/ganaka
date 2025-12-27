@@ -1,11 +1,12 @@
-import { SegmentedControl } from "@mantine/core";
+import { Avatar, Menu, SegmentedControl } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import dayjs from "dayjs";
 import { startTransition, useCallback, useEffect, useRef, useState } from "react";
 import { dashboardAPI } from "../../../store/api/dashboardApi";
 import { useRTKNotifier } from "../../../utils/hooks/useRTKNotifier";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
+import { authLocalStorage } from "../../../utils/authLocalStorage";
 
 export const Header = ({
   activeTab,
@@ -20,6 +21,7 @@ export const Header = ({
 }) => {
   // HOOKS
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const shouldProcessSearchParamDate = useRef(true);
 
   // STATE
@@ -144,6 +146,28 @@ export const Header = ({
     ]
   );
 
+  // HANDLERS
+  const handleLogout = () => {
+    authLocalStorage.logout();
+    const result = navigate("/signin");
+    if (result instanceof Promise) {
+      result.catch((error) => {
+        console.error("Error navigating to signin:", error);
+      });
+    }
+  };
+
+  // VARIABLES
+  const username = authLocalStorage.getUsername();
+  const userInitials = username
+    ? username
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "U";
+
   // EFFECTS
   useEffect(() => {
     if (getAvailableDatetimesAPI.data && shouldProcessSearchParamDate.current) {
@@ -159,36 +183,51 @@ export const Header = ({
 
   // DRAW
   return (
-    <div className="flex gap-4 items-end mb-4 sticky top-0 bg-(--mantine-color-body) z-10">
-      <div className="w-full max-w-xs">
-        <DateTimePicker
-          label="Pick date and time"
-          placeholder="Pick date and time"
-          valueFormat="DD MMM YYYY hh:mm A"
-          className="w-full"
-          value={selectedDate ?? localSelectedDate}
-          onChange={handleChange}
-          excludeDate={excludeDate}
-          hideOutsideDates={true}
-          highlightToday
-          timePickerProps={{
-            withDropdown: true,
-            format: "12h",
-            presets: timePresets,
+    <div className="flex gap-4 items-end mb-4 sticky top-0 bg-(--mantine-color-body) z-10 justify-between">
+      <div className="flex gap-4 items-end">
+        <div className="w-full max-w-xs">
+          <DateTimePicker
+            label="Pick date and time"
+            placeholder="Pick date and time"
+            valueFormat="DD MMM YYYY hh:mm A"
+            className="w-full"
+            value={selectedDate ?? localSelectedDate}
+            onChange={handleChange}
+            excludeDate={excludeDate}
+            hideOutsideDates={true}
+            highlightToday
+            timePickerProps={{
+              withDropdown: true,
+              format: "12h",
+              presets: timePresets,
+            }}
+            disabled={getAvailableDatetimesAPI.isLoading}
+          />
+        </div>
+        <SegmentedControl
+          value={activeTab ?? undefined}
+          onChange={(value) => {
+            setActiveTab(value as "TOP_GAINERS" | "VOLUME_SHOCKERS");
           }}
-          disabled={getAvailableDatetimesAPI.isLoading}
+          data={[
+            { value: "TOP_GAINERS", label: "Top Gainers" },
+            { value: "VOLUME_SHOCKERS", label: "Volume Shockers" },
+          ]}
         />
       </div>
-      <SegmentedControl
-        value={activeTab ?? undefined}
-        onChange={(value) => {
-          setActiveTab(value as "TOP_GAINERS" | "VOLUME_SHOCKERS");
-        }}
-        data={[
-          { value: "TOP_GAINERS", label: "Top Gainers" },
-          { value: "VOLUME_SHOCKERS", label: "Volume Shockers" },
-        ]}
-      />
+      <Menu shadow="md" width={200}>
+        <Menu.Target>
+          <Avatar color="blue" radius="xl" style={{ cursor: "pointer" }} title={username || "User"}>
+            {userInitials}
+          </Avatar>
+        </Menu.Target>
+        <Menu.Dropdown>
+          {username && <Menu.Label>{username}</Menu.Label>}
+          <Menu.Item onClick={handleLogout} color="red">
+            Logout
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
     </div>
   );
 };

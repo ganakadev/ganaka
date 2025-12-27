@@ -26,6 +26,10 @@ function isAuthenticated(): boolean {
   return getToken() !== null && getUsername() !== null;
 }
 
+function logout(): void {
+  clearAuth();
+}
+
 export const authLocalStorage = {
   getToken,
   getUsername,
@@ -33,4 +37,5 @@ export const authLocalStorage = {
   setUsername,
   clearAuth,
   isAuthenticated,
+  logout,
 };
