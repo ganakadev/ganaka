@@ -159,14 +159,6 @@ export const Header = ({
 
   // VARIABLES
   const username = authLocalStorage.getUsername();
-  const userInitials = username
-    ? username
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
-    : "U";
 
   // EFFECTS
   useEffect(() => {
@@ -184,7 +176,7 @@ export const Header = ({
   // DRAW
   return (
     <div className="flex gap-4 items-end mb-4 sticky top-0 bg-(--mantine-color-body) z-10 justify-between">
-      <div className="flex gap-4 items-end">
+      <div className="flex gap-4 items-end w-full">
         <div className="w-full max-w-xs">
           <DateTimePicker
             label="Pick date and time"
@@ -217,12 +209,16 @@ export const Header = ({
       </div>
       <Menu shadow="md" width={200}>
         <Menu.Target>
-          <Avatar color="blue" radius="xl" style={{ cursor: "pointer" }} title={username || "User"}>
-            {userInitials}
-          </Avatar>
+          <Avatar
+            color="initials"
+            radius="xl"
+            style={{ cursor: "pointer" }}
+            title={username || "User"}
+            name={username || "User"}
+          />
         </Menu.Target>
         <Menu.Dropdown>
-          {username && <Menu.Label>{username}</Menu.Label>}
+          {username && <Menu.Label>{username.toUpperCase()}</Menu.Label>}
           <Menu.Item onClick={handleLogout} color="red">
             Logout
           </Menu.Item>
