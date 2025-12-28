@@ -103,3 +103,26 @@ export const getGrowwToken = {
     data: z.string(),
   }),
 };
+
+// ==================== GET /quote-timeline ====================
+
+export const getGrowwQuoteTimeline = {
+  query: z.object({
+    symbol: z.string(),
+    date: z.string(), // ISO date string (YYYY-MM-DD)
+  }),
+  response: apiResponseSchema.extend({
+    data: z.object({
+      quoteTimeline: z.array(
+        z.object({
+          id: z.string(),
+          timestamp: z.date(),
+          nseSymbol: z.string(),
+          quoteData: growwQuoteSchema,
+          createdAt: z.date(),
+          updatedAt: z.date(),
+        })
+      ),
+    }),
+  }),
+};
