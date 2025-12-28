@@ -6,17 +6,17 @@ export const useDeleteConfirmModal = () => {
   const invokeModal = ({
     onConfirm,
     artifact,
-    isLoading,
     value,
   }: {
     onConfirm: () => Promise<void>;
     value: string;
     artifact: "run";
-    isLoading: boolean;
   }) => {
-    modals.openConfirmModal({
+    let modalId = "";
+    modalId = modals.openConfirmModal({
       title: `Delete ${artifact}?`,
       centered: true,
+      closeOnConfirm: false,
       children: (
         <div className="relative">
           <Alert variant="light" color="red" title="Warning">
@@ -30,16 +30,25 @@ export const useDeleteConfirmModal = () => {
       labels: { confirm: "Delete", cancel: "Cancel" },
       confirmProps: {
         color: "var(--mantine-color-red-text)",
-        loading: isLoading,
+        loading: false,
       },
       onCancel: modals.closeAll,
       onConfirm: () => {
-        onConfirm()
+        modals.updateModal({
+          modalId,
+          confirmProps: { color: "var(--mantine-color-red-text)", loading: true },
+        });
+
+        void onConfirm()
           .then(() => {
             modals.closeAll();
           })
           .catch((error) => {
             console.error(error);
+            modals.updateModal({
+              modalId,
+              confirmProps: { color: "var(--mantine-color-red-text)", loading: false },
+            });
           });
       },
     });

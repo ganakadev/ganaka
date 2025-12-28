@@ -1,8 +1,9 @@
-import { ScrollArea, Card, Badge, Text, Group, Stack, Title, ActionIcon } from "@mantine/core";
+import { ScrollArea, Card, Badge, Text, Title, ActionIcon } from "@mantine/core";
 import { Icon } from "@iconify/react";
 import dayjs from "dayjs";
+import { useState } from "react";
 import { dashboardAPI } from "../../../store/api/dashboardApi";
-import type { Run } from "../../../types";
+import type { GroupedRuns, Run } from "../../../types";
 import { useRTKNotifier } from "../../../utils/hooks/useRTKNotifier";
 import { useDeleteConfirmModal } from "../../../utils/hooks/useDeleteConfirmModal";
 
@@ -30,6 +31,9 @@ export const RunsSidebar = ({
   // Delete confirmation modal
   const { invokeModal } = useDeleteConfirmModal();
 
+  // STATE
+  const [deletingRunId, setDeletingRunId] = useState<string | null>(null);
+
   // GUARDS
   if (getRunsAPI.isLoading) {
     return (
@@ -41,7 +45,10 @@ export const RunsSidebar = ({
     );
   }
 
-  if (!getRunsAPI.data?.data || Object.keys(getRunsAPI.data.data).length === 0) {
+  // VARIABLES
+  const groupedRuns: GroupedRuns = (getRunsAPI.data?.data ?? {}) as GroupedRuns;
+
+  if (Object.keys(groupedRuns).length === 0) {
     return (
       <div className="w-80 border-r border-gray-700 p-4">
         <Text size="sm" c="dimmed">
@@ -60,16 +67,17 @@ export const RunsSidebar = ({
     invokeModal({
       artifact: "run",
       value: runTimeRange,
-      isLoading: deleteRunAPI.isLoading,
       onConfirm: async () => {
-        await deleteRun({ runId: run.id }).unwrap();
-        onRunDelete?.(run.id);
+        setDeletingRunId(run.id);
+        try {
+          await deleteRun({ runId: run.id }).unwrap();
+          onRunDelete?.(run.id);
+        } finally {
+          setDeletingRunId(null);
+        }
       },
     });
   };
-
-  // VARIABLES
-  const groupedRuns = getRunsAPI.data?.data;
 
   // DRAW
   return (
@@ -97,15 +105,15 @@ export const RunsSidebar = ({
                   }
                   onClick={() => onRunClick?.(run)}
                 >
-                  <Stack gap="xs">
-                    <Group justify="space-between" align="flex-start">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <Text size="xs" c="dimmed" truncate>
                           {dayjs(run.startTime).format("HH:mm")} -{" "}
                           {dayjs(run.endTime).format("HH:mm")}
                         </Text>
                       </div>
-                      <Group gap="xs">
+                      <div className="flex items-center gap-2">
                         <Badge color={run.completed ? "green" : "yellow"} size="xs" variant="light">
                           {run.completed ? "Completed" : "In Progress"}
                         </Badge>
@@ -114,17 +122,17 @@ export const RunsSidebar = ({
                           color="red"
                           size="sm"
                           onClick={(e) => handleDelete(run, e)}
-                          loading={deleteRunAPI.isLoading}
+                          loading={deleteRunAPI.isLoading && deletingRunId === run.id}
                           title="Delete run"
                         >
                           <Icon icon="mdi:delete" width={16} height={16} />
                         </ActionIcon>
-                      </Group>
-                    </Group>
+                      </div>
+                    </div>
                     <Text size="xs" c="dimmed">
                       {run.orderCount} {run.orderCount === 1 ? "order" : "orders"}
                     </Text>
-                  </Stack>
+                  </div>
                 </Card>
               ))}
             </div>
