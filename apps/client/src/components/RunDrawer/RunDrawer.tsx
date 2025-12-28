@@ -302,19 +302,23 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
                   {targetGainPercentage !== undefined ? (
                     order.targetAchieved !== undefined ? (
                       order.targetAchieved ? (
-                        <span className="text-sm font-medium text-green-600">
+                        <Text size="sm" fw={600} c="green">
                           ✓ Achieved in {formatTime(order.timeToTargetMinutes)}
-                        </span>
+                        </Text>
                       ) : (
-                        <span className="text-sm font-medium text-red-600">
+                        <Text size="sm" fw={600} c="red">
                           ✗ Target not achieved
-                        </span>
+                        </Text>
                       )
                     ) : (
-                      <span className="text-sm text-gray-400">N/A</span>
+                      <Text size="sm" c="dimmed">
+                        N/A
+                      </Text>
                     )
                   ) : (
-                    <span className="text-sm text-gray-400">Enter target %</span>
+                    <Text size="sm" c="dimmed">
+                      Enter target %
+                    </Text>
                   )}
                 </Table.Td>
                 <Table.Td>

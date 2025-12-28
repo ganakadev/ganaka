@@ -2,98 +2,34 @@ import axios, { AxiosError } from "axios";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { FastifyInstance, FastifyPluginAsync } from "fastify";
+import { FastifyPluginAsync } from "fastify";
 import z from "zod";
 import { RedisManager } from "../../../../utils/redis";
 import { sendResponse } from "../../../../utils/sendResponse";
 import { TokenManager } from "../../../../utils/token-manager";
 import { validateRequest } from "../../../../utils/validator";
 import { v1_dashboard_schemas, validCandleIntervals } from "@ganaka/schemas";
+import { makeGrowwAPIRequest } from "../../../../utils/groww-api-request";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 /**
- * Helper function to make Groww API requests with automatic token refresh
+ * Helper function to safely extract error messages from response data.
+ * Converts objects to JSON strings to avoid "[object Object]" issues.
  */
-const makeGrowwAPIRequest =
-  (fastify: FastifyInstance, tokenManager: TokenManager) =>
-  async <T>({
-    method,
-    url,
-    params,
-  }: {
-    url: string;
-    method: string;
-    params?: Record<string, any>;
-  }): Promise<T> => {
-    const maxAttempts = 3;
-    let lastError: unknown;
-
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      try {
-        const accessToken = await tokenManager.getToken();
-        if (!accessToken) {
-          throw new Error("Failed to get access token");
-        }
-
-        const headers = {
-          Authorization: `Bearer ${accessToken}`,
-        };
-
-        const response = await axios({
-          method,
-          url,
-          params,
-          headers,
-        });
-
-        return response.data;
-      } catch (error) {
-        lastError = error;
-        console.dir(error, { depth: null });
-
-        // Check if it's a 401 Unauthorized error
-        const isUnauthorized =
-          axios.isAxiosError(error) && (error as AxiosError).response?.status === 401;
-
-        if (isUnauthorized && attempt < maxAttempts) {
-          // Invalidate token and retry
-          await tokenManager.invalidateToken();
-          continue;
-        }
-
-        // Log the error response for debugging
-        if (axios.isAxiosError(error) && error.response) {
-          const errorResponse = {
-            status: error.response.status,
-            statusText: error.response.statusText,
-            data: error.response.data,
-            config: {
-              url: error.config?.url,
-              params: error.config?.params,
-            },
-          };
-          fastify.log.error("Groww API Error: %s", JSON.stringify(errorResponse));
-
-          // For 500 errors, log additional details
-          if (error.response.status === 500) {
-            fastify.log.error(
-              "Groww API 500 Error Details - URL: %s, Params: %s, Response Data: %s",
-              error.config?.url,
-              JSON.stringify(error.config?.params),
-              JSON.stringify(error.response.data)
-            );
-            continue;
-          }
-        }
-
-        throw error;
-      }
-    }
-
-    throw lastError;
-  };
+function safeExtractErrorMessage(value: unknown): string | undefined {
+  if (value === null || value === undefined) {
+    return undefined;
+  }
+  if (typeof value === "string") {
+    return value;
+  }
+  if (typeof value === "object") {
+    return JSON.stringify(value);
+  }
+  return String(value);
+}
 
 const candlesRoutes: FastifyPluginAsync = async (fastify) => {
   const redisManager = RedisManager.getInstance(fastify);
@@ -218,17 +154,32 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
         if (error.response) {
           const status = error.response.status;
 
-          // Special handling for 500 errors from Groww API
-          if (status === 500) {
+          // Special handling for rate limit errors (429)
+          if (status === 429) {
+            const rateLimitMessage = safeExtractErrorMessage(
+              error.response.data?.message || error.response.data?.error
+            );
+            errorMessage = rateLimitMessage
+              ? `Rate limit exceeded: ${rateLimitMessage}. Please try again later.`
+              : "Rate limit exceeded. Please try again later.";
+
+            fastify.log.error(
+              "Groww API Rate Limit Error - Symbol: %s, Date: %s, Response: %s",
+              symbol,
+              dateParam,
+              JSON.stringify(error.response.data)
+            );
+          } else if (status === 500) {
+            // Special handling for 500 errors from Groww API
             const growwErrorMessage =
-              error.response.data?.message ||
-              error.response.data?.error ||
-              error.response.data?.errorMessage;
+              safeExtractErrorMessage(
+                error.response.data?.message ||
+                  error.response.data?.error ||
+                  error.response.data?.errorMessage
+              ) || undefined;
 
             errorMessage = growwErrorMessage
-              ? `Groww API error: ${JSON.stringify(
-                  growwErrorMessage
-                )}. Please verify the date (${dateParam}) and symbol (${symbol}) are valid.`
+              ? `Groww API error: ${growwErrorMessage}. Please verify the date (${dateParam}) and symbol (${symbol}) are valid.`
               : `Groww API returned a server error. Please verify the date (${dateParam}) and symbol (${symbol}) are valid. Historical data may not be available for this date.`;
 
             fastify.log.error(
@@ -238,23 +189,30 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
               JSON.stringify(error.response.data)
             );
           } else {
-            // For other status codes, use existing logic
-            errorMessage =
-              error.response.data?.message ||
-              error.response.data?.error ||
-              `API Error: ${status} ${error.response.statusText}`;
+            // For other status codes, use safe extraction
+            const extractedMessage =
+              safeExtractErrorMessage(error.response.data?.message) ||
+              safeExtractErrorMessage(error.response.data?.error);
+            errorMessage = extractedMessage
+              ? extractedMessage
+              : `API Error: ${status} ${error.response.statusText}`;
             fastify.log.error("API Error Details: %s", JSON.stringify(error.response.data));
           }
         } else if (error.request) {
           errorMessage = "No response from API";
         } else {
-          errorMessage = error.message;
+          errorMessage = error.message || "Unknown API error";
         }
       } else if (error instanceof Error) {
-        errorMessage = error.message;
+        errorMessage = error.message || "Unknown error occurred";
+      } else {
+        // Fallback for non-Error objects
+        errorMessage = typeof error === "string" ? error : JSON.stringify(error);
       }
 
-      return reply.internalServerError(errorMessage);
+      // Ensure errorMessage is always a string
+      const finalErrorMessage = typeof errorMessage === "string" ? errorMessage : String(errorMessage);
+      return reply.internalServerError(finalErrorMessage);
     }
   });
 };

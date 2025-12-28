@@ -1,15 +1,27 @@
-import { FastifyPluginAsync } from "fastify";
+import { FastifyInstance, FastifyPluginAsync } from "fastify";
 import { sendResponse } from "../../../../utils/sendResponse";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
 import z from "zod";
 import { prisma } from "../../../../utils/prisma";
 import { Decimal } from "@ganaka/db/prisma";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { validateRequest } from "../../../../utils/validator";
-import { QuoteData } from "@ganaka/db";
+import { RedisManager } from "../../../../utils/redis";
+import { TokenManager } from "../../../../utils/token-manager";
+import { makeGrowwAPIRequest } from "../../../../utils/groww-api-request";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+// Type for order with gain metrics, extracted from the Zod schema
+type OrderWithMetrics = z.infer<
+  typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response
+>["data"][number];
 
 /**
- * Calculate gain metrics for an order based on quote snapshots after order placement.
+ * Calculate gain metrics for an order based on historical candle data after order placement.
  * Only considers price movements that occurred after the order was placed, making it
  * more relevant for algorithm evaluation by showing actual post-entry opportunity.
  */
@@ -17,14 +29,22 @@ async function calculateOrderGainMetrics({
   nseSymbol,
   entryPrice,
   orderTimestamp,
-  runEndTime,
   targetGainPercentage,
+  growwAPIRequest,
 }: {
   nseSymbol: string;
   entryPrice: number;
   orderTimestamp: Date;
-  runEndTime: Date;
   targetGainPercentage?: number;
+  growwAPIRequest: <T>({
+    method,
+    url,
+    params,
+  }: {
+    url: string;
+    method: string;
+    params?: Record<string, any>;
+  }) => Promise<T>;
 }): Promise<{
   targetGainPercentage?: number;
   targetAchieved?: boolean;
@@ -32,37 +52,73 @@ async function calculateOrderGainMetrics({
   timeToTargetMinutes?: number;
 }> {
   try {
-    // Determine day bounds for the order
-    const dayStart = dayjs(orderTimestamp).startOf("day").toDate();
-    const dayEnd = dayjs(orderTimestamp).endOf("day").toDate();
+    // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
+    const dateStr = dayjs(orderTimestamp).tz("Asia/Kolkata").format("YYYY-MM-DD");
+    const marketStart = dayjs.tz(`${dateStr} 09:15:00`, "Asia/Kolkata");
+    const marketEnd = dayjs.tz(`${dateStr} 15:30:00`, "Asia/Kolkata");
 
-    // Fetch all snapshots for that calendar day
-    const quoteSnapshots = await prisma.quoteSnapshot.findMany({
-      where: {
-        nseSymbol: nseSymbol,
-        timestamp: {
-          gte: dayStart,
-          lte: dayEnd,
-        },
-      },
-      orderBy: {
-        timestamp: "asc",
+    // Convert to format expected by Groww API: YYYY-MM-DDTHH:mm:ss (no milliseconds, no Z)
+    // The API expects times in IST format without timezone suffix
+    const start_time = marketStart.format("YYYY-MM-DDTHH:mm:ss");
+    const end_time = marketEnd.format("YYYY-MM-DDTHH:mm:ss");
+
+    // Fetch historical candles from Groww API
+    const response = await growwAPIRequest<{
+      status: "SUCCESS" | "FAILURE";
+      payload: {
+        candles: Array<[string, number, number, number, number, number, number | null]>;
+        closing_price: number | null;
+        start_time: string;
+        end_time: string;
+        interval_in_minutes: number;
+      };
+    }>({
+      method: "get",
+      url: `https://api.groww.in/v1/historical/candles`,
+      params: {
+        candle_interval: "1minute",
+        start_time,
+        end_time,
+        exchange: "NSE",
+        segment: "CASH",
+        groww_symbol: `NSE-${nseSymbol}`,
       },
     });
 
-    if (quoteSnapshots.length === 0) {
+    if (
+      response.status !== "SUCCESS" ||
+      !response.payload?.candles ||
+      response.payload.candles.length === 0
+    ) {
       return {};
     }
 
-    // Find entry price at placement: nearest snapshot at or before orderTimestamp
+    // Parse candles: [timestamp, open, high, low, close, volume, turnover]
+    const candles = response.payload.candles.map((candle) => {
+      const [timestamp, open, high, low, close] = candle;
+      return {
+        // convert to UTC since orderTimestamp is in UTC
+        timestamp: dayjs.utc(timestamp).toDate(),
+        open,
+        high,
+        low,
+        close,
+      };
+    });
+
+    // Find entry price at placement: candle at or before orderTimestamp
     let entryPriceAtPlacement = entryPrice;
-    for (let i = quoteSnapshots.length - 1; i >= 0; i--) {
-      const snapshot = quoteSnapshots[i];
-      if (dayjs(snapshot.timestamp).isAfter(orderTimestamp)) continue;
-      const quoteData = snapshot.quoteData as unknown as QuoteData;
-      if (quoteData?.status === "SUCCESS" && quoteData?.payload) {
-        entryPriceAtPlacement =
-          quoteData.payload.last_price ?? quoteData.payload.ohlc?.close ?? entryPriceAtPlacement;
+    for (let i = candles.length - 1; i >= 0; i--) {
+      const candle = candles[i];
+      // Only ignore candles strictly after order placement (not equal to orderTimestamp)
+      if (
+        dayjs(candle.timestamp).isAfter(orderTimestamp, "minute") &&
+        !dayjs(candle.timestamp).isSame(orderTimestamp, "minute")
+      ) {
+        continue;
+      }
+      if (candle.close && typeof candle.close === "number") {
+        entryPriceAtPlacement = candle.close;
         break;
       }
     }
@@ -72,7 +128,7 @@ async function calculateOrderGainMetrics({
       return {};
     }
 
-    // If target percentage is provided, check if it was achieved
+    // If target percentage is not provided, return empty metrics
     if (targetGainPercentage === undefined) {
       return {};
     }
@@ -86,22 +142,27 @@ async function calculateOrderGainMetrics({
       targetGainPercentage: targetGainPercentage,
     };
 
+    /**
+     * Calculates the target price needed to achieve the target gain percentage
+     * Example:
+     * Entry price: ₹100
+     * Target gain percentage: 10%
+     * Target price: 100 × (1 + 10/100) = 100 × 1.10 = ₹110
+     * */
     const targetPrice = entryPriceAtPlacement * (1 + targetGainPercentage / 100);
     let targetTimestamp: Date | null = null;
     let bestPrice = entryPriceAtPlacement;
 
-    // Check all snapshots after order placement to see if target was reached
-    for (const snapshot of quoteSnapshots) {
-      // Only consider snapshots strictly after order placement (not equal to)
-      if (!dayjs(snapshot.timestamp).isAfter(orderTimestamp)) {
+    // Check all candles after order placement to see if target was reached
+    for (const candle of candles) {
+      // Only consider candles strictly after order placement (not equal to)
+      if (!dayjs(candle.timestamp).isAfter(orderTimestamp, "minute")) {
         continue;
       }
 
-      const quoteData = snapshot.quoteData as unknown as QuoteData;
-      if (quoteData?.status !== "SUCCESS" || !quoteData?.payload) continue;
+      if (!candle.high || typeof candle.high !== "number") continue;
 
-      const highPrice = quoteData.payload.ohlc?.high ?? quoteData.payload.last_price;
-      if (!highPrice) continue;
+      const highPrice = candle.high;
 
       // Track best price for calculating actual gain if target not achieved
       if (highPrice > bestPrice) {
@@ -110,13 +171,15 @@ async function calculateOrderGainMetrics({
 
       // Check if target price was reached (only record first occurrence)
       if (targetTimestamp === null && highPrice >= targetPrice) {
-        targetTimestamp = snapshot.timestamp;
+        targetTimestamp = candle.timestamp;
       }
     }
 
     if (targetTimestamp !== null) {
+      const targetTimestampUTC = dayjs(targetTimestamp).utc().format("YYYY-MM-DD HH:mm:ss");
+
       // Target was achieved - calculate time difference in seconds first for accuracy
-      const timeDiffSeconds = dayjs(targetTimestamp).diff(dayjs(orderTimestamp), "second", true);
+      const timeDiffSeconds = dayjs(targetTimestampUTC).diff(dayjs(orderTimestamp), "second", true);
 
       // Ensure the timestamp is truly after the order (at least 1 second difference)
       // This prevents false positives from timestamp precision issues or peaks that occurred before the order
@@ -147,6 +210,10 @@ async function calculateOrderGainMetrics({
 }
 
 const runsRoutes: FastifyPluginAsync = async (fastify) => {
+  const redisManager = RedisManager.getInstance(fastify);
+  const tokenManager = new TokenManager(redisManager.redis, fastify);
+  const growwAPIRequest = makeGrowwAPIRequest(fastify, tokenManager);
+
   // ==================== GET /runs ====================
   fastify.get("/", async (request, reply) => {
     try {
@@ -222,97 +289,6 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
       fastify.log.error("Error fetching runs: %s", JSON.stringify(error));
       return reply.internalServerError(
         "Failed to fetch runs. Please check server logs for more details."
-      );
-    }
-  });
-
-  // ==================== GET /runs/:runId/orders ====================
-
-  fastify.get("/:runId/orders", async (request, reply) => {
-    const paramsValidationResult = validateRequest(
-      request.params,
-      reply,
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params,
-      "params"
-    );
-    if (!paramsValidationResult) {
-      return;
-    }
-
-    const queryValidationResult = validateRequest(
-      request.query,
-      reply,
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.query,
-      "query"
-    );
-    if (!queryValidationResult) {
-      return;
-    }
-
-    try {
-      const { runId } = paramsValidationResult;
-      const { targetGainPercentage } = queryValidationResult;
-      const token = request.headers.authorization?.split(" ")[1] || "";
-
-      // Verify the run belongs to the authenticated developer
-      const run = await prisma.run.findFirst({
-        where: {
-          id: runId,
-          developer: {
-            token: token,
-          },
-        },
-      });
-
-      if (!run) {
-        return reply.notFound("Run not found or access denied");
-      }
-
-      // Fetch orders for the run
-      const orders = await prisma.order.findMany({
-        where: {
-          runId: runId,
-        },
-        orderBy: {
-          timestamp: "asc",
-        },
-      });
-
-      // Calculate gain metrics for each order
-      const ordersWithMetrics = await Promise.all(
-        orders.map(async (order) => {
-          const gainMetrics = await calculateOrderGainMetrics({
-            nseSymbol: order.nseSymbol,
-            entryPrice: Number(order.entryPrice),
-            orderTimestamp: order.timestamp,
-            runEndTime: run.endTime,
-            targetGainPercentage,
-          });
-
-          return {
-            id: order.id,
-            nseSymbol: order.nseSymbol,
-            entryPrice: Number(order.entryPrice),
-            stopLossPrice: Number(order.stopLossPrice),
-            takeProfitPrice: Number(order.takeProfitPrice),
-            timestamp: order.timestamp,
-            runId: order.runId,
-            ...gainMetrics,
-          };
-        })
-      );
-
-      return sendResponse<
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response>
-      >({
-        statusCode: 200,
-        message: "Orders fetched successfully",
-        data: ordersWithMetrics,
-      });
-    } catch (error) {
-      fastify.log.error("Error fetching orders: %s", JSON.stringify(error));
-      return reply.internalServerError(
-        "Failed to fetch orders. Please check server logs for more details."
       );
     }
   });
@@ -495,6 +471,100 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
       fastify.log.error("Error deleting run: %s", JSON.stringify(error));
       return reply.internalServerError(
         "Failed to delete run. Please check server logs for more details."
+      );
+    }
+  });
+
+  // ==================== GET /runs/:runId/orders ====================
+
+  fastify.get("/:runId/orders", async (request, reply) => {
+    // validation
+    const paramsValidationResult = validateRequest(
+      request.params,
+      reply,
+      v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params,
+      "params"
+    );
+    if (!paramsValidationResult) {
+      return;
+    }
+
+    const queryValidationResult = validateRequest(
+      request.query,
+      reply,
+      v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.query,
+      "query"
+    );
+    if (!queryValidationResult) {
+      return;
+    }
+
+    try {
+      const { runId } = paramsValidationResult;
+      const { targetGainPercentage } = queryValidationResult;
+      const token = request.headers.authorization?.split(" ")[1] || "";
+
+      // Verify the run belongs to the authenticated developer
+      const run = await prisma.run.findFirst({
+        where: {
+          id: runId,
+          developer: {
+            token: token,
+          },
+        },
+      });
+
+      if (!run) {
+        return reply.notFound("Run not found or access denied");
+      }
+
+      // Fetch orders for the run
+      const orders = await prisma.order.findMany({
+        where: {
+          runId: runId,
+        },
+        orderBy: {
+          timestamp: "asc",
+        },
+      });
+
+      // Calculate gain metrics for each order
+      const ordersWithMetrics = await Promise.all(
+        orders.map(async (order) => {
+          const gainMetrics = await calculateOrderGainMetrics({
+            nseSymbol: order.nseSymbol,
+            entryPrice: Number(order.entryPrice),
+            orderTimestamp: order.timestamp,
+            targetGainPercentage,
+            growwAPIRequest,
+          });
+
+          const orderWithMetrics: OrderWithMetrics = {
+            id: order.id,
+            nseSymbol: order.nseSymbol,
+            entryPrice: Number(order.entryPrice),
+            stopLossPrice: Number(order.stopLossPrice),
+            takeProfitPrice: Number(order.takeProfitPrice),
+            timestamp: order.timestamp,
+            runId: order.runId,
+            ...gainMetrics,
+          };
+
+          return orderWithMetrics;
+        })
+      );
+
+      return sendResponse<
+        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response>
+      >({
+        statusCode: 200,
+        message: "Orders fetched successfully",
+        data: ordersWithMetrics,
+      });
+    } catch (error) {
+      fastify.log.error("Error fetching orders: %s", JSON.stringify(error));
+      return reply.internalServerError(
+        "Failed to fetch orders. Please check server logs for more details."
       );
     }
   });
