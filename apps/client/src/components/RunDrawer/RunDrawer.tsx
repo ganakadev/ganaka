@@ -184,7 +184,7 @@ const StockChart = ({
 
 const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
   // STATE
-  const [targetGainPercentage, setTargetGainPercentage] = useState<number | undefined>(undefined);
+  const [targetGainPercentage, setTargetGainPercentage] = useState<number | undefined>(2);
   const [expandedStocks, setExpandedStocks] = useState<Set<string>>(new Set());
 
   // API
@@ -302,6 +302,7 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
                     value={targetGainPercentage}
                     size="xs"
                     variant="filled"
+                    suffix="%"
                     onChange={(value) =>
                       setTargetGainPercentage(typeof value === "number" ? value : undefined)
                     }
@@ -351,7 +352,16 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
                 </Table.Td>
                 <Table.Td>
                   {targetGainPercentage !== undefined ? (
-                    order.targetAchieved !== undefined ? (
+                    // Priority: Stop loss status takes precedence over target achievement
+                    order.stopLossHit === true ? (
+                      <div className="flex flex-col">
+                        <Text size="sm" fw={600} c="red">
+                          {`✗ Stop Loss Hit in ${formatTime(order.timeToStopLossMinutes)} @ ${dayjs
+                            .tz(order.stopLossTimestamp, "Asia/Kolkata")
+                            .format("HH:mm")}`}
+                        </Text>
+                      </div>
+                    ) : order.targetAchieved !== undefined ? (
                       order.targetAchieved ? (
                         <div className="flex flex-col">
                           <Text size="sm" fw={600} c="green">

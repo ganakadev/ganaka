@@ -28,12 +28,14 @@ type OrderWithMetrics = z.infer<
 async function calculateOrderGainMetrics({
   nseSymbol,
   entryPrice,
+  stopLossPrice,
   orderTimestamp,
   targetGainPercentage,
   growwAPIRequest,
 }: {
   nseSymbol: string;
   entryPrice: number;
+  stopLossPrice: number;
   orderTimestamp: Date;
   targetGainPercentage?: number;
   growwAPIRequest: <T>({
@@ -51,6 +53,9 @@ async function calculateOrderGainMetrics({
   targetGainPercentageActual?: number;
   timeToTargetMinutes?: number;
   targetTimestamp?: Date;
+  stopLossHit?: boolean;
+  stopLossTimestamp?: Date;
+  timeToStopLossMinutes?: number;
 }> {
   try {
     // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
@@ -140,6 +145,9 @@ async function calculateOrderGainMetrics({
       targetGainPercentageActual?: number;
       timeToTargetMinutes?: number;
       targetTimestamp?: Date;
+      stopLossHit?: boolean;
+      stopLossTimestamp?: Date;
+      timeToStopLossMinutes?: number;
     } = {
       targetGainPercentage: targetGainPercentage,
     };
@@ -153,9 +161,10 @@ async function calculateOrderGainMetrics({
      * */
     const targetPrice = entryPriceAtPlacement * (1 + targetGainPercentage / 100);
     let targetTimestamp: Date | null = null;
+    let stopLossTimestamp: Date | null = null;
     let bestPrice = entryPriceAtPlacement;
 
-    // Check all candles after order placement to see if target was reached
+    // Check all candles after order placement to see if target or stop loss was reached
     for (const candle of candles) {
       const candleTimestamp = dayjs(candle.timestamp).utc().format("YYYY-MM-DD HH:mm:ss");
 
@@ -164,47 +173,98 @@ async function calculateOrderGainMetrics({
         continue;
       }
 
-      if (!candle.high || typeof candle.high !== "number") continue;
-
-      const highPrice = candle.high;
-
-      // Track best price for calculating actual gain if target not achieved
-      if (highPrice > bestPrice) {
-        bestPrice = highPrice;
+      // Check for stop loss hit (using candle low price)
+      if (candle.low && typeof candle.low === "number" && stopLossTimestamp === null) {
+        if (candle.low <= stopLossPrice) {
+          stopLossTimestamp = candle.timestamp;
+        }
       }
 
-      // Check if target price was reached (only record first occurrence)
-      if (targetTimestamp === null && highPrice >= targetPrice) {
-        targetTimestamp = candle.timestamp;
+      // Check for take profit hit (using candle high price)
+      if (candle.high && typeof candle.high === "number") {
+        const highPrice = candle.high;
+
+        // Track best price for calculating actual gain if target not achieved
+        if (highPrice > bestPrice) {
+          bestPrice = highPrice;
+        }
+
+        // Check if target price was reached (only record first occurrence)
+        if (targetTimestamp === null && highPrice >= targetPrice) {
+          targetTimestamp = candle.timestamp;
+        }
+      }
+    }
+
+    // Determine which happened first: stop loss or take profit
+    // If stop loss was hit, we exit immediately, so target cannot be achieved
+    // If take profit was hit first, we exit at take profit, so target is achieved
+    let stopLossHit = false;
+    let stopLossTimeDiffSeconds = Infinity;
+    let targetTimeDiffSeconds = Infinity;
+
+    if (stopLossTimestamp !== null) {
+      const stopLossTimestampUTC = dayjs(stopLossTimestamp).utc().format("YYYY-MM-DD HH:mm:ss");
+      stopLossTimeDiffSeconds = dayjs(stopLossTimestampUTC).diff(
+        dayjs(orderTimestamp),
+        "second",
+        true
+      );
+
+      // Ensure the timestamp is truly after the order (at least 1 second difference)
+      if (stopLossTimeDiffSeconds >= 1) {
+        stopLossHit = true;
       }
     }
 
     if (targetTimestamp !== null) {
       const targetTimestampUTC = dayjs(targetTimestamp).utc().format("YYYY-MM-DD HH:mm:ss");
+      targetTimeDiffSeconds = dayjs(targetTimestampUTC).diff(dayjs(orderTimestamp), "second", true);
+    }
 
-      // Target was achieved - calculate time difference in seconds first for accuracy
-      const timeDiffSeconds = dayjs(targetTimestampUTC).diff(dayjs(orderTimestamp), "second", true);
+    // If stop loss was hit, mark it
+    if (stopLossHit) {
+      result.stopLossHit = true;
+      result.timeToStopLossMinutes =
+        stopLossTimeDiffSeconds < 30 ? 0 : Math.round(stopLossTimeDiffSeconds / 60);
+      result.stopLossTimestamp = stopLossTimestamp!;
 
-      // Ensure the timestamp is truly after the order (at least 1 second difference)
-      // This prevents false positives from timestamp precision issues or peaks that occurred before the order
-      if (timeDiffSeconds >= 1) {
+      // If stop loss was hit first, we exited, so target is not achieved
+      if (targetTimestamp !== null && stopLossTimeDiffSeconds < targetTimeDiffSeconds) {
+        result.targetAchieved = false;
+        const maxGainPercentage =
+          ((bestPrice - entryPriceAtPlacement) / entryPriceAtPlacement) * 100;
+        result.targetGainPercentageActual = Number(maxGainPercentage.toFixed(2));
+      } else if (targetTimestamp !== null && targetTimeDiffSeconds < stopLossTimeDiffSeconds) {
+        // Take profit was hit first, so we exited at take profit (target achieved)
         result.targetAchieved = true;
-        // Convert to minutes: if less than 30 seconds, show 0 min, otherwise round to nearest minute
-        result.timeToTargetMinutes = timeDiffSeconds < 30 ? 0 : Math.round(timeDiffSeconds / 60);
+        result.timeToTargetMinutes =
+          targetTimeDiffSeconds < 30 ? 0 : Math.round(targetTimeDiffSeconds / 60);
         result.targetTimestamp = targetTimestamp;
       } else {
-        // If timestamp difference is less than 1 second, it's likely a precision issue
-        // or the peak was actually at/before the order time - treat as not achieved
+        // Stop loss hit, but target was never reached
         result.targetAchieved = false;
         const maxGainPercentage =
           ((bestPrice - entryPriceAtPlacement) / entryPriceAtPlacement) * 100;
         result.targetGainPercentageActual = Number(maxGainPercentage.toFixed(2));
       }
     } else {
-      // Target was not achieved
-      result.targetAchieved = false;
-      const maxGainPercentage = ((bestPrice - entryPriceAtPlacement) / entryPriceAtPlacement) * 100;
-      result.targetGainPercentageActual = Number(maxGainPercentage.toFixed(2));
+      // Stop loss was not hit
+      result.stopLossHit = false;
+
+      // Handle target achievement if stop loss was not hit
+      if (targetTimestamp !== null && targetTimeDiffSeconds >= 1) {
+        result.targetAchieved = true;
+        result.timeToTargetMinutes =
+          targetTimeDiffSeconds < 30 ? 0 : Math.round(targetTimeDiffSeconds / 60);
+        result.targetTimestamp = targetTimestamp;
+      } else {
+        // Target was not achieved
+        result.targetAchieved = false;
+        const maxGainPercentage =
+          ((bestPrice - entryPriceAtPlacement) / entryPriceAtPlacement) * 100;
+        result.targetGainPercentageActual = Number(maxGainPercentage.toFixed(2));
+      }
     }
 
     return result;
@@ -539,6 +599,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
           const gainMetrics = await calculateOrderGainMetrics({
             nseSymbol: order.nseSymbol,
             entryPrice: Number(order.entryPrice),
+            stopLossPrice: Number(order.stopLossPrice),
             orderTimestamp: order.timestamp,
             targetGainPercentage,
             growwAPIRequest,

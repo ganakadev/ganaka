@@ -211,7 +211,8 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
       }
 
       // Ensure errorMessage is always a string
-      const finalErrorMessage = typeof errorMessage === "string" ? errorMessage : String(errorMessage);
+      const finalErrorMessage =
+        typeof errorMessage === "string" ? errorMessage : String(errorMessage);
       return reply.internalServerError(finalErrorMessage);
     }
   });

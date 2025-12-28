@@ -44,4 +44,8 @@ export interface Order {
   targetGainPercentageActual?: number;
   timeToTargetMinutes?: number;
   targetTimestamp?: Date;
+  // Stop loss analysis fields
+  stopLossHit?: boolean;
+  stopLossTimestamp?: Date;
+  timeToStopLossMinutes?: number;
 }
