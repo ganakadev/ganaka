@@ -33,8 +33,6 @@ const orderSchema = z.object({
   timestamp: z.coerce.date(),
   runId: z.uuid(),
   // Gain analysis fields
-  maxGainPercentage: z.number().optional(),
-  timeToMaxGainMinutes: z.number().optional(),
   targetGainPercentage: z.number().optional(),
   targetAchieved: z.boolean().optional(),
   targetGainPercentageActual: z.number().optional(),

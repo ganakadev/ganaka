@@ -243,9 +243,7 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
               <Table.Th className="w-[12%]">Entry Price</Table.Th>
               <Table.Th className="w-[12%]">Stop Loss</Table.Th>
               <Table.Th className="w-[12%]">Take Profit</Table.Th>
-              <Table.Th className="w-[12%]">Max Gain %</Table.Th>
-              <Table.Th className="w-[10%]">Time to Max</Table.Th>
-              <Table.Th className="w-[12%]">
+              <Table.Th className="w-[20%]">
                 <div className="w-full h-full flex items-center justify-between">
                   <span>Target Status</span>
                   <NumberInput
@@ -301,44 +299,22 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
                   </span>
                 </Table.Td>
                 <Table.Td>
-                  {order.maxGainPercentage !== undefined ? (
-                    <span
-                      className={`text-sm font-medium ${
-                        order.maxGainPercentage >= 0 ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {order.maxGainPercentage >= 0 ? "+" : ""}
-                      {order.maxGainPercentage.toFixed(2)}%
-                    </span>
-                  ) : (
-                    <span className="text-sm text-gray-400">N/A</span>
-                  )}
-                </Table.Td>
-                <Table.Td>
-                  <span className="text-sm">{formatTime(order.timeToMaxGainMinutes)}</span>
-                </Table.Td>
-                <Table.Td>
-                  {targetGainPercentage ? (
+                  {targetGainPercentage !== undefined ? (
                     order.targetAchieved !== undefined ? (
                       order.targetAchieved ? (
-                        <span className="text-sm text-green-600">
+                        <span className="text-sm font-medium text-green-600">
                           ✓ Achieved in {formatTime(order.timeToTargetMinutes)}
                         </span>
                       ) : (
-                        <span className="text-sm text-red-600">
-                          ✗ Missed by{" "}
-                          {order.targetGainPercentageActual !== undefined
-                            ? `${(targetGainPercentage - order.targetGainPercentageActual).toFixed(
-                                2
-                              )}%`
-                            : "N/A"}
+                        <span className="text-sm font-medium text-red-600">
+                          ✗ Target not achieved
                         </span>
                       )
                     ) : (
                       <span className="text-sm text-gray-400">N/A</span>
                     )
                   ) : (
-                    <span className="text-sm text-gray-400">N/A</span>
+                    <span className="text-sm text-gray-400">Enter target %</span>
                   )}
                 </Table.Td>
                 <Table.Td>

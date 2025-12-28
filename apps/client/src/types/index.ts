@@ -39,8 +39,6 @@ export interface Order {
   timestamp: Date;
   runId: string;
   // Gain analysis fields
-  maxGainPercentage?: number;
-  timeToMaxGainMinutes?: number;
   targetGainPercentage?: number;
   targetAchieved?: boolean;
   targetGainPercentageActual?: number;

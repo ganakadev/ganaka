@@ -9,7 +9,9 @@ import { validateRequest } from "../../../../utils/validator";
 import { QuoteData } from "@ganaka/db";
 
 /**
- * Calculate gain metrics for an order based on quote snapshots after order placement
+ * Calculate gain metrics for an order based on quote snapshots after order placement.
+ * Only considers price movements that occurred after the order was placed, making it
+ * more relevant for algorithm evaluation by showing actual post-entry opportunity.
  */
 async function calculateOrderGainMetrics({
   nseSymbol,
@@ -24,21 +26,23 @@ async function calculateOrderGainMetrics({
   runEndTime: Date;
   targetGainPercentage?: number;
 }): Promise<{
-  maxGainPercentage?: number;
-  timeToMaxGainMinutes?: number;
   targetGainPercentage?: number;
   targetAchieved?: boolean;
   targetGainPercentageActual?: number;
   timeToTargetMinutes?: number;
 }> {
   try {
-    // Fetch quote snapshots for the symbol after order timestamp and before run end time
+    // Determine day bounds for the order
+    const dayStart = dayjs(orderTimestamp).startOf("day").toDate();
+    const dayEnd = dayjs(orderTimestamp).endOf("day").toDate();
+
+    // Fetch all snapshots for that calendar day
     const quoteSnapshots = await prisma.quoteSnapshot.findMany({
       where: {
         nseSymbol: nseSymbol,
         timestamp: {
-          gte: orderTimestamp,
-          lte: runEndTime,
+          gte: dayStart,
+          lte: dayEnd,
         },
       },
       orderBy: {
@@ -50,79 +54,89 @@ async function calculateOrderGainMetrics({
       return {};
     }
 
-    // Extract prices from quote snapshots
-    let maxPrice = entryPrice;
-    let maxPriceTimestamp: Date | null = null;
-
-    for (const snapshot of quoteSnapshots) {
+    // Find entry price at placement: nearest snapshot at or before orderTimestamp
+    let entryPriceAtPlacement = entryPrice;
+    for (let i = quoteSnapshots.length - 1; i >= 0; i--) {
+      const snapshot = quoteSnapshots[i];
+      if (dayjs(snapshot.timestamp).isAfter(orderTimestamp)) continue;
       const quoteData = snapshot.quoteData as unknown as QuoteData;
       if (quoteData?.status === "SUCCESS" && quoteData?.payload) {
-        // Use the high price from OHLC data
-        const highPrice = quoteData.payload.ohlc?.high;
-        if (highPrice && highPrice > maxPrice) {
-          maxPrice = highPrice;
-          maxPriceTimestamp = snapshot.timestamp;
-        }
+        entryPriceAtPlacement =
+          quoteData.payload.last_price ?? quoteData.payload.ohlc?.close ?? entryPriceAtPlacement;
+        break;
       }
     }
 
-    // If no price data found, return empty metrics
-    if (maxPriceTimestamp === null) {
+    // Avoid division by zero
+    if (!entryPriceAtPlacement || entryPriceAtPlacement === 0) {
       return {};
     }
 
-    // Calculate maximum gain percentage
-    const maxGainPercentage = ((maxPrice - entryPrice) / entryPrice) * 100;
-
-    // Calculate time to maximum gain in minutes
-    const timeToMaxGainMinutes = Math.round(
-      dayjs(maxPriceTimestamp).diff(dayjs(orderTimestamp), "minute", true)
-    );
+    // If target percentage is provided, check if it was achieved
+    if (targetGainPercentage === undefined) {
+      return {};
+    }
 
     const result: {
-      maxGainPercentage?: number;
-      timeToMaxGainMinutes?: number;
       targetGainPercentage?: number;
       targetAchieved?: boolean;
       targetGainPercentageActual?: number;
       timeToTargetMinutes?: number;
     } = {
-      maxGainPercentage: Number(maxGainPercentage.toFixed(2)),
-      timeToMaxGainMinutes,
+      targetGainPercentage: targetGainPercentage,
     };
 
-    // If target percentage is provided, check if it was achieved
-    if (targetGainPercentage !== undefined) {
-      result.targetGainPercentage = targetGainPercentage;
+    const targetPrice = entryPriceAtPlacement * (1 + targetGainPercentage / 100);
+    let targetTimestamp: Date | null = null;
+    let bestPrice = entryPriceAtPlacement;
 
-      if (maxGainPercentage >= targetGainPercentage) {
-        // Target was achieved, find when it was first reached
+    // Check all snapshots after order placement to see if target was reached
+    for (const snapshot of quoteSnapshots) {
+      // Only consider snapshots strictly after order placement (not equal to)
+      if (!dayjs(snapshot.timestamp).isAfter(orderTimestamp)) {
+        continue;
+      }
+
+      const quoteData = snapshot.quoteData as unknown as QuoteData;
+      if (quoteData?.status !== "SUCCESS" || !quoteData?.payload) continue;
+
+      const highPrice = quoteData.payload.ohlc?.high ?? quoteData.payload.last_price;
+      if (!highPrice) continue;
+
+      // Track best price for calculating actual gain if target not achieved
+      if (highPrice > bestPrice) {
+        bestPrice = highPrice;
+      }
+
+      // Check if target price was reached (only record first occurrence)
+      if (targetTimestamp === null && highPrice >= targetPrice) {
+        targetTimestamp = snapshot.timestamp;
+      }
+    }
+
+    if (targetTimestamp !== null) {
+      // Target was achieved - calculate time difference in seconds first for accuracy
+      const timeDiffSeconds = dayjs(targetTimestamp).diff(dayjs(orderTimestamp), "second", true);
+
+      // Ensure the timestamp is truly after the order (at least 1 second difference)
+      // This prevents false positives from timestamp precision issues or peaks that occurred before the order
+      if (timeDiffSeconds >= 1) {
         result.targetAchieved = true;
-
-        const targetPrice = entryPrice * (1 + targetGainPercentage / 100);
-        let targetTimestamp: Date | null = null;
-
-        for (const snapshot of quoteSnapshots) {
-          const quoteData = snapshot.quoteData as unknown as QuoteData;
-          if (quoteData?.status === "SUCCESS" && quoteData?.payload) {
-            const highPrice = quoteData.payload.ohlc?.high;
-            if (highPrice && highPrice >= targetPrice) {
-              targetTimestamp = snapshot.timestamp;
-              break;
-            }
-          }
-        }
-
-        if (targetTimestamp) {
-          result.timeToTargetMinutes = Math.round(
-            dayjs(targetTimestamp).diff(dayjs(orderTimestamp), "minute", true)
-          );
-        }
+        // Convert to minutes: if less than 30 seconds, show 0 min, otherwise round to nearest minute
+        result.timeToTargetMinutes = timeDiffSeconds < 30 ? 0 : Math.round(timeDiffSeconds / 60);
       } else {
-        // Target was not achieved
+        // If timestamp difference is less than 1 second, it's likely a precision issue
+        // or the peak was actually at/before the order time - treat as not achieved
         result.targetAchieved = false;
+        const maxGainPercentage =
+          ((bestPrice - entryPriceAtPlacement) / entryPriceAtPlacement) * 100;
         result.targetGainPercentageActual = Number(maxGainPercentage.toFixed(2));
       }
+    } else {
+      // Target was not achieved
+      result.targetAchieved = false;
+      const maxGainPercentage = ((bestPrice - entryPriceAtPlacement) / entryPriceAtPlacement) * 100;
+      result.targetGainPercentageActual = Number(maxGainPercentage.toFixed(2));
     }
 
     return result;
