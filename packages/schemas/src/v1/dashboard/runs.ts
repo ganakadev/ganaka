@@ -38,6 +38,7 @@ const orderSchema = z.object({
   targetGainPercentageActual: z.number().optional(),
   timeToTargetMinutes: z.number().optional(),
   targetTimestamp: z.coerce.date().optional(),
+  dynamicTakeProfitPrice: z.coerce.number().optional(),
   // Stop loss analysis fields
   stopLossHit: z.boolean().optional(),
   stopLossTimestamp: z.coerce.date().optional(),

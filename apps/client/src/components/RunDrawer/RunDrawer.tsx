@@ -354,31 +354,71 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
                   {targetGainPercentage !== undefined ? (
                     // Priority: Stop loss status takes precedence over target achievement
                     order.stopLossHit === true ? (
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-1">
                         <Text size="sm" fw={600} c="red">
                           {`✗ Stop Loss Hit in ${formatTime(order.timeToStopLossMinutes)} @ ${dayjs
                             .tz(order.stopLossTimestamp, "Asia/Kolkata")
                             .format("HH:mm")}`}
                         </Text>
+                        {order.dynamicTakeProfitPrice !== undefined && (
+                          <Text size="xs" c="dimmed">
+                            Dynamic TP: ₹
+                            {order.dynamicTakeProfitPrice.toLocaleString("en-IN", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </Text>
+                        )}
                       </div>
                     ) : order.targetAchieved !== undefined ? (
                       order.targetAchieved ? (
-                        <div className="flex flex-col">
+                        <div className="flex flex-col gap-1">
                           <Text size="sm" fw={600} c="green">
                             {`✓ Achieved in ${formatTime(order.timeToTargetMinutes)} @ ${dayjs
                               .tz(order.targetTimestamp, "Asia/Kolkata")
                               .format("HH:mm")}`}
                           </Text>
+                          {order.dynamicTakeProfitPrice !== undefined && (
+                            <Text size="xs" c="dimmed">
+                              Dynamic TP: ₹
+                              {order.dynamicTakeProfitPrice.toLocaleString("en-IN", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}
+                            </Text>
+                          )}
                         </div>
                       ) : (
-                        <Text size="sm" fw={600} c="red">
-                          ✗ Target not achieved
-                        </Text>
+                        <div className="flex flex-col gap-1">
+                          <Text size="sm" fw={600} c="red">
+                            ✗ Target not achieved
+                          </Text>
+                          {order.dynamicTakeProfitPrice !== undefined && (
+                            <Text size="xs" c="dimmed">
+                              Dynamic TP: ₹
+                              {order.dynamicTakeProfitPrice.toLocaleString("en-IN", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}
+                            </Text>
+                          )}
+                        </div>
                       )
                     ) : (
-                      <Text size="sm" c="dimmed">
-                        N/A
-                      </Text>
+                      <div className="flex flex-col gap-1">
+                        <Text size="sm" c="dimmed">
+                          N/A
+                        </Text>
+                        {order.dynamicTakeProfitPrice !== undefined && (
+                          <Text size="xs" c="dimmed">
+                            Dynamic TP: ₹
+                            {order.dynamicTakeProfitPrice.toLocaleString("en-IN", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </Text>
+                        )}
+                      </div>
                     )
                   ) : (
                     <Text size="sm" c="dimmed">

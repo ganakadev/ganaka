@@ -56,6 +56,7 @@ async function calculateOrderGainMetrics({
   stopLossHit?: boolean;
   stopLossTimestamp?: Date;
   timeToStopLossMinutes?: number;
+  dynamicTakeProfitPrice?: number;
 }> {
   try {
     // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
@@ -148,6 +149,7 @@ async function calculateOrderGainMetrics({
       stopLossHit?: boolean;
       stopLossTimestamp?: Date;
       timeToStopLossMinutes?: number;
+      dynamicTakeProfitPrice?: number;
     } = {
       targetGainPercentage: targetGainPercentage,
     };
@@ -160,6 +162,7 @@ async function calculateOrderGainMetrics({
      * Target price: 100 × (1 + 10/100) = 100 × 1.10 = ₹110
      * */
     const targetPrice = entryPriceAtPlacement * (1 + targetGainPercentage / 100);
+    result.dynamicTakeProfitPrice = targetPrice;
     let targetTimestamp: Date | null = null;
     let stopLossTimestamp: Date | null = null;
     let bestPrice = entryPriceAtPlacement;
