@@ -210,14 +210,10 @@ export const RunsSidebar = ({
                         .join(" ")}
                       onClick={() => onRunClick?.(run)}
                     >
-                      <div className="space-y-2">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-start gap-2 min-w-0 flex-1">
-                            <div
-                              className="pt-0.5"
-                              onClick={(e) => e.stopPropagation()}
-                              title="Select run"
-                            >
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <div onClick={(e) => e.stopPropagation()} title="Select run">
                               <Checkbox
                                 size="xs"
                                 checked={isSelected}
@@ -228,7 +224,7 @@ export const RunsSidebar = ({
                                 aria-label="Select run"
                               />
                             </div>
-                            <div className="min-w-0 flex-1">
+                            <div className="h-full min-w-0 flex-1">
                               <Text size="xs" c="dimmed" truncate>
                                 {dayjs(run.startTime).format("HH:mm")} -{" "}
                                 {dayjs(run.endTime).format("HH:mm")}
@@ -248,7 +244,7 @@ export const RunsSidebar = ({
                               variant="subtle"
                               color="red"
                               size="sm"
-                              disabled={isBulkDeleting}
+                              disabled={isBulkDeleting || deletingRunId !== null}
                               onClick={(e) => handleDelete(run, e)}
                               loading={isDeletingThisRun}
                               title="Delete run"
