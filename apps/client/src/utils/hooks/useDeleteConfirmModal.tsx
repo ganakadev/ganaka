@@ -11,10 +11,10 @@ export const useDeleteConfirmModal = () => {
   }: {
     onConfirm: () => Promise<void>;
     value: string;
-    artifact: "run";
+    artifact: "run" | "runs";
     isLoading: boolean;
   }) => {
-    modals.openConfirmModal({
+    const modalId = modals.openConfirmModal({
       title: `Delete ${artifact}?`,
       centered: true,
       children: (
@@ -34,12 +34,26 @@ export const useDeleteConfirmModal = () => {
       },
       onCancel: modals.closeAll,
       onConfirm: () => {
+        modals.updateModal({
+          modalId,
+          confirmProps: {
+            color: "var(--mantine-color-red-text)",
+            loading: true,
+          },
+        });
         onConfirm()
           .then(() => {
             modals.closeAll();
           })
           .catch((error) => {
             console.error(error);
+            modals.updateModal({
+              modalId,
+              confirmProps: {
+                color: "var(--mantine-color-red-text)",
+                loading: false,
+              },
+            });
           });
       },
     });
