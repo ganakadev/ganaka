@@ -32,11 +32,21 @@ const orderSchema = z.object({
   takeProfitPrice: z.coerce.number(),
   timestamp: z.coerce.date(),
   runId: z.uuid(),
+  // Gain analysis fields
+  maxGainPercentage: z.number().optional(),
+  timeToMaxGainMinutes: z.number().optional(),
+  targetGainPercentage: z.number().optional(),
+  targetAchieved: z.boolean().optional(),
+  targetGainPercentageActual: z.number().optional(),
+  timeToTargetMinutes: z.number().optional(),
 });
 
 export const getRunOrders = {
   params: z.object({
     runId: z.uuid(),
+  }),
+  query: z.object({
+    targetGainPercentage: z.coerce.number().optional(),
   }),
   response: apiResponseSchema.extend({
     data: z.array(orderSchema),

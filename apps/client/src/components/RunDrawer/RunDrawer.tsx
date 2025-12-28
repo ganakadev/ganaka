@@ -1,11 +1,11 @@
-import { Drawer, Table, Accordion, Text } from "@mantine/core";
-import { useState, useMemo } from "react";
-import type { Run, Order } from "../../types";
+import { Accordion, Drawer, NumberInput, Table, Text } from "@mantine/core";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import type { Time } from "lightweight-charts";
+import { useMemo, useState } from "react";
 import { dashboardAPI } from "../../store/api/dashboardApi";
+import type { Order, Run } from "../../types";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
 import { CandleChart, type CandleData, type SeriesMarkerConfig } from "../CandleChart";
 
@@ -132,9 +132,16 @@ const StockChart = ({
 };
 
 const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
+  // STATE
+  const [targetGainPercentage, setTargetGainPercentage] = useState<number | undefined>(undefined);
+  const [expandedStocks, setExpandedStocks] = useState<Set<string>>(new Set());
+
   // API
   const runOrdersAPI = dashboardAPI.useGetRunOrdersQuery(
-    { runId: selectedRun?.id || "" },
+    {
+      runId: selectedRun?.id || "",
+      ...(targetGainPercentage !== undefined && { targetGainPercentage }),
+    },
     {
       skip: !selectedRun,
     }
@@ -144,12 +151,8 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
     error: runOrdersAPI.error,
   });
 
-  // STATE
-  const [expandedStocks, setExpandedStocks] = useState<Set<string>>(new Set());
-
   // VARIABLES
   const orders: Order[] = runOrdersAPI.data?.data || [];
-
   // Group orders by nseSymbol
   const ordersByStock = orders.reduce((acc, order) => {
     if (!acc[order.nseSymbol]) {
@@ -158,12 +161,11 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
     acc[order.nseSymbol].push(order);
     return acc;
   }, {} as Record<string, Order[]>);
-
-  const stockSymbols = Object.keys(ordersByStock).sort();
-
+  const stockSymbols = Object.keys(ordersByStock);
   // Convert Set to array for Accordion value prop
   const accordionValue = Array.from(expandedStocks);
 
+  // HANDLERS
   // Handle Accordion onChange - convert array back to Set
   const handleAccordionChange = (value: string | string[] | null) => {
     if (value === null) {
@@ -210,6 +212,17 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
     );
   }
 
+  // Helper function to format time
+  const formatTime = (minutes?: number): string => {
+    if (minutes === undefined || minutes === null) return "N/A";
+    if (minutes < 60) {
+      return `${minutes} min`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return mins > 0 ? `${hours} hr ${mins} min` : `${hours} hr`;
+  };
+
   // DRAW
   return (
     <div className="flex flex-col gap-6">
@@ -226,11 +239,32 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
         >
           <Table.Thead>
             <Table.Tr>
-              <Table.Th className="w-[15%]">Symbol</Table.Th>
-              <Table.Th className="w-[20%]">Entry Price</Table.Th>
-              <Table.Th className="w-[20%]">Stop Loss</Table.Th>
-              <Table.Th className="w-[20%]">Take Profit</Table.Th>
-              <Table.Th className="w-[25%]">Timestamp</Table.Th>
+              <Table.Th className="w-[10%]">Symbol</Table.Th>
+              <Table.Th className="w-[12%]">Entry Price</Table.Th>
+              <Table.Th className="w-[12%]">Stop Loss</Table.Th>
+              <Table.Th className="w-[12%]">Take Profit</Table.Th>
+              <Table.Th className="w-[12%]">Max Gain %</Table.Th>
+              <Table.Th className="w-[10%]">Time to Max</Table.Th>
+              <Table.Th className="w-[10%]">
+                <div className="w-full h-full flex items-center justify-between">
+                  <span>Target Status</span>
+                  <NumberInput
+                    placeholder="x%"
+                    value={targetGainPercentage}
+                    size="xs"
+                    variant="filled"
+                    onChange={(value) =>
+                      setTargetGainPercentage(typeof value === "number" ? value : undefined)
+                    }
+                    min={0}
+                    max={100}
+                    step={0.1}
+                    className="w-16"
+                    decimalScale={2}
+                  />
+                </div>
+              </Table.Th>
+              <Table.Th className="w-[12%]">Timestamp</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -265,6 +299,47 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
                       maximumFractionDigits: 2,
                     })}
                   </span>
+                </Table.Td>
+                <Table.Td>
+                  {order.maxGainPercentage !== undefined ? (
+                    <span
+                      className={`text-sm font-medium ${
+                        order.maxGainPercentage >= 0 ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {order.maxGainPercentage >= 0 ? "+" : ""}
+                      {order.maxGainPercentage.toFixed(2)}%
+                    </span>
+                  ) : (
+                    <span className="text-sm text-gray-400">N/A</span>
+                  )}
+                </Table.Td>
+                <Table.Td>
+                  <span className="text-sm">{formatTime(order.timeToMaxGainMinutes)}</span>
+                </Table.Td>
+                <Table.Td>
+                  {targetGainPercentage ? (
+                    order.targetAchieved !== undefined ? (
+                      order.targetAchieved ? (
+                        <span className="text-sm text-green-600">
+                          ✓ Achieved in {formatTime(order.timeToTargetMinutes)}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-red-600">
+                          ✗ Missed by{" "}
+                          {order.targetGainPercentageActual !== undefined
+                            ? `${(targetGainPercentage - order.targetGainPercentageActual).toFixed(
+                                2
+                              )}%`
+                            : "N/A"}
+                        </span>
+                      )
+                    ) : (
+                      <span className="text-sm text-gray-400">N/A</span>
+                    )
+                  ) : (
+                    <span className="text-sm text-gray-400">N/A</span>
+                  )}
                 </Table.Td>
                 <Table.Td>
                   <span className="text-sm">

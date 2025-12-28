@@ -1,0 +1,5 @@
+---
+alwaysApply: true
+---
+
+When making changes to the client app using Mantine UI, make sure to not use the Mantine layout components (Group, Center, Grid, Flex, etc). For layouts, only use divs with tailwind CSS styling.
