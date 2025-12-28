@@ -1,4 +1,5 @@
 import autoLoad from "@fastify/autoload";
+import compress from "@fastify/compress";
 import cors from "@fastify/cors";
 import sensible from "@fastify/sensible";
 import dotenv from "dotenv";
@@ -17,6 +18,10 @@ async function main() {
   fastify.register(cors, {
     origin: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  });
+  fastify.register(compress, {
+    encodings: ["br", "gzip", "deflate"],
+    threshold: 1024, // Only compress responses larger than 1KB,
   });
 
   // ROUTES CONFIGURATION
