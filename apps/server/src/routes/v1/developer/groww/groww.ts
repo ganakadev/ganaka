@@ -4,13 +4,16 @@ import { FastifyInstance, FastifyPluginAsync } from "fastify";
 import z from "zod";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { RedisManager } from "../../../../utils/redis";
 import { sendResponse } from "../../../../utils/sendResponse";
 import { TokenManager } from "../../../../utils/token-manager";
 import { validateRequest } from "../../../../utils/validator";
 import { prisma } from "../../../../utils/prisma";
+import { QuoteData } from "@ganaka/db";
 
 dayjs.extend(utc);
+dayjs.extend(timezone);
 
 /**
  * Helper function to make Groww API requests with automatic token refresh
@@ -241,6 +244,79 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.internalServerError(
         "Failed to fetch historical candles. Please check server logs for more details."
       );
+    }
+  });
+
+  // ==================== GET /quote-timeline ====================
+
+  // Quote timeline endpoint
+  fastify.get("/quote-timeline", async (request, reply) => {
+    const validationResult = validateRequest(
+      request.query,
+      reply,
+      v1_developer_groww_schemas.getGrowwQuoteTimeline.query,
+      "query"
+    ) as z.infer<typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.query> | false;
+    if (!validationResult) {
+      return;
+    }
+
+    try {
+      const { symbol, date: dateParam } = validationResult;
+
+      // Parse the selected date (it comes in as UTC ISO string)
+      const selectedDate = dayjs(dateParam);
+      if (!selectedDate.isValid()) {
+        return reply.badRequest("Invalid date format");
+      }
+
+      // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
+      // Extract just the date part (YYYY-MM-DD) and create new dayjs object in IST
+      const dateStr = selectedDate.format("YYYY-MM-DD");
+      const marketStart = dayjs.tz(`${dateStr} 09:14:00`, "Asia/Kolkata");
+      const marketEnd = dayjs.tz(`${dateStr} 15:31:00`, "Asia/Kolkata");
+      const marketStartUtc = marketStart.utc();
+      const marketEndUtc = marketEnd.utc();
+
+      // Fetch quote snapshots from database for the symbol and date range
+      const quoteSnapshots = await prisma.quoteSnapshot.findMany({
+        where: {
+          timestamp: {
+            gte: marketStartUtc.toDate(),
+            lte: marketEndUtc.toDate(),
+          },
+          nseSymbol: symbol,
+        },
+        orderBy: {
+          timestamp: "asc",
+        },
+      });
+
+      return sendResponse<
+        z.infer<typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.response>
+      >({
+        statusCode: 200,
+        message: "Quote timeline fetched successfully",
+        data: {
+          quoteTimeline: quoteSnapshots.map((snapshot) => ({
+            id: snapshot.id,
+            timestamp: snapshot.timestamp,
+            nseSymbol: snapshot.nseSymbol,
+            quoteData: snapshot.quoteData as unknown as QuoteData,
+            createdAt: snapshot.createdAt,
+            updatedAt: snapshot.updatedAt,
+          })),
+        },
+      });
+    } catch (error) {
+      fastify.log.error("Error fetching quote timeline: %s", JSON.stringify(error));
+
+      let errorMessage = "Failed to fetch quote timeline";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      return reply.internalServerError(errorMessage);
     }
   });
 };

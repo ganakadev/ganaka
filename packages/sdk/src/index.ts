@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import { z } from "zod";
 import { fetchCandles } from "./callbacks/fetchCandles";
 import { fetchQuote } from "./callbacks/fetchQuote";
+import { fetchQuoteTimeline } from "./callbacks/fetchQuoteTimeline";
 import { fetchShortlist } from "./callbacks/fetchShortlist";
 import { logger } from "./utils/logger";
 import { ApiClient } from "./utils/apiClient";
@@ -31,6 +32,14 @@ export interface RunContext {
   ) => Promise<
     | z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"]
     | null
+  >;
+  fetchQuoteTimeline: (
+    symbol: string,
+    date: Date
+  ) => Promise<
+    z.infer<
+      typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.response
+    >["data"]["quoteTimeline"]
   >;
   fetchShortlist: (
     type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
@@ -116,6 +125,10 @@ export async function ganaka<T>({
             apiDomain,
           }),
           fetchQuote: fetchQuote({
+            developerToken,
+            apiDomain,
+          }),
+          fetchQuoteTimeline: fetchQuoteTimeline({
             developerToken,
             apiDomain,
           }),
