@@ -196,14 +196,18 @@ export const dashboardAPI = createApi({
     // Get run orders
     getRunOrders: builder.query<
       z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response>,
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params>
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params> &
+        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.query>
     >({
       query: (params) => {
         const validatedParams =
           v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params.parse(params);
+        const validatedQuery =
+          v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.query.parse(params);
         return {
           url: `/runs/${validatedParams.runId}/orders`,
           method: "GET",
+          params: validatedQuery,
         };
       },
       providesTags: ["Runs"],

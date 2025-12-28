@@ -6,6 +6,131 @@ import { prisma } from "../../../../utils/prisma";
 import { Decimal } from "@ganaka/db/prisma";
 import dayjs from "dayjs";
 import { validateRequest } from "../../../../utils/validator";
+import { QuoteData } from "@ganaka/db";
+
+/**
+ * Calculate gain metrics for an order based on quote snapshots after order placement
+ */
+async function calculateOrderGainMetrics({
+  nseSymbol,
+  entryPrice,
+  orderTimestamp,
+  runEndTime,
+  targetGainPercentage,
+}: {
+  nseSymbol: string;
+  entryPrice: number;
+  orderTimestamp: Date;
+  runEndTime: Date;
+  targetGainPercentage?: number;
+}): Promise<{
+  maxGainPercentage?: number;
+  timeToMaxGainMinutes?: number;
+  targetGainPercentage?: number;
+  targetAchieved?: boolean;
+  targetGainPercentageActual?: number;
+  timeToTargetMinutes?: number;
+}> {
+  try {
+    // Fetch quote snapshots for the symbol after order timestamp and before run end time
+    const quoteSnapshots = await prisma.quoteSnapshot.findMany({
+      where: {
+        nseSymbol: nseSymbol,
+        timestamp: {
+          gte: orderTimestamp,
+          lte: runEndTime,
+        },
+      },
+      orderBy: {
+        timestamp: "asc",
+      },
+    });
+
+    if (quoteSnapshots.length === 0) {
+      return {};
+    }
+
+    // Extract prices from quote snapshots
+    let maxPrice = entryPrice;
+    let maxPriceTimestamp: Date | null = null;
+
+    for (const snapshot of quoteSnapshots) {
+      const quoteData = snapshot.quoteData as unknown as QuoteData;
+      if (quoteData?.status === "SUCCESS" && quoteData?.payload) {
+        // Use the high price from OHLC data
+        const highPrice = quoteData.payload.ohlc?.high;
+        if (highPrice && highPrice > maxPrice) {
+          maxPrice = highPrice;
+          maxPriceTimestamp = snapshot.timestamp;
+        }
+      }
+    }
+
+    // If no price data found, return empty metrics
+    if (maxPriceTimestamp === null) {
+      return {};
+    }
+
+    // Calculate maximum gain percentage
+    const maxGainPercentage = ((maxPrice - entryPrice) / entryPrice) * 100;
+
+    // Calculate time to maximum gain in minutes
+    const timeToMaxGainMinutes = Math.round(
+      dayjs(maxPriceTimestamp).diff(dayjs(orderTimestamp), "minute", true)
+    );
+
+    const result: {
+      maxGainPercentage?: number;
+      timeToMaxGainMinutes?: number;
+      targetGainPercentage?: number;
+      targetAchieved?: boolean;
+      targetGainPercentageActual?: number;
+      timeToTargetMinutes?: number;
+    } = {
+      maxGainPercentage: Number(maxGainPercentage.toFixed(2)),
+      timeToMaxGainMinutes,
+    };
+
+    // If target percentage is provided, check if it was achieved
+    if (targetGainPercentage !== undefined) {
+      result.targetGainPercentage = targetGainPercentage;
+
+      if (maxGainPercentage >= targetGainPercentage) {
+        // Target was achieved, find when it was first reached
+        result.targetAchieved = true;
+
+        const targetPrice = entryPrice * (1 + targetGainPercentage / 100);
+        let targetTimestamp: Date | null = null;
+
+        for (const snapshot of quoteSnapshots) {
+          const quoteData = snapshot.quoteData as unknown as QuoteData;
+          if (quoteData?.status === "SUCCESS" && quoteData?.payload) {
+            const highPrice = quoteData.payload.ohlc?.high;
+            if (highPrice && highPrice >= targetPrice) {
+              targetTimestamp = snapshot.timestamp;
+              break;
+            }
+          }
+        }
+
+        if (targetTimestamp) {
+          result.timeToTargetMinutes = Math.round(
+            dayjs(targetTimestamp).diff(dayjs(orderTimestamp), "minute", true)
+          );
+        }
+      } else {
+        // Target was not achieved
+        result.targetAchieved = false;
+        result.targetGainPercentageActual = Number(maxGainPercentage.toFixed(2));
+      }
+    }
+
+    return result;
+  } catch (error) {
+    // Return empty metrics on error
+    return {};
+  }
+}
 
 const runsRoutes: FastifyPluginAsync = async (fastify) => {
   // ==================== GET /runs ====================
@@ -90,18 +215,29 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
   // ==================== GET /runs/:runId/orders ====================
 
   fastify.get("/:runId/orders", async (request, reply) => {
-    const validationResult = validateRequest(
+    const paramsValidationResult = validateRequest(
       request.params,
       reply,
       v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params,
       "params"
     );
-    if (!validationResult) {
+    if (!paramsValidationResult) {
+      return;
+    }
+
+    const queryValidationResult = validateRequest(
+      request.query,
+      reply,
+      v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.query,
+      "query"
+    );
+    if (!queryValidationResult) {
       return;
     }
 
     try {
-      const { runId } = validationResult;
+      const { runId } = paramsValidationResult;
+      const { targetGainPercentage } = queryValidationResult;
       const token = request.headers.authorization?.split(" ")[1] || "";
 
       // Verify the run belongs to the authenticated developer
@@ -128,20 +264,36 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
 
+      // Calculate gain metrics for each order
+      const ordersWithMetrics = await Promise.all(
+        orders.map(async (order) => {
+          const gainMetrics = await calculateOrderGainMetrics({
+            nseSymbol: order.nseSymbol,
+            entryPrice: Number(order.entryPrice),
+            orderTimestamp: order.timestamp,
+            runEndTime: run.endTime,
+            targetGainPercentage,
+          });
+
+          return {
+            id: order.id,
+            nseSymbol: order.nseSymbol,
+            entryPrice: Number(order.entryPrice),
+            stopLossPrice: Number(order.stopLossPrice),
+            takeProfitPrice: Number(order.takeProfitPrice),
+            timestamp: order.timestamp,
+            runId: order.runId,
+            ...gainMetrics,
+          };
+        })
+      );
+
       return sendResponse<
         z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response>
       >({
         statusCode: 200,
         message: "Orders fetched successfully",
-        data: orders.map((order) => ({
-          id: order.id,
-          nseSymbol: order.nseSymbol,
-          entryPrice: Number(order.entryPrice),
-          stopLossPrice: Number(order.stopLossPrice),
-          takeProfitPrice: Number(order.takeProfitPrice),
-          timestamp: order.timestamp,
-          runId: order.runId,
-        })),
+        data: ordersWithMetrics,
       });
     } catch (error) {
       fastify.log.error("Error fetching orders: %s", JSON.stringify(error));

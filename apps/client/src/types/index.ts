@@ -38,4 +38,11 @@ export interface Order {
   takeProfitPrice: number;
   timestamp: Date;
   runId: string;
+  // Gain analysis fields
+  maxGainPercentage?: number;
+  timeToMaxGainMinutes?: number;
+  targetGainPercentage?: number;
+  targetAchieved?: boolean;
+  targetGainPercentageActual?: number;
+  timeToTargetMinutes?: number;
 }
