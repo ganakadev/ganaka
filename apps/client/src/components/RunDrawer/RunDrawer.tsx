@@ -7,7 +7,12 @@ import { useMemo, useState } from "react";
 import { dashboardAPI } from "../../store/api/dashboardApi";
 import type { Order, Run } from "../../types";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
-import { CandleChart, type CandleData, type SeriesMarkerConfig } from "../CandleChart";
+import {
+  CandleChart,
+  type CandleData,
+  type PriceLineConfig,
+  type SeriesMarkerConfig,
+} from "../CandleChart";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -96,10 +101,47 @@ const StockChart = ({
         color: color,
         size: 1,
         shape: "circle" as const,
-        text: `Order ${index + 1}: ₹${order.entryPrice.toFixed(2)}`,
+        text: `Order: ₹${order.entryPrice.toFixed(2)}`,
       };
     });
   }, [orders, candleData]);
+
+  // Transform orders into price lines format (stop loss and take profit)
+  const priceLines: PriceLineConfig[] = useMemo(() => {
+    if (!orders || orders.length === 0) {
+      return [];
+    }
+
+    const priceLinesList: PriceLineConfig[] = [];
+
+    orders.forEach((order, index) => {
+      // Stop Loss price line - red color
+      priceLinesList.push({
+        price: order.stopLossPrice,
+        color: "#ef5350", // red color matching chart's down color
+        lineWidth: 1,
+        lineStyle: 0, // solid line
+        axisLabelVisible: true,
+        title: `SL${index + 1 > 1 ? ` (Order ${index + 1})` : ""}: ₹${order.stopLossPrice.toFixed(
+          2
+        )}`,
+      });
+
+      // Take Profit price line - green color
+      priceLinesList.push({
+        price: order.takeProfitPrice,
+        color: "#26a69a", // green color matching chart's up color
+        lineWidth: 1,
+        lineStyle: 0, // solid line
+        axisLabelVisible: true,
+        title: `TP${index + 1 > 1 ? ` (Order ${index + 1})` : ""}: ₹${order.takeProfitPrice.toFixed(
+          2
+        )}`,
+      });
+    });
+
+    return priceLinesList;
+  }, [orders]);
 
   const errorMessage = candleError
     ? "data" in candleError &&
@@ -130,7 +172,14 @@ const StockChart = ({
 
   // DRAW
   // Use a key based on symbol to force chart re-initialization when data becomes available
-  return <CandleChart key={symbol} candleData={candleData} seriesMarkers={seriesMarkers} />;
+  return (
+    <CandleChart
+      key={symbol}
+      candleData={candleData}
+      seriesMarkers={seriesMarkers}
+      priceLines={priceLines}
+    />
+  );
 };
 
 const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
