@@ -50,6 +50,7 @@ async function calculateOrderGainMetrics({
   targetAchieved?: boolean;
   targetGainPercentageActual?: number;
   timeToTargetMinutes?: number;
+  targetTimestamp?: Date;
 }> {
   try {
     // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
@@ -138,6 +139,7 @@ async function calculateOrderGainMetrics({
       targetAchieved?: boolean;
       targetGainPercentageActual?: number;
       timeToTargetMinutes?: number;
+      targetTimestamp?: Date;
     } = {
       targetGainPercentage: targetGainPercentage,
     };
@@ -187,6 +189,7 @@ async function calculateOrderGainMetrics({
         result.targetAchieved = true;
         // Convert to minutes: if less than 30 seconds, show 0 min, otherwise round to nearest minute
         result.timeToTargetMinutes = timeDiffSeconds < 30 ? 0 : Math.round(timeDiffSeconds / 60);
+        result.targetTimestamp = targetTimestamp;
       } else {
         // If timestamp difference is less than 1 second, it's likely a precision issue
         // or the peak was actually at/before the order time - treat as not achieved

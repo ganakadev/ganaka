@@ -43,4 +43,5 @@ export interface Order {
   targetAchieved?: boolean;
   targetGainPercentageActual?: number;
   timeToTargetMinutes?: number;
+  targetTimestamp?: Date;
 }

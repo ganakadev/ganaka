@@ -302,9 +302,13 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
                   {targetGainPercentage !== undefined ? (
                     order.targetAchieved !== undefined ? (
                       order.targetAchieved ? (
-                        <Text size="sm" fw={600} c="green">
-                          ✓ Achieved in {formatTime(order.timeToTargetMinutes)}
-                        </Text>
+                        <div className="flex flex-col">
+                          <Text size="sm" fw={600} c="green">
+                            {`✓ Achieved in ${formatTime(order.timeToTargetMinutes)} @ ${dayjs
+                              .tz(order.targetTimestamp, "Asia/Kolkata")
+                              .format("HH:mm")}`}
+                          </Text>
+                        </div>
                       ) : (
                         <Text size="sm" fw={600} c="red">
                           ✗ Target not achieved

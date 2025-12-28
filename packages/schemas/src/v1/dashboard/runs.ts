@@ -37,6 +37,7 @@ const orderSchema = z.object({
   targetAchieved: z.boolean().optional(),
   targetGainPercentageActual: z.number().optional(),
   timeToTargetMinutes: z.number().optional(),
+  targetTimestamp: z.coerce.date().optional(),
 });
 
 export const getRunOrders = {
