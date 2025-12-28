@@ -155,10 +155,17 @@ async function calculateOrderGainMetrics({
     let targetTimestamp: Date | null = null;
     let bestPrice = entryPriceAtPlacement;
 
+    if (nseSymbol === "JBMA") {
+      console.log(targetPrice);
+      console.log(bestPrice);
+    }
+
     // Check all candles after order placement to see if target was reached
     for (const candle of candles) {
+      const candleTimestamp = dayjs(candle.timestamp).utc().format("YYYY-MM-DD HH:mm:ss");
+
       // Only consider candles strictly after order placement (not equal to)
-      if (!dayjs(candle.timestamp).isAfter(orderTimestamp, "minute")) {
+      if (!dayjs(candleTimestamp).isAfter(orderTimestamp, "minute")) {
         continue;
       }
 
