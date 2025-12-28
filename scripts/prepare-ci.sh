@@ -17,4 +17,13 @@ pnpm --filter @ganaka/schemas build
 echo "Building SDK package..."
 pnpm --filter @ganaka/sdk build
 
+echo "Building client package..."
+pnpm --filter @ganaka/client build
+
+echo "Building server package..."
+pnpm --filter @ganaka/server build
+
+echo "Building collector package..."
+pnpm --filter @ganaka/collector build
+
 echo "CI preparation complete!"
