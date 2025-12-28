@@ -13,6 +13,8 @@ import {
   type HistogramSeriesPartialOptions,
   type SeriesMarker,
   type Time,
+  type LineWidth,
+  LineStyle,
 } from "lightweight-charts";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
@@ -40,8 +42,8 @@ export interface SeriesMarkerConfig {
 export interface PriceLineConfig {
   price: number;
   color: string;
-  lineWidth: number;
-  lineStyle: 0 | 1 | 2 | 3; // 0 = solid, 1 = dotted, 2 = dashed, 3 = large dashed
+  lineWidth: LineWidth;
+  lineStyle: LineStyle; // 0 = solid, 1 = dotted, 2 = dashed, 3 = large dashed
   axisLabelVisible: boolean;
   title?: string;
 }
