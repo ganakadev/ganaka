@@ -21,7 +21,12 @@ export const RunsSidebar = ({
   const [deletingRunId, setDeletingRunId] = useState<string | null>(null);
 
   // API
-  const getRunsAPI = dashboardAPI.useGetRunsQuery();
+  const getRunsAPI = dashboardAPI.useGetRunsQuery(undefined, {
+    pollingInterval: 10000,
+    skipPollingIfUnfocused: true,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  });
   useRTKNotifier({
     requestName: "Get Runs",
     error: getRunsAPI.error,

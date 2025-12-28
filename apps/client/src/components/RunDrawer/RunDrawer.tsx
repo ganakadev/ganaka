@@ -7,7 +7,12 @@ import { useMemo, useState } from "react";
 import { dashboardAPI } from "../../store/api/dashboardApi";
 import type { Order, Run } from "../../types";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
-import { CandleChart, type CandleData, type SeriesMarkerConfig } from "../CandleChart";
+import {
+  CandleChart,
+  type CandleData,
+  type PriceLineConfig,
+  type SeriesMarkerConfig,
+} from "../CandleChart";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -16,10 +21,12 @@ const StockChart = ({
   symbol,
   orders,
   runStartTime,
+  isExpanded,
 }: {
   symbol: string;
   orders: Order[];
   runStartTime: Date | string | null;
+  isExpanded: boolean;
 }) => {
   // API
   // Normalize runStartTime to ISO string: handle both Date objects and string values
@@ -37,7 +44,7 @@ const StockChart = ({
       interval: "1minute",
     },
     {
-      skip: !runStartTime,
+      skip: !runStartTime || !isExpanded,
     }
   );
   useRTKNotifier({
@@ -94,10 +101,47 @@ const StockChart = ({
         color: color,
         size: 1,
         shape: "circle" as const,
-        text: `Order ${index + 1}: ₹${order.entryPrice.toFixed(2)}`,
+        text: `Order: ₹${order.entryPrice.toFixed(2)}`,
       };
     });
   }, [orders, candleData]);
+
+  // Transform orders into price lines format (stop loss and take profit)
+  const priceLines: PriceLineConfig[] = useMemo(() => {
+    if (!orders || orders.length === 0) {
+      return [];
+    }
+
+    const priceLinesList: PriceLineConfig[] = [];
+
+    orders.forEach((order, index) => {
+      // Stop Loss price line - red color
+      priceLinesList.push({
+        price: order.stopLossPrice,
+        color: "#ef5350", // red color matching chart's down color
+        lineWidth: 1,
+        lineStyle: 0, // solid line
+        axisLabelVisible: true,
+        title: `SL${index + 1 > 1 ? ` (Order ${index + 1})` : ""}: ₹${order.stopLossPrice.toFixed(
+          2
+        )}`,
+      });
+
+      // Take Profit price line - green color
+      priceLinesList.push({
+        price: order.takeProfitPrice,
+        color: "#26a69a", // green color matching chart's up color
+        lineWidth: 1,
+        lineStyle: 0, // solid line
+        axisLabelVisible: true,
+        title: `TP${index + 1 > 1 ? ` (Order ${index + 1})` : ""}: ₹${order.takeProfitPrice.toFixed(
+          2
+        )}`,
+      });
+    });
+
+    return priceLinesList;
+  }, [orders]);
 
   const errorMessage = candleError
     ? "data" in candleError &&
@@ -118,7 +162,7 @@ const StockChart = ({
 
   if (!candleData || candleData.length === 0) {
     return (
-      <div className="border rounded-md p-4">
+      <div className="border rounded-md p-4 h-[284px]">
         <Text size="sm" c="dimmed">
           Loading chart data...
         </Text>
@@ -128,12 +172,19 @@ const StockChart = ({
 
   // DRAW
   // Use a key based on symbol to force chart re-initialization when data becomes available
-  return <CandleChart key={symbol} candleData={candleData} seriesMarkers={seriesMarkers} />;
+  return (
+    <CandleChart
+      key={symbol}
+      candleData={candleData}
+      seriesMarkers={seriesMarkers}
+      priceLines={priceLines}
+    />
+  );
 };
 
 const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
   // STATE
-  const [targetGainPercentage, setTargetGainPercentage] = useState<number | undefined>(undefined);
+  const [targetGainPercentage, setTargetGainPercentage] = useState<number | undefined>(2);
   const [expandedStocks, setExpandedStocks] = useState<Set<string>>(new Set());
 
   // API
@@ -243,9 +294,7 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
               <Table.Th className="w-[12%]">Entry Price</Table.Th>
               <Table.Th className="w-[12%]">Stop Loss</Table.Th>
               <Table.Th className="w-[12%]">Take Profit</Table.Th>
-              <Table.Th className="w-[12%]">Max Gain %</Table.Th>
-              <Table.Th className="w-[10%]">Time to Max</Table.Th>
-              <Table.Th className="w-[10%]">
+              <Table.Th className="w-[20%]">
                 <div className="w-full h-full flex items-center justify-between">
                   <span>Target Status</span>
                   <NumberInput
@@ -253,6 +302,7 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
                     value={targetGainPercentage}
                     size="xs"
                     variant="filled"
+                    suffix="%"
                     onChange={(value) =>
                       setTargetGainPercentage(typeof value === "number" ? value : undefined)
                     }
@@ -301,44 +351,79 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
                   </span>
                 </Table.Td>
                 <Table.Td>
-                  {order.maxGainPercentage !== undefined ? (
-                    <span
-                      className={`text-sm font-medium ${
-                        order.maxGainPercentage >= 0 ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {order.maxGainPercentage >= 0 ? "+" : ""}
-                      {order.maxGainPercentage.toFixed(2)}%
-                    </span>
-                  ) : (
-                    <span className="text-sm text-gray-400">N/A</span>
-                  )}
-                </Table.Td>
-                <Table.Td>
-                  <span className="text-sm">{formatTime(order.timeToMaxGainMinutes)}</span>
-                </Table.Td>
-                <Table.Td>
-                  {targetGainPercentage ? (
-                    order.targetAchieved !== undefined ? (
+                  {targetGainPercentage !== undefined ? (
+                    // Priority: Stop loss status takes precedence over target achievement
+                    order.stopLossHit === true ? (
+                      <div className="flex flex-col gap-1">
+                        <Text size="sm" fw={600} c="red">
+                          {`✗ Stop Loss Hit in ${formatTime(order.timeToStopLossMinutes)} @ ${dayjs
+                            .tz(order.stopLossTimestamp, "Asia/Kolkata")
+                            .format("HH:mm")}`}
+                        </Text>
+                        {order.dynamicTakeProfitPrice !== undefined && (
+                          <Text size="xs" c="dimmed">
+                            Dynamic TP: ₹
+                            {order.dynamicTakeProfitPrice.toLocaleString("en-IN", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </Text>
+                        )}
+                      </div>
+                    ) : order.targetAchieved !== undefined ? (
                       order.targetAchieved ? (
-                        <span className="text-sm text-green-600">
-                          ✓ Achieved in {formatTime(order.timeToTargetMinutes)}
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          <Text size="sm" fw={600} c="green">
+                            {`✓ Achieved in ${formatTime(order.timeToTargetMinutes)} @ ${dayjs
+                              .tz(order.targetTimestamp, "Asia/Kolkata")
+                              .format("HH:mm")}`}
+                          </Text>
+                          {order.dynamicTakeProfitPrice !== undefined && (
+                            <Text size="xs" c="dimmed">
+                              Dynamic TP: ₹
+                              {order.dynamicTakeProfitPrice.toLocaleString("en-IN", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}
+                            </Text>
+                          )}
+                        </div>
                       ) : (
-                        <span className="text-sm text-red-600">
-                          ✗ Missed by{" "}
-                          {order.targetGainPercentageActual !== undefined
-                            ? `${(targetGainPercentage - order.targetGainPercentageActual).toFixed(
-                                2
-                              )}%`
-                            : "N/A"}
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          <Text size="sm" fw={600} c="red">
+                            ✗ Target not achieved
+                          </Text>
+                          {order.dynamicTakeProfitPrice !== undefined && (
+                            <Text size="xs" c="dimmed">
+                              Dynamic TP: ₹
+                              {order.dynamicTakeProfitPrice.toLocaleString("en-IN", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}
+                            </Text>
+                          )}
+                        </div>
                       )
                     ) : (
-                      <span className="text-sm text-gray-400">N/A</span>
+                      <div className="flex flex-col gap-1">
+                        <Text size="sm" c="dimmed">
+                          N/A
+                        </Text>
+                        {order.dynamicTakeProfitPrice !== undefined && (
+                          <Text size="xs" c="dimmed">
+                            Dynamic TP: ₹
+                            {order.dynamicTakeProfitPrice.toLocaleString("en-IN", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </Text>
+                        )}
+                      </div>
                     )
                   ) : (
-                    <span className="text-sm text-gray-400">N/A</span>
+                    <Text size="sm" c="dimmed">
+                      Enter target %
+                    </Text>
                   )}
                 </Table.Td>
                 <Table.Td>
@@ -379,6 +464,7 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
                     symbol={symbol}
                     orders={stockOrders}
                     runStartTime={selectedRun?.startTime || null}
+                    isExpanded={expandedStocks.has(symbol)}
                   />
                 </Accordion.Panel>
               </Accordion.Item>

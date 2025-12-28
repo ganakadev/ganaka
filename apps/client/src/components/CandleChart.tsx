@@ -37,10 +37,20 @@ export interface SeriesMarkerConfig {
   text?: string;
 }
 
+export interface PriceLineConfig {
+  price: number;
+  color: string;
+  lineWidth: number;
+  lineStyle: 0 | 1 | 2 | 3; // 0 = solid, 1 = dotted, 2 = dashed, 3 = large dashed
+  axisLabelVisible: boolean;
+  title?: string;
+}
+
 export interface CandleChartProps {
   candleData: CandleData[] | null;
   histogramSeries?: HistogramSeriesConfig[];
   seriesMarkers?: SeriesMarkerConfig[];
+  priceLines?: PriceLineConfig[];
   height?: number;
 }
 
@@ -48,6 +58,7 @@ export function CandleChart({
   candleData,
   histogramSeries = [],
   seriesMarkers = [],
+  priceLines = [],
   height = 250,
 }: CandleChartProps) {
   // HOOKS
@@ -57,6 +68,7 @@ export function CandleChart({
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const histogramSeriesRefsRef = useRef<Array<ISeriesApi<"Histogram"> | null>>([]);
   const markersRef = useRef<ReturnType<typeof createSeriesMarkers<Time>> | null>(null);
+  const priceLinesRef = useRef<Array<ReturnType<ISeriesApi<"Candlestick">["createPriceLine"]>>>([]);
 
   // STATE
   const [containerReady, setContainerReady] = useState(false);
@@ -263,7 +275,29 @@ export function CandleChart({
         }
       }
     });
-  }, [candleData, histogramSeries, seriesMarkers, height]);
+
+    // SETTING/UPDATE PRICE LINES
+    // Remove existing price lines
+    priceLinesRef.current.forEach((priceLine) => {
+      currentCandlestickSeries.removePriceLine(priceLine);
+    });
+    priceLinesRef.current = [];
+
+    // Create new price lines
+    if (priceLines && priceLines.length > 0) {
+      priceLines.forEach((config) => {
+        const priceLine = currentCandlestickSeries.createPriceLine({
+          price: config.price,
+          color: config.color,
+          lineWidth: config.lineWidth,
+          lineStyle: config.lineStyle,
+          axisLabelVisible: config.axisLabelVisible,
+          title: config.title,
+        });
+        priceLinesRef.current.push(priceLine);
+      });
+    }
+  }, [candleData, histogramSeries, seriesMarkers, priceLines, height]);
 
   // Initialize or update chart when container is ready and data is available
   useEffect(() => {
@@ -286,6 +320,7 @@ export function CandleChart({
       seriesRef.current = null;
       histogramSeriesRefsRef.current = [];
       markersRef.current = null;
+      priceLinesRef.current = [];
     };
   }, []);
 

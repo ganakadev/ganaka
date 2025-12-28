@@ -39,10 +39,14 @@ export interface Order {
   timestamp: Date;
   runId: string;
   // Gain analysis fields
-  maxGainPercentage?: number;
-  timeToMaxGainMinutes?: number;
   targetGainPercentage?: number;
   targetAchieved?: boolean;
   targetGainPercentageActual?: number;
   timeToTargetMinutes?: number;
+  targetTimestamp?: Date;
+  dynamicTakeProfitPrice?: number;
+  // Stop loss analysis fields
+  stopLossHit?: boolean;
+  stopLossTimestamp?: Date;
+  timeToStopLossMinutes?: number;
 }

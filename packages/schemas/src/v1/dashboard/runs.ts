@@ -33,12 +33,16 @@ const orderSchema = z.object({
   timestamp: z.coerce.date(),
   runId: z.uuid(),
   // Gain analysis fields
-  maxGainPercentage: z.number().optional(),
-  timeToMaxGainMinutes: z.number().optional(),
   targetGainPercentage: z.number().optional(),
   targetAchieved: z.boolean().optional(),
   targetGainPercentageActual: z.number().optional(),
   timeToTargetMinutes: z.number().optional(),
+  targetTimestamp: z.coerce.date().optional(),
+  dynamicTakeProfitPrice: z.coerce.number().optional(),
+  // Stop loss analysis fields
+  stopLossHit: z.boolean().optional(),
+  stopLossTimestamp: z.coerce.date().optional(),
+  timeToStopLossMinutes: z.number().optional(),
 });
 
 export const getRunOrders = {
