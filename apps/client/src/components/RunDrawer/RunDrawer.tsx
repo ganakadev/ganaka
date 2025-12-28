@@ -16,10 +16,12 @@ const StockChart = ({
   symbol,
   orders,
   runStartTime,
+  isExpanded,
 }: {
   symbol: string;
   orders: Order[];
   runStartTime: Date | string | null;
+  isExpanded: boolean;
 }) => {
   // API
   // Normalize runStartTime to ISO string: handle both Date objects and string values
@@ -37,7 +39,7 @@ const StockChart = ({
       interval: "1minute",
     },
     {
-      skip: !runStartTime,
+      skip: !runStartTime || !isExpanded,
     }
   );
   useRTKNotifier({
@@ -118,7 +120,7 @@ const StockChart = ({
 
   if (!candleData || candleData.length === 0) {
     return (
-      <div className="border rounded-md p-4">
+      <div className="border rounded-md p-4 h-[284px]">
         <Text size="sm" c="dimmed">
           Loading chart data...
         </Text>
@@ -363,6 +365,7 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
                     symbol={symbol}
                     orders={stockOrders}
                     runStartTime={selectedRun?.startTime || null}
+                    isExpanded={expandedStocks.has(symbol)}
                   />
                 </Accordion.Panel>
               </Accordion.Item>
