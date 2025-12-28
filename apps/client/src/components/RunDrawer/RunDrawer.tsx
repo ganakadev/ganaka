@@ -245,7 +245,7 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
               <Table.Th className="w-[12%]">Take Profit</Table.Th>
               <Table.Th className="w-[12%]">Max Gain %</Table.Th>
               <Table.Th className="w-[10%]">Time to Max</Table.Th>
-              <Table.Th className="w-[10%]">
+              <Table.Th className="w-[12%]">
                 <div className="w-full h-full flex items-center justify-between">
                   <span>Target Status</span>
                   <NumberInput
