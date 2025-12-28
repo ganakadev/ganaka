@@ -167,7 +167,7 @@ export const RunsSidebar = ({
             loading={isBulkDeleting}
             onClick={handleBulkDelete}
           >
-            {allSelected ? "Clear All" : "Delete Selected"}
+            {allSelected ? "Delete All" : "Delete Selected"}
           </Button>
         </div>
       </div>
