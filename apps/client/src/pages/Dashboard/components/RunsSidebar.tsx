@@ -225,7 +225,7 @@ export const RunsSidebar = ({
                               />
                             </div>
                             <div className="h-full min-w-0 flex-1">
-                              <Text size="xs" c="dimmed" truncate>
+                              <Text size="xs" c="dimmed" truncate className="leading-none!">
                                 {dayjs(run.startTime).format("HH:mm")} -{" "}
                                 {dayjs(run.endTime).format("HH:mm")}
                               </Text>
