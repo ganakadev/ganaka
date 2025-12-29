@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "..",
+    "baseUrl": ".",
+    "paths": {
+      "@ganaka/schemas": ["../schemas/src/index.ts"],
+      "@ganaka/schemas/*": ["../schemas/src/*"],
+      "@ganaka/db": ["../db/src/index.ts"],
+      "@ganaka/db/*": ["../db/src/*"],
+      "@ganaka/db/prisma": ["../db/src/prisma.ts"]
+    }
+  }
+}

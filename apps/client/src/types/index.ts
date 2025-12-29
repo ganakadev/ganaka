@@ -22,6 +22,7 @@ export interface Run {
   id: string;
   startTime: Date;
   endTime: Date;
+  createdAt: Date;
   completed: boolean;
   orderCount: number;
 }

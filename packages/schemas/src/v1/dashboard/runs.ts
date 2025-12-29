@@ -7,12 +7,13 @@ const runSchema = z.object({
   id: z.string().uuid(),
   startTime: z.coerce.date(),
   endTime: z.coerce.date(),
+  createdAt: z.coerce.date(),
   completed: z.boolean(),
   orderCount: z.number(),
 });
 
 const groupedRunsSchema = z.record(
-  z.string(), // date string (YYYY-MM-DD)
+  z.string(), // date string (YYYY-MM-DD) based on run createdAt
   z.array(runSchema)
 );
 

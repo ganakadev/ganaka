@@ -6,8 +6,8 @@
     "dev": "env-cmd -f ../../.env --silent nodemon",
     "build": "env-cmd -f ../../.env --silent tsc",
     "start": "env-cmd -f ../../.env --silent node dist/index.js",
-    "lint": "tsc --noEmit",
-    "test": "playwright test"
+    "test": "playwright test",
+    "lint": "tsc --noEmit -p tsconfig.lint.json"
   },
   "dependencies": {
     "@fastify/autoload": "^6.3.1",

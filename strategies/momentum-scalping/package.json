@@ -6,7 +6,7 @@
     "dev": "env-cmd -f ../../.env --silent nodemon",
     "build": "env-cmd -f ../../.env --silent tsc",
     "start": "env-cmd -f ../../.env --silent node dist/index.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit -p tsconfig.lint.json"
   },
   "dependencies": {
     "@ganaka/sdk": "workspace:*",

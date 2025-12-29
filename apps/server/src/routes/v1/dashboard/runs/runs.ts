@@ -297,23 +297,25 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
             select: { orders: true },
           },
         },
-        orderBy: { startTime: "desc" },
+        // Order newest-created runs first so "runs I ran today" show on top
+        orderBy: { createdAt: "desc" },
       });
 
-      // Group runs by date (startTime date)
+      // Group runs by date (createdAt date)
       const groupedRuns: Record<
         string,
         Array<{
           id: string;
           startTime: Date;
           endTime: Date;
+          createdAt: Date;
           completed: boolean;
           orderCount: number;
         }>
       > = {};
 
       for (const run of runs) {
-        const dateKey = dayjs(run.startTime).format("YYYY-MM-DD");
+        const dateKey = dayjs(run.createdAt).format("YYYY-MM-DD");
         if (!groupedRuns[dateKey]) {
           groupedRuns[dateKey] = [];
         }
@@ -321,6 +323,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
           id: run.id,
           startTime: run.startTime,
           endTime: run.endTime,
+          createdAt: run.createdAt,
           completed: run.completed,
           orderCount: run._count.orders,
         });
@@ -338,6 +341,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
           id: string;
           startTime: Date;
           endTime: Date;
+          createdAt: Date;
           completed: boolean;
           orderCount: number;
         }>

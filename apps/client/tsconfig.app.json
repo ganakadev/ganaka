@@ -10,6 +10,14 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@ganaka/schemas": ["../../packages/schemas/src/index.ts"],
+      "@ganaka/schemas/*": ["../../packages/schemas/src/*"],
+      "@ganaka/db": ["../../packages/db/src/index.ts"],
+      "@ganaka/db/*": ["../../packages/db/src/*"],
+      "@ganaka/db/prisma": ["../../packages/db/src/prisma.ts"]
+    },
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",

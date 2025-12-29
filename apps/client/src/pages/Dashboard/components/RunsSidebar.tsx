@@ -50,6 +50,15 @@ export const RunsSidebar = ({
   const allSelected = allRunIds.length > 0 && selectedCount === allRunIds.length;
   const someSelected = selectedCount > 0 && selectedCount < allRunIds.length;
 
+  const formatRunWindow = (run: Run) => {
+    const start = dayjs(run.startTime);
+    const end = dayjs(run.endTime);
+    if (start.isSame(end, "day")) {
+      return `${start.format("MMM DD, YYYY")} ${start.format("HH:mm")} - ${end.format("HH:mm")}`;
+    }
+    return `${start.format("MMM DD, YYYY HH:mm")} - ${end.format("MMM DD, YYYY HH:mm")}`;
+  };
+
   useEffect(() => {
     const validIds = new Set(allRunIds);
     setSelectedRunIds((prev) => {
@@ -231,8 +240,7 @@ export const RunsSidebar = ({
                             </div>
                             <div className="h-full min-w-0 flex-1">
                               <Text size="xs" c="dimmed" truncate className="leading-none!">
-                                {dayjs(run.startTime).format("HH:mm")} -{" "}
-                                {dayjs(run.endTime).format("HH:mm")}
+                                {formatRunWindow(run)}
                               </Text>
                             </div>
                           </div>

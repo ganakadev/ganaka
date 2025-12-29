@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "../..",
+    "baseUrl": ".",
+    "paths": {
+      "@ganaka/sdk": ["../../packages/sdk/src/index.ts"],
+      "@ganaka/sdk/*": ["../../packages/sdk/src/*"],
+      "@ganaka/schemas": ["../../packages/schemas/src/index.ts"],
+      "@ganaka/schemas/*": ["../../packages/schemas/src/*"],
+      "@ganaka/db": ["../../packages/db/src/index.ts"],
+      "@ganaka/db/*": ["../../packages/db/src/*"],
+      "@ganaka/db/prisma": ["../../packages/db/src/prisma.ts"]
+    }
+  }
+}
