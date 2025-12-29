@@ -205,3 +205,110 @@ export function createListsQuery(type?: "top-gainers" | "volume-shockers", datet
     ...(datetime && { datetime }),
   };
 }
+
+// ==================== Dashboard API Test Data ====================
+
+/**
+ * Creates test data for creating a run
+ */
+export function createRunTestData(startTime?: string, endTime?: string) {
+  const defaultStart = new Date("2025-12-26T09:15:00Z").toISOString();
+  const defaultEnd = new Date("2025-12-26T15:30:00Z").toISOString();
+  return {
+    startTime: startTime || defaultStart,
+    endTime: endTime || defaultEnd,
+  };
+}
+
+/**
+ * Creates test data for creating an order
+ */
+export function createOrderTestData(
+  nseSymbol?: string,
+  entryPrice?: number,
+  stopLossPrice?: number,
+  takeProfitPrice?: number,
+  timestamp?: string
+) {
+  const defaultTimestamp = new Date("2025-12-26T10:00:00Z").toISOString();
+  return {
+    nseSymbol: nseSymbol || TEST_SYMBOL,
+    entryPrice: entryPrice || 2500.0,
+    stopLossPrice: stopLossPrice || 2400.0,
+    takeProfitPrice: takeProfitPrice || 2600.0,
+    timestamp: timestamp || defaultTimestamp,
+  };
+}
+
+/**
+ * Creates valid shortlists query parameters for dashboard
+ */
+export function createShortlistsQuery(
+  date?: string,
+  type?: "TOP_GAINERS" | "VOLUME_SHOCKERS",
+  method?:
+    | "simple"
+    | "total"
+    | "price-weighted"
+    | "near-price"
+    | "volume-weighted"
+    | "bid-ask"
+    | "hybrid"
+) {
+  return {
+    date: date || TEST_DATE,
+    type: type || "TOP_GAINERS",
+    ...(method && { method }),
+  };
+}
+
+/**
+ * Creates valid candles query parameters for dashboard
+ */
+export function createCandlesQuery(
+  symbol?: string,
+  date?: string,
+  interval?: "1minute" | "5minute" | "15minute" | "30minute" | "1hour" | "1day"
+) {
+  return {
+    symbol: symbol || TEST_SYMBOL,
+    date: date || TEST_DATE,
+    ...(interval && { interval }),
+  };
+}
+
+/**
+ * Creates valid quote timeline query parameters for dashboard
+ */
+export function createQuoteTimelineQueryForDashboard(symbol?: string, date?: string) {
+  return {
+    symbol: symbol || TEST_SYMBOL,
+    date: date || TEST_DATE,
+  };
+}
+
+/**
+ * Creates valid daily persistent companies query parameters
+ */
+export function createDailyPersistentCompaniesQuery(
+  date?: string,
+  type?: "TOP_GAINERS" | "VOLUME_SHOCKERS"
+) {
+  return {
+    date: date || TEST_DATE,
+    type: type || "TOP_GAINERS",
+  };
+}
+
+/**
+ * Creates valid daily unique companies query parameters
+ */
+export function createDailyUniqueCompaniesQuery(
+  date?: string,
+  type?: "TOP_GAINERS" | "VOLUME_SHOCKERS"
+) {
+  return {
+    date: date || TEST_DATE,
+    type: type || "TOP_GAINERS",
+  };
+}

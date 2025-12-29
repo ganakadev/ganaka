@@ -5,6 +5,8 @@ import type { z } from "zod";
 import { v1_developer_groww_schemas, v1_developer_lists_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { Decimal } from "@ganaka/db/prisma";
+import { createValidShortlistEntries } from "../fixtures/test-data";
 
 dayjs.extend(utc);
 
@@ -239,5 +241,120 @@ export async function getQuoteSnapshotById(id: string) {
 export async function getShortlistSnapshotById(id: string) {
   return prisma.shortlistSnapshot.findUnique({
     where: { id },
+  });
+}
+
+// ==================== Run and Order Helpers ====================
+
+/**
+ * Creates a test run for a developer
+ */
+export async function createRun(
+  developerId: string,
+  startTime: Date | string,
+  endTime: Date | string
+) {
+  const start = typeof startTime === "string" ? new Date(startTime) : startTime;
+  const end = typeof endTime === "string" ? new Date(endTime) : endTime;
+
+  const run = await prisma.run.create({
+    data: {
+      id: randomUUID(),
+      startTime: start,
+      endTime: end,
+      developerId: developerId,
+      completed: false,
+    },
+  });
+
+  return run;
+}
+
+/**
+ * Creates a test order for a run
+ */
+export async function createOrder(
+  runId: string,
+  nseSymbol: string,
+  entryPrice: number,
+  stopLossPrice: number,
+  takeProfitPrice: number,
+  timestamp: Date | string
+) {
+  const ts = typeof timestamp === "string" ? new Date(timestamp) : timestamp;
+
+  const order = await prisma.order.create({
+    data: {
+      id: randomUUID(),
+      runId: runId,
+      nseSymbol: nseSymbol,
+      entryPrice: new Decimal(entryPrice),
+      stopLossPrice: new Decimal(stopLossPrice),
+      takeProfitPrice: new Decimal(takeProfitPrice),
+      timestamp: ts,
+    },
+  });
+
+  return order;
+}
+
+/**
+ * Creates multiple shortlist snapshots for a date (for testing daily persistent/unique companies)
+ */
+export async function createMultipleShortlistSnapshots(
+  type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
+  date: string,
+  count: number
+) {
+  const baseDate = dayjs(date).utc();
+  const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
+  const snapshots = [];
+
+  // Create snapshots at different times during market hours (9:15 AM - 3:30 PM IST)
+  const startHour = 9;
+  const startMinute = 15;
+  const intervalMinutes = Math.floor((15 * 60 - 15) / count); // Distribute across market hours
+
+  const entries = createValidShortlistEntries();
+
+  for (let i = 0; i < count; i++) {
+    const minutes = startMinute + i * intervalMinutes;
+    const hours = startHour + Math.floor(minutes / 60);
+    const finalMinutes = minutes % 60;
+
+    // Convert IST to UTC (IST is UTC+5:30)
+    const istTime = baseDate.hour(hours).minute(finalMinutes).second(0);
+    const utcTime = istTime.subtract(5, "hour").subtract(30, "minute");
+
+    const snapshot = await prisma.shortlistSnapshot.create({
+      data: {
+        id: randomUUID(),
+        timestamp: utcTime.toDate(),
+        shortlistType,
+        entries: entries as any,
+      },
+    });
+
+    snapshots.push(snapshot);
+  }
+
+  return snapshots;
+}
+
+/**
+ * Gets a run by ID for verification
+ */
+export async function getRunById(runId: string) {
+  return prisma.run.findUnique({
+    where: { id: runId },
+  });
+}
+
+/**
+ * Gets an order by ID for verification
+ */
+export async function getOrderById(orderId: string) {
+  return prisma.order.findUnique({
+    where: { id: orderId },
   });
 }
