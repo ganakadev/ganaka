@@ -73,7 +73,9 @@ test.describe("GET /v1/dashboard/runs", () => {
     const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(response.data);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
+      response.data
+    );
     expect(Object.keys(validatedData.data).length).toBeGreaterThan(0);
   });
 
@@ -85,7 +87,9 @@ test.describe("GET /v1/dashboard/runs", () => {
     const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(response.data);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
+      response.data
+    );
     const dateKeys = Object.keys(validatedData.data);
     dateKeys.forEach((dateKey) => {
       expect(dateKey).toMatch(/^\d{4}-\d{2}-\d{2}$/);
@@ -104,7 +108,9 @@ test.describe("GET /v1/dashboard/runs", () => {
     const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(response.data);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
+      response.data
+    );
     const dateKeys = Object.keys(validatedData.data);
 
     for (let i = 1; i < dateKeys.length; i++) {
@@ -122,7 +128,9 @@ test.describe("GET /v1/dashboard/runs", () => {
     const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(response.data);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
+      response.data
+    );
 
     const dateKeys = Object.keys(validatedData.data);
     if (dateKeys.length > 0) {
@@ -151,11 +159,12 @@ test.describe("GET /v1/dashboard/runs", () => {
     const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(response.data);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
+      response.data
+    );
 
-    // TODO: Add exact date grouping assertions here
-    // expect(validatedData.data).toHaveProperty("2025-12-26");
-    // expect(validatedData.data["2025-12-26"].length).toBe(1);
+    expect(validatedData.data).toHaveProperty("2025-12-26");
+    expect(validatedData.data["2025-12-26"].length).toBe(1);
   });
 });
 
@@ -169,9 +178,14 @@ test.describe("POST /v1/dashboard/runs", () => {
 
   test("should return 401 when invalid token is provided", async () => {
     const testData = createRunTestData();
-    const response = await authenticatedPost("/v1/dashboard/runs", "invalid-token-12345", testData, {
-      validateStatus: () => true,
-    });
+    const response = await authenticatedPost(
+      "/v1/dashboard/runs",
+      "invalid-token-12345",
+      testData,
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect(response.status).toBe(401);
   });
@@ -231,8 +245,9 @@ test.describe("POST /v1/dashboard/runs", () => {
     const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData =
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(response.data);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+      response.data
+    );
     expect(validatedData.data).toHaveProperty("id");
     expect(validatedData.data).toHaveProperty("startTime");
     expect(validatedData.data).toHaveProperty("endTime");
@@ -255,20 +270,25 @@ test.describe("POST /v1/dashboard/runs", () => {
     const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData =
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(response.data);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+      response.data
+    );
     expect(validatedData.data).toHaveProperty("startTime");
     expect(validatedData.data).toHaveProperty("endTime");
-    // TODO: Add exact timestamp assertions here
-    // expect(validatedData.data.startTime).toBe(new Date(testData.startTime));
-    // expect(validatedData.data.endTime).toBe(new Date(testData.endTime));
+    const startTime = new Date(testData.startTime);
+    const endTime = new Date(testData.endTime);
+
+    expect(validatedData.data.startTime.toISOString()).toBe(startTime.toISOString());
+    expect(validatedData.data.endTime.toISOString()).toBe(endTime.toISOString());
   });
 });
 
 test.describe("PATCH /v1/dashboard/runs/:runId", () => {
   test("should return 401 when authorization header is missing", async () => {
     const run = await createRun(developerId, new Date(), new Date());
-    const response = await unauthenticatedPatch(`/v1/dashboard/runs/${run.id}`, { completed: true });
+    const response = await unauthenticatedPatch(`/v1/dashboard/runs/${run.id}`, {
+      completed: true,
+    });
 
     expect(response.status).toBe(401);
   });
@@ -340,8 +360,9 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
     });
 
     expect(response.status).toBe(200);
-    const validatedData =
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(response.data);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
+      response.data
+    );
     expect(validatedData.data).toHaveProperty("id");
     expect(validatedData.data).toHaveProperty("startTime");
     expect(validatedData.data).toHaveProperty("endTime");
@@ -371,11 +392,12 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
     });
 
     expect(response.status).toBe(200);
-    const validatedData =
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(response.data);
-    // TODO: Add exact timestamp assertions here
-    // expect(validatedData.data.startTime).toBe(startTime);
-    // expect(validatedData.data.endTime).toBe(endTime);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
+      response.data
+    );
+
+    expect(validatedData.data.startTime.toISOString()).toBe(startTime.toISOString());
+    expect(validatedData.data.endTime.toISOString()).toBe(endTime.toISOString());
   });
 });
 
@@ -389,9 +411,13 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
 
   test("should return 401 when invalid token is provided", async () => {
     const run = await createRun(developerId, new Date(), new Date());
-    const response = await authenticatedDelete(`/v1/dashboard/runs/${run.id}`, "invalid-token-12345", {
-      validateStatus: () => true,
-    });
+    const response = await authenticatedDelete(
+      `/v1/dashboard/runs/${run.id}`,
+      "invalid-token-12345",
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect(response.status).toBe(401);
   });
@@ -452,17 +478,25 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
 
   test("should return 401 when invalid token is provided", async () => {
     const run = await createRun(developerId, new Date(), new Date());
-    const response = await authenticatedGet(`/v1/dashboard/runs/${run.id}/orders`, "invalid-token-12345", {
-      validateStatus: () => true,
-    });
+    const response = await authenticatedGet(
+      `/v1/dashboard/runs/${run.id}/orders`,
+      "invalid-token-12345",
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect(response.status).toBe(401);
   });
 
   test("should return 404 when runId is invalid UUID", async () => {
-    const response = await authenticatedGet("/v1/dashboard/runs/invalid-id/orders", developerToken, {
-      validateStatus: () => true,
-    });
+    const response = await authenticatedGet(
+      "/v1/dashboard/runs/invalid-id/orders",
+      developerToken,
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect([400, 404]).toContain(response.status);
   });
@@ -633,11 +667,10 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
 
     if (validatedData.data.length > 0) {
       const firstOrder = validatedData.data[0];
-      // TODO: Add exact value assertions here
-      // expect(firstOrder.nseSymbol).toBe(TEST_SYMBOL);
-      // expect(firstOrder.entryPrice).toBe(2500.0);
-      // expect(firstOrder.stopLossPrice).toBe(2400.0);
-      // expect(firstOrder.takeProfitPrice).toBe(2600.0);
+      expect(firstOrder.nseSymbol).toBe(TEST_SYMBOL);
+      expect(firstOrder.entryPrice).toBe(2500.0);
+      expect(firstOrder.stopLossPrice).toBe(2400.0);
+      expect(firstOrder.takeProfitPrice).toBe(2600.0);
     }
   });
 
@@ -664,9 +697,8 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
 
     if (validatedData.data.length > 0) {
       const firstOrder = validatedData.data[0];
-      // TODO: Add exact gain metrics assertions here
-      // expect(firstOrder.targetGainPercentage).toBe(10);
-      // expect(firstOrder.targetAchieved).toBe(/* expected value */);
+      expect(firstOrder.targetGainPercentage).toBe(10);
+      expect(firstOrder.targetAchieved).toBe(false);
     }
   });
 });
@@ -818,7 +850,11 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
   test("should return 201 with created order when valid data provided", async () => {
     const run = await createRun(developerId, new Date(), new Date());
     const orderData = createOrderTestData();
-    const response = await authenticatedPost(`/v1/dashboard/runs/${run.id}/orders`, developerToken, orderData);
+    const response = await authenticatedPost(
+      `/v1/dashboard/runs/${run.id}/orders`,
+      developerToken,
+      orderData
+    );
 
     expect(response.status).toBe(201);
     const body = response.data;
@@ -836,11 +872,16 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
   test("should validate response structure matches schema", async () => {
     const run = await createRun(developerId, new Date(), new Date());
     const orderData = createOrderTestData();
-    const response = await authenticatedPost(`/v1/dashboard/runs/${run.id}/orders`, developerToken, orderData);
+    const response = await authenticatedPost(
+      `/v1/dashboard/runs/${run.id}/orders`,
+      developerToken,
+      orderData
+    );
 
     expect(response.status).toBe(201);
-    const validatedData =
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.response.parse(response.data);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.response.parse(
+      response.data
+    );
     expect(validatedData.data).toHaveProperty("id");
     expect(validatedData.data).toHaveProperty("nseSymbol");
     expect(validatedData.data).toHaveProperty("entryPrice");
@@ -853,7 +894,11 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
   test("should validate order belongs to specified run", async () => {
     const run = await createRun(developerId, new Date(), new Date());
     const orderData = createOrderTestData();
-    const response = await authenticatedPost(`/v1/dashboard/runs/${run.id}/orders`, developerToken, orderData);
+    const response = await authenticatedPost(
+      `/v1/dashboard/runs/${run.id}/orders`,
+      developerToken,
+      orderData
+    );
 
     expect(response.status).toBe(201);
     const orderId = response.data.data.id;
@@ -865,16 +910,19 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
   test("should validate exact order values (placeholder for user to fill)", async () => {
     const run = await createRun(developerId, new Date(), new Date());
     const orderData = createOrderTestData();
-    const response = await authenticatedPost(`/v1/dashboard/runs/${run.id}/orders`, developerToken, orderData);
+    const response = await authenticatedPost(
+      `/v1/dashboard/runs/${run.id}/orders`,
+      developerToken,
+      orderData
+    );
 
     expect(response.status).toBe(201);
-    const validatedData =
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.response.parse(response.data);
-    // TODO: Add exact value assertions here
-    // expect(validatedData.data.nseSymbol).toBe(orderData.nseSymbol);
-    // expect(validatedData.data.entryPrice).toBe(orderData.entryPrice);
-    // expect(validatedData.data.stopLossPrice).toBe(orderData.stopLossPrice);
-    // expect(validatedData.data.takeProfitPrice).toBe(orderData.takeProfitPrice);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.response.parse(
+      response.data
+    );
+    expect(validatedData.data.nseSymbol).toBe(orderData.nseSymbol);
+    expect(validatedData.data.entryPrice).toBe(orderData.entryPrice);
+    expect(validatedData.data.stopLossPrice).toBe(orderData.stopLossPrice);
+    expect(validatedData.data.takeProfitPrice).toBe(orderData.takeProfitPrice);
   });
 });
-

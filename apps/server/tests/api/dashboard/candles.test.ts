@@ -25,7 +25,7 @@ test.beforeAll(async () => {
 test.describe("GET /v1/dashboard/candles", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createCandlesQuery();
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await unauthenticatedGet(`/v1/dashboard/candles?${queryString}`);
 
     expect(response.status).toBe(401);
@@ -33,7 +33,7 @@ test.describe("GET /v1/dashboard/candles", () => {
 
   test("should return 401 when invalid token is provided", async () => {
     const query = createCandlesQuery();
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/candles?${queryString}`,
       "invalid-token-12345",
@@ -47,7 +47,7 @@ test.describe("GET /v1/dashboard/candles", () => {
 
   test("should return 400 when symbol is missing", async () => {
     const query = { date: TEST_DATE };
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/candles?${queryString}`,
       developerToken,
@@ -61,7 +61,7 @@ test.describe("GET /v1/dashboard/candles", () => {
 
   test("should return 400 when date is missing", async () => {
     const query = { symbol: TEST_SYMBOL };
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/candles?${queryString}`,
       developerToken,
@@ -75,7 +75,7 @@ test.describe("GET /v1/dashboard/candles", () => {
 
   test("should return 400 when date format is invalid", async () => {
     const query = createCandlesQuery(TEST_SYMBOL, "invalid-date");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/candles?${queryString}`,
       developerToken,
@@ -88,8 +88,8 @@ test.describe("GET /v1/dashboard/candles", () => {
   });
 
   test("should return 400 when interval is invalid enum value", async () => {
-    const query = createCandlesQuery(TEST_SYMBOL, TEST_DATE, "invalid-interval" as any);
-    const queryString = new URLSearchParams(query as any).toString();
+    const query = createCandlesQuery(TEST_SYMBOL, TEST_DATE, "invalid-interval");
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/candles?${queryString}`,
       developerToken,
@@ -103,7 +103,7 @@ test.describe("GET /v1/dashboard/candles", () => {
 
   test("should return 200 with candles data when valid params provided", async () => {
     const query = createCandlesQuery(TEST_SYMBOL, TEST_DATE);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken);
 
     // Note: This test may fail if external API is unavailable, but structure validation should still work
@@ -123,7 +123,7 @@ test.describe("GET /v1/dashboard/candles", () => {
 
   test("should validate candle structure (time, open, high, low, close)", async () => {
     const query = createCandlesQuery(TEST_SYMBOL, TEST_DATE);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken);
 
     if (response.status === 200) {
@@ -150,7 +150,7 @@ test.describe("GET /v1/dashboard/candles", () => {
 
   test("should validate start_time and end_time match market hours (9:15 AM - 3:30 PM IST)", async () => {
     const query = createCandlesQuery(TEST_SYMBOL, TEST_DATE);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken);
 
     if (response.status === 200) {
@@ -185,7 +185,7 @@ test.describe("GET /v1/dashboard/candles", () => {
 
     for (const { interval, expectedMinutes } of intervals) {
       const query = createCandlesQuery(TEST_SYMBOL, TEST_DATE, interval);
-      const queryString = new URLSearchParams(query as any).toString();
+      const queryString = new URLSearchParams(query).toString();
       console.log(queryString);
       const response = await authenticatedGet(
         `/v1/dashboard/candles?${queryString}`,
@@ -204,7 +204,7 @@ test.describe("GET /v1/dashboard/candles", () => {
 
   test("should validate candles are ordered chronologically", async () => {
     const query = createCandlesQuery(TEST_SYMBOL, TEST_DATE);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken);
 
     if (response.status === 200) {
@@ -224,7 +224,7 @@ test.describe("GET /v1/dashboard/candles", () => {
     // Use a date that likely won't have data (far future or invalid symbol)
     const futureDate = "2099-01-01";
     const query = createCandlesQuery("INVALID_SYMBOL_XYZ", futureDate);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/candles?${queryString}`,
       developerToken,
@@ -239,7 +239,7 @@ test.describe("GET /v1/dashboard/candles", () => {
 
   test("should validate exact candle values (placeholder for user to fill)", async () => {
     const query = createCandlesQuery(TEST_SYMBOL, TEST_DATE);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken);
 
     if (response.status === 200) {
@@ -253,12 +253,11 @@ test.describe("GET /v1/dashboard/candles", () => {
         expect(firstCandle).toHaveProperty("high");
         expect(firstCandle).toHaveProperty("low");
         expect(firstCandle).toHaveProperty("close");
-        // TODO: Add exact value assertions here
-        // expect(firstCandle.time).toBe(/* expected unix timestamp */);
-        // expect(firstCandle.open).toBe(/* expected open price */);
-        // expect(firstCandle.high).toBe(/* expected high price */);
-        // expect(firstCandle.low).toBe(/* expected low price */);
-        // expect(firstCandle.close).toBe(/* expected close price */);
+        expect(firstCandle.time).toBe(1766740500);
+        expect(firstCandle.open).toBe(1558.1);
+        expect(firstCandle.high).toBe(1560.2);
+        expect(firstCandle.low).toBe(1554.7);
+        expect(firstCandle.close).toBe(1554.7);
       }
     }
   });

@@ -132,7 +132,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
         data: {
           shortlist: {
             id: shortlistFromDb.id,
-            timestamp: shortlistFromDb.timestamp,
+            timestamp: `${shortlistFromDb.timestamp.toISOString()}`,
             shortlistType: shortlistFromDb.shortlistType,
             entries,
           },

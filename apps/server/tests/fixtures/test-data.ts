@@ -65,6 +65,7 @@ export const TEST_DATETIME = "2025-12-26T10:06:00";
  * Known test date in format (YYYY-MM-DD)
  */
 export const TEST_DATE = "2025-12-26";
+export const TEST_DATE_FOR_DAILY_PERSISTENT_COMPANIES = "2025-12-27";
 
 /**
  * Creates a valid Groww quote payload matching growwQuoteSchema
@@ -246,14 +247,7 @@ export function createOrderTestData(
 export function createShortlistsQuery(
   date?: string,
   type?: "TOP_GAINERS" | "VOLUME_SHOCKERS",
-  method?:
-    | "simple"
-    | "total"
-    | "price-weighted"
-    | "near-price"
-    | "volume-weighted"
-    | "bid-ask"
-    | "hybrid"
+  method?: string
 ) {
   return {
     date: date || TEST_DATE,

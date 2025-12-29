@@ -250,9 +250,9 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
       const firstEntry = validatedData.data.quoteTimeline[0];
       expect(firstEntry).toHaveProperty("timestamp");
       expect(firstEntry).toHaveProperty("nseSymbol");
-      // TODO: Add exact timestamp assertions here
-      // expect(firstEntry.timestamp).toBe(new Date("2025-12-26T03:51:04.520Z"));
-      // expect(firstEntry.nseSymbol).toBe("RELIANCE");
+
+      expect(firstEntry.timestamp).toBe(new Date("2025-12-26T03:51:04.520Z"));
+      expect(firstEntry.nseSymbol).toBe("RELIANCE");
     }
   });
 
@@ -277,12 +277,12 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
       const firstEntry = validatedData.data.quoteTimeline[0];
       expect(firstEntry.quoteData).toHaveProperty("status");
       expect(firstEntry.quoteData).toHaveProperty("payload");
-      // TODO: Add exact quoteData assertions here
-      // expect(firstEntry.quoteData.status).toBe("SUCCESS");
-      // expect(firstEntry.quoteData.payload.ohlc.open).toBe(2475.0);
-      // expect(firstEntry.quoteData.payload.ohlc.high).toBe(2510.0);
-      // expect(firstEntry.quoteData.payload.ohlc.low).toBe(2470.0);
-      // expect(firstEntry.quoteData.payload.ohlc.close).toBe(2500.0);
+
+      expect(firstEntry.quoteData.status).toBe("SUCCESS");
+      expect(firstEntry.quoteData.payload.ohlc.open).toBe(2475.0);
+      expect(firstEntry.quoteData.payload.ohlc.high).toBe(2510.0);
+      expect(firstEntry.quoteData.payload.ohlc.low).toBe(2470.0);
+      expect(firstEntry.quoteData.payload.ohlc.close).toBe(2500.0);
     }
   });
 });

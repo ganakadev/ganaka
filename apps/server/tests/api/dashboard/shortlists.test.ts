@@ -5,8 +5,8 @@ import { createShortlistSnapshot, createQuoteSnapshot } from "../../helpers/db-h
 import {
   createValidShortlistEntries,
   createValidGrowwQuotePayload,
-  TEST_DATETIME,
   createShortlistsQuery,
+  TEST_DATETIME,
 } from "../../fixtures/test-data";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
 
@@ -20,7 +20,7 @@ test.beforeAll(async () => {
 test.describe("GET /v1/dashboard/shortlists", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createShortlistsQuery();
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await unauthenticatedGet(`/v1/dashboard/shortlists?${queryString}`);
 
     expect(response.status).toBe(401);
@@ -28,7 +28,7 @@ test.describe("GET /v1/dashboard/shortlists", () => {
 
   test("should return 401 when invalid token is provided", async () => {
     const query = createShortlistsQuery();
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/shortlists?${queryString}`,
       "invalid-token-12345",
@@ -42,59 +42,82 @@ test.describe("GET /v1/dashboard/shortlists", () => {
 
   test("should return 400 when date is missing", async () => {
     const query = { type: "TOP_GAINERS" };
-    const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/shortlists?${queryString}`, developerToken, {
-      validateStatus: () => true,
-    });
+    const queryString = new URLSearchParams(query).toString();
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken,
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect(response.status).toBe(400);
   });
 
   test("should return 400 when type is missing", async () => {
     const query = { date: TEST_DATETIME };
-    const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/shortlists?${queryString}`, developerToken, {
-      validateStatus: () => true,
-    });
+    const queryString = new URLSearchParams(query).toString();
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken,
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect(response.status).toBe(400);
   });
 
   test("should return 400 when date format is invalid", async () => {
     const query = createShortlistsQuery("invalid-date", "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/shortlists?${queryString}`, developerToken, {
-      validateStatus: () => true,
-    });
+    const queryString = new URLSearchParams(query).toString();
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken,
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect(response.status).toBe(400);
   });
 
   test("should return 400 when type is invalid enum value", async () => {
     const query = { date: TEST_DATETIME, type: "invalid-type" };
-    const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/shortlists?${queryString}`, developerToken, {
-      validateStatus: () => true,
-    });
+    const queryString = new URLSearchParams(query).toString();
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken,
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect(response.status).toBe(400);
   });
 
   test("should return 400 when method is invalid enum value", async () => {
-    const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS", "invalid-method" as any);
-    const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/shortlists?${queryString}`, developerToken, {
-      validateStatus: () => true,
-    });
+    const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS", "invalid-method");
+    const queryString = new URLSearchParams(query).toString();
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken,
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect(response.status).toBe(400);
   });
 
   test("should return 200 with null shortlist when snapshot not found", async () => {
-    const futureDatetime = "2099-01-01T10:30:00";
+    const futureDatetime = "2099-01-01T10:06:00";
     const query = createShortlistsQuery(futureDatetime, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/shortlists?${queryString}`, developerToken);
+    const queryString = new URLSearchParams(query).toString();
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken
+    );
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -116,8 +139,11 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     }
 
     const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/shortlists?${queryString}`, developerToken);
+    const queryString = new URLSearchParams(query).toString();
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken
+    );
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -126,9 +152,8 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     expect(body.data.shortlist).not.toBeNull();
 
     // Validate response matches schema
-    const validatedData = v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
-      body
-    );
+    const validatedData =
+      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(body);
     expect(validatedData.data.shortlist).not.toBeNull();
   });
 
@@ -142,13 +167,17 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     }
 
     const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/shortlists?${queryString}`, developerToken);
+    const queryString = new URLSearchParams(query).toString();
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken
+    );
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
-      response.data
-    );
+    const validatedData =
+      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
+        response.data
+      );
 
     if (validatedData.data.shortlist) {
       expect(validatedData.data.shortlist).toHaveProperty("id");
@@ -156,8 +185,9 @@ test.describe("GET /v1/dashboard/shortlists", () => {
       expect(validatedData.data.shortlist).toHaveProperty("shortlistType");
       expect(validatedData.data.shortlist).toHaveProperty("entries");
       expect(typeof validatedData.data.shortlist.id).toBe("string");
-      expect(validatedData.data.shortlist.timestamp).toBeInstanceOf(Date);
-      expect(["TOP_GAINERS", "VOLUME_SHOCKERS"]).toContain(validatedData.data.shortlist.shortlistType);
+      expect(["TOP_GAINERS", "VOLUME_SHOCKERS"]).toContain(
+        validatedData.data.shortlist.shortlistType
+      );
       expect(Array.isArray(validatedData.data.shortlist.entries)).toBe(true);
     }
   });
@@ -172,13 +202,17 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     }
 
     const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/shortlists?${queryString}`, developerToken);
+    const queryString = new URLSearchParams(query).toString();
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken
+    );
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
-      response.data
-    );
+    const validatedData =
+      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
+        response.data
+      );
 
     if (validatedData.data.shortlist && validatedData.data.shortlist.entries.length > 0) {
       const firstEntry = validatedData.data.shortlist.entries[0];
@@ -204,13 +238,17 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     }
 
     const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/shortlists?${queryString}`, developerToken);
+    const queryString = new URLSearchParams(query).toString();
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken
+    );
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
-      response.data
-    );
+    const validatedData =
+      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
+        response.data
+      );
 
     if (validatedData.data.shortlist && validatedData.data.shortlist.entries.length > 0) {
       const firstEntry = validatedData.data.shortlist.entries[0];
@@ -236,18 +274,23 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     }
 
     const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/shortlists?${queryString}`, developerToken);
+    const queryString = new URLSearchParams(query).toString();
+    console.log(queryString);
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken
+    );
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
-      response.data
-    );
+    const validatedData =
+      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
+        response.data
+      );
 
     if (validatedData.data.shortlist) {
       // Validate timestamp is within 1 second of requested datetime
       const requestedTime = new Date(TEST_DATETIME).getTime();
-      const returnedTime = validatedData.data.shortlist.timestamp.getTime();
+      const returnedTime = new Date(validatedData.data.shortlist.timestamp).getTime();
       const timeDiff = Math.abs(returnedTime - requestedTime);
       expect(timeDiff).toBeLessThan(1000); // Within 1 second
     }
@@ -262,16 +305,29 @@ test.describe("GET /v1/dashboard/shortlists", () => {
       await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData);
     }
 
-    const methods = ["simple", "total", "price-weighted", "near-price", "volume-weighted", "bid-ask", "hybrid"];
+    const methods = [
+      "simple",
+      "total",
+      "price-weighted",
+      "near-price",
+      "volume-weighted",
+      "bid-ask",
+      "hybrid",
+    ];
 
     for (const method of methods) {
-      const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS", method as any);
-      const queryString = new URLSearchParams(query as any).toString();
-      const response = await authenticatedGet(`/v1/dashboard/shortlists?${queryString}`, developerToken);
+      const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS", method);
+      const queryString = new URLSearchParams(query).toString();
+      const response = await authenticatedGet(
+        `/v1/dashboard/shortlists?${queryString}`,
+        developerToken
+      );
 
       expect(response.status).toBe(200);
       const validatedData =
-        v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(response.data);
+        v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
+          response.data
+        );
 
       if (validatedData.data.shortlist && validatedData.data.shortlist.entries.length > 0) {
         validatedData.data.shortlist.entries.forEach((entry) => {
@@ -293,13 +349,17 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     }
 
     const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/shortlists?${queryString}`, developerToken);
+    const queryString = new URLSearchParams(query).toString();
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken
+    );
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
-      response.data
-    );
+    const validatedData =
+      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
+        response.data
+      );
 
     if (validatedData.data.shortlist && validatedData.data.shortlist.entries.length > 0) {
       // Placeholder for exact value validation - user will fill with actual expected values
@@ -308,12 +368,10 @@ test.describe("GET /v1/dashboard/shortlists", () => {
       expect(firstEntry).toHaveProperty("name");
       expect(firstEntry).toHaveProperty("price");
       expect(firstEntry).toHaveProperty("buyerControlPercentage");
-      // TODO: Add exact value assertions here
-      // expect(firstEntry.nseSymbol).toBe("RELIANCE");
-      // expect(firstEntry.name).toBe("Reliance Industries Ltd");
-      // expect(firstEntry.price).toBe(2500.0);
-      // expect(firstEntry.buyerControlPercentage).toBe(/* expected value */);
+      expect(firstEntry.nseSymbol).toBe("RELIANCE");
+      expect(firstEntry.name).toBe("Reliance Industries Ltd");
+      expect(firstEntry.price).toBe(2500);
+      expect(firstEntry.buyerControlPercentage).toBe(48.676363583030394);
     }
   });
 });
-

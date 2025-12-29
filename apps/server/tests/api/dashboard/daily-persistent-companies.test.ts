@@ -4,6 +4,7 @@ import { createDeveloperUser } from "../../helpers/auth-helpers";
 import { createMultipleShortlistSnapshots } from "../../helpers/db-helpers";
 import {
   TEST_DATE,
+  TEST_DATE_FOR_DAILY_PERSISTENT_COMPANIES,
   createDailyPersistentCompaniesQuery,
   createValidShortlistEntries,
 } from "../../fixtures/test-data";
@@ -225,9 +226,10 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
   });
 
   test("should validate exact company values (placeholder for user to fill)", async () => {
-    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 10);
-
-    const query = createDailyPersistentCompaniesQuery(TEST_DATE, "TOP_GAINERS");
+    const query = createDailyPersistentCompaniesQuery(
+      TEST_DATE_FOR_DAILY_PERSISTENT_COMPANIES,
+      "TOP_GAINERS"
+    );
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
@@ -246,11 +248,11 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
       expect(firstCompany).toHaveProperty("name");
       expect(firstCompany).toHaveProperty("count");
       expect(firstCompany).toHaveProperty("percentage");
-      // TODO: Add exact value assertions here
-      // expect(firstCompany.nseSymbol).toBe("RELIANCE");
-      // expect(firstCompany.name).toBe("Reliance Industries Ltd");
-      // expect(firstCompany.count).toBe(10);
-      // expect(firstCompany.percentage).toBe(100.0);
+
+      expect(firstCompany.nseSymbol).toBe("RVNL");
+      expect(firstCompany.name).toBe("Rail Vikas Nigam");
+      expect(firstCompany.count).toBe(358);
+      expect(firstCompany.percentage).toBe(93.7);
     }
   });
 

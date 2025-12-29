@@ -165,8 +165,6 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
   });
 
   test("should validate exact uniqueCount value (placeholder for user to fill)", async () => {
-    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5);
-
     const query = createDailyUniqueCompaniesQuery(TEST_DATE, "TOP_GAINERS");
     const queryString = new URLSearchParams(query as any).toString();
     const response = await authenticatedGet(
@@ -182,8 +180,7 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
 
     expect(typeof validatedData.data.uniqueCount).toBe("number");
     expect(validatedData.data.uniqueCount).toBeGreaterThanOrEqual(0);
-    // TODO: Add exact value assertion here
-    // expect(validatedData.data.uniqueCount).toBe(5); // Based on testEntries length
+    expect(validatedData.data.uniqueCount).toBe(5);
   });
 
   test("should validate date matches requested date format (YYYY-MM-DD)", async () => {

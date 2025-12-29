@@ -1,6 +1,6 @@
 import { prisma } from "../../src/utils/prisma";
 import { randomUUID } from "crypto";
-import type { ShortlistType, QuoteSnapshot } from "@ganaka/db";
+import type { ShortlistType, QuoteSnapshot, ShortlistSnapshot } from "@ganaka/db";
 import type { z } from "zod";
 import { v1_developer_groww_schemas, v1_developer_lists_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
@@ -305,10 +305,10 @@ export async function createMultipleShortlistSnapshots(
   type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
   date: string,
   count: number
-) {
+): Promise<ShortlistSnapshot[]> {
   const baseDate = dayjs(date).utc();
   const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
-  const snapshots = [];
+  const snapshots: ShortlistSnapshot[] = [];
 
   // Create snapshots at different times during market hours (9:15 AM - 3:30 PM IST)
   const startHour = 9;
