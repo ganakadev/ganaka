@@ -129,7 +129,7 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.response>
-      >({
+      >(reply, {
         statusCode: 200,
         message: "Candles fetched successfully",
         data: {

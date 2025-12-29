@@ -11,7 +11,7 @@ const dbScriptsRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<typeof v1_admin_schemas.v1_admin_db_scripts_schemas.dbScriptsSchema.response>
-      >({
+      >(reply, {
         statusCode: 200,
         message: "DB script executed successfully",
         data: {
@@ -27,7 +27,7 @@ const dbScriptsRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<typeof v1_admin_schemas.v1_admin_db_scripts_schemas.dbScriptsSchema.response>
-      >({
+      >(reply, {
         statusCode: 500,
         message: "DB script execution failed",
         data: {

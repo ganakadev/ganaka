@@ -62,7 +62,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
           z.infer<
             typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response
           >
-        >({
+        >(reply, {
           statusCode: 200,
           message: "Shortlist fetched successfully",
           data: {
@@ -126,7 +126,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response>
-      >({
+      >(reply, {
         statusCode: 200,
         message: "Shortlist fetched successfully",
         data: {

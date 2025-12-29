@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "lint": "pnpm -r --parallel run lint",
-    "prepare:release": "./scripts/prepare-release.sh",
-    "prepare:ci": "./scripts/prepare-ci.sh",
+    "prepare:ci": "./scripts/prepare-for-ci.sh",
+    "prepare:release": "./scripts/prepare-for-release.sh",
+    "reset:test-db": "env-cmd -f .env --silent bash ./scripts/reset-test-db.sh",
+    "test:server": "pnpm --filter @ganaka/server test",
     "clean:node_modules": "find . -name 'node_modules' -type d -prune -exec rm -rf {} +"
   },
   "devDependencies": {

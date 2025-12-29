@@ -121,7 +121,7 @@ const dailyPersistentCompaniesRoutes: FastifyPluginAsync = async (fastify) => {
         z.infer<
           typeof v1_dashboard_schemas.v1_dashboard_daily_persistent_companies_schemas.getDailyPersistentCompanies.response
         >
-      >({
+      >(reply, {
         statusCode: 200,
         message: "Daily persistent companies fetched successfully",
         data: {

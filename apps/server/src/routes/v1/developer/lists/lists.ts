@@ -107,7 +107,7 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
         });
 
         if (shortlists.length === 0) {
-          return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>({
+          return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(reply, {
             statusCode: 200,
             message: "Shortlist snapshot not found",
             data: null,
@@ -122,14 +122,14 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
         }> | null;
 
         if (!entries) {
-          return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>({
+          return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(reply, {
             statusCode: 200,
             message: "Shortlist snapshot not found",
             data: null,
           });
         }
 
-        return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>({
+        return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(reply, {
           statusCode: 200,
           message: "Lists fetched successfully",
           data: entries,
@@ -247,7 +247,7 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
           break;
         }
 
-        return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>({
+        return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(reply, {
           statusCode: 200,
           message: "Lists fetched successfully",
           data: stocks
@@ -272,7 +272,7 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
       }
     }
 
-    return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>({
+    return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(reply, {
       statusCode: 200,
       message: "Lists unable to be fetched. Please check server logs for more details.",
       data: [],

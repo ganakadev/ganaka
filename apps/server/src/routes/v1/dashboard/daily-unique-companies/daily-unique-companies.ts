@@ -76,7 +76,7 @@ const dailyUniqueCompaniesRoutes: FastifyPluginAsync = async (fastify) => {
         z.infer<
           typeof v1_dashboard_schemas.v1_dashboard_daily_unique_companies_schemas.getDailyUniqueCompanies.response
         >
-      >({
+      >(reply, {
         statusCode: 200,
         message: "Daily unique companies fetched successfully",
         data: {
