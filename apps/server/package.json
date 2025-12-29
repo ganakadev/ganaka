@@ -7,9 +7,7 @@
     "build": "env-cmd -f ../../.env --silent tsc",
     "start": "env-cmd -f ../../.env --silent node dist/index.js",
     "lint": "tsc --noEmit",
-    "test": "playwright test",
-    "test:api": "playwright test",
-    "test:watch": "playwright test --ui"
+    "test": "playwright test"
   },
   "dependencies": {
     "@fastify/autoload": "^6.3.1",
