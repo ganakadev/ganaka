@@ -24,6 +24,16 @@ async function main() {
     threshold: 1024, // Only compress responses larger than 1KB,
   });
 
+  // Health check endpoint (public, no auth required)
+  fastify.get("/health", async (_, reply) => {
+    try {
+      return reply.send({ status: "healthy", timestamp: new Date().toISOString() });
+    } catch (error) {
+      fastify.log.error(error, "Health check failed");
+      return reply.status(503).send({ status: "unhealthy", error: "Health check failed" });
+    }
+  });
+
   // ROUTES CONFIGURATION
   // Register routes with authentication plugins
   // Developer routes (/v1/developer) - protected with developer token
