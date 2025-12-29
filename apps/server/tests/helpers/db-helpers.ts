@@ -43,6 +43,18 @@ export async function createTestDeveloper(username?: string): Promise<{
   username: string;
   token: string;
 }> {
+  // check if developer already exists
+  const existingDeveloper = await prisma.developer.findUnique({
+    where: { username: username || `test-dev-${Date.now()}` },
+  });
+  if (existingDeveloper) {
+    return {
+      id: existingDeveloper.id,
+      username: existingDeveloper.username,
+      token: existingDeveloper.token,
+    };
+  }
+
   const developer = await prisma.developer.create({
     data: {
       username: username || `test-dev-${Date.now()}`,

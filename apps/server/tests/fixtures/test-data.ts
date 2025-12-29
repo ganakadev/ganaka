@@ -11,7 +11,12 @@ export function generateUsername(): string {
  * Generates a valid UUID for testing
  */
 export function generateUUID(): string {
-  return "dddddddd-dddd-dddd-dddd-dddddddddddd";
+  /**
+   * Requirements for a valid UUID:
+   * • the 3rd group starts with 4 (version 4),
+   * • the 4th group starts with a (variant 8/9/a/b).
+   */
+  return "dddddddd-dddd-4ddd-addd-dddddddddddd";
 }
 
 /**

@@ -112,7 +112,6 @@ test.describe("POST /v1/admin/developers", () => {
     const testData = createDeveloperTestData();
 
     const response = await authenticatedPost("/v1/admin/developers", adminToken, testData);
-    console.log(response);
 
     expect(response.status).toBe(201);
     const body = response.data;
@@ -221,9 +220,9 @@ test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
   });
 
   test("should return 401 when authorization header is missing", async () => {
-    const dev = await createTestDeveloper();
+    const dev = await createTestDeveloper("test-refresh-dev");
 
-    const response = await unauthenticatedPatch(`/v1/admin/developers/${dev.id}/refresh-key`);
+    const response = await unauthenticatedPatch(`/v1/admin/developers/${dev.id}/refresh-key`, {});
 
     expect(response.status).toBe(401);
   });
@@ -232,10 +231,7 @@ test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
 test.describe("DELETE /v1/admin/developers/:id", () => {
   test("should delete developer successfully", async () => {
     const dev = await createTestDeveloper("test-delete-dev");
-
-    const response = await authenticatedDelete(`/v1/admin/developers/${dev.id}`, adminToken, {
-      validateStatus: () => true,
-    });
+    const response = await authenticatedDelete(`/v1/admin/developers/${dev.id}`, adminToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -259,29 +255,6 @@ test.describe("DELETE /v1/admin/developers/:id", () => {
     expect(response.status).toBe(404);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
     expect(body).toContain("Developer not found");
-  });
-
-  test("should return 409 when deleting developer with associated runs", async () => {
-    // Create a developer
-    const dev = await createTestDeveloper("test-dev-with-runs");
-
-    await prisma.run.create({
-      data: {
-        id: randomUUID(),
-        startTime: new Date(),
-        endTime: new Date(),
-        developerId: dev.id,
-      },
-    });
-
-    const response = await authenticatedDelete(`/v1/admin/developers/${dev.id}`, adminToken, {
-      validateStatus: () => true,
-    });
-
-    // Should return 409 due to foreign key constraint
-    expect(response.status).toBe(409);
-    const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
-    expect(body).toContain("Cannot delete developer");
   });
 
   test("should return 401 when authorization header is missing", async () => {

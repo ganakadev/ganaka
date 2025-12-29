@@ -76,6 +76,7 @@ export async function authenticatedDelete(url: string, token: string, config?: A
     ...config,
     headers: {
       ...config?.headers,
+      "Content-Type": undefined, // DELETE requests don't have bodies
       Authorization: `Bearer ${token}`,
     },
   });
@@ -88,7 +89,7 @@ export async function unauthenticatedGet(url: string, config?: AxiosRequestConfi
   const client = createApiClient();
   return client.get(url, {
     ...config,
-    validateStatus: () => true, // Don't throw on any status
+    validateStatus: () => true,
   });
 }
 
@@ -103,7 +104,7 @@ export async function unauthenticatedPost(
   const client = createApiClient();
   return client.post(url, data, {
     ...config,
-    validateStatus: () => true, // Don't throw on any status
+    validateStatus: () => true,
   });
 }
 
@@ -118,7 +119,7 @@ export async function unauthenticatedPatch(
   const client = createApiClient();
   return client.patch(url, data, {
     ...config,
-    validateStatus: () => true, // Don't throw on any status
+    validateStatus: () => true,
   });
 }
 
@@ -129,7 +130,11 @@ export async function unauthenticatedDelete(url: string, config?: AxiosRequestCo
   const client = createApiClient();
   return client.delete(url, {
     ...config,
-    validateStatus: () => true, // Don't throw on any status
+    headers: {
+      ...config?.headers,
+      "Content-Type": undefined, // DELETE requests don't have bodies
+    },
+    validateStatus: () => true,
   });
 }
 
