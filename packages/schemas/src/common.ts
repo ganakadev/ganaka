@@ -25,6 +25,9 @@ export const validCandleIntervals = [
   "30minute",
   "1hour",
   "4hour",
+  "1day",
+  "1week",
+  "1month",
 ] as const;
 
 export const datetimeFormatSchema = z

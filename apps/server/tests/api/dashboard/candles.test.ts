@@ -1,7 +1,12 @@
 import { test, expect } from "@playwright/test";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createCandlesQuery, TEST_DATE, TEST_SYMBOL } from "../../fixtures/test-data";
+import {
+  createCandlesQuery,
+  TEST_DATE,
+  TEST_DATETIME,
+  TEST_SYMBOL,
+} from "../../fixtures/test-data";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -29,9 +34,13 @@ test.describe("GET /v1/dashboard/candles", () => {
   test("should return 401 when invalid token is provided", async () => {
     const query = createCandlesQuery();
     const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, "invalid-token-12345", {
-      validateStatus: () => true,
-    });
+    const response = await authenticatedGet(
+      `/v1/dashboard/candles?${queryString}`,
+      "invalid-token-12345",
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect(response.status).toBe(401);
   });
@@ -39,9 +48,13 @@ test.describe("GET /v1/dashboard/candles", () => {
   test("should return 400 when symbol is missing", async () => {
     const query = { date: TEST_DATE };
     const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken, {
-      validateStatus: () => true,
-    });
+    const response = await authenticatedGet(
+      `/v1/dashboard/candles?${queryString}`,
+      developerToken,
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect(response.status).toBe(400);
   });
@@ -49,9 +62,13 @@ test.describe("GET /v1/dashboard/candles", () => {
   test("should return 400 when date is missing", async () => {
     const query = { symbol: TEST_SYMBOL };
     const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken, {
-      validateStatus: () => true,
-    });
+    const response = await authenticatedGet(
+      `/v1/dashboard/candles?${queryString}`,
+      developerToken,
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect(response.status).toBe(400);
   });
@@ -59,9 +76,13 @@ test.describe("GET /v1/dashboard/candles", () => {
   test("should return 400 when date format is invalid", async () => {
     const query = createCandlesQuery(TEST_SYMBOL, "invalid-date");
     const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken, {
-      validateStatus: () => true,
-    });
+    const response = await authenticatedGet(
+      `/v1/dashboard/candles?${queryString}`,
+      developerToken,
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect(response.status).toBe(400);
   });
@@ -69,9 +90,13 @@ test.describe("GET /v1/dashboard/candles", () => {
   test("should return 400 when interval is invalid enum value", async () => {
     const query = createCandlesQuery(TEST_SYMBOL, TEST_DATE, "invalid-interval" as any);
     const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken, {
-      validateStatus: () => true,
-    });
+    const response = await authenticatedGet(
+      `/v1/dashboard/candles?${queryString}`,
+      developerToken,
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect(response.status).toBe(400);
   });
@@ -133,8 +158,12 @@ test.describe("GET /v1/dashboard/candles", () => {
         v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.response.parse(response.data);
 
       // Market hours: 9:15 AM - 3:30 PM IST
-      const expectedStart = dayjs.tz(`${TEST_DATE} 09:15:00`, "Asia/Kolkata").format("YYYY-MM-DDTHH:mm:ss");
-      const expectedEnd = dayjs.tz(`${TEST_DATE} 15:30:00`, "Asia/Kolkata").format("YYYY-MM-DDTHH:mm:ss");
+      const expectedStart = dayjs
+        .tz(`${TEST_DATE} 09:15:00`, "Asia/Kolkata")
+        .format("YYYY-MM-DDTHH:mm:ss");
+      const expectedEnd = dayjs
+        .tz(`${TEST_DATE} 15:30:00`, "Asia/Kolkata")
+        .format("YYYY-MM-DDTHH:mm:ss");
 
       expect(validatedData.data.start_time).toBe(expectedStart);
       expect(validatedData.data.end_time).toBe(expectedEnd);
@@ -144,21 +173,30 @@ test.describe("GET /v1/dashboard/candles", () => {
   test("should validate interval_in_minutes matches requested interval", async () => {
     const intervals = [
       { interval: "1minute", expectedMinutes: 1 },
+      { interval: "2minute", expectedMinutes: 2 },
+      { interval: "3minute", expectedMinutes: 3 },
       { interval: "5minute", expectedMinutes: 5 },
       { interval: "15minute", expectedMinutes: 15 },
       { interval: "30minute", expectedMinutes: 30 },
       { interval: "1hour", expectedMinutes: 60 },
       { interval: "1day", expectedMinutes: 1440 },
+      { interval: "1week", expectedMinutes: 10080 },
     ];
 
     for (const { interval, expectedMinutes } of intervals) {
-      const query = createCandlesQuery(TEST_SYMBOL, TEST_DATE, interval as any);
+      const query = createCandlesQuery(TEST_SYMBOL, TEST_DATETIME, interval);
       const queryString = new URLSearchParams(query as any).toString();
-      const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken);
+      console.log(queryString);
+      const response = await authenticatedGet(
+        `/v1/dashboard/candles?${queryString}`,
+        developerToken
+      );
 
       if (response.status === 200) {
         const validatedData =
-          v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.response.parse(response.data);
+          v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.response.parse(
+            response.data
+          );
         expect(validatedData.data.interval_in_minutes).toBe(expectedMinutes);
       }
     }
@@ -187,9 +225,13 @@ test.describe("GET /v1/dashboard/candles", () => {
     const futureDate = "2099-01-01";
     const query = createCandlesQuery("INVALID_SYMBOL_XYZ", futureDate);
     const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken, {
-      validateStatus: () => true,
-    });
+    const response = await authenticatedGet(
+      `/v1/dashboard/candles?${queryString}`,
+      developerToken,
+      {
+        validateStatus: () => true,
+      }
+    );
 
     // Should return 500 when external API fails
     expect([400, 500]).toContain(response.status);
@@ -221,4 +263,3 @@ test.describe("GET /v1/dashboard/candles", () => {
     }
   });
 });
-

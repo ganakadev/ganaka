@@ -265,11 +265,7 @@ export function createShortlistsQuery(
 /**
  * Creates valid candles query parameters for dashboard
  */
-export function createCandlesQuery(
-  symbol?: string,
-  date?: string,
-  interval?: "1minute" | "5minute" | "15minute" | "30minute" | "1hour" | "1day"
-) {
+export function createCandlesQuery(symbol?: string, date?: string, interval?: string) {
   return {
     symbol: symbol || TEST_SYMBOL,
     date: date || TEST_DATE,
