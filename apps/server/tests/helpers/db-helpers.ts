@@ -1,6 +1,6 @@
 import { prisma } from "../../src/utils/prisma";
 import { randomUUID } from "crypto";
-import type { ShortlistType, QuoteSnapshot, ShortlistSnapshot } from "@ganaka/db";
+import type { ShortlistType, QuoteSnapshot, ShortlistSnapshot, InputJsonValue } from "@ganaka/db";
 import type { z } from "zod";
 import { v1_developer_groww_schemas, v1_developer_lists_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
@@ -115,7 +115,7 @@ export async function createQuoteSnapshot(
       id: randomUUID(),
       timestamp,
       nseSymbol: symbol,
-      quoteData: quoteData as any,
+      quoteData: quoteData as InputJsonValue,
     },
   });
 
@@ -138,7 +138,7 @@ export async function createShortlistSnapshot(
       id: randomUUID(),
       timestamp,
       shortlistType,
-      entries: entries as any,
+      entries: entries as InputJsonValue,
     },
   });
 
@@ -216,7 +216,7 @@ export async function createMultipleQuoteSnapshots(
         id: randomUUID(),
         timestamp: utcTime.toDate(),
         nseSymbol: symbol,
-        quoteData: quoteData as any,
+        quoteData: quoteData as InputJsonValue,
       },
     });
 
@@ -335,7 +335,7 @@ export async function createMultipleShortlistSnapshots(
         id: randomUUID(),
         timestamp: utcTime.toDate(),
         shortlistType,
-        entries: entries as any,
+        entries: entries as InputJsonValue,
       },
     });
 

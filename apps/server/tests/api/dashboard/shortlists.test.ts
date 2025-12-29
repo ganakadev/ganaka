@@ -1,7 +1,11 @@
 import { test, expect } from "@playwright/test";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createShortlistSnapshot, createQuoteSnapshot } from "../../helpers/db-helpers";
+import {
+  createShortlistSnapshot,
+  createQuoteSnapshot,
+  cleanupDatabase,
+} from "../../helpers/db-helpers";
 import {
   createValidShortlistEntries,
   createValidGrowwQuotePayload,
@@ -13,6 +17,13 @@ import { v1_dashboard_schemas } from "@ganaka/schemas";
 let developerToken: string;
 
 test.beforeAll(async () => {
+  const dev = await createDeveloperUser();
+  developerToken = dev.token;
+});
+
+test.afterEach(async () => {
+  await cleanupDatabase();
+  // Re-create developer user after cleanup
   const dev = await createDeveloperUser();
   developerToken = dev.token;
 });

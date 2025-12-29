@@ -4,10 +4,11 @@ import {
   createListsQuery,
   createValidShortlistEntries,
   TEST_DATETIME,
+  buildQueryString,
 } from "../../fixtures/test-data";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createShortlistSnapshot } from "../../helpers/db-helpers";
+import { createShortlistSnapshot, cleanupDatabase } from "../../helpers/db-helpers";
 
 let developerToken: string;
 
@@ -16,10 +17,17 @@ test.beforeAll(async () => {
   developerToken = dev.token;
 });
 
+test.afterEach(async () => {
+  await cleanupDatabase();
+  // Re-create developer user after cleanup
+  const dev = await createDeveloperUser();
+  developerToken = dev.token;
+});
+
 test.describe("GET /v1/developer/lists", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createListsQuery("top-gainers");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await unauthenticatedGet(`/v1/developer/lists?${queryString}`);
 
     expect(response.status).toBe(401);
@@ -27,7 +35,7 @@ test.describe("GET /v1/developer/lists", () => {
 
   test("should return 401 when invalid token is provided", async () => {
     const query = createListsQuery("top-gainers");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await authenticatedGet(
       `/v1/developer/lists?${queryString}`,
       "invalid-token-12345",
@@ -61,7 +69,7 @@ test.describe("GET /v1/developer/lists", () => {
 
   test("should return 400 when datetime format is invalid", async () => {
     const query = createListsQuery("top-gainers", "invalid-datetime");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
@@ -72,7 +80,7 @@ test.describe("GET /v1/developer/lists", () => {
   test("should return null data when snapshot is not found", async () => {
     const futureDatetime = "2099-01-01T10:30:00";
     const query = createListsQuery("top-gainers", futureDatetime);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
@@ -87,7 +95,7 @@ test.describe("GET /v1/developer/lists", () => {
     const snapshot = await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries);
 
     const query = createListsQuery("top-gainers", TEST_DATETIME);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
@@ -112,7 +120,7 @@ test.describe("GET /v1/developer/lists", () => {
     const snapshot = await createShortlistSnapshot("volume-shockers", TEST_DATETIME, testEntries);
 
     const query = createListsQuery("volume-shockers", TEST_DATETIME);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
@@ -134,7 +142,7 @@ test.describe("GET /v1/developer/lists", () => {
 
     // Fetch via API
     const query = createListsQuery(testType, testDatetime);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
 
     // Validate response structure
@@ -178,7 +186,7 @@ test.describe("GET /v1/developer/lists", () => {
 
     // Fetch via API
     const query = createListsQuery(testType, testDatetime);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
 
     // Validate response structure
@@ -213,7 +221,7 @@ test.describe("GET /v1/developer/lists", () => {
 
   test("should handle live fetch when no datetime is provided", async () => {
     const query = createListsQuery("top-gainers");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
 
     // Note: This test may return empty array if external API fails, but should still return 200

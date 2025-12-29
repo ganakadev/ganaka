@@ -2,6 +2,11 @@ import { test, expect } from "@playwright/test";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
 import { authenticatedPost, unauthenticatedPost } from "../../helpers/api-client";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { cleanupDatabase } from "../../helpers/db-helpers";
+
+test.afterEach(async () => {
+  await cleanupDatabase();
+});
 
 test.describe("POST /v1/dashboard/auth/sign-in", () => {
   test("should return 200 with developer data when valid token provided", async () => {

@@ -6,7 +6,13 @@ import {
   createEmptyDeveloperTestData,
   generateUUID,
 } from "../../fixtures/test-data";
-import { createTestDeveloper, getDeveloperById, getAllDevelopers } from "../../helpers/db-helpers";
+import {
+  createTestDeveloper,
+  getDeveloperById,
+  getAllDevelopers,
+  cleanupDatabase,
+  seedAdminUser,
+} from "../../helpers/db-helpers";
 import {
   authenticatedGet,
   authenticatedPost,
@@ -29,6 +35,14 @@ test.beforeAll(async () => {
     throw new Error("TEST_ADMIN_TOKEN not set in environment");
   }
   adminToken = token;
+});
+
+test.afterEach(async () => {
+  await cleanupDatabase();
+  // Re-seed admin user after cleanup since tests depend on TEST_ADMIN_TOKEN
+  const admin = await seedAdminUser();
+  process.env.TEST_ADMIN_TOKEN = admin.token;
+  adminToken = admin.token;
 });
 
 test.describe("GET /v1/admin/developers", () => {
@@ -63,6 +77,12 @@ test.describe("GET /v1/admin/developers", () => {
 });
 
 test.describe("GET /v1/admin/developers/:id", () => {
+  test.beforeEach(async () => {
+    await cleanupDatabase();
+    const admin = await seedAdminUser();
+    process.env.TEST_ADMIN_TOKEN = admin.token;
+    adminToken = admin.token;
+  });
   test("should return developer by valid ID", async () => {
     const dev = await createTestDeveloper("test-get-dev");
 
@@ -108,6 +128,12 @@ test.describe("GET /v1/admin/developers/:id", () => {
 });
 
 test.describe("POST /v1/admin/developers", () => {
+  test.beforeEach(async () => {
+    await cleanupDatabase();
+    const admin = await seedAdminUser();
+    process.env.TEST_ADMIN_TOKEN = admin.token;
+    adminToken = admin.token;
+  });
   test("should create a new developer successfully", async () => {
     const testData = createDeveloperTestData();
 
@@ -179,6 +205,12 @@ test.describe("POST /v1/admin/developers", () => {
 });
 
 test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
+  test.beforeEach(async () => {
+    await cleanupDatabase();
+    const admin = await seedAdminUser();
+    process.env.TEST_ADMIN_TOKEN = admin.token;
+    adminToken = admin.token;
+  });
   test("should refresh developer key successfully", async () => {
     const dev = await createTestDeveloper("test-refresh-dev");
     const oldToken = dev.token;
@@ -229,6 +261,12 @@ test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
 });
 
 test.describe("DELETE /v1/admin/developers/:id", () => {
+  test.beforeEach(async () => {
+    await cleanupDatabase();
+    const admin = await seedAdminUser();
+    process.env.TEST_ADMIN_TOKEN = admin.token;
+    adminToken = admin.token;
+  });
   test("should delete developer successfully", async () => {
     const dev = await createTestDeveloper("test-delete-dev");
     const response = await authenticatedDelete(`/v1/admin/developers/${dev.id}`, adminToken);

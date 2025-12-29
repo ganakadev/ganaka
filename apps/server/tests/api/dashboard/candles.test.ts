@@ -11,6 +11,7 @@ import { v1_dashboard_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
+import { cleanupDatabase } from "../../helpers/db-helpers";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -18,6 +19,13 @@ dayjs.extend(timezone);
 let developerToken: string;
 
 test.beforeAll(async () => {
+  const dev = await createDeveloperUser();
+  developerToken = dev.token;
+});
+
+test.afterEach(async () => {
+  await cleanupDatabase();
+  // Re-create developer user after cleanup
   const dev = await createDeveloperUser();
   developerToken = dev.token;
 });
@@ -186,7 +194,6 @@ test.describe("GET /v1/dashboard/candles", () => {
     for (const { interval, expectedMinutes } of intervals) {
       const query = createCandlesQuery(TEST_SYMBOL, TEST_DATE, interval);
       const queryString = new URLSearchParams(query).toString();
-      console.log(queryString);
       const response = await authenticatedGet(
         `/v1/dashboard/candles?${queryString}`,
         developerToken

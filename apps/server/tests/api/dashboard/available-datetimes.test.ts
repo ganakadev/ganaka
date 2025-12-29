@@ -1,13 +1,20 @@
 import { test, expect } from "@playwright/test";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createShortlistSnapshot } from "../../helpers/db-helpers";
+import { createShortlistSnapshot, cleanupDatabase } from "../../helpers/db-helpers";
 import { createValidShortlistEntries, TEST_DATETIME, TEST_DATE } from "../../fixtures/test-data";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
 
 let developerToken: string;
 
 test.beforeAll(async () => {
+  const dev = await createDeveloperUser();
+  developerToken = dev.token;
+});
+
+test.afterEach(async () => {
+  await cleanupDatabase();
+  // Re-create developer user after cleanup
   const dev = await createDeveloperUser();
   developerToken = dev.token;
 });

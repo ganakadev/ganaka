@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createMultipleQuoteSnapshots, createQuoteSnapshot } from "../../helpers/db-helpers";
+import { createMultipleQuoteSnapshots, createQuoteSnapshot, cleanupDatabase } from "../../helpers/db-helpers";
 import {
   createValidGrowwQuotePayload,
   TEST_DATE,
@@ -19,6 +19,13 @@ dayjs.extend(timezone);
 let developerToken: string;
 
 test.beforeAll(async () => {
+  const dev = await createDeveloperUser();
+  developerToken = dev.token;
+});
+
+test.afterEach(async () => {
+  await cleanupDatabase();
+  // Re-create developer user after cleanup
   const dev = await createDeveloperUser();
   developerToken = dev.token;
 });

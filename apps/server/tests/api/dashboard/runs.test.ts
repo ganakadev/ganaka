@@ -10,7 +10,7 @@ import {
   unauthenticatedDelete,
 } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createRun, createOrder, getRunById, getOrderById } from "../../helpers/db-helpers";
+import { createRun, createOrder, getRunById, getOrderById, cleanupDatabase } from "../../helpers/db-helpers";
 import {
   createRunTestData,
   createOrderTestData,
@@ -26,6 +26,18 @@ let otherDeveloperToken: string;
 let otherDeveloperId: string;
 
 test.beforeAll(async () => {
+  const dev = await createDeveloperUser();
+  developerToken = dev.token;
+  developerId = dev.id;
+
+  const otherDev = await createDeveloperUser();
+  otherDeveloperToken = otherDev.token;
+  otherDeveloperId = otherDev.id;
+});
+
+test.afterEach(async () => {
+  await cleanupDatabase();
+  // Re-create developer users after cleanup
   const dev = await createDeveloperUser();
   developerToken = dev.token;
   developerId = dev.id;
@@ -169,6 +181,7 @@ test.describe("GET /v1/dashboard/runs", () => {
 });
 
 test.describe("POST /v1/dashboard/runs", () => {
+
   test("should return 401 when authorization header is missing", async () => {
     const testData = createRunTestData();
     const response = await unauthenticatedPost("/v1/dashboard/runs", testData);
@@ -284,6 +297,7 @@ test.describe("POST /v1/dashboard/runs", () => {
 });
 
 test.describe("PATCH /v1/dashboard/runs/:runId", () => {
+
   test("should return 401 when authorization header is missing", async () => {
     const run = await createRun(developerId, new Date(), new Date());
     const response = await unauthenticatedPatch(`/v1/dashboard/runs/${run.id}`, {
@@ -402,6 +416,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
 });
 
 test.describe("DELETE /v1/dashboard/runs/:runId", () => {
+
   test("should return 401 when authorization header is missing", async () => {
     const run = await createRun(developerId, new Date(), new Date());
     const response = await unauthenticatedDelete(`/v1/dashboard/runs/${run.id}`);
@@ -469,6 +484,7 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
 });
 
 test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
+
   test("should return 401 when authorization header is missing", async () => {
     const run = await createRun(developerId, new Date(), new Date());
     const response = await unauthenticatedGet(`/v1/dashboard/runs/${run.id}/orders`);
@@ -704,6 +720,7 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
 });
 
 test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
+
   test("should return 401 when authorization header is missing", async () => {
     const run = await createRun(developerId, new Date(), new Date());
     const orderData = createOrderTestData();
@@ -766,11 +783,11 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
   test("should return 400 when nseSymbol is missing", async () => {
     const run = await createRun(developerId, new Date(), new Date());
     const orderData = createOrderTestData();
-    delete (orderData as any).nseSymbol;
+    const { nseSymbol, ...orderDataWithoutSymbol } = orderData;
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
       developerToken,
-      orderData,
+      orderDataWithoutSymbol,
       { validateStatus: () => true }
     );
 
@@ -780,11 +797,11 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
   test("should return 400 when entryPrice is missing", async () => {
     const run = await createRun(developerId, new Date(), new Date());
     const orderData = createOrderTestData();
-    delete (orderData as any).entryPrice;
+    const { entryPrice, ...orderDataWithoutEntryPrice } = orderData;
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
       developerToken,
-      orderData,
+      orderDataWithoutEntryPrice,
       { validateStatus: () => true }
     );
 
@@ -794,11 +811,11 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
   test("should return 400 when stopLossPrice is missing", async () => {
     const run = await createRun(developerId, new Date(), new Date());
     const orderData = createOrderTestData();
-    delete (orderData as any).stopLossPrice;
+    const { stopLossPrice, ...orderDataWithoutStopLoss } = orderData;
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
       developerToken,
-      orderData,
+      orderDataWithoutStopLoss,
       { validateStatus: () => true }
     );
 
@@ -808,11 +825,11 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
   test("should return 400 when takeProfitPrice is missing", async () => {
     const run = await createRun(developerId, new Date(), new Date());
     const orderData = createOrderTestData();
-    delete (orderData as any).takeProfitPrice;
+    const { takeProfitPrice, ...orderDataWithoutTakeProfit } = orderData;
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
       developerToken,
-      orderData,
+      orderDataWithoutTakeProfit,
       { validateStatus: () => true }
     );
 
@@ -822,11 +839,11 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
   test("should return 400 when timestamp is missing", async () => {
     const run = await createRun(developerId, new Date(), new Date());
     const orderData = createOrderTestData();
-    delete (orderData as any).timestamp;
+    const { timestamp, ...orderDataWithoutTimestamp } = orderData;
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
       developerToken,
-      orderData,
+      orderDataWithoutTimestamp,
       { validateStatus: () => true }
     );
 
@@ -836,11 +853,14 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
   test("should return 400 when timestamp is invalid date format", async () => {
     const run = await createRun(developerId, new Date(), new Date());
     const orderData = createOrderTestData();
-    orderData.timestamp = "invalid-date" as any;
+    const orderDataWithInvalidTimestamp = {
+      ...orderData,
+      timestamp: "invalid-date",
+    };
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
       developerToken,
-      orderData,
+      orderDataWithInvalidTimestamp,
       { validateStatus: () => true }
     );
 

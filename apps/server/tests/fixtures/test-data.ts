@@ -302,3 +302,17 @@ export function createDailyUniqueCompaniesQuery(
     type: type || "TOP_GAINERS",
   };
 }
+
+/**
+ * Helper function to convert query object to URLSearchParams-compatible format
+ * Filters out undefined values to avoid adding them to the query string
+ */
+export function buildQueryString(query: Record<string, string | undefined>): string {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (value !== undefined) {
+      params.append(key, value);
+    }
+  }
+  return params.toString();
+}

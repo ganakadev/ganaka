@@ -12,11 +12,33 @@ import {
 } from "../../fixtures/test-data";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createMultipleQuoteSnapshots, createQuoteSnapshot } from "../../helpers/db-helpers";
+import {
+  createMultipleQuoteSnapshots,
+  createQuoteSnapshot,
+  cleanupDatabase,
+} from "../../helpers/db-helpers";
+
+// Helper function to convert query object to URLSearchParams-compatible format
+function buildQueryString(query: Record<string, string | undefined>): string {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (value !== undefined) {
+      params.append(key, value);
+    }
+  }
+  return params.toString();
+}
 
 let developerToken: string;
 
 test.beforeAll(async () => {
+  const dev = await createDeveloperUser();
+  developerToken = dev.token;
+});
+
+test.afterEach(async () => {
+  await cleanupDatabase();
+  // Re-create developer user after cleanup
   const dev = await createDeveloperUser();
   developerToken = dev.token;
 });
@@ -100,7 +122,7 @@ test.describe("GET /v1/developer/groww/quote", () => {
     await createQuoteSnapshot(TEST_SYMBOL, TEST_DATETIME, testQuoteData);
 
     const query = createGrowwQuoteQuery(TEST_SYMBOL, TEST_DATETIME);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await authenticatedGet(
       `/v1/developer/groww/quote?${queryString}`,
       developerToken
@@ -200,7 +222,7 @@ test.describe("GET /v1/developer/groww/quote", () => {
 test.describe("GET /v1/developer/groww/historical-candles", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createHistoricalCandlesQuery();
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await unauthenticatedGet(
       `/v1/developer/groww/historical-candles?${queryString}`
     );
@@ -210,7 +232,7 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
 
   test("should return 401 when invalid token is provided", async () => {
     const query = createHistoricalCandlesQuery();
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await authenticatedGet(
       `/v1/developer/groww/historical-candles?${queryString}`,
       "invalid-token-12345",
@@ -224,8 +246,8 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
 
   test("should return 400 when symbol is missing", async () => {
     const query = createHistoricalCandlesQuery();
-    delete (query as any).symbol;
-    const queryString = new URLSearchParams(query as any).toString();
+    const { symbol, ...queryWithoutSymbol } = query;
+    const queryString = buildQueryString(queryWithoutSymbol);
     const response = await authenticatedGet(
       `/v1/developer/groww/historical-candles?${queryString}`,
       developerToken,
@@ -239,8 +261,8 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
 
   test("should return 400 when interval is missing", async () => {
     const query = createHistoricalCandlesQuery();
-    delete (query as any).interval;
-    const queryString = new URLSearchParams(query as any).toString();
+    const { interval, ...queryWithoutInterval } = query;
+    const queryString = buildQueryString(queryWithoutInterval);
     const response = await authenticatedGet(
       `/v1/developer/groww/historical-candles?${queryString}`,
       developerToken,
@@ -254,8 +276,8 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
 
   test("should return 400 when start_time is missing", async () => {
     const query = createHistoricalCandlesQuery();
-    delete (query as any).start_time;
-    const queryString = new URLSearchParams(query as any).toString();
+    const { start_time, ...queryWithoutStartTime } = query;
+    const queryString = buildQueryString(queryWithoutStartTime);
     const response = await authenticatedGet(
       `/v1/developer/groww/historical-candles?${queryString}`,
       developerToken,
@@ -269,8 +291,8 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
 
   test("should return 400 when end_time is missing", async () => {
     const query = createHistoricalCandlesQuery();
-    delete (query as any).end_time;
-    const queryString = new URLSearchParams(query as any).toString();
+    const { end_time, ...queryWithoutEndTime } = query;
+    const queryString = buildQueryString(queryWithoutEndTime);
     const response = await authenticatedGet(
       `/v1/developer/groww/historical-candles?${queryString}`,
       developerToken,
@@ -284,8 +306,11 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
 
   test("should return 400 when interval is invalid", async () => {
     const query = createHistoricalCandlesQuery();
-    query.interval = "invalid-interval" as any;
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryWithInvalidInterval = {
+      ...query,
+      interval: "invalid-interval",
+    };
+    const queryString = buildQueryString(queryWithInvalidInterval);
     const response = await authenticatedGet(
       `/v1/developer/groww/historical-candles?${queryString}`,
       developerToken,
@@ -485,7 +510,7 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
 test.describe("GET /v1/developer/groww/quote-timeline", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createQuoteTimelineQuery();
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await unauthenticatedGet(`/v1/developer/groww/quote-timeline?${queryString}`);
 
     expect(response.status).toBe(401);
@@ -493,7 +518,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
 
   test("should return 401 when invalid token is provided", async () => {
     const query = createQuoteTimelineQuery();
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await authenticatedGet(
       `/v1/developer/groww/quote-timeline?${queryString}`,
       "invalid-token-12345",
@@ -507,8 +532,8 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
 
   test("should return 400 when symbol is missing", async () => {
     const query = createQuoteTimelineQuery();
-    delete (query as any).symbol;
-    const queryString = new URLSearchParams(query as any).toString();
+    const { symbol, ...queryWithoutSymbol } = query;
+    const queryString = buildQueryString(queryWithoutSymbol);
     const response = await authenticatedGet(
       `/v1/developer/groww/quote-timeline?${queryString}`,
       developerToken,
@@ -522,8 +547,8 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
 
   test("should return 400 when date is missing", async () => {
     const query = createQuoteTimelineQuery();
-    delete (query as any).date;
-    const queryString = new URLSearchParams(query as any).toString();
+    const { date, ...queryWithoutDate } = query;
+    const queryString = buildQueryString(queryWithoutDate);
     const response = await authenticatedGet(
       `/v1/developer/groww/quote-timeline?${queryString}`,
       developerToken,
@@ -538,7 +563,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
   test("should return empty array when no snapshots exist", async () => {
     const futureDate = "2099-01-01";
     const query = createQuoteTimelineQuery(TEST_SYMBOL, futureDate);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await authenticatedGet(
       `/v1/developer/groww/quote-timeline?${queryString}`,
       developerToken
@@ -561,7 +586,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     const snapshots = await createMultipleQuoteSnapshots(testSymbol, testDate, snapshotCount);
 
     const query = createQuoteTimelineQuery(testSymbol, testDate);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = buildQueryString(query);
     const response = await authenticatedGet(
       `/v1/developer/groww/quote-timeline?${queryString}`,
       developerToken
