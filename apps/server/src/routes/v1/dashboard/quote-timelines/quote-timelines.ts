@@ -69,11 +69,11 @@ const quoteSnapshotsRoutes: FastifyPluginAsync = async (fastify) => {
                   typeof v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.response
                 >["data"]["quoteTimeline"][0] = {
                   id: snapshot.id,
-                  timestamp: snapshot.timestamp,
+                  timestamp: `${snapshot.timestamp.toISOString()}`,
                   nseSymbol: snapshot.nseSymbol,
                   quoteData: snapshot.quoteData as unknown as QuoteData,
-                  createdAt: snapshot.createdAt,
-                  updatedAt: snapshot.updatedAt,
+                  createdAt: `${snapshot.createdAt.toISOString()}`,
+                  updatedAt: `${snapshot.updatedAt.toISOString()}`,
                 };
                 return data;
               })

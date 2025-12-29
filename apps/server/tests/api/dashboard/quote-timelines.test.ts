@@ -26,7 +26,7 @@ test.beforeAll(async () => {
 test.describe("GET /v1/dashboard/quote-timelines", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createQuoteTimelineQueryForDashboard();
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await unauthenticatedGet(`/v1/dashboard/quote-timelines?${queryString}`);
 
     expect(response.status).toBe(401);
@@ -34,7 +34,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
 
   test("should return 401 when invalid token is provided", async () => {
     const query = createQuoteTimelineQueryForDashboard();
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
       "invalid-token-12345",
@@ -48,7 +48,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
 
   test("should return 400 when symbol is missing", async () => {
     const query = { date: TEST_DATE };
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
       developerToken,
@@ -62,7 +62,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
 
   test("should return 400 when date is missing", async () => {
     const query = { symbol: TEST_SYMBOL };
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
       developerToken,
@@ -76,7 +76,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
 
   test("should return 400 when date format is invalid", async () => {
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, "invalid-date");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
       developerToken,
@@ -91,7 +91,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
   test("should return 200 with empty array when no snapshots exist", async () => {
     const futureDate = "2099-01-01";
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, futureDate);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
       developerToken
@@ -110,7 +110,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
     await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, snapshotCount);
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
       developerToken
@@ -128,7 +128,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
     await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 2);
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
       developerToken
@@ -149,10 +149,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
       expect(firstEntry).toHaveProperty("createdAt");
       expect(firstEntry).toHaveProperty("updatedAt");
       expect(typeof firstEntry.id).toBe("string");
-      expect(firstEntry.timestamp).toBeInstanceOf(Date);
       expect(typeof firstEntry.nseSymbol).toBe("string");
-      expect(firstEntry.createdAt).toBeInstanceOf(Date);
-      expect(firstEntry.updatedAt).toBeInstanceOf(Date);
     }
   });
 
@@ -160,7 +157,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
     await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 2);
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
       developerToken
@@ -186,7 +183,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
     await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 5);
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
       developerToken
@@ -200,8 +197,8 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
 
     // Validate entries are ordered by timestamp ascending
     for (let i = 1; i < validatedData.data.quoteTimeline.length; i++) {
-      const prevTimestamp = validatedData.data.quoteTimeline[i - 1].timestamp.getTime();
-      const currTimestamp = validatedData.data.quoteTimeline[i].timestamp.getTime();
+      const prevTimestamp = dayjs(validatedData.data.quoteTimeline[i - 1].timestamp).valueOf();
+      const currTimestamp = dayjs(validatedData.data.quoteTimeline[i].timestamp).valueOf();
       expect(currTimestamp).toBeGreaterThanOrEqual(prevTimestamp);
     }
   });
@@ -210,7 +207,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
     await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 3);
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
       developerToken
@@ -237,7 +234,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
     await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 2);
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
       developerToken
@@ -264,7 +261,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
     await createQuoteSnapshot(TEST_SYMBOL, `${TEST_DATE}T10:06:00`, testQuoteData);
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
       developerToken
