@@ -66,11 +66,14 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         });
 
         if (quoteSnapshots.length === 0) {
-          return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(reply, {
-            statusCode: 200,
-            message: "Quote snapshot not found",
-            data: null as any,
-          });
+          return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(
+            reply,
+            {
+              statusCode: 200,
+              message: "Quote snapshot not found",
+              data: null as any,
+            }
+          );
         }
 
         const quoteSnapshot = quoteSnapshots[0];
@@ -79,18 +82,24 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         > | null;
 
         if (!quoteData) {
-          return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(reply, {
-            statusCode: 200,
-            message: "Quote snapshot not found",
-            data: null as any,
-          });
+          return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(
+            reply,
+            {
+              statusCode: 200,
+              message: "Quote snapshot not found",
+              data: null as any,
+            }
+          );
         }
 
-        return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(reply, {
-          statusCode: 200,
-          message: "Quote fetched successfully",
-          data: quoteData,
-        });
+        return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(
+          reply,
+          {
+            statusCode: 200,
+            message: "Quote fetched successfully",
+            data: quoteData,
+          }
+        );
       } catch (error) {
         fastify.log.error(
           `Error fetching quote snapshot for ${
@@ -117,11 +126,14 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
 
-      return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(reply, {
-        statusCode: 200,
-        message: "Quote fetched successfully",
-        data: response,
-      });
+      return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(
+        reply,
+        {
+          statusCode: 200,
+          message: "Quote fetched successfully",
+          data: response,
+        }
+      );
     } catch (error) {
       fastify.log.error("Error fetching quote: %s", JSON.stringify(error));
       return reply.internalServerError(
@@ -228,11 +240,11 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         data: {
           quoteTimeline: quoteSnapshots.map((snapshot) => ({
             id: snapshot.id,
-            timestamp: snapshot.timestamp,
+            timestamp: `${snapshot.timestamp.toISOString()}`,
             nseSymbol: snapshot.nseSymbol,
             quoteData: snapshot.quoteData as unknown as QuoteData,
-            createdAt: snapshot.createdAt,
-            updatedAt: snapshot.updatedAt,
+            createdAt: `${snapshot.createdAt.toISOString()}`,
+            updatedAt: `${snapshot.updatedAt.toISOString()}`,
           })),
         },
       });

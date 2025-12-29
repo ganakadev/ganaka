@@ -1,4 +1,6 @@
 import { faker } from "@faker-js/faker";
+import { v1_developer_groww_schemas } from "@ganaka/schemas";
+import type { z } from "zod";
 
 /**
  * Generates a random username for testing
@@ -43,5 +45,163 @@ export function createInvalidDeveloperTestData() {
 export function createEmptyDeveloperTestData() {
   return {
     username: "",
+  };
+}
+
+// ==================== Developer API Test Data ====================
+
+/**
+ * Known test symbol for consistent testing
+ */
+export const TEST_SYMBOL = "RELIANCE";
+export const TEST_SYMBOL_FOR_QUOTE_TIMELINE = "TARC";
+
+/**
+ * Known test datetime in format (YYYY-MM-DDTHH:mm:ss)
+ */
+export const TEST_DATETIME = "2025-12-26T10:06:00";
+
+/**
+ * Known test date in format (YYYY-MM-DD)
+ */
+export const TEST_DATE = "2025-12-26";
+
+/**
+ * Creates a valid Groww quote payload matching growwQuoteSchema
+ */
+export function createValidGrowwQuotePayload(): z.infer<
+  typeof v1_developer_groww_schemas.growwQuoteSchema
+> {
+  return {
+    status: "SUCCESS",
+    payload: {
+      average_price: 2500.5,
+      bid_quantity: 100,
+      bid_price: 2501.0,
+      day_change: 25.5,
+      day_change_perc: 1.03,
+      upper_circuit_limit: 2750.0,
+      lower_circuit_limit: 2250.0,
+      ohlc: {
+        open: 2475.0,
+        high: 2510.0,
+        low: 2470.0,
+        close: 2500.0,
+      },
+      depth: {
+        buy: [
+          { price: 2500.0, quantity: 100 },
+          { price: 2499.5, quantity: 200 },
+          { price: 2499.0, quantity: 150 },
+        ],
+        sell: [
+          { price: 2501.0, quantity: 100 },
+          { price: 2501.5, quantity: 200 },
+          { price: 2502.0, quantity: 150 },
+        ],
+      },
+      high_trade_range: null,
+      implied_volatility: null,
+      last_trade_quantity: 50,
+      last_trade_time: 1705312200000,
+      low_trade_range: null,
+      last_price: 2500.0,
+      market_cap: null,
+      offer_price: null,
+      offer_quantity: null,
+      oi_day_change: 0,
+      oi_day_change_percentage: 0,
+      open_interest: null,
+      previous_open_interest: null,
+      total_buy_quantity: 1000,
+      total_sell_quantity: 1200,
+      volume: 50000,
+      week_52_high: 2800.0,
+      week_52_low: 2200.0,
+    },
+  };
+}
+
+/**
+ * Creates valid shortlist entries array matching listSchema[]
+ */
+export function createValidShortlistEntries(): Array<{
+  name: string;
+  price: number;
+  nseSymbol: string;
+}> {
+  return [
+    { name: "Reliance Industries Ltd", price: 2500.0, nseSymbol: "RELIANCE" },
+    { name: "Tata Consultancy Services", price: 3500.0, nseSymbol: "TCS" },
+    { name: "HDFC Bank Ltd", price: 1600.0, nseSymbol: "HDFCBANK" },
+    { name: "Infosys Ltd", price: 1400.0, nseSymbol: "INFY" },
+    { name: "ICICI Bank Ltd", price: 950.0, nseSymbol: "ICICIBANK" },
+  ];
+}
+
+/**
+ * Creates quote snapshot test data matching growwQuoteSchema
+ */
+export function createQuoteSnapshotTestData(): z.infer<
+  typeof v1_developer_groww_schemas.growwQuoteSchema
+> {
+  return createValidGrowwQuotePayload();
+}
+
+/**
+ * Creates shortlist snapshot test data matching listSchema[]
+ */
+export function createShortlistSnapshotTestData(): Array<{
+  name: string;
+  price: number;
+  nseSymbol: string;
+}> {
+  return createValidShortlistEntries();
+}
+
+/**
+ * Creates valid quote query parameters
+ */
+export function createGrowwQuoteQuery(symbol?: string, datetime?: string) {
+  return {
+    symbol: symbol || TEST_SYMBOL,
+    ...(datetime && { datetime }),
+  };
+}
+
+/**
+ * Creates valid historical candles query parameters
+ */
+export function createHistoricalCandlesQuery(
+  symbol?: string,
+  interval?: string,
+  startTime?: string,
+  endTime?: string
+) {
+  return {
+    symbol: symbol || TEST_SYMBOL,
+    interval: interval || "5minute",
+    start_time: startTime || "2025-12-26T09:15:00",
+    end_time: endTime || "2025-12-26T10:00:00",
+  };
+}
+
+/**
+ * Creates valid quote timeline query parameters
+ */
+export function createQuoteTimelineQuery(symbol?: string, date?: string) {
+  return {
+    symbol: symbol || TEST_SYMBOL,
+    date: date || TEST_DATE,
+  };
+}
+
+/**
+ * Creates valid lists query parameters
+ */
+export function createListsQuery(type?: "top-gainers" | "volume-shockers", datetime?: string) {
+  return {
+    type: type || "top-gainers",
+    ...(datetime && { datetime }),
   };
 }
