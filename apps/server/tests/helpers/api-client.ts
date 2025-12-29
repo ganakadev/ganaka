@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from "axios";
 
-const baseURL = process.env.API_DOMAIN || "http://localhost:5000";
+const baseURL = process.env.API_DOMAIN || "http://localhost:4000";
 
 /**
  * Creates a configured axios instance with base URL

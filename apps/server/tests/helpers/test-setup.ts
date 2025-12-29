@@ -2,7 +2,7 @@
 import axios from "axios";
 
 export function getTestServerUrl(): string {
-  return process.env.API_DOMAIN || `http://localhost:5000`;
+  return process.env.API_DOMAIN || `http://localhost:4000`;
 }
 
 /**
