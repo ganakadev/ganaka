@@ -434,16 +434,24 @@ async function main() {
                 `StopLoss=${stopLossPrice.toFixed(2)}, TakeProfit=${takeProfitPrice.toFixed(2)}`
             );
 
-            placeOrder({
-              entryPrice,
-              nseSymbol: symbol,
-              stopLossPrice,
-              takeProfitPrice,
-              timestamp: currentTimestamp,
-            });
+            try {
+              await placeOrder({
+                entryPrice,
+                nseSymbol: symbol,
+                stopLossPrice,
+                takeProfitPrice,
+                timestamp: currentTimestamp,
+              });
 
-            // Track that we've placed an order for this stock
-            stocksWithOrders.add(symbol);
+              // Track that we've placed an order for this stock only if successful
+              stocksWithOrders.add(symbol);
+            } catch (error) {
+              console.error(
+                `[${symbol}] Failed to place order:`,
+                error instanceof Error ? error.message : error
+              );
+              // Continue processing other stocks even if this order fails
+            }
           }
         } catch (error) {
           console.error(`[${symbol}] Error processing stock:`, error);

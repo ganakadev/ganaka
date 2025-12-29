@@ -16,7 +16,7 @@ import { runMinuteLoop } from "./utils/minute-loop";
 dotenv.config();
 
 export interface RunContext {
-  placeOrder: (data: PlaceOrderData) => void;
+  placeOrder: (data: PlaceOrderData) => Promise<void>;
   fetchCandles: (
     params: z.infer<
       typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.query
