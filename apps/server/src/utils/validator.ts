@@ -11,11 +11,14 @@ export function validateRequest<T>(
     return schema.parse(data);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      reply.badRequest(
-        `Validation failed for ${type}: ${error.issues
-          .map((err) => err.path.join(".") + ": " + err.message)
-          .join(", ")}`
-      );
+      const errorMessage = `Validation failed for ${type}: ${error.issues
+        .map((err) => err.path.join(".") + ": " + err.message)
+        .join(", ")}`;
+      // Log the validation error and the data that failed validation
+      if (reply.log) {
+        reply.log.error(`Validation error for ${type}: ${errorMessage}, data: ${JSON.stringify(data)}`);
+      }
+      reply.badRequest(errorMessage);
     } else {
       reply.internalServerError(
         "An unexpected error occurred during validation"

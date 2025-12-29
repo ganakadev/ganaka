@@ -59,7 +59,7 @@ const quoteSnapshotsRoutes: FastifyPluginAsync = async (fastify) => {
         z.infer<
           typeof v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.response
         >
-      >({
+      >(reply, {
         statusCode: 200,
         message: "Quote snapshots fetched successfully",
         data: {

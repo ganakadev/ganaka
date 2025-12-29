@@ -348,7 +348,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response>
-      >({
+      >(reply, {
         statusCode: 200,
         message: "Runs fetched successfully",
         data: sortedGroupedRuns,
@@ -402,7 +402,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response>
-      >({
+      >(reply, {
         statusCode: 201,
         message: "Run created successfully",
         data: {
@@ -472,7 +472,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response>
-      >({
+      >(reply, {
         statusCode: 200,
         message: "Run updated successfully",
         data: {
@@ -528,7 +528,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.response>
-      >({
+      >(reply, {
         statusCode: 200,
         message: "Run deleted successfully",
         data: {
@@ -625,7 +625,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response>
-      >({
+      >(reply, {
         statusCode: 200,
         message: "Orders fetched successfully",
         data: ordersWithMetrics,
@@ -699,7 +699,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.response>
-      >({
+      >(reply, {
         statusCode: 201,
         message: "Order created successfully",
         data: {

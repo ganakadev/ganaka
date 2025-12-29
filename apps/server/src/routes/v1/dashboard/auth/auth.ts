@@ -32,7 +32,7 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<typeof v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.response>
-      >({
+      >(reply, {
         statusCode: 200,
         message: "Developer signed in successfully",
         data: {

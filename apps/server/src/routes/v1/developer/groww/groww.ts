@@ -23,7 +23,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
   // Get latest token endpoint
   fastify.get("/token", async (request, reply) => {
     const token = await tokenManager.getToken();
-    return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwToken.response>>({
+    return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwToken.response>>(reply, {
       statusCode: 200,
       message: "Token fetched successfully",
       data: token,
@@ -66,7 +66,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         });
 
         if (quoteSnapshots.length === 0) {
-          return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>({
+          return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(reply, {
             statusCode: 200,
             message: "Quote snapshot not found",
             data: null as any,
@@ -79,14 +79,14 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         > | null;
 
         if (!quoteData) {
-          return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>({
+          return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(reply, {
             statusCode: 200,
             message: "Quote snapshot not found",
             data: null as any,
           });
         }
 
-        return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>({
+        return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(reply, {
           statusCode: 200,
           message: "Quote fetched successfully",
           data: quoteData,
@@ -117,7 +117,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
 
-      return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>({
+      return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(reply, {
         statusCode: 200,
         message: "Quote fetched successfully",
         data: response,
@@ -162,7 +162,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response>
-      >({
+      >(reply, {
         statusCode: 200,
         message: "Historical candles fetched successfully",
         data: response,
@@ -222,7 +222,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.response>
-      >({
+      >(reply, {
         statusCode: 200,
         message: "Quote timeline fetched successfully",
         data: {
