@@ -40,7 +40,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "pnpm --filter @ganaka/server start",
+    command: "pnpm --filter @ganaka/server dev",
     url: `${process.env.API_DOMAIN || "http://localhost:4000"}/health`,
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
