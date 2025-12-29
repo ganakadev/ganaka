@@ -19,7 +19,7 @@ test.beforeAll(async () => {
 test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createDailyPersistentCompaniesQuery();
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await unauthenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`
     );
@@ -29,7 +29,7 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
 
   test("should return 401 when invalid token is provided", async () => {
     const query = createDailyPersistentCompaniesQuery();
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
       "invalid-token-12345",
@@ -43,7 +43,7 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
 
   test("should return 400 when date is missing", async () => {
     const query = { type: "TOP_GAINERS" };
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
       developerToken,
@@ -57,7 +57,7 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
 
   test("should return 400 when type is missing", async () => {
     const query = { date: TEST_DATE };
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
       developerToken,
@@ -71,7 +71,7 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
 
   test("should return 400 when date format is invalid", async () => {
     const query = createDailyPersistentCompaniesQuery("invalid-date", "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
       developerToken,
@@ -85,7 +85,7 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
 
   test("should return 400 when type is invalid enum value", async () => {
     const query = { date: TEST_DATE, type: "invalid-type" };
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
       developerToken,
@@ -100,7 +100,7 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
   test("should return 200 with empty companies array when no snapshots exist", async () => {
     const futureDate = "2099-01-01";
     const query = createDailyPersistentCompaniesQuery(futureDate, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
       developerToken
@@ -120,7 +120,7 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
     await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 10);
 
     const query = createDailyPersistentCompaniesQuery(TEST_DATE, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
       developerToken
@@ -147,7 +147,7 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
     await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5);
 
     const query = createDailyPersistentCompaniesQuery(TEST_DATE, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
       developerToken
@@ -173,7 +173,7 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
     await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5);
 
     const query = createDailyPersistentCompaniesQuery(TEST_DATE, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
       developerToken
@@ -205,7 +205,7 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
     await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5);
 
     const query = createDailyPersistentCompaniesQuery(TEST_DATE, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
       developerToken
@@ -228,7 +228,7 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
     await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 10);
 
     const query = createDailyPersistentCompaniesQuery(TEST_DATE, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
       developerToken
@@ -258,7 +258,7 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
     await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5);
 
     const query = createDailyPersistentCompaniesQuery(TEST_DATE, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
       developerToken
@@ -274,4 +274,3 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
     expect(validatedData.data.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 });
-

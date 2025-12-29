@@ -184,7 +184,7 @@ test.describe("GET /v1/dashboard/candles", () => {
     ];
 
     for (const { interval, expectedMinutes } of intervals) {
-      const query = createCandlesQuery(TEST_SYMBOL, TEST_DATETIME, interval);
+      const query = createCandlesQuery(TEST_SYMBOL, TEST_DATE, interval);
       const queryString = new URLSearchParams(query as any).toString();
       console.log(queryString);
       const response = await authenticatedGet(
