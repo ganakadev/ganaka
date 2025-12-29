@@ -10,7 +10,7 @@ const developerSchema = z.object({
 
 export const signIn = {
   body: z.object({
-    developerToken: z.string(),
+    developerToken: z.string().nonempty("Developer token is required"),
   }),
   response: apiResponseSchema.extend({
     data: developerSchema,
