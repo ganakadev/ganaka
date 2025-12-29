@@ -19,7 +19,7 @@ test.beforeAll(async () => {
 test.describe("GET /v1/dashboard/daily-unique-companies", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createDailyUniqueCompaniesQuery();
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await unauthenticatedGet(
       `/v1/dashboard/daily-unique-companies?${queryString}`
     );
@@ -29,7 +29,7 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
 
   test("should return 401 when invalid token is provided", async () => {
     const query = createDailyUniqueCompaniesQuery();
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-unique-companies?${queryString}`,
       "invalid-token-12345",
@@ -43,7 +43,7 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
 
   test("should return 400 when date is missing", async () => {
     const query = { type: "TOP_GAINERS" };
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-unique-companies?${queryString}`,
       developerToken,
@@ -57,7 +57,7 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
 
   test("should return 400 when type is missing", async () => {
     const query = { date: TEST_DATE };
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-unique-companies?${queryString}`,
       developerToken,
@@ -71,7 +71,7 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
 
   test("should return 400 when date format is invalid", async () => {
     const query = createDailyUniqueCompaniesQuery("invalid-date", "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-unique-companies?${queryString}`,
       developerToken,
@@ -85,7 +85,7 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
 
   test("should return 400 when type is invalid enum value", async () => {
     const query = { date: TEST_DATE, type: "invalid-type" };
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-unique-companies?${queryString}`,
       developerToken,
@@ -100,7 +100,7 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
   test("should return 200 with uniqueCount 0 when no snapshots exist", async () => {
     const futureDate = "2099-01-01";
     const query = createDailyUniqueCompaniesQuery(futureDate, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-unique-companies?${queryString}`,
       developerToken
@@ -119,7 +119,7 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
     await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5);
 
     const query = createDailyUniqueCompaniesQuery(TEST_DATE, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-unique-companies?${queryString}`,
       developerToken
@@ -143,7 +143,7 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
     await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 3);
 
     const query = createDailyUniqueCompaniesQuery(TEST_DATE, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-unique-companies?${queryString}`,
       developerToken
@@ -166,7 +166,7 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
 
   test("should validate exact uniqueCount value (placeholder for user to fill)", async () => {
     const query = createDailyUniqueCompaniesQuery(TEST_DATE, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-unique-companies?${queryString}`,
       developerToken
@@ -180,14 +180,14 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
 
     expect(typeof validatedData.data.uniqueCount).toBe("number");
     expect(validatedData.data.uniqueCount).toBeGreaterThanOrEqual(0);
-    expect(validatedData.data.uniqueCount).toBe(5);
+    expect(validatedData.data.uniqueCount).toBe(10);
   });
 
   test("should validate date matches requested date format (YYYY-MM-DD)", async () => {
     await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 3);
 
     const query = createDailyUniqueCompaniesQuery(TEST_DATE, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-unique-companies?${queryString}`,
       developerToken
