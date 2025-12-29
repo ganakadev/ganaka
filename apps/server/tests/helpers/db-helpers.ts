@@ -15,9 +15,13 @@ dayjs.extend(utc);
  * IMPORTANT: This should be called after each test suite
  */
 export async function cleanupDatabase(): Promise<void> {
-  // Delete in order to respect foreign key constraints
   await prisma.order.deleteMany({});
   await prisma.run.deleteMany({});
+  await prisma.quoteSnapshot.deleteMany({});
+  await prisma.shortlistSnapshot.deleteMany({});
+  await prisma.developer.deleteMany({});
+  await prisma.niftyQuote.deleteMany({});
+  await prisma.collectorError.deleteMany({});
 }
 
 /**
