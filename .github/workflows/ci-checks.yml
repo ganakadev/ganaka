@@ -1,0 +1,58 @@
+name: CI Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  lint-build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create .env file for database reset
+        run: |
+          cat > .env << EOF
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          GROWW_API_KEY=${{ secrets.GROWW_API_KEY }}
+          GROWW_API_SECRET=${{ secrets.GROWW_API_SECRET }}
+          REDIS_URL=${{ secrets.REDIS_URL }}
+          API_DOMAIN="http://localhost:4000"
+          VITE_API_DOMAIN="http://localhost:4000"
+          DEVELOPER_KEY=${{ secrets.DEVELOPER_KEY }}
+          WEBSHARE_API_KEY=${{ secrets.WEBSHARE_API_KEY }}
+          NEON_API_KEY=${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID=${{ secrets.NEON_PROJECT_ID }}
+          NEON_TEST_BRANCH_ID=${{ secrets.NEON_TEST_BRANCH_ID }}
+          NEON_PRODUCTION_BRANCH_ID=${{ secrets.NEON_PRODUCTION_BRANCH_ID }}
+          EOF
+
+      - name: Reset test database
+        run: pnpm run reset:test-db
+
+      - name: Prepare for CI
+        run: pnpm run prepare:ci
+
+      - name: Run lint
+        run: pnpm run lint
+
+      - name: Run tests
+        run: pnpm run test:server

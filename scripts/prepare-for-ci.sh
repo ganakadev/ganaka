@@ -5,6 +5,9 @@ set -e
 
 echo "Starting CI preparation..."
 
+echo "Deploying database migrations..."
+pnpm --filter @ganaka/db prisma:migrate:deploy
+
 echo "Generating Prisma client..."
 pnpm --filter @ganaka/db prisma:generate
 
