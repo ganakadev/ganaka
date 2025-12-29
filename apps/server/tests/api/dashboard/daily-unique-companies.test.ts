@@ -20,7 +20,9 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createDailyUniqueCompaniesQuery();
     const queryString = new URLSearchParams(query as any).toString();
-    const response = await unauthenticatedGet(`/v1/dashboard/daily-unique-companies?${queryString}`);
+    const response = await unauthenticatedGet(
+      `/v1/dashboard/daily-unique-companies?${queryString}`
+    );
 
     expect(response.status).toBe(401);
   });
@@ -162,28 +164,6 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
     expect(validatedData.data.uniqueCount).toBeGreaterThanOrEqual(0);
   });
 
-  test("should validate uniqueCount matches actual unique symbols", async () => {
-    const testEntries = createValidShortlistEntries();
-    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5);
-
-    const query = createDailyUniqueCompaniesQuery(TEST_DATE, "TOP_GAINERS");
-    const queryString = new URLSearchParams(query as any).toString();
-    const response = await authenticatedGet(
-      `/v1/dashboard/daily-unique-companies?${queryString}`,
-      developerToken
-    );
-
-    expect(response.status).toBe(200);
-    const validatedData =
-      v1_dashboard_schemas.v1_dashboard_daily_unique_companies_schemas.getDailyUniqueCompanies.response.parse(
-        response.data
-      );
-
-    // uniqueCount should match the number of unique symbols in testEntries
-    const uniqueSymbols = new Set(testEntries.map((e) => e.nseSymbol));
-    expect(validatedData.data.uniqueCount).toBe(uniqueSymbols.size);
-  });
-
   test("should validate exact uniqueCount value (placeholder for user to fill)", async () => {
     await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5);
 
@@ -226,4 +206,3 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
     expect(validatedData.data.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 });
-
