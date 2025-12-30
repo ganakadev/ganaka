@@ -5,14 +5,18 @@ import type { z } from "zod";
 import { v1_developer_groww_schemas, v1_developer_lists_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { Decimal } from "@ganaka/db/prisma";
 import { createValidShortlistEntries } from "../fixtures/test-data";
+import type { TestDataTracker } from "./test-tracker";
 
 dayjs.extend(utc);
+dayjs.extend(timezone);
 
 /**
  * Cleans up all test data from the database
- * IMPORTANT: This should be called after each test suite
+ * IMPORTANT: This should only be called in global setup/teardown
+ * For test-level cleanup, use TestDataTracker instead
  */
 export async function cleanupDatabase(): Promise<void> {
   await prisma.order.deleteMany({});
@@ -22,6 +26,14 @@ export async function cleanupDatabase(): Promise<void> {
   await prisma.developer.deleteMany({});
   await prisma.niftyQuote.deleteMany({});
   await prisma.collectorError.deleteMany({});
+}
+
+/**
+ * Cleans up tracked data using a TestDataTracker instance
+ * This is called automatically by the test fixture after each test
+ */
+export async function cleanupTrackedData(tracker: TestDataTracker): Promise<void> {
+  await tracker.cleanup();
 }
 
 /**
@@ -51,7 +63,10 @@ export async function seedAdminUser(): Promise<{ id: string; token: string }> {
 /**
  * Creates a test developer
  */
-export async function createTestDeveloper(username?: string): Promise<{
+export async function createTestDeveloper(
+  username?: string,
+  tracker?: TestDataTracker
+): Promise<{
   id: string;
   username: string;
   token: string;
@@ -61,6 +76,9 @@ export async function createTestDeveloper(username?: string): Promise<{
     where: { username: username || `test-dev-${Date.now()}` },
   });
   if (existingDeveloper) {
+    if (tracker) {
+      tracker.trackDeveloper(existingDeveloper.id);
+    }
     return {
       id: existingDeveloper.id,
       username: existingDeveloper.username,
@@ -70,10 +88,14 @@ export async function createTestDeveloper(username?: string): Promise<{
 
   const developer = await prisma.developer.create({
     data: {
-      username: username || `test-dev-${Date.now()}`,
+      username: `${username}-${randomUUID()}` || `test-dev-${randomUUID()}`,
       token: randomUUID(),
     },
   });
+
+  if (tracker) {
+    tracker.trackDeveloper(developer.id);
+  }
 
   return {
     id: developer.id,
@@ -106,18 +128,22 @@ export async function getAllDevelopers() {
 export async function createQuoteSnapshot(
   symbol: string,
   datetime: string,
-  quoteData: z.infer<typeof v1_developer_groww_schemas.growwQuoteSchema>
+  quoteData: z.infer<typeof v1_developer_groww_schemas.growwQuoteSchema>,
+  tracker?: TestDataTracker
 ) {
   const timestamp = dayjs(datetime).utc().toDate();
 
   const snapshot = await prisma.quoteSnapshot.create({
     data: {
-      id: randomUUID(),
       timestamp,
       nseSymbol: symbol,
       quoteData: quoteData as InputJsonValue,
     },
   });
+
+  if (tracker) {
+    tracker.trackQuoteSnapshot(snapshot.id);
+  }
 
   return snapshot;
 }
@@ -128,19 +154,23 @@ export async function createQuoteSnapshot(
 export async function createShortlistSnapshot(
   type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
   datetime: string,
-  entries: Array<z.infer<typeof v1_developer_lists_schemas.listSchema>>
+  entries: Array<z.infer<typeof v1_developer_lists_schemas.listSchema>>,
+  tracker?: TestDataTracker
 ) {
   const timestamp = dayjs(datetime).utc().toDate();
   const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
 
   const snapshot = await prisma.shortlistSnapshot.create({
     data: {
-      id: randomUUID(),
       timestamp,
       shortlistType,
       entries: entries as InputJsonValue,
     },
   });
+
+  if (tracker) {
+    tracker.trackShortlistSnapshot(snapshot.id);
+  }
 
   return snapshot;
 }
@@ -151,9 +181,11 @@ export async function createShortlistSnapshot(
 export async function createMultipleQuoteSnapshots(
   symbol: string,
   date: string,
-  count: number
+  count: number,
+  tracker?: TestDataTracker
 ): Promise<Array<Pick<QuoteSnapshot, "id" | "timestamp" | "nseSymbol">>> {
-  const baseDate = dayjs(date).utc();
+  // Parse the date string (YYYY-MM-DD format)
+  const dateStr = dayjs(date).format("YYYY-MM-DD");
   const snapshots: Array<Pick<QuoteSnapshot, "id" | "timestamp" | "nseSymbol">> = [];
 
   // Create snapshots at different times during market hours (9:15 AM - 3:30 PM IST)
@@ -163,12 +195,15 @@ export async function createMultipleQuoteSnapshots(
 
   for (let i = 0; i < count; i++) {
     const minutes = startMinute + i * intervalMinutes;
-    const hours = startHour + Math.floor(minutes / 60);
+    const hours = startHour + i;
     const finalMinutes = minutes % 60;
 
-    // Convert IST to UTC (IST is UTC+5:30)
-    const istTime = baseDate.hour(hours).minute(finalMinutes).second(0);
-    const utcTime = istTime.subtract(5, "hour").subtract(30, "minute");
+    // Create IST time using timezone plugin, then convert to UTC
+    const istTime = dayjs.tz(
+      `${dateStr} ${String(hours).padStart(2, "0")}:${String(finalMinutes).padStart(2, "0")}:00`,
+      "Asia/Kolkata"
+    );
+    const utcTime = istTime.utc();
 
     const quoteData = {
       status: "SUCCESS" as const,
@@ -213,7 +248,6 @@ export async function createMultipleQuoteSnapshots(
 
     const snapshot = await prisma.quoteSnapshot.create({
       data: {
-        id: randomUUID(),
         timestamp: utcTime.toDate(),
         nseSymbol: symbol,
         quoteData: quoteData as InputJsonValue,
@@ -225,6 +259,10 @@ export async function createMultipleQuoteSnapshots(
       timestamp: snapshot.timestamp,
       nseSymbol: snapshot.nseSymbol,
     });
+
+    if (tracker) {
+      tracker.trackQuoteSnapshot(snapshot.id);
+    }
   }
 
   return snapshots;
@@ -256,20 +294,24 @@ export async function getShortlistSnapshotById(id: string) {
 export async function createRun(
   developerId: string,
   startTime: Date | string,
-  endTime: Date | string
+  endTime: Date | string,
+  tracker?: TestDataTracker
 ) {
   const start = typeof startTime === "string" ? new Date(startTime) : startTime;
   const end = typeof endTime === "string" ? new Date(endTime) : endTime;
 
   const run = await prisma.run.create({
     data: {
-      id: randomUUID(),
       startTime: start,
       endTime: end,
       developerId: developerId,
       completed: false,
     },
   });
+
+  if (tracker) {
+    tracker.trackRun(run.id);
+  }
 
   return run;
 }
@@ -283,13 +325,13 @@ export async function createOrder(
   entryPrice: number,
   stopLossPrice: number,
   takeProfitPrice: number,
-  timestamp: Date | string
+  timestamp: Date | string,
+  tracker?: TestDataTracker
 ) {
   const ts = typeof timestamp === "string" ? new Date(timestamp) : timestamp;
 
   const order = await prisma.order.create({
     data: {
-      id: randomUUID(),
       runId: runId,
       nseSymbol: nseSymbol,
       entryPrice: new Decimal(entryPrice),
@@ -298,6 +340,10 @@ export async function createOrder(
       timestamp: ts,
     },
   });
+
+  if (tracker) {
+    tracker.trackOrder(order.id);
+  }
 
   return order;
 }
@@ -308,7 +354,8 @@ export async function createOrder(
 export async function createMultipleShortlistSnapshots(
   type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
   date: string,
-  count: number
+  count: number,
+  tracker?: TestDataTracker
 ): Promise<ShortlistSnapshot[]> {
   const baseDate = dayjs(date).utc();
   const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
@@ -332,7 +379,6 @@ export async function createMultipleShortlistSnapshots(
 
     const snapshot = await prisma.shortlistSnapshot.create({
       data: {
-        id: randomUUID(),
         timestamp: utcTime.toDate(),
         shortlistType,
         entries: entries as InputJsonValue,
@@ -340,6 +386,83 @@ export async function createMultipleShortlistSnapshots(
     });
 
     snapshots.push(snapshot);
+
+    if (tracker) {
+      tracker.trackShortlistSnapshot(snapshot.id);
+    }
+  }
+
+  return snapshots;
+}
+
+/**
+ * Creates shortlist snapshots with a specific number of unique companies across all snapshots
+ * This is useful for testing unique company counts
+ */
+export async function createShortlistSnapshotsWithUniqueCompanies(
+  type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
+  date: string,
+  uniqueCompanyCount: number = 10,
+  tracker?: TestDataTracker
+): Promise<ShortlistSnapshot[]> {
+  const baseDate = dayjs(date).utc();
+  const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
+  const snapshots: ShortlistSnapshot[] = [];
+
+  // Generate entries with the required number of unique companies
+  // Start with the base 5 companies from createValidShortlistEntries
+  const baseEntries = createValidShortlistEntries();
+  const additionalCompanies = [
+    { name: "Bharti Airtel Ltd", price: 1200.0, nseSymbol: "BHARTIARTL" },
+    { name: "State Bank of India", price: 600.0, nseSymbol: "SBIN" },
+    { name: "Bajaj Finance Ltd", price: 7500.0, nseSymbol: "BAJFINANCE" },
+    { name: "Axis Bank Ltd", price: 1100.0, nseSymbol: "AXISBANK" },
+    { name: "Wipro Ltd", price: 450.0, nseSymbol: "WIPRO" },
+  ];
+
+  // Combine to get exactly uniqueCompanyCount companies
+  const allCompanies = [...baseEntries, ...additionalCompanies].slice(0, uniqueCompanyCount);
+
+  // Create snapshots with different subsets of companies
+  // Distribute companies across snapshots to ensure all uniqueCompanyCount companies appear
+  const snapshotsNeeded = Math.ceil(uniqueCompanyCount / 5); // Each snapshot can have up to 5 companies
+  const startHour = 9;
+  const startMinute = 15;
+  const intervalMinutes = Math.floor((15 * 60 - 15) / snapshotsNeeded);
+
+  for (let i = 0; i < snapshotsNeeded; i++) {
+    const minutes = startMinute + i * intervalMinutes;
+    const hours = startHour + Math.floor(minutes / 60);
+    const finalMinutes = minutes % 60;
+
+    // Convert IST to UTC (IST is UTC+5:30)
+    const istTime = baseDate.hour(hours).minute(finalMinutes).second(0);
+    const utcTime = istTime.subtract(5, "hour").subtract(30, "minute");
+
+    // Distribute companies across snapshots
+    // Each snapshot gets a subset, ensuring all companies appear across all snapshots
+    const startIdx = i * 5;
+    const endIdx = Math.min(startIdx + 5, uniqueCompanyCount);
+    const snapshotEntries = allCompanies.slice(startIdx, endIdx);
+
+    // If this is the last snapshot and we need more companies, add remaining companies
+    if (i === snapshotsNeeded - 1 && endIdx < uniqueCompanyCount) {
+      snapshotEntries.push(...allCompanies.slice(endIdx));
+    }
+
+    const snapshot = await prisma.shortlistSnapshot.create({
+      data: {
+        timestamp: utcTime.toDate(),
+        shortlistType,
+        entries: snapshotEntries as InputJsonValue,
+      },
+    });
+
+    snapshots.push(snapshot);
+
+    if (tracker) {
+      tracker.trackShortlistSnapshot(snapshot.id);
+    }
   }
 
   return snapshots;

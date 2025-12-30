@@ -1,16 +1,11 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../helpers/test-fixtures";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
 import { authenticatedPost, unauthenticatedPost } from "../../helpers/api-client";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
-import { cleanupDatabase } from "../../helpers/db-helpers";
-
-test.afterEach(async () => {
-  await cleanupDatabase();
-});
 
 test.describe("POST /v1/dashboard/auth/sign-in", () => {
-  test("should return 200 with developer data when valid token provided", async () => {
-    const dev = await createDeveloperUser();
+  test("should return 200 with developer data when valid token provided", async ({ tracker }) => {
+    const dev = await createDeveloperUser(undefined, tracker);
 
     const response = await authenticatedPost("/v1/dashboard/auth/sign-in", dev.token, {
       developerToken: dev.token,
@@ -30,8 +25,8 @@ test.describe("POST /v1/dashboard/auth/sign-in", () => {
     expect(validatedData.data.username).toBe(dev.username);
   });
 
-  test("should return 401 when invalid developer token provided", async () => {
-    const dev = await createDeveloperUser();
+  test("should return 401 when invalid developer token provided", async ({ tracker }) => {
+    const dev = await createDeveloperUser(undefined, tracker);
     const response = await authenticatedPost(
       "/v1/dashboard/auth/sign-in",
       dev.token,
@@ -44,8 +39,8 @@ test.describe("POST /v1/dashboard/auth/sign-in", () => {
     expect(body).toContain("Invalid developer token");
   });
 
-  test("should return 400 when developerToken is missing", async () => {
-    const dev = await createDeveloperUser();
+  test("should return 400 when developerToken is missing", async ({ tracker }) => {
+    const dev = await createDeveloperUser(undefined, tracker);
 
     const response = await authenticatedPost(
       "/v1/dashboard/auth/sign-in",
@@ -57,8 +52,8 @@ test.describe("POST /v1/dashboard/auth/sign-in", () => {
     expect(response.status).toBe(400);
   });
 
-  test("should return 400 when developerToken is empty string", async () => {
-    const dev = await createDeveloperUser();
+  test("should return 400 when developerToken is empty string", async ({ tracker }) => {
+    const dev = await createDeveloperUser(undefined, tracker);
 
     const response = await authenticatedPost(
       "/v1/dashboard/auth/sign-in",
@@ -70,8 +65,8 @@ test.describe("POST /v1/dashboard/auth/sign-in", () => {
     expect(response.status).toBe(400);
   });
 
-  test("should validate response schema matches expected structure", async () => {
-    const dev = await createDeveloperUser();
+  test("should validate response schema matches expected structure", async ({ tracker }) => {
+    const dev = await createDeveloperUser(undefined, tracker);
 
     const response = await authenticatedPost("/v1/dashboard/auth/sign-in", dev.token, {
       developerToken: dev.token,
@@ -94,8 +89,8 @@ test.describe("POST /v1/dashboard/auth/sign-in", () => {
     );
   });
 
-  test("should return exact developer id and username matching database", async () => {
-    const dev = await createDeveloperUser();
+  test("should return exact developer id and username matching database", async ({ tracker }) => {
+    const dev = await createDeveloperUser(undefined, tracker);
 
     const response = await authenticatedPost("/v1/dashboard/auth/sign-in", dev.token, {
       developerToken: dev.token,

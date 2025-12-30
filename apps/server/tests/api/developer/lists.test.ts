@@ -1,5 +1,5 @@
 import { v1_developer_lists_schemas } from "@ganaka/schemas";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../../helpers/test-fixtures";
 import {
   createListsQuery,
   createValidShortlistEntries,
@@ -8,20 +8,22 @@ import {
 } from "../../fixtures/test-data";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createShortlistSnapshot, cleanupDatabase } from "../../helpers/db-helpers";
+import { createShortlistSnapshot } from "../../helpers/db-helpers";
+import { TestDataTracker } from "../../helpers/test-tracker";
 
 let developerToken: string;
+let sharedTracker: TestDataTracker;
 
 test.beforeAll(async () => {
-  const dev = await createDeveloperUser();
+  sharedTracker = new TestDataTracker();
+  const dev = await createDeveloperUser(undefined, sharedTracker);
   developerToken = dev.token;
 });
 
-test.afterEach(async () => {
-  await cleanupDatabase();
-  // Re-create developer user after cleanup
-  const dev = await createDeveloperUser();
-  developerToken = dev.token;
+test.afterAll(async () => {
+  if (sharedTracker) {
+    await sharedTracker.cleanup();
+  }
 });
 
 test.describe("GET /v1/developer/lists", () => {
@@ -90,9 +92,9 @@ test.describe("GET /v1/developer/lists", () => {
     expect(body.data).toBeNull();
   });
 
-  test("should return snapshot data for top-gainers with valid datetime", async () => {
+  test("should return snapshot data for top-gainers with valid datetime", async ({ tracker }) => {
     const testEntries = createValidShortlistEntries();
-    const snapshot = await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries);
+    const snapshot = await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
 
     const query = createListsQuery("top-gainers", TEST_DATETIME);
     const queryString = buildQueryString(query);
@@ -115,9 +117,9 @@ test.describe("GET /v1/developer/lists", () => {
     }
   });
 
-  test("should return snapshot data for volume-shockers with valid datetime", async () => {
+  test("should return snapshot data for volume-shockers with valid datetime", async ({ tracker }) => {
     const testEntries = createValidShortlistEntries();
-    const snapshot = await createShortlistSnapshot("volume-shockers", TEST_DATETIME, testEntries);
+    const snapshot = await createShortlistSnapshot("volume-shockers", TEST_DATETIME, testEntries, tracker);
 
     const query = createListsQuery("volume-shockers", TEST_DATETIME);
     const queryString = buildQueryString(query);
@@ -132,13 +134,13 @@ test.describe("GET /v1/developer/lists", () => {
     expect(body.data.length).toBeGreaterThan(0);
   });
 
-  test("should return list data matching stored snapshot with known datetime/type", async () => {
+  test("should return list data matching stored snapshot with known datetime/type", async ({ tracker }) => {
     const testType = "top-gainers";
     const testDatetime = TEST_DATETIME;
     const testEntries = createValidShortlistEntries();
 
     // Create snapshot in database
-    const snapshot = await createShortlistSnapshot(testType, testDatetime, testEntries);
+    const snapshot = await createShortlistSnapshot(testType, testDatetime, testEntries, tracker);
 
     // Fetch via API
     const query = createListsQuery(testType, testDatetime);
@@ -176,13 +178,13 @@ test.describe("GET /v1/developer/lists", () => {
     }
   });
 
-  test("should return list data matching stored snapshot for volume-shockers type", async () => {
+  test("should return list data matching stored snapshot for volume-shockers type", async ({ tracker }) => {
     const testType = "volume-shockers";
     const testDatetime = TEST_DATETIME;
     const testEntries = createValidShortlistEntries();
 
     // Create snapshot in database
-    const snapshot = await createShortlistSnapshot(testType, testDatetime, testEntries);
+    const snapshot = await createShortlistSnapshot(testType, testDatetime, testEntries, tracker);
 
     // Fetch via API
     const query = createListsQuery(testType, testDatetime);

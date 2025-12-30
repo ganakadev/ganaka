@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../helpers/test-fixtures";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
 import {
@@ -11,26 +11,28 @@ import { v1_dashboard_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { cleanupDatabase } from "../../helpers/db-helpers";
+import { TestDataTracker } from "../../helpers/test-tracker";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 let developerToken: string;
+let sharedTracker: TestDataTracker;
 
 test.beforeAll(async () => {
-  const dev = await createDeveloperUser();
+  sharedTracker = new TestDataTracker();
+  const dev = await createDeveloperUser(undefined, sharedTracker);
   developerToken = dev.token;
 });
 
-test.afterEach(async () => {
-  await cleanupDatabase();
-  // Re-create developer user after cleanup
-  const dev = await createDeveloperUser();
-  developerToken = dev.token;
+test.afterAll(async () => {
+  if (sharedTracker) {
+    await sharedTracker.cleanup();
+  }
 });
 
 test.describe("GET /v1/dashboard/candles", () => {
+  test.describe.configure({ mode: "default" });
   test("should return 401 when authorization header is missing", async () => {
     const query = createCandlesQuery();
     const queryString = new URLSearchParams(query).toString();
@@ -244,7 +246,7 @@ test.describe("GET /v1/dashboard/candles", () => {
     expect([400, 500]).toContain(response.status);
   });
 
-  test("should validate exact candle values (placeholder for user to fill)", async () => {
+  test("should validate exact candle values ", async () => {
     const query = createCandlesQuery(TEST_SYMBOL, TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken);

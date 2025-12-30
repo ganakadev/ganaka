@@ -1,22 +1,24 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../helpers/test-fixtures";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createShortlistSnapshot, cleanupDatabase } from "../../helpers/db-helpers";
+import { createShortlistSnapshot } from "../../helpers/db-helpers";
 import { createValidShortlistEntries, TEST_DATETIME, TEST_DATE } from "../../fixtures/test-data";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { TestDataTracker } from "../../helpers/test-tracker";
 
 let developerToken: string;
+let sharedTracker: TestDataTracker;
 
 test.beforeAll(async () => {
-  const dev = await createDeveloperUser();
+  sharedTracker = new TestDataTracker();
+  const dev = await createDeveloperUser(undefined, sharedTracker);
   developerToken = dev.token;
 });
 
-test.afterEach(async () => {
-  await cleanupDatabase();
-  // Re-create developer user after cleanup
-  const dev = await createDeveloperUser();
-  developerToken = dev.token;
+test.afterAll(async () => {
+  if (sharedTracker) {
+    await sharedTracker.cleanup();
+  }
 });
 
 test.describe("GET /v1/dashboard/available-datetimes", () => {
@@ -59,18 +61,18 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
     expect(validatedData.data.dates).toBeInstanceOf(Array);
   });
 
-  test("should return dates grouped by date with timestamps sorted ascending", async () => {
+  test("should return dates grouped by date with timestamps sorted ascending", async ({ tracker }) => {
     // Create snapshots for testing
     const testEntries = createValidShortlistEntries();
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries);
+    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
 
     // Create another snapshot on the same date but different time
     const anotherDatetime = "2025-12-26T11:00:00";
-    await createShortlistSnapshot("top-gainers", anotherDatetime, testEntries);
+    await createShortlistSnapshot("top-gainers", anotherDatetime, testEntries, tracker);
 
     // Create snapshot on different date
     const differentDate = "2025-12-27T10:06:00";
-    await createShortlistSnapshot("volume-shockers", differentDate, testEntries);
+    await createShortlistSnapshot("volume-shockers", differentDate, testEntries, tracker);
 
     const response = await authenticatedGet("/v1/dashboard/available-datetimes", developerToken);
 
@@ -107,9 +109,9 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
     });
   });
 
-  test("should validate exact timestamp formats (ISO strings)", async () => {
+  test("should validate exact timestamp formats (ISO strings)", async ({ tracker }) => {
     const testEntries = createValidShortlistEntries();
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries);
+    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
 
     const response = await authenticatedGet("/v1/dashboard/available-datetimes", developerToken);
 
@@ -131,9 +133,9 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
     });
   });
 
-  test("should validate response schema matches expected structure", async () => {
+  test("should validate response schema matches expected structure", async ({ tracker }) => {
     const testEntries = createValidShortlistEntries();
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries);
+    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
 
     const response = await authenticatedGet("/v1/dashboard/available-datetimes", developerToken);
 
@@ -157,12 +159,12 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
     }
   });
 
-  test("should return dates in ascending order", async () => {
+  test("should return dates in ascending order", async ({ tracker }) => {
     const testEntries = createValidShortlistEntries();
     // Create snapshots on different dates
-    await createShortlistSnapshot("top-gainers", "2025-12-25T10:06:00", testEntries);
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries);
-    await createShortlistSnapshot("top-gainers", "2025-12-27T10:06:00", testEntries);
+    await createShortlistSnapshot("top-gainers", "2025-12-25T10:06:00", testEntries, tracker);
+    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
+    await createShortlistSnapshot("top-gainers", "2025-12-27T10:06:00", testEntries, tracker);
 
     const response = await authenticatedGet("/v1/dashboard/available-datetimes", developerToken);
 
@@ -180,13 +182,13 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
     }
   });
 
-  test("should handle multiple dates correctly", async () => {
+  test("should handle multiple dates correctly", async ({ tracker }) => {
     const testEntries = createValidShortlistEntries();
     const dates = ["2025-12-25", "2025-12-26", "2025-12-27"];
 
     // Create snapshots on different dates
     for (const date of dates) {
-      await createShortlistSnapshot("top-gainers", `${date}T10:06:00`, testEntries);
+      await createShortlistSnapshot("top-gainers", `${date}T10:06:00`, testEntries, tracker);
     }
 
     const response = await authenticatedGet("/v1/dashboard/available-datetimes", developerToken);

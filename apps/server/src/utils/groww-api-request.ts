@@ -19,6 +19,8 @@ export const makeGrowwAPIRequest =
     const maxAttempts = 3;
     let lastError: unknown;
 
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         const accessToken = await tokenManager.getToken();
@@ -49,6 +51,23 @@ export const makeGrowwAPIRequest =
         if (isUnauthorized && attempt < maxAttempts) {
           // Invalidate token and retry
           await tokenManager.invalidateToken();
+          continue;
+        }
+
+        // Handle 429 Too Many Requests with exponential backoff
+        const isRateLimited =
+          axios.isAxiosError(error) && (error as AxiosError).response?.status === 429;
+
+        if (isRateLimited && attempt < maxAttempts) {
+          const backoffDelay = Math.min(1000 * Math.pow(2, attempt - 1), 10000);
+          fastify.log.warn(
+            "Groww API Rate Limit - Attempt %d of %d. Retrying in %dms. URL: %s",
+            attempt,
+            maxAttempts,
+            backoffDelay,
+            url
+          );
+          await delay(backoffDelay);
           continue;
         }
 

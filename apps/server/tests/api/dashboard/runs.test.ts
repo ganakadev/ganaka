@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../helpers/test-fixtures";
 import {
   authenticatedGet,
   authenticatedPost,
@@ -10,7 +10,7 @@ import {
   unauthenticatedDelete,
 } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createRun, createOrder, getRunById, getOrderById, cleanupDatabase } from "../../helpers/db-helpers";
+import { createRun, createOrder, getRunById, getOrderById } from "../../helpers/db-helpers";
 import {
   createRunTestData,
   createOrderTestData,
@@ -19,32 +19,29 @@ import {
 } from "../../fixtures/test-data";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
+import { TestDataTracker } from "../../helpers/test-tracker";
 
 let developerToken: string;
 let developerId: string;
 let otherDeveloperToken: string;
 let otherDeveloperId: string;
+let sharedTracker: TestDataTracker;
 
 test.beforeAll(async () => {
-  const dev = await createDeveloperUser();
+  sharedTracker = new TestDataTracker();
+  const dev = await createDeveloperUser(undefined, sharedTracker);
   developerToken = dev.token;
   developerId = dev.id;
 
-  const otherDev = await createDeveloperUser();
+  const otherDev = await createDeveloperUser(undefined, sharedTracker);
   otherDeveloperToken = otherDev.token;
   otherDeveloperId = otherDev.id;
 });
 
-test.afterEach(async () => {
-  await cleanupDatabase();
-  // Re-create developer users after cleanup
-  const dev = await createDeveloperUser();
-  developerToken = dev.token;
-  developerId = dev.id;
-
-  const otherDev = await createDeveloperUser();
-  otherDeveloperToken = otherDev.token;
-  otherDeveloperId = otherDev.id;
+test.afterAll(async () => {
+  if (sharedTracker) {
+    await sharedTracker.cleanup();
+  }
 });
 
 test.describe("GET /v1/dashboard/runs", () => {
@@ -73,14 +70,14 @@ test.describe("GET /v1/dashboard/runs", () => {
     expect(Object.keys(body.data).length).toBe(0);
   });
 
-  test("should return 200 with runs grouped by date", async () => {
+  test("should return 200 with runs grouped by date", async ({ tracker }) => {
     const startTime1 = new Date("2025-12-26T09:15:00Z");
     const endTime1 = new Date("2025-12-26T15:30:00Z");
     const startTime2 = new Date("2025-12-27T09:15:00Z");
     const endTime2 = new Date("2025-12-27T15:30:00Z");
 
-    await createRun(developerId, startTime1, endTime1);
-    await createRun(developerId, startTime2, endTime2);
+    await createRun(developerId, startTime1, endTime1, tracker);
+    await createRun(developerId, startTime2, endTime2, tracker);
 
     const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
 
@@ -91,10 +88,10 @@ test.describe("GET /v1/dashboard/runs", () => {
     expect(Object.keys(validatedData.data).length).toBeGreaterThan(0);
   });
 
-  test("should validate runs are grouped correctly by date (YYYY-MM-DD)", async () => {
+  test("should validate runs are grouped correctly by date (YYYY-MM-DD)", async ({ tracker }) => {
     const startTime = new Date("2025-12-26T09:15:00Z");
     const endTime = new Date("2025-12-26T15:30:00Z");
-    await createRun(developerId, startTime, endTime);
+    await createRun(developerId, startTime, endTime, tracker);
 
     const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
 
@@ -108,14 +105,14 @@ test.describe("GET /v1/dashboard/runs", () => {
     });
   });
 
-  test("should validate dates are sorted descending (newest first)", async () => {
+  test("should validate dates are sorted descending (newest first)", async ({ tracker }) => {
     const startTime1 = new Date("2025-12-25T09:15:00Z");
     const endTime1 = new Date("2025-12-25T15:30:00Z");
     const startTime2 = new Date("2025-12-26T09:15:00Z");
     const endTime2 = new Date("2025-12-26T15:30:00Z");
 
-    await createRun(developerId, startTime1, endTime1);
-    await createRun(developerId, startTime2, endTime2);
+    await createRun(developerId, startTime1, endTime1, tracker);
+    await createRun(developerId, startTime2, endTime2, tracker);
 
     const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
 
@@ -132,10 +129,12 @@ test.describe("GET /v1/dashboard/runs", () => {
     }
   });
 
-  test("should validate run structure (id, startTime, endTime, completed, orderCount)", async () => {
+  test("should validate run structure (id, startTime, endTime, completed, orderCount)", async ({
+    tracker,
+  }) => {
     const startTime = new Date("2025-12-26T09:15:00Z");
     const endTime = new Date("2025-12-26T15:30:00Z");
-    await createRun(developerId, startTime, endTime);
+    await createRun(developerId, startTime, endTime, tracker);
 
     const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
 
@@ -163,10 +162,10 @@ test.describe("GET /v1/dashboard/runs", () => {
     }
   });
 
-  test("should validate exact date grouping (placeholder for user to fill)", async () => {
+  test("should validate exact date grouping ", async ({ tracker }) => {
     const startTime = new Date("2025-12-26T09:15:00Z");
     const endTime = new Date("2025-12-26T15:30:00Z");
-    await createRun(developerId, startTime, endTime);
+    await createRun(developerId, startTime, endTime, tracker);
 
     const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
 
@@ -181,7 +180,6 @@ test.describe("GET /v1/dashboard/runs", () => {
 });
 
 test.describe("POST /v1/dashboard/runs", () => {
-
   test("should return 401 when authorization header is missing", async () => {
     const testData = createRunTestData();
     const response = await unauthenticatedPost("/v1/dashboard/runs", testData);
@@ -278,7 +276,7 @@ test.describe("POST /v1/dashboard/runs", () => {
     expect(run?.developerId).toBe(developerId);
   });
 
-  test("should validate exact timestamps (placeholder for user to fill)", async () => {
+  test("should validate exact timestamps ", async () => {
     const testData = createRunTestData();
     const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
 
@@ -297,9 +295,8 @@ test.describe("POST /v1/dashboard/runs", () => {
 });
 
 test.describe("PATCH /v1/dashboard/runs/:runId", () => {
-
-  test("should return 401 when authorization header is missing", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 401 when authorization header is missing", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const response = await unauthenticatedPatch(`/v1/dashboard/runs/${run.id}`, {
       completed: true,
     });
@@ -307,8 +304,8 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
     expect(response.status).toBe(401);
   });
 
-  test("should return 401 when invalid token is provided", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 401 when invalid token is provided", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const response = await authenticatedPatch(
       `/v1/dashboard/runs/${run.id}`,
       "invalid-token-12345",
@@ -342,8 +339,8 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
     expect(response.status).toBe(404);
   });
 
-  test("should return 404 when run belongs to different developer", async () => {
-    const run = await createRun(otherDeveloperId, new Date(), new Date());
+  test("should return 404 when run belongs to different developer", async ({ tracker }) => {
+    const run = await createRun(otherDeveloperId, new Date(), new Date(), tracker);
     const response = await authenticatedPatch(
       `/v1/dashboard/runs/${run.id}`,
       developerToken,
@@ -354,8 +351,8 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
     expect(response.status).toBe(404);
   });
 
-  test("should return 200 with updated run when valid data provided", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 200 with updated run when valid data provided", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
       completed: true,
     });
@@ -367,8 +364,8 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
     expect(body.data.completed).toBe(true);
   });
 
-  test("should validate response structure matches schema", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should validate response structure matches schema", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
       completed: true,
     });
@@ -383,8 +380,8 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
     expect(validatedData.data).toHaveProperty("completed");
   });
 
-  test("should validate completed status is updated correctly", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should validate completed status is updated correctly", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     expect(run.completed).toBe(false);
 
     const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
@@ -396,7 +393,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
     expect(updatedRun?.completed).toBe(true);
   });
 
-  test("should validate exact timestamps preserved (placeholder for user to fill)", async () => {
+  test("should validate exact timestamps preserved ", async () => {
     const startTime = new Date("2025-12-26T09:15:00Z");
     const endTime = new Date("2025-12-26T15:30:00Z");
     const run = await createRun(developerId, startTime, endTime);
@@ -416,16 +413,15 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
 });
 
 test.describe("DELETE /v1/dashboard/runs/:runId", () => {
-
-  test("should return 401 when authorization header is missing", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 401 when authorization header is missing", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const response = await unauthenticatedDelete(`/v1/dashboard/runs/${run.id}`);
 
     expect(response.status).toBe(401);
   });
 
-  test("should return 401 when invalid token is provided", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 401 when invalid token is provided", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const response = await authenticatedDelete(
       `/v1/dashboard/runs/${run.id}`,
       "invalid-token-12345",
@@ -454,8 +450,8 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
     expect(response.status).toBe(404);
   });
 
-  test("should return 404 when run belongs to different developer", async () => {
-    const run = await createRun(otherDeveloperId, new Date(), new Date());
+  test("should return 404 when run belongs to different developer", async ({ tracker }) => {
+    const run = await createRun(otherDeveloperId, new Date(), new Date(), tracker);
     const response = await authenticatedDelete(`/v1/dashboard/runs/${run.id}`, developerToken, {
       validateStatus: () => true,
     });
@@ -463,8 +459,8 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
     expect(response.status).toBe(404);
   });
 
-  test("should return 200 with deleted run id when valid", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 200 with deleted run id when valid", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const response = await authenticatedDelete(`/v1/dashboard/runs/${run.id}`, developerToken);
 
     expect(response.status).toBe(200);
@@ -474,8 +470,8 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
     expect(body.data.id).toBe(run.id);
   });
 
-  test("should validate run is actually deleted from database", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should validate run is actually deleted from database", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     await authenticatedDelete(`/v1/dashboard/runs/${run.id}`, developerToken);
 
     const deletedRun = await getRunById(run.id);
@@ -484,16 +480,15 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
 });
 
 test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
-
-  test("should return 401 when authorization header is missing", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 401 when authorization header is missing", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const response = await unauthenticatedGet(`/v1/dashboard/runs/${run.id}/orders`);
 
     expect(response.status).toBe(401);
   });
 
-  test("should return 401 when invalid token is provided", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 401 when invalid token is provided", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const response = await authenticatedGet(
       `/v1/dashboard/runs/${run.id}/orders`,
       "invalid-token-12345",
@@ -526,8 +521,8 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
     expect(response.status).toBe(404);
   });
 
-  test("should return 404 when run belongs to different developer", async () => {
-    const run = await createRun(otherDeveloperId, new Date(), new Date());
+  test("should return 404 when run belongs to different developer", async ({ tracker }) => {
+    const run = await createRun(otherDeveloperId, new Date(), new Date(), tracker);
     const response = await authenticatedGet(`/v1/dashboard/runs/${run.id}/orders`, developerToken, {
       validateStatus: () => true,
     });
@@ -535,8 +530,8 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
     expect(response.status).toBe(404);
   });
 
-  test("should return 200 with empty array when no orders exist", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 200 with empty array when no orders exist", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const response = await authenticatedGet(`/v1/dashboard/runs/${run.id}/orders`, developerToken);
 
     expect(response.status).toBe(200);
@@ -547,8 +542,8 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
     expect(body.data.length).toBe(0);
   });
 
-  test("should return 200 with orders when valid runId provided", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 200 with orders when valid runId provided", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     await createOrder(
       run.id,
@@ -556,7 +551,8 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       orderData.entryPrice,
       orderData.stopLossPrice,
       orderData.takeProfitPrice,
-      orderData.timestamp
+      orderData.timestamp,
+      tracker
     );
 
     const response = await authenticatedGet(`/v1/dashboard/runs/${run.id}/orders`, developerToken);
@@ -568,8 +564,10 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
     expect(body.data.length).toBeGreaterThan(0);
   });
 
-  test("should validate order structure (id, nseSymbol, entryPrice, stopLossPrice, takeProfitPrice, timestamp, runId)", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should validate order structure (id, nseSymbol, entryPrice, stopLossPrice, takeProfitPrice, timestamp, runId)", async ({
+    tracker,
+  }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     await createOrder(
       run.id,
@@ -577,7 +575,8 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       orderData.entryPrice,
       orderData.stopLossPrice,
       orderData.takeProfitPrice,
-      orderData.timestamp
+      orderData.timestamp,
+      tracker
     );
 
     const response = await authenticatedGet(`/v1/dashboard/runs/${run.id}/orders`, developerToken);
@@ -598,8 +597,10 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
     }
   });
 
-  test("should validate gain metrics structure when targetGainPercentage provided", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should validate gain metrics structure when targetGainPercentage provided", async ({
+    tracker,
+  }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     await createOrder(
       run.id,
@@ -607,7 +608,8 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       orderData.entryPrice,
       orderData.stopLossPrice,
       orderData.takeProfitPrice,
-      orderData.timestamp
+      orderData.timestamp,
+      tracker
     );
 
     const response = await authenticatedGet(
@@ -628,8 +630,8 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
     }
   });
 
-  test("should validate orders are ordered by timestamp ascending", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should validate orders are ordered by timestamp ascending", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData1 = createOrderTestData(TEST_SYMBOL, 2500, 2400, 2600, "2025-12-26T10:00:00Z");
     const orderData2 = createOrderTestData(TEST_SYMBOL, 2500, 2400, 2600, "2025-12-26T11:00:00Z");
 
@@ -663,8 +665,8 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
     }
   });
 
-  test("should validate exact order values (placeholder for user to fill)", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should validate exact order values ", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     await createOrder(
       run.id,
@@ -672,7 +674,8 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       orderData.entryPrice,
       orderData.stopLossPrice,
       orderData.takeProfitPrice,
-      orderData.timestamp
+      orderData.timestamp,
+      tracker
     );
 
     const response = await authenticatedGet(`/v1/dashboard/runs/${run.id}/orders`, developerToken);
@@ -690,8 +693,8 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
     }
   });
 
-  test("should validate exact gain metrics values (placeholder for user to fill)", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should validate exact gain metrics values ", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     await createOrder(
       run.id,
@@ -699,7 +702,8 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       orderData.entryPrice,
       orderData.stopLossPrice,
       orderData.takeProfitPrice,
-      orderData.timestamp
+      orderData.timestamp,
+      tracker
     );
 
     const response = await authenticatedGet(
@@ -720,17 +724,16 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
 });
 
 test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
-
-  test("should return 401 when authorization header is missing", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 401 when authorization header is missing", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     const response = await unauthenticatedPost(`/v1/dashboard/runs/${run.id}/orders`, orderData);
 
     expect(response.status).toBe(401);
   });
 
-  test("should return 401 when invalid token is provided", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 401 when invalid token is provided", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
@@ -767,8 +770,8 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     expect(response.status).toBe(404);
   });
 
-  test("should return 404 when run belongs to different developer", async () => {
-    const run = await createRun(otherDeveloperId, new Date(), new Date());
+  test("should return 404 when run belongs to different developer", async ({ tracker }) => {
+    const run = await createRun(otherDeveloperId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
@@ -780,8 +783,8 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     expect(response.status).toBe(404);
   });
 
-  test("should return 400 when nseSymbol is missing", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 400 when nseSymbol is missing", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     const { nseSymbol, ...orderDataWithoutSymbol } = orderData;
     const response = await authenticatedPost(
@@ -794,8 +797,8 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     expect(response.status).toBe(400);
   });
 
-  test("should return 400 when entryPrice is missing", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 400 when entryPrice is missing", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     const { entryPrice, ...orderDataWithoutEntryPrice } = orderData;
     const response = await authenticatedPost(
@@ -808,8 +811,8 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     expect(response.status).toBe(400);
   });
 
-  test("should return 400 when stopLossPrice is missing", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 400 when stopLossPrice is missing", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     const { stopLossPrice, ...orderDataWithoutStopLoss } = orderData;
     const response = await authenticatedPost(
@@ -822,8 +825,8 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     expect(response.status).toBe(400);
   });
 
-  test("should return 400 when takeProfitPrice is missing", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 400 when takeProfitPrice is missing", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     const { takeProfitPrice, ...orderDataWithoutTakeProfit } = orderData;
     const response = await authenticatedPost(
@@ -836,8 +839,8 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     expect(response.status).toBe(400);
   });
 
-  test("should return 400 when timestamp is missing", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 400 when timestamp is missing", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     const { timestamp, ...orderDataWithoutTimestamp } = orderData;
     const response = await authenticatedPost(
@@ -850,8 +853,8 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     expect(response.status).toBe(400);
   });
 
-  test("should return 400 when timestamp is invalid date format", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 400 when timestamp is invalid date format", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     const orderDataWithInvalidTimestamp = {
       ...orderData,
@@ -867,8 +870,8 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     expect(response.status).toBe(400);
   });
 
-  test("should return 201 with created order when valid data provided", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should return 201 with created order when valid data provided", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
@@ -889,8 +892,8 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     expect(body.data).toHaveProperty("runId");
   });
 
-  test("should validate response structure matches schema", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should validate response structure matches schema", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
@@ -911,8 +914,8 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     expect(validatedData.data).toHaveProperty("runId");
   });
 
-  test("should validate order belongs to specified run", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should validate order belongs to specified run", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
@@ -927,8 +930,8 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     expect(order?.runId).toBe(run.id);
   });
 
-  test("should validate exact order values (placeholder for user to fill)", async () => {
-    const run = await createRun(developerId, new Date(), new Date());
+  test("should validate exact order values ", async ({ tracker }) => {
+    const run = await createRun(developerId, new Date(), new Date(), tracker);
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,

@@ -1,11 +1,7 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../helpers/test-fixtures";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import {
-  createShortlistSnapshot,
-  createQuoteSnapshot,
-  cleanupDatabase,
-} from "../../helpers/db-helpers";
+import { createShortlistSnapshot, createQuoteSnapshot } from "../../helpers/db-helpers";
 import {
   createValidShortlistEntries,
   createValidGrowwQuotePayload,
@@ -13,19 +9,23 @@ import {
   TEST_DATETIME,
 } from "../../fixtures/test-data";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { TestDataTracker } from "../../helpers/test-tracker";
 
 let developerToken: string;
+let developerId: string;
+let sharedTracker: TestDataTracker;
 
 test.beforeAll(async () => {
-  const dev = await createDeveloperUser();
+  sharedTracker = new TestDataTracker();
+  const dev = await createDeveloperUser(undefined, sharedTracker);
   developerToken = dev.token;
+  developerId = dev.id;
 });
 
-test.afterEach(async () => {
-  await cleanupDatabase();
-  // Re-create developer user after cleanup
-  const dev = await createDeveloperUser();
-  developerToken = dev.token;
+test.afterAll(async () => {
+  if (sharedTracker) {
+    await sharedTracker.cleanup();
+  }
 });
 
 test.describe("GET /v1/dashboard/shortlists", () => {
@@ -137,16 +137,16 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     expect(body.data.shortlist).toBeNull();
   });
 
-  test("should return 200 with shortlist data when valid params provided", async () => {
+  test("should return 200 with shortlist data when valid params provided", async ({ tracker }) => {
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
     // Create shortlist snapshot
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries);
+    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
 
     // Create quote snapshots for each entry
     for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData);
+      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData, tracker);
     }
 
     const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
@@ -168,13 +168,15 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     expect(validatedData.data.shortlist).not.toBeNull();
   });
 
-  test("should validate shortlist structure (id, timestamp, shortlistType, entries)", async () => {
+  test("should validate shortlist structure (id, timestamp, shortlistType, entries)", async ({
+    tracker,
+  }) => {
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries);
+    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
     for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData);
+      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData, tracker);
     }
 
     const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
@@ -203,13 +205,15 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     }
   });
 
-  test("should validate entries structure (nseSymbol, name, price, quoteData, buyerControlPercentage)", async () => {
+  test("should validate entries structure (nseSymbol, name, price, quoteData, buyerControlPercentage)", async ({
+    tracker,
+  }) => {
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries);
+    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
     for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData);
+      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData, tracker);
     }
 
     const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
@@ -239,13 +243,13 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     }
   });
 
-  test("should validate quoteData structure matches schema", async () => {
+  test("should validate quoteData structure matches schema", async ({ tracker }) => {
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries);
+    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
     for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData);
+      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData, tracker);
     }
 
     const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
@@ -275,13 +279,13 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     }
   });
 
-  test("should validate exact timestamp matches requested datetime", async () => {
+  test("should validate exact timestamp matches requested datetime", async ({ tracker }) => {
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries);
+    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
     for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData);
+      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData, tracker);
     }
 
     const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
@@ -307,13 +311,15 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     }
   });
 
-  test("should validate buyerControlPercentage calculation for each method", async () => {
+  test("should validate buyerControlPercentage calculation for each method", async ({
+    tracker,
+  }) => {
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries);
+    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
     for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData);
+      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData, tracker);
     }
 
     const methods = [
@@ -350,13 +356,13 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     }
   });
 
-  test("should validate exact entry values (placeholder for user to fill)", async () => {
+  test("should validate exact entry values ", async ({ tracker }) => {
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries);
+    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
     for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData);
+      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData, tracker);
     }
 
     const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");

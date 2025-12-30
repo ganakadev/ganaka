@@ -1,7 +1,7 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../helpers/test-fixtures";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createMultipleQuoteSnapshots, createQuoteSnapshot, cleanupDatabase } from "../../helpers/db-helpers";
+import { createMultipleQuoteSnapshots, createQuoteSnapshot } from "../../helpers/db-helpers";
 import {
   createValidGrowwQuotePayload,
   TEST_DATE,
@@ -12,22 +12,24 @@ import { v1_dashboard_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
+import { TestDataTracker } from "../../helpers/test-tracker";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 let developerToken: string;
+let sharedTracker: TestDataTracker;
 
 test.beforeAll(async () => {
-  const dev = await createDeveloperUser();
+  sharedTracker = new TestDataTracker();
+  const dev = await createDeveloperUser(undefined, sharedTracker);
   developerToken = dev.token;
 });
 
-test.afterEach(async () => {
-  await cleanupDatabase();
-  // Re-create developer user after cleanup
-  const dev = await createDeveloperUser();
-  developerToken = dev.token;
+test.afterAll(async () => {
+  if (sharedTracker) {
+    await sharedTracker.cleanup();
+  }
 });
 
 test.describe("GET /v1/dashboard/quote-timelines", () => {
@@ -112,9 +114,9 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
     expect(body.data.quoteTimeline.length).toBe(0);
   });
 
-  test("should return 200 with quote timeline when valid params provided", async () => {
+  test("should return 200 with quote timeline when valid params provided", async ({ tracker }) => {
     const snapshotCount = 3;
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, snapshotCount);
+    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, snapshotCount, tracker);
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
@@ -131,8 +133,10 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
     expect(body.data.quoteTimeline.length).toBeGreaterThanOrEqual(snapshotCount);
   });
 
-  test("should validate timeline entries structure (id, timestamp, nseSymbol, quoteData, createdAt, updatedAt)", async () => {
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 2);
+  test("should validate timeline entries structure (id, timestamp, nseSymbol, quoteData, createdAt, updatedAt)", async ({
+    tracker,
+  }) => {
+    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 2, tracker);
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
@@ -160,8 +164,8 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
     }
   });
 
-  test("should validate quoteData structure matches schema", async () => {
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 2);
+  test("should validate quoteData structure matches schema", async ({ tracker }) => {
+    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 2, tracker);
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
@@ -186,8 +190,10 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
     }
   });
 
-  test("should validate timeline entries are ordered by timestamp ascending", async () => {
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 5);
+  test("should validate timeline entries are ordered by timestamp ascending", async ({
+    tracker,
+  }) => {
+    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 5, tracker);
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
@@ -210,8 +216,10 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
     }
   });
 
-  test("should validate timestamps are within market hours (9:14 AM - 3:31 PM IST)", async () => {
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 3);
+  test("should validate timestamps are within market hours (9:14 AM - 3:31 PM IST)", async ({
+    tracker,
+  }) => {
+    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 3, tracker);
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
@@ -237,8 +245,8 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
     });
   });
 
-  test("should validate exact timestamp values (placeholder for user to fill)", async () => {
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 2);
+  test("should validate exact timestamp values ", async ({ tracker }) => {
+    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 2, tracker);
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
@@ -259,15 +267,15 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
       expect(firstEntry).toHaveProperty("nseSymbol");
 
       expect(new Date(firstEntry.timestamp).toISOString()).toBe(
-        new Date("2025-12-26T03:51:04.520Z").toISOString()
+        new Date("2025-12-26T03:45:00.000Z").toISOString()
       );
       expect(firstEntry.nseSymbol).toBe("RELIANCE");
     }
   });
 
-  test("should validate exact quoteData values (placeholder for user to fill)", async () => {
+  test("should validate exact quoteData values ", async ({ tracker }) => {
     const testQuoteData = createValidGrowwQuotePayload();
-    await createQuoteSnapshot(TEST_SYMBOL, `${TEST_DATE}T10:06:00`, testQuoteData);
+    await createQuoteSnapshot(TEST_SYMBOL, `${TEST_DATE}T10:06:00`, testQuoteData, tracker);
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
     const queryString = new URLSearchParams(query).toString();

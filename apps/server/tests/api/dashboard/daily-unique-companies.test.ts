@@ -1,26 +1,31 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../helpers/test-fixtures";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createMultipleShortlistSnapshots, cleanupDatabase } from "../../helpers/db-helpers";
+import {
+  createMultipleShortlistSnapshots,
+  createShortlistSnapshotsWithUniqueCompanies,
+} from "../../helpers/db-helpers";
 import {
   TEST_DATE,
   createDailyUniqueCompaniesQuery,
   createValidShortlistEntries,
 } from "../../fixtures/test-data";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { TestDataTracker } from "../../helpers/test-tracker";
 
 let developerToken: string;
+let sharedTracker: TestDataTracker;
 
 test.beforeAll(async () => {
-  const dev = await createDeveloperUser();
+  sharedTracker = new TestDataTracker();
+  const dev = await createDeveloperUser(undefined, sharedTracker);
   developerToken = dev.token;
 });
 
-test.afterEach(async () => {
-  await cleanupDatabase();
-  // Re-create developer user after cleanup
-  const dev = await createDeveloperUser();
-  developerToken = dev.token;
+test.afterAll(async () => {
+  if (sharedTracker) {
+    await sharedTracker.cleanup();
+  }
 });
 
 test.describe("GET /v1/dashboard/daily-unique-companies", () => {
@@ -120,10 +125,10 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
     expect(body.data.uniqueCount).toBe(0);
   });
 
-  test("should return 200 with correct unique count when snapshots exist", async () => {
+  test("should return 200 with correct unique count when snapshots exist", async ({ tracker }) => {
     // Create snapshots with known entries
     const testEntries = createValidShortlistEntries();
-    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5);
+    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5, tracker);
 
     const query = createDailyUniqueCompaniesQuery(TEST_DATE, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
@@ -146,8 +151,8 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
     expect(validatedData.data.uniqueCount).toBeGreaterThan(0);
   });
 
-  test("should validate response structure (date, type, uniqueCount)", async () => {
-    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 3);
+  test("should validate response structure (date, type, uniqueCount)", async ({ tracker }) => {
+    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 3, tracker);
 
     const query = createDailyUniqueCompaniesQuery(TEST_DATE, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
@@ -171,7 +176,10 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
     expect(validatedData.data.uniqueCount).toBeGreaterThanOrEqual(0);
   });
 
-  test("should validate exact uniqueCount value (placeholder for user to fill)", async () => {
+  test("should validate exact uniqueCount value", async ({ tracker }) => {
+    // Create snapshots with exactly 10 unique companies
+    await createShortlistSnapshotsWithUniqueCompanies("top-gainers", TEST_DATE, 10, tracker);
+
     const query = createDailyUniqueCompaniesQuery(TEST_DATE, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
@@ -190,8 +198,8 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
     expect(validatedData.data.uniqueCount).toBe(10);
   });
 
-  test("should validate date matches requested date format (YYYY-MM-DD)", async () => {
-    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 3);
+  test("should validate date matches requested date format (YYYY-MM-DD)", async ({ tracker }) => {
+    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 3, tracker);
 
     const query = createDailyUniqueCompaniesQuery(TEST_DATE, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();

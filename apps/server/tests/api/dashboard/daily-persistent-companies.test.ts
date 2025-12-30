@@ -1,7 +1,7 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../helpers/test-fixtures";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createMultipleShortlistSnapshots, cleanupDatabase } from "../../helpers/db-helpers";
+import { createMultipleShortlistSnapshots } from "../../helpers/db-helpers";
 import {
   TEST_DATE,
   TEST_DATE_FOR_DAILY_PERSISTENT_COMPANIES,
@@ -9,19 +9,21 @@ import {
   createValidShortlistEntries,
 } from "../../fixtures/test-data";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { TestDataTracker } from "../../helpers/test-tracker";
 
 let developerToken: string;
+let sharedTracker: TestDataTracker;
 
 test.beforeAll(async () => {
-  const dev = await createDeveloperUser();
+  sharedTracker = new TestDataTracker();
+  const dev = await createDeveloperUser(undefined, sharedTracker);
   developerToken = dev.token;
 });
 
-test.afterEach(async () => {
-  await cleanupDatabase();
-  // Re-create developer user after cleanup
-  const dev = await createDeveloperUser();
-  developerToken = dev.token;
+test.afterAll(async () => {
+  if (sharedTracker) {
+    await sharedTracker.cleanup();
+  }
 });
 
 test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
@@ -122,10 +124,10 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
     expect(body.data.companies.length).toBe(0);
   });
 
-  test("should return 200 with companies appearing in >=80% of snapshots", async () => {
+  test("should return 200 with companies appearing in >=80% of snapshots", async ({ tracker }) => {
     // Create 10 snapshots with same entries (should appear in 100% of snapshots)
     const testEntries = createValidShortlistEntries();
-    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 10);
+    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 10, tracker);
 
     const query = createDailyPersistentCompaniesQuery(TEST_DATE, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
@@ -151,8 +153,10 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
     });
   });
 
-  test("should validate response structure (date, type, totalSnapshots, companies)", async () => {
-    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5);
+  test("should validate response structure (date, type, totalSnapshots, companies)", async ({
+    tracker,
+  }) => {
+    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5, tracker);
 
     const query = createDailyPersistentCompaniesQuery(TEST_DATE, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
@@ -177,8 +181,10 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
     expect(Array.isArray(validatedData.data.companies)).toBe(true);
   });
 
-  test("should validate company structure (nseSymbol, name, count, percentage)", async () => {
-    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5);
+  test("should validate company structure (nseSymbol, name, count, percentage)", async ({
+    tracker,
+  }) => {
+    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5, tracker);
 
     const query = createDailyPersistentCompaniesQuery(TEST_DATE, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
@@ -209,8 +215,8 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
     }
   });
 
-  test("should validate percentage is rounded to 1 decimal place", async () => {
-    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5);
+  test("should validate percentage is rounded to 1 decimal place", async ({ tracker }) => {
+    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5, tracker);
 
     const query = createDailyPersistentCompaniesQuery(TEST_DATE, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
@@ -232,7 +238,7 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
     });
   });
 
-  test("should validate exact company values (placeholder for user to fill)", async () => {
+  test("should validate exact company values ", async () => {
     const query = createDailyPersistentCompaniesQuery(
       TEST_DATE_FOR_DAILY_PERSISTENT_COMPANIES,
       "TOP_GAINERS"
@@ -263,8 +269,8 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
     }
   });
 
-  test("should validate date matches requested date format (YYYY-MM-DD)", async () => {
-    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5);
+  test("should validate date matches requested date format (YYYY-MM-DD)", async ({ tracker }) => {
+    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5, tracker);
 
     const query = createDailyPersistentCompaniesQuery(TEST_DATE, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
