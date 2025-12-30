@@ -75,7 +75,12 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
     .quoteTimeline
     ? quoteTimelineData.data.quoteTimeline
         .map(
-          (timeline: { id: string; timestamp: Date; nseSymbol: string; quoteData: QuoteData }) => {
+          (timeline: {
+            id: string;
+            timestamp: string;
+            nseSymbol: string;
+            quoteData: QuoteData;
+          }) => {
             const buyerControlPercentage = calculateBuyerControlPercentage(
               timeline.quoteData,
               "total"

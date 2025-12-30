@@ -145,7 +145,7 @@ function calculateBidAsk(quoteData: {
  */
 function analyzeOrderBookTrend(
   quoteTimeline: Array<{
-    timestamp: Date;
+    timestamp: string;
     quoteData: {
       status: string;
       payload: {
@@ -377,7 +377,24 @@ async function main() {
           }
 
           // Analyze candle momentum
-          const candleMomentum = analyzeCandleMomentum(candlesData.payload.candles);
+          // Transform candles: [timestamp, open, high, low, close, volume, turnover] -> [0, 0, high, low, close, volume]
+          // to match function's expected indices: [2]=high, [3]=low, [4]=close, [5]=volume
+          const numericCandles = candlesData.payload.candles
+            .map((candle) => {
+              const [, , high, low, close, volume] = candle;
+              // Ensure all values are numbers
+              if (
+                typeof high === "number" &&
+                typeof low === "number" &&
+                typeof close === "number" &&
+                typeof volume === "number"
+              ) {
+                return [0, 0, high, low, close, volume];
+              }
+              return null;
+            })
+            .filter((c): c is number[] => c !== null);
+          const candleMomentum = analyzeCandleMomentum(numericCandles);
 
           console.log(
             `[${symbol}] Candle momentum: ${candleMomentum.priceTrend.toFixed(
