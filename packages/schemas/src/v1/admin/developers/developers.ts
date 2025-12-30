@@ -4,7 +4,7 @@ import { apiResponseSchema } from "../../../common";
 // ==================== Developer Schema ====================
 
 const developerSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   username: z.string(),
   token: z.string(),
   createdAt: z.date(),
@@ -30,7 +30,7 @@ export const getDevelopers = {
 
 export const getDeveloper = {
   params: z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
   }),
   response: apiResponseSchema.extend({
     data: developerSchema,
@@ -52,7 +52,7 @@ export const createDeveloper = {
 
 export const refreshDeveloperKey = {
   params: z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
   }),
   response: apiResponseSchema.extend({
     data: developerSchema,
@@ -63,11 +63,11 @@ export const refreshDeveloperKey = {
 
 export const deleteDeveloper = {
   params: z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
   }),
   response: apiResponseSchema.extend({
     data: z.object({
-      id: z.string().uuid(),
+      id: z.uuid(),
       deleted: z.boolean(),
     }),
   }),

@@ -276,7 +276,7 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
 
   test("should return 400 when start_time is missing", async () => {
     const query = createHistoricalCandlesQuery();
-    const { start_time, ...queryWithoutStartTime } = query;
+    const { start_datetime, ...queryWithoutStartTime } = query;
     const queryString = buildQueryString(queryWithoutStartTime);
     const response = await authenticatedGet(
       `/v1/developer/groww/historical-candles?${queryString}`,
@@ -291,7 +291,7 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
 
   test("should return 400 when end_time is missing", async () => {
     const query = createHistoricalCandlesQuery();
-    const { end_time, ...queryWithoutEndTime } = query;
+    const { end_datetime, ...queryWithoutEndTime } = query;
     const queryString = buildQueryString(queryWithoutEndTime);
     const response = await authenticatedGet(
       `/v1/developer/groww/historical-candles?${queryString}`,
@@ -346,8 +346,8 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
       expect(typeof validatedData.data.payload.interval_in_minutes).toBe("number");
 
       // Validate payload structure matches expected values
-      expect(validatedData.data.payload.start_time).toBe(query.start_time);
-      expect(validatedData.data.payload.end_time).toBe(query.end_time);
+      expect(validatedData.data.payload.start_time).toBe(query.start_datetime);
+      expect(validatedData.data.payload.end_time).toBe(query.end_datetime);
       expect(validatedData.data.payload.interval_in_minutes).toBe(5); // 5minute interval
       expect(validatedData.data.payload.closing_price).toBeNull();
 

@@ -222,11 +222,11 @@ export function createListsQuery(
  * Creates test data for creating a run
  */
 export function createRunTestData(startTime?: string, endTime?: string) {
-  const defaultStart = new Date("2025-12-26T09:15:00Z").toISOString();
-  const defaultEnd = new Date("2025-12-26T15:30:00Z").toISOString();
+  const defaultStart = "2025-12-26T09:15:00";
+  const defaultEnd = "2025-12-26T15:30:00";
   return {
-    startTime: startTime || defaultStart,
-    endTime: endTime || defaultEnd,
+    start_datetime: startTime || defaultStart,
+    end_datetime: endTime || defaultEnd,
   };
 }
 
@@ -254,13 +254,13 @@ export function createOrderTestData(
  * Creates valid shortlists query parameters for dashboard
  */
 export function createShortlistsQuery(
-  date?: string,
+  datetime?: string,
   type?: "TOP_GAINERS" | "VOLUME_SHOCKERS",
   method?: string,
   timezone?: string
 ) {
   return {
-    date: date || TEST_DATE,
+    datetime: datetime || TEST_DATETIME,
     timezone: timezone || "Asia/Kolkata",
     type: type || "TOP_GAINERS",
     ...(method && { method }),

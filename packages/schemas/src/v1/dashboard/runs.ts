@@ -4,9 +4,9 @@ import { apiResponseSchema, datetimeFormatSchema, timezoneSchema } from "../../c
 // ==================== GET /runs ====================
 
 const runSchema = z.object({
-  id: z.string().uuid(),
-  startTime: z.coerce.date(),
-  endTime: z.coerce.date(),
+  id: z.uuid(),
+  start_datetime: z.string(),
+  end_datetime: z.string(),
   completed: z.boolean(),
   orderCount: z.number(),
 });
@@ -30,18 +30,18 @@ const orderSchema = z.object({
   entryPrice: z.coerce.number(),
   stopLossPrice: z.coerce.number(),
   takeProfitPrice: z.coerce.number(),
-  timestamp: z.coerce.date(),
+  timestamp: z.string(),
   runId: z.uuid(),
   // Gain analysis fields
   targetGainPercentage: z.number().optional(),
   targetAchieved: z.boolean().optional(),
   targetGainPercentageActual: z.number().optional(),
   timeToTargetMinutes: z.number().optional(),
-  targetTimestamp: z.coerce.date().optional(),
+  targetTimestamp: z.string().optional(),
   dynamicTakeProfitPrice: z.coerce.number().optional(),
   // Stop loss analysis fields
   stopLossHit: z.boolean().optional(),
-  stopLossTimestamp: z.coerce.date().optional(),
+  stopLossTimestamp: z.string().optional(),
   timeToStopLossMinutes: z.number().optional(),
 });
 
@@ -66,9 +66,9 @@ const createRunBodySchema = z.object({
 });
 
 const createRunResponseSchema = z.object({
-  id: z.string().uuid(),
-  startTime: z.coerce.date(),
-  endTime: z.coerce.date(),
+  id: z.uuid(),
+  start_datetime: datetimeFormatSchema,
+  end_datetime: datetimeFormatSchema,
   completed: z.boolean(),
 });
 
@@ -87,8 +87,8 @@ const updateRunBodySchema = z.object({
 
 const updateRunResponseSchema = z.object({
   id: z.uuid(),
-  startTime: z.coerce.date(),
-  endTime: z.coerce.date(),
+  start_datetime: z.string(),
+  end_datetime: z.string(),
   completed: z.boolean(),
 });
 
@@ -110,7 +110,7 @@ export const deleteRun = {
   }),
   response: apiResponseSchema.extend({
     data: z.object({
-      id: z.string().uuid(),
+      id: z.uuid(),
     }),
   }),
 };
@@ -132,7 +132,7 @@ const createOrderResponseSchema = z.object({
   entryPrice: z.coerce.number(),
   stopLossPrice: z.coerce.number(),
   takeProfitPrice: z.coerce.number(),
-  timestamp: z.coerce.date(),
+  datetime: z.string(),
   runId: z.uuid(),
 });
 

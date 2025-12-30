@@ -127,7 +127,10 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/shortlists?${queryString}`,
-      developerToken
+      developerToken,
+      {
+        validateStatus: () => true,
+      }
     );
 
     expect(response.status).toBe(200);

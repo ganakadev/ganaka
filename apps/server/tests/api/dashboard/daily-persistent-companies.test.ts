@@ -238,7 +238,9 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
     });
   });
 
-  test("should validate exact company values ", async () => {
+  test("should validate exact company values ", async ({ tracker }) => {
+    await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5, tracker);
+
     const query = createDailyPersistentCompaniesQuery(
       TEST_DATE_FOR_DAILY_PERSISTENT_COMPANIES,
       "TOP_GAINERS"
@@ -262,10 +264,10 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
       expect(firstCompany).toHaveProperty("count");
       expect(firstCompany).toHaveProperty("percentage");
 
-      expect(firstCompany.nseSymbol).toBe("RVNL");
-      expect(firstCompany.name).toBe("Rail Vikas Nigam");
-      expect(firstCompany.count).toBe(358);
-      expect(firstCompany.percentage).toBe(93.7);
+      expect(firstCompany.nseSymbol).toBe("RELIANCE");
+      expect(firstCompany.name).toBe("Reliance Industries Ltd");
+      expect(firstCompany.count).toBe(5);
+      expect(firstCompany.percentage).toBe(100);
     }
   });
 

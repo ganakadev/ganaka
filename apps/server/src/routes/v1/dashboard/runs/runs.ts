@@ -306,8 +306,8 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         string,
         Array<{
           id: string;
-          startTime: Date;
-          endTime: Date;
+          start_datetime: string;
+          end_datetime: string;
           completed: boolean;
           orderCount: number;
         }>
@@ -320,8 +320,8 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         }
         groupedRuns[dateKey].push({
           id: run.id,
-          startTime: run.startTime,
-          endTime: run.endTime,
+          start_datetime: dayjs(run.startTime).format("YYYY-MM-DDTHH:mm:ss"),
+          end_datetime: dayjs(run.endTime).format("YYYY-MM-DDTHH:mm:ss"),
           completed: run.completed,
           orderCount: run._count.orders,
         });
@@ -337,8 +337,8 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         string,
         Array<{
           id: string;
-          startTime: Date;
-          endTime: Date;
+          start_datetime: string;
+          end_datetime: string;
           completed: boolean;
           orderCount: number;
         }>
@@ -412,8 +412,8 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         message: "Run created successfully",
         data: {
           id: run.id,
-          startTime: run.startTime,
-          endTime: run.endTime,
+          start_datetime: dayjs(run.startTime).format("YYYY-MM-DDTHH:mm:ss"),
+          end_datetime: dayjs(run.endTime).format("YYYY-MM-DDTHH:mm:ss"),
           completed: run.completed,
         },
       });
@@ -482,8 +482,8 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         message: "Run updated successfully",
         data: {
           id: updatedRun.id,
-          startTime: updatedRun.startTime,
-          endTime: updatedRun.endTime,
+          start_datetime: dayjs(updatedRun.startTime).format("YYYY-MM-DDTHH:mm:ss"),
+          end_datetime: dayjs(updatedRun.endTime).format("YYYY-MM-DDTHH:mm:ss"),
           completed: updatedRun.completed,
         },
       });
@@ -619,9 +619,20 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
             entryPrice: Number(order.entryPrice),
             stopLossPrice: Number(order.stopLossPrice),
             takeProfitPrice: Number(order.takeProfitPrice),
-            timestamp: order.timestamp,
+            timestamp: dayjs(order.timestamp).format("YYYY-MM-DDTHH:mm:ss"),
             runId: order.runId,
-            ...gainMetrics,
+            dynamicTakeProfitPrice: gainMetrics.dynamicTakeProfitPrice,
+            targetAchieved: gainMetrics.targetAchieved,
+            targetGainPercentageActual: gainMetrics.targetGainPercentageActual,
+            timeToTargetMinutes: gainMetrics.timeToTargetMinutes,
+            targetTimestamp: gainMetrics.targetTimestamp
+              ? dayjs(gainMetrics.targetTimestamp).format("YYYY-MM-DDTHH:mm:ss")
+              : undefined,
+            stopLossHit: gainMetrics.stopLossHit,
+            stopLossTimestamp: gainMetrics.stopLossTimestamp
+              ? dayjs(gainMetrics.stopLossTimestamp).format("YYYY-MM-DDTHH:mm:ss")
+              : undefined,
+            timeToStopLossMinutes: gainMetrics.timeToStopLossMinutes,
           };
 
           return orderWithMetrics;
@@ -722,7 +733,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
           entryPrice: Number(order.entryPrice),
           stopLossPrice: Number(order.stopLossPrice),
           takeProfitPrice: Number(order.takeProfitPrice),
-          timestamp: order.timestamp,
+          datetime: dayjs(order.timestamp).format("YYYY-MM-DDTHH:mm:ss"),
           runId: order.runId,
         },
       });

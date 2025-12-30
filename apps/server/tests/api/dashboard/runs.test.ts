@@ -149,13 +149,11 @@ test.describe("GET /v1/dashboard/runs", () => {
       if (runs.length > 0) {
         const firstRun = runs[0];
         expect(firstRun).toHaveProperty("id");
-        expect(firstRun).toHaveProperty("startTime");
-        expect(firstRun).toHaveProperty("endTime");
+        expect(firstRun).toHaveProperty("start_datetime");
+        expect(firstRun).toHaveProperty("end_datetime");
         expect(firstRun).toHaveProperty("completed");
         expect(firstRun).toHaveProperty("orderCount");
         expect(typeof firstRun.id).toBe("string");
-        expect(firstRun.startTime).toBeInstanceOf(Date);
-        expect(firstRun.endTime).toBeInstanceOf(Date);
         expect(typeof firstRun.completed).toBe("boolean");
         expect(typeof firstRun.orderCount).toBe("number");
       }
@@ -202,7 +200,7 @@ test.describe("POST /v1/dashboard/runs", () => {
   });
 
   test("should return 400 when startTime is missing", async () => {
-    const testData = { endTime: createRunTestData().endTime };
+    const testData = { end_datetime: createRunTestData().end_datetime };
     const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
       validateStatus: () => true,
     });
@@ -211,7 +209,7 @@ test.describe("POST /v1/dashboard/runs", () => {
   });
 
   test("should return 400 when endTime is missing", async () => {
-    const testData = { startTime: createRunTestData().startTime };
+    const testData = { start_datetime: createRunTestData().start_datetime };
     const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
       validateStatus: () => true,
     });
@@ -220,7 +218,10 @@ test.describe("POST /v1/dashboard/runs", () => {
   });
 
   test("should return 400 when startTime is invalid date format", async () => {
-    const testData = { startTime: "invalid-date", endTime: createRunTestData().endTime };
+    const testData = {
+      start_datetime: "invalid-date",
+      end_datetime: createRunTestData().end_datetime,
+    };
     const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
       validateStatus: () => true,
     });
@@ -229,7 +230,10 @@ test.describe("POST /v1/dashboard/runs", () => {
   });
 
   test("should return 400 when endTime is invalid date format", async () => {
-    const testData = { startTime: createRunTestData().startTime, endTime: "invalid-date" };
+    const testData = {
+      start_datetime: createRunTestData().start_datetime,
+      end_datetime: "invalid-date",
+    };
     const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
       validateStatus: () => true,
     });
@@ -246,8 +250,8 @@ test.describe("POST /v1/dashboard/runs", () => {
     expect(body.statusCode).toBe(201);
     expect(body.message).toBe("Run created successfully");
     expect(body.data).toHaveProperty("id");
-    expect(body.data).toHaveProperty("startTime");
-    expect(body.data).toHaveProperty("endTime");
+    expect(body.data).toHaveProperty("start_datetime");
+    expect(body.data).toHaveProperty("end_datetime");
     expect(body.data).toHaveProperty("completed");
   });
 
@@ -260,8 +264,8 @@ test.describe("POST /v1/dashboard/runs", () => {
       response.data
     );
     expect(validatedData.data).toHaveProperty("id");
-    expect(validatedData.data).toHaveProperty("startTime");
-    expect(validatedData.data).toHaveProperty("endTime");
+    expect(validatedData.data).toHaveProperty("start_datetime");
+    expect(validatedData.data).toHaveProperty("end_datetime");
     expect(validatedData.data).toHaveProperty("completed");
   });
 
@@ -276,7 +280,7 @@ test.describe("POST /v1/dashboard/runs", () => {
     expect(run?.developerId).toBe(developerId);
   });
 
-  test("should validate exact timestamps ", async () => {
+  test("should validate exact timestamps", async () => {
     const testData = createRunTestData();
     const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
 
@@ -284,13 +288,10 @@ test.describe("POST /v1/dashboard/runs", () => {
     const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
       response.data
     );
-    expect(validatedData.data).toHaveProperty("startTime");
-    expect(validatedData.data).toHaveProperty("endTime");
-    const startTime = new Date(testData.startTime);
-    const endTime = new Date(testData.endTime);
-
-    expect(validatedData.data.startTime.toISOString()).toBe(startTime.toISOString());
-    expect(validatedData.data.endTime.toISOString()).toBe(endTime.toISOString());
+    expect(validatedData.data).toHaveProperty("start_datetime");
+    expect(validatedData.data).toHaveProperty("end_datetime");
+    expect(validatedData.data.start_datetime).toBe(testData.start_datetime);
+    expect(validatedData.data.end_datetime).toBe(testData.end_datetime);
   });
 });
 
@@ -394,8 +395,8 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
   });
 
   test("should validate exact timestamps preserved ", async () => {
-    const startTime = new Date("2025-12-26T09:15:00Z");
-    const endTime = new Date("2025-12-26T15:30:00Z");
+    const startTime = "2025-12-26T09:15:00";
+    const endTime = "2025-12-26T15:30:00";
     const run = await createRun(developerId, startTime, endTime);
 
     const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
@@ -407,8 +408,8 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
       response.data
     );
 
-    expect(validatedData.data.startTime.toISOString()).toBe(startTime.toISOString());
-    expect(validatedData.data.endTime.toISOString()).toBe(endTime.toISOString());
+    expect(validatedData.data.start_datetime).toBe(startTime);
+    expect(validatedData.data.end_datetime).toBe(endTime);
   });
 });
 
@@ -659,8 +660,8 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(response.data);
 
     for (let i = 1; i < validatedData.data.length; i++) {
-      const prevTimestamp = validatedData.data[i - 1].timestamp.getTime();
-      const currTimestamp = validatedData.data[i].timestamp.getTime();
+      const prevTimestamp = dayjs(validatedData.data[i - 1].timestamp).valueOf();
+      const currTimestamp = dayjs(validatedData.data[i].timestamp).valueOf();
       expect(currTimestamp).toBeGreaterThanOrEqual(prevTimestamp);
     }
   });
