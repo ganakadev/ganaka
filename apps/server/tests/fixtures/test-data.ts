@@ -70,6 +70,14 @@ export const TEST_DATETIME = "2025-12-26T10:06:00";
 export const TEST_DATE = "2025-12-26";
 
 /**
+ * Suite-specific test dates for test isolation
+ */
+export const DAILY_PERSISTENT_COMPANIES_TEST_DATE = "2025-12-27";
+export const DAILY_UNIQUE_COMPANIES_TEST_DATE = "2025-12-28";
+export const CANDLES_TEST_DATE = "2025-12-29";
+export const QUOTE_TIMELINES_TEST_DATE = "2025-12-30";
+
+/**
  * Creates a valid Groww quote payload matching growwQuoteSchema
  */
 export function createValidGrowwQuotePayload(): z.infer<
