@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../helpers/test-fixtures";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
 import {
   createDeveloperTestData,
@@ -6,7 +6,13 @@ import {
   createEmptyDeveloperTestData,
   generateUUID,
 } from "../../fixtures/test-data";
-import { createTestDeveloper, getDeveloperById, getAllDevelopers } from "../../helpers/db-helpers";
+import {
+  createTestDeveloper,
+  getDeveloperById,
+  getAllDevelopers,
+  seedAdminUser,
+} from "../../helpers/db-helpers";
+import { TestDataTracker } from "../../helpers/test-tracker";
 import {
   authenticatedGet,
   authenticatedPost,
@@ -21,6 +27,7 @@ import { prisma } from "../../../src/utils/prisma";
 import { randomUUID } from "crypto";
 
 let adminToken: string;
+let sharedTracker: TestDataTracker;
 
 test.beforeAll(async () => {
   // Get admin token from environment or create one
@@ -29,18 +36,27 @@ test.beforeAll(async () => {
     throw new Error("TEST_ADMIN_TOKEN not set in environment");
   }
   adminToken = token;
+  // Create a shared tracker for beforeAll data
+  sharedTracker = new TestDataTracker();
+});
+
+test.afterAll(async () => {
+  // Cleanup any shared data created in beforeAll
+  if (sharedTracker) {
+    await sharedTracker.cleanup();
+  }
 });
 
 test.describe("GET /v1/admin/developers", () => {
   // AUTHORIZATION TESTS
-  test("should return 401 when authorization header is missing", async () => {
+  test("should return 401 when authorization header is missing", async ({ tracker }) => {
     const response = await unauthenticatedGet("/v1/admin/developers");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
     expect(body).toContain("Authorization header is required");
   });
-  test("should return 401 when invalid admin token is provided", async () => {
+  test("should return 401 when invalid admin token is provided", async ({ tracker }) => {
     const response = await authenticatedGet("/v1/admin/developers", "invalid-token-12345", {
       validateStatus: () => true,
     });
@@ -49,8 +65,10 @@ test.describe("GET /v1/admin/developers", () => {
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
     expect(body).toContain("Authorization failed");
   });
-  test("should return 401 when developer token is used instead of admin token", async () => {
-    const dev = await createDeveloperUser();
+  test("should return 401 when developer token is used instead of admin token", async ({
+    tracker,
+  }) => {
+    const dev = await createDeveloperUser(undefined, tracker);
 
     const response = await authenticatedGet("/v1/admin/developers", dev.token, {
       validateStatus: () => true,
@@ -63,8 +81,8 @@ test.describe("GET /v1/admin/developers", () => {
 });
 
 test.describe("GET /v1/admin/developers/:id", () => {
-  test("should return developer by valid ID", async () => {
-    const dev = await createTestDeveloper("test-get-dev");
+  test("should return developer by valid ID", async ({ tracker }) => {
+    const dev = await createTestDeveloper("test-get-dev", tracker);
 
     const response = await authenticatedGet(`/v1/admin/developers/${dev.id}`, adminToken);
 
@@ -77,7 +95,7 @@ test.describe("GET /v1/admin/developers/:id", () => {
     expect(body.data.token).toBe(dev.token);
   });
 
-  test("should return 404 for non-existent developer ID", async () => {
+  test("should return 404 for non-existent developer ID", async ({ tracker }) => {
     const fakeId = generateUUID();
 
     const response = await authenticatedGet(`/v1/admin/developers/${fakeId}`, adminToken, {
@@ -89,7 +107,7 @@ test.describe("GET /v1/admin/developers/:id", () => {
     expect(body).toContain("Developer not found");
   });
 
-  test("should return 400 for invalid UUID format", async () => {
+  test("should return 400 for invalid UUID format", async ({ tracker }) => {
     const response = await authenticatedGet("/v1/admin/developers/invalid-id", adminToken, {
       validateStatus: () => true,
     });
@@ -98,8 +116,8 @@ test.describe("GET /v1/admin/developers/:id", () => {
     expect([400, 404]).toContain(response.status);
   });
 
-  test("should return 401 when authorization header is missing", async () => {
-    const dev = await createTestDeveloper();
+  test("should return 401 when authorization header is missing", async ({ tracker }) => {
+    const dev = await createTestDeveloper(undefined, tracker);
 
     const response = await unauthenticatedGet(`/v1/admin/developers/${dev.id}`);
 
@@ -108,7 +126,7 @@ test.describe("GET /v1/admin/developers/:id", () => {
 });
 
 test.describe("POST /v1/admin/developers", () => {
-  test("should create a new developer successfully", async () => {
+  test("should create a new developer successfully", async ({ tracker }) => {
     const testData = createDeveloperTestData();
 
     const response = await authenticatedPost("/v1/admin/developers", adminToken, testData);
@@ -121,10 +139,13 @@ test.describe("POST /v1/admin/developers", () => {
     expect(body.data).toHaveProperty("username", testData.username);
     expect(body.data).toHaveProperty("token");
     expect(body.data.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+
+    // Track the developer created via API
+    tracker.trackDeveloper(body.data.id);
   });
 
-  test("should return 409 when creating developer with duplicate username", async () => {
-    const dev = await createTestDeveloper("duplicate-username");
+  test("should return 409 when creating developer with duplicate username", async ({ tracker }) => {
+    const dev = await createTestDeveloper("duplicate-username", tracker);
 
     const response = await authenticatedPost(
       "/v1/admin/developers",
@@ -138,7 +159,7 @@ test.describe("POST /v1/admin/developers", () => {
     expect(body).toContain("Username already exists");
   });
 
-  test("should return 400 when username is missing", async () => {
+  test("should return 400 when username is missing", async ({ tracker }) => {
     const response = await authenticatedPost(
       "/v1/admin/developers",
       adminToken,
@@ -149,7 +170,7 @@ test.describe("POST /v1/admin/developers", () => {
     expect(response.status).toBe(400);
   });
 
-  test("should return 400 when username is empty", async () => {
+  test("should return 400 when username is empty", async ({ tracker }) => {
     const testData = createEmptyDeveloperTestData();
 
     const response = await authenticatedPost("/v1/admin/developers", adminToken, testData, {
@@ -159,7 +180,7 @@ test.describe("POST /v1/admin/developers", () => {
     expect(response.status).toBe(400);
   });
 
-  test("should return 400 when username exceeds max length", async () => {
+  test("should return 400 when username exceeds max length", async ({ tracker }) => {
     const testData = createInvalidDeveloperTestData();
 
     const response = await authenticatedPost("/v1/admin/developers", adminToken, testData, {
@@ -169,7 +190,7 @@ test.describe("POST /v1/admin/developers", () => {
     expect(response.status).toBe(400);
   });
 
-  test("should return 401 when authorization header is missing", async () => {
+  test("should return 401 when authorization header is missing", async ({ tracker }) => {
     const testData = createDeveloperTestData();
 
     const response = await unauthenticatedPost("/v1/admin/developers", testData);
@@ -179,8 +200,8 @@ test.describe("POST /v1/admin/developers", () => {
 });
 
 test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
-  test("should refresh developer key successfully", async () => {
-    const dev = await createTestDeveloper("test-refresh-dev");
+  test("should refresh developer key successfully", async ({ tracker }) => {
+    const dev = await createTestDeveloper("test-refresh-dev", tracker);
     const oldToken = dev.token;
 
     const response = await authenticatedPatch(
@@ -197,14 +218,14 @@ test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
     expect(body.data.username).toBe(dev.username);
     expect(body.data.token).not.toBe(oldToken);
 
-    // Verify old token no longer works (if we had a way to test this)
+    // Verify old token no longer works
     // Verify new token works by checking the developer in DB
     const updatedDev = await getDeveloperById(dev.id);
     expect(updatedDev?.token).toBe(body.data.token);
     expect(updatedDev?.token).not.toBe(oldToken);
   });
 
-  test("should return 404 for non-existent developer ID", async () => {
+  test("should return 404 for non-existent developer ID", async ({ tracker }) => {
     const fakeId = generateUUID();
 
     const response = await authenticatedPatch(
@@ -219,8 +240,8 @@ test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
     expect(body).toContain("Developer not found");
   });
 
-  test("should return 401 when authorization header is missing", async () => {
-    const dev = await createTestDeveloper("test-refresh-dev");
+  test("should return 401 when authorization header is missing", async ({ tracker }) => {
+    const dev = await createTestDeveloper("test-refresh-dev", tracker);
 
     const response = await unauthenticatedPatch(`/v1/admin/developers/${dev.id}/refresh-key`, {});
 
@@ -229,8 +250,8 @@ test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
 });
 
 test.describe("DELETE /v1/admin/developers/:id", () => {
-  test("should delete developer successfully", async () => {
-    const dev = await createTestDeveloper("test-delete-dev");
+  test("should delete developer successfully", async ({ tracker }) => {
+    const dev = await createTestDeveloper("test-delete-dev", tracker);
     const response = await authenticatedDelete(`/v1/admin/developers/${dev.id}`, adminToken);
 
     expect(response.status).toBe(200);
@@ -243,9 +264,11 @@ test.describe("DELETE /v1/admin/developers/:id", () => {
     // Verify developer is actually deleted
     const deletedDev = await getDeveloperById(dev.id);
     expect(deletedDev).toBeNull();
+
+    // Note: Developer is already deleted by API, so no need to track for cleanup
   });
 
-  test("should return 404 for non-existent developer ID", async () => {
+  test("should return 404 for non-existent developer ID", async ({ tracker }) => {
     const fakeId = generateUUID();
 
     const response = await authenticatedDelete(`/v1/admin/developers/${fakeId}`, adminToken, {
@@ -257,8 +280,8 @@ test.describe("DELETE /v1/admin/developers/:id", () => {
     expect(body).toContain("Developer not found");
   });
 
-  test("should return 401 when authorization header is missing", async () => {
-    const dev = await createTestDeveloper();
+  test("should return 401 when authorization header is missing", async ({ tracker }) => {
+    const dev = await createTestDeveloper(undefined, tracker);
 
     const response = await unauthenticatedDelete(`/v1/admin/developers/${dev.id}`);
 

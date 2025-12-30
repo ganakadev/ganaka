@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { apiResponseSchema } from "../../common";
+import { apiResponseSchema, dateFormatSchema } from "../../common";
 import { shortlistTypeEnum } from "@ganaka/db";
 
 // ==================== GET /daily-unique-companies ====================
 
 export const getDailyUniqueCompanies = {
   query: z.object({
-    date: z.string(),
+    date: dateFormatSchema,
     type: z.enum(shortlistTypeEnum),
   }),
   response: apiResponseSchema.extend({

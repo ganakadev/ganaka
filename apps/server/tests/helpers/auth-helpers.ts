@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { prisma } from "../../src/utils/prisma";
 import { randomUUID } from "crypto";
+import type { TestDataTracker } from "./test-tracker";
 
 /**
  * Creates an admin user in the database and returns the token
@@ -18,7 +19,6 @@ export async function createAdminUser(): Promise<string> {
   // Create admin user
   const admin = await prisma.developer.create({
     data: {
-      id: randomUUID(),
       username: "admin",
       token: randomUUID(),
     },
@@ -31,15 +31,19 @@ export async function createAdminUser(): Promise<string> {
  * Creates a regular developer user in the database and returns the token
  */
 export async function createDeveloperUser(
-  username?: string
+  username?: string,
+  tracker?: TestDataTracker
 ): Promise<{ id: string; token: string; username: string }> {
   const developer = await prisma.developer.create({
     data: {
-      id: randomUUID(),
       username: username || `test-dev-${randomUUID()}`,
       token: randomUUID(),
     },
   });
+
+  if (tracker) {
+    tracker.trackDeveloper(developer.id);
+  }
 
   return {
     id: developer.id,

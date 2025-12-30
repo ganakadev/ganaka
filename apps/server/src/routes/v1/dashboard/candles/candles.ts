@@ -213,6 +213,15 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
       // Ensure errorMessage is always a string
       const finalErrorMessage =
         typeof errorMessage === "string" ? errorMessage : String(errorMessage);
+
+      if (axios.isAxiosError(error) && error.response?.status === 429) {
+        return reply.status(429).send({
+          statusCode: 429,
+          error: "Too Many Requests",
+          message: finalErrorMessage,
+        });
+      }
+
       return reply.internalServerError(finalErrorMessage);
     }
   });

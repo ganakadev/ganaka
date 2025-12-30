@@ -1,17 +1,13 @@
 /// <reference types="node" />
 import axios from "axios";
 
-export function getTestServerUrl(): string {
-  return process.env.API_DOMAIN || `http://localhost:4000`;
-}
-
 /**
  * Checks if the test server is running and accessible.
  * Throws an error if the server is not running or not accessible.
  * @throws Error if server is not running or not accessible
  */
 export async function ensureTestServerRunning(): Promise<void> {
-  const serverUrl = getTestServerUrl();
+  const serverUrl = process.env.API_DOMAIN || `http://localhost:4000`;
 
   try {
     // Try to make a request to the server
@@ -40,21 +36,4 @@ export async function ensureTestServerRunning(): Promise<void> {
     // Re-throw non-axios errors
     throw error;
   }
-}
-
-/**
- * @deprecated Server is no longer managed by test setup. Use ensureTestServerRunning() instead.
- * This function is kept for backwards compatibility but does nothing.
- */
-export async function startTestServer(): Promise<void> {
-  await ensureTestServerRunning();
-}
-
-/**
- * @deprecated Server is no longer managed by test setup.
- * This function is kept for backwards compatibility but does nothing.
- */
-export async function stopTestServer(): Promise<void> {
-  // No-op: server is not managed by test setup
-  return Promise.resolve();
 }

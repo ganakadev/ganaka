@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { apiResponseSchema, validCandleIntervals } from "../../../common";
+import {
+  apiResponseSchema,
+  dateFormatSchema,
+  datetimeFormatSchema,
+  validCandleIntervals,
+} from "../../../common";
 
 // ==================== Schemas ====================
 
@@ -9,7 +14,7 @@ export const growwHistoricalCandlesSchema = z.object({
     /**
      * [timestamp, open, high, low, close, volume, turnover]
      */
-    candles: z.array(z.array(z.number())),
+    candles: z.array(z.array(z.union([z.string(), z.number()]).nullable())),
     closing_price: z.number().nullable(),
     start_time: z.string(),
     end_time: z.string(),
@@ -74,8 +79,8 @@ export const getGrowwHistoricalCandles = {
   query: z.object({
     symbol: z.string(),
     interval: z.enum(validCandleIntervals),
-    start_time: z.string(),
-    end_time: z.string(),
+    start_time: datetimeFormatSchema,
+    end_time: datetimeFormatSchema,
   }),
   response: apiResponseSchema.extend({
     data: growwHistoricalCandlesSchema,
@@ -89,7 +94,7 @@ export const getGrowwQuote = {
     symbol: z.string(),
     exchange: z.enum(["NSE", "BSE"]).optional(),
     segment: z.enum(["CASH"]).optional(),
-    datetime: z.string().optional(), // ISO string format
+    datetime: datetimeFormatSchema.optional(),
   }),
   response: apiResponseSchema.extend({
     data: growwQuoteSchema.nullable(),
@@ -109,18 +114,18 @@ export const getGrowwToken = {
 export const getGrowwQuoteTimeline = {
   query: z.object({
     symbol: z.string(),
-    date: z.string(), // ISO date string (YYYY-MM-DD)
+    date: dateFormatSchema,
   }),
   response: apiResponseSchema.extend({
     data: z.object({
       quoteTimeline: z.array(
         z.object({
           id: z.string(),
-          timestamp: z.date(),
+          timestamp: z.string(),
           nseSymbol: z.string(),
           quoteData: growwQuoteSchema,
-          createdAt: z.date(),
-          updatedAt: z.date(),
+          createdAt: z.string(),
+          updatedAt: z.string(),
         })
       ),
     }),

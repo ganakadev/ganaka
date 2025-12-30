@@ -16,8 +16,8 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Run tests in parallel */
+  workers: "100%",
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -40,7 +40,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "pnpm --filter @ganaka/server start",
+    command: process.env.CI ? "pnpm --filter @ganaka/server start" : "echo 'Server is not running'",
     url: `${process.env.API_DOMAIN || "http://localhost:4000"}/health`,
     reuseExistingServer: !process.env.CI,
     timeout: 120000,

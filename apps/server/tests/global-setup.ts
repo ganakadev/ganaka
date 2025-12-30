@@ -1,9 +1,8 @@
 /// <reference types="node" />
-import { FullConfig } from "@playwright/test";
 import { cleanupDatabase, seedAdminUser } from "./helpers/db-helpers";
 import { ensureTestServerRunning } from "./helpers/test-setup";
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup() {
   console.log("Starting global test setup...");
 
   // Clean up database first
