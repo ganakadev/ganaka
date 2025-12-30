@@ -365,8 +365,8 @@ async function main() {
           const candlesData = await fetchCandles({
             symbol,
             interval: "1minute",
-            start_time: startDate.format("YYYY-MM-DDTHH:mm:ss"),
-            end_time: endDate.format("YYYY-MM-DDTHH:mm:ss"),
+            start_datetime: startDate.format("YYYY-MM-DDTHH:mm:ss"),
+            end_datetime: endDate.format("YYYY-MM-DDTHH:mm:ss"),
           });
 
           console.log(`[${symbol}] Fetched ${candlesData.payload.candles.length} candles`);

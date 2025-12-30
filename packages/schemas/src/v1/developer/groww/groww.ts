@@ -3,6 +3,7 @@ import {
   apiResponseSchema,
   dateFormatSchema,
   datetimeFormatSchema,
+  timezoneSchema,
   validCandleIntervals,
 } from "../../../common";
 
@@ -79,8 +80,9 @@ export const getGrowwHistoricalCandles = {
   query: z.object({
     symbol: z.string(),
     interval: z.enum(validCandleIntervals),
-    start_time: datetimeFormatSchema,
-    end_time: datetimeFormatSchema,
+    start_datetime: datetimeFormatSchema,
+    end_datetime: datetimeFormatSchema,
+    timezone: timezoneSchema.optional(),
   }),
   response: apiResponseSchema.extend({
     data: growwHistoricalCandlesSchema,
@@ -95,6 +97,7 @@ export const getGrowwQuote = {
     exchange: z.enum(["NSE", "BSE"]).optional(),
     segment: z.enum(["CASH"]).optional(),
     datetime: datetimeFormatSchema.optional(),
+    timezone: timezoneSchema.optional(),
   }),
   response: apiResponseSchema.extend({
     data: growwQuoteSchema.nullable(),
@@ -115,6 +118,7 @@ export const getGrowwQuoteTimeline = {
   query: z.object({
     symbol: z.string(),
     date: dateFormatSchema,
+    timezone: timezoneSchema.optional(),
   }),
   response: apiResponseSchema.extend({
     data: z.object({

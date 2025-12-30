@@ -10,6 +10,7 @@ import {
 } from "../../fixtures/test-data";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
 import { TestDataTracker } from "../../helpers/test-tracker";
+import z from "zod";
 
 let developerToken: string;
 let developerId: string;
@@ -108,7 +109,7 @@ test.describe("GET /v1/dashboard/shortlists", () => {
   });
 
   test("should return 400 when method is invalid enum value", async () => {
-    const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS", "invalid-method");
+    const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS", "invalid-method" as any);
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/shortlists?${queryString}`,
@@ -127,7 +128,10 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/shortlists?${queryString}`,
-      developerToken
+      developerToken,
+      {
+        validateStatus: () => true,
+      }
     );
 
     expect(response.status).toBe(200);
@@ -290,7 +294,6 @@ test.describe("GET /v1/dashboard/shortlists", () => {
 
     const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
-    console.log(queryString);
     const response = await authenticatedGet(
       `/v1/dashboard/shortlists?${queryString}`,
       developerToken
@@ -322,7 +325,9 @@ test.describe("GET /v1/dashboard/shortlists", () => {
       await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData, tracker);
     }
 
-    const methods = [
+    const methods: z.infer<
+      typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query
+    >["method"][] = [
       "simple",
       "total",
       "price-weighted",

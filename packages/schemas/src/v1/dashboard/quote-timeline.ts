@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { apiResponseSchema, dateFormatSchema } from "../../common";
+import { apiResponseSchema, dateFormatSchema, timezoneSchema } from "../../common";
 import { growwQuoteSchema } from "../developer/groww/groww";
 
 // ==================== GET /quote-timeline ====================
@@ -8,6 +8,7 @@ export const getQuoteTimeline = {
   query: z.object({
     symbol: z.string(),
     date: dateFormatSchema,
+    timezone: timezoneSchema.optional(),
   }),
   response: apiResponseSchema.extend({
     data: z.object({

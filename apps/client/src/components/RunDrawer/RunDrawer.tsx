@@ -203,7 +203,15 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
   });
 
   // VARIABLES
-  const orders: Order[] = runOrdersAPI.data?.data || [];
+  const orders: Order[] =
+    runOrdersAPI.data?.data.map((order) => ({
+      ...order,
+      timestamp: new Date(order.timestamp),
+      stopLossTimestamp: order.stopLossTimestamp ? new Date(order.stopLossTimestamp) : undefined,
+      targetTimestamp: order.targetTimestamp ? new Date(order.targetTimestamp) : undefined,
+      timeToStopLossMinutes: order.timeToStopLossMinutes,
+      timeToTargetMinutes: order.timeToTargetMinutes,
+    })) || [];
   // Group orders by nseSymbol
   const ordersByStock = orders.reduce((acc, order) => {
     if (!acc[order.nseSymbol]) {

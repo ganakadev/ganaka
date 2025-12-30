@@ -33,7 +33,7 @@ export const Dashboard = () => {
     error: getShortlistsAPIError,
   } = dashboardAPI.useGetShortlistsQuery(
     {
-      date: selectedDate?.toISOString() || "",
+      datetime: selectedDate?.toISOString() || "",
       type: activeTab || "TOP_GAINERS",
     },
     {

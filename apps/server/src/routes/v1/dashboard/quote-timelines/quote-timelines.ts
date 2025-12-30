@@ -8,6 +8,7 @@ import { sendResponse } from "../../../../utils/sendResponse";
 import { validateRequest } from "../../../../utils/validator";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
 import { QuoteData } from "@ganaka/db";
+import { parseDateInTimezone } from "../../../../utils/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -25,17 +26,14 @@ const quoteSnapshotsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { symbol, date: dateParam } = validationResult;
+      const { symbol, date: dateParam, timezone = "Asia/Kolkata" } = validationResult;
 
-      // Parse the selected date (it comes in as UTC ISO string)
-      const selectedDate = dayjs(dateParam);
-      if (!selectedDate.isValid()) {
-        return reply.badRequest("Invalid date format");
-      }
+      // Convert date string to UTC Date representing midnight IST of that date
+      const dateUTC = parseDateInTimezone(dateParam, timezone);
 
       // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
       // Extract just the date part (YYYY-MM-DD) and create new dayjs object in IST
-      const dateStr = selectedDate.format("YYYY-MM-DD");
+      const dateStr = dayjs(dateUTC).format("YYYY-MM-DD");
       const marketStart = dayjs.tz(`${dateStr} 09:14:00`, "Asia/Kolkata");
       const marketEnd = dayjs.tz(`${dateStr} 15:31:00`, "Asia/Kolkata");
       const marketStartUtc = marketStart.utc();

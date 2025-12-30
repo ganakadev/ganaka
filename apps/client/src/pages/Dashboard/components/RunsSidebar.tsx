@@ -213,7 +213,13 @@ export const RunsSidebar = ({
                       ]
                         .filter(Boolean)
                         .join(" ")}
-                      onClick={() => onRunClick?.(run)}
+                      onClick={() =>
+                        onRunClick?.({
+                          ...run,
+                          startTime: new Date(run.start_datetime),
+                          endTime: new Date(run.end_datetime),
+                        })
+                      }
                     >
                       <div className="space-y-3">
                         <div className="flex items-center justify-between gap-2">
@@ -231,8 +237,8 @@ export const RunsSidebar = ({
                             </div>
                             <div className="h-full min-w-0 flex-1">
                               <Text size="xs" c="dimmed" truncate className="leading-none!">
-                                {dayjs(run.startTime).format("HH:mm")} -{" "}
-                                {dayjs(run.endTime).format("HH:mm")}
+                                {dayjs(run.start_datetime).format("HH:mm")} -{" "}
+                                {dayjs(run.end_datetime).format("HH:mm")}
                               </Text>
                             </div>
                           </div>
@@ -250,7 +256,16 @@ export const RunsSidebar = ({
                               color="red"
                               size="sm"
                               disabled={isBulkDeleting || deletingRunId !== null}
-                              onClick={(e) => handleDelete(run, e)}
+                              onClick={(e) =>
+                                handleDelete(
+                                  {
+                                    ...run,
+                                    startTime: new Date(run.start_datetime),
+                                    endTime: new Date(run.end_datetime),
+                                  },
+                                  e
+                                )
+                              }
                               loading={isDeletingThisRun}
                               title="Delete run"
                             >

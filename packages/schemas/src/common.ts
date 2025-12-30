@@ -61,3 +61,29 @@ export const dateFormatSchema = z
       message: "date must be a valid date",
     }
   );
+
+export const timezoneSchema = z
+  .string()
+  .regex(/^([A-Za-z_]+\/[A-Za-z_]+|[+-]\d{2}:\d{2})$/, {
+    message:
+      "timezone must be an IANA identifier (e.g., 'Asia/Kolkata') or offset (e.g., '+05:30')",
+  })
+  .refine(
+    (val) => {
+      // For IANA identifiers, validate they exist
+      if (val.includes("/")) {
+        try {
+          // This will throw if the timezone is invalid
+          new Intl.DateTimeFormat("en-US", { timeZone: val });
+          return true;
+        } catch {
+          return false;
+        }
+      }
+      // For offsets, validate format (+/-HH:MM)
+      return /^([+-]\d{2}:\d{2})$/.test(val);
+    },
+    {
+      message: "timezone must be a valid IANA identifier or UTC offset",
+    }
+  );

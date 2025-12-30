@@ -42,7 +42,6 @@ export const makeGrowwAPIRequest =
         return response.data;
       } catch (error) {
         lastError = error;
-        console.dir(error, { depth: null });
 
         // Check if it's a 401 Unauthorized error
         const isUnauthorized =
@@ -102,4 +101,3 @@ export const makeGrowwAPIRequest =
 
     throw lastError;
   };
-

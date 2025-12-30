@@ -11,6 +11,7 @@ import { validateRequest } from "../../../../utils/validator";
 import { prisma } from "../../../../utils/prisma";
 import { QuoteData } from "@ganaka/db";
 import { makeGrowwAPIRequest } from "../../../../utils/groww-api-request";
+import { parseDateInTimezone, parseDateTimeInTimezone } from "../../../../utils/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -44,19 +45,19 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
       return;
     }
 
-    console.log(validationResult);
-
     // If datetime is provided, fetch from snapshot
-    const datetime = (validationResult as { datetime?: string }).datetime;
+    const datetime = validationResult.datetime;
+    const timezone = validationResult.timezone || "Asia/Kolkata";
     if (datetime) {
       try {
-        const selectedDateTime = dayjs(datetime).utc();
+        // Convert datetime string to UTC Date object
+        const selectedDateTime = parseDateTimeInTimezone(datetime, timezone);
 
         const quoteSnapshots = await prisma.quoteSnapshot.findMany({
           where: {
             timestamp: {
-              gte: selectedDateTime.toDate(),
-              lte: selectedDateTime.add(1, "m").toDate(),
+              gte: selectedDateTime,
+              lte: new Date(selectedDateTime.getTime() + 60000), // Add 1 minute
             },
             nseSymbol: validationResult.symbol,
           },
@@ -157,18 +158,28 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
+      const { start_datetime, end_datetime, timezone = "Asia/Kolkata", ...rest } = validationResult;
+
+      // Convert datetime strings to IST format for Groww API
+      const startTimeIST = dayjs(parseDateTimeInTimezone(start_datetime, timezone))
+        .tz("Asia/Kolkata")
+        .format("YYYY-MM-DDTHH:mm:ss");
+      const endTimeIST = dayjs(parseDateTimeInTimezone(end_datetime, timezone))
+        .tz("Asia/Kolkata")
+        .format("YYYY-MM-DDTHH:mm:ss");
+
       const response = await growwAPIRequest<
         z.infer<typeof v1_developer_groww_schemas.growwHistoricalCandlesSchema>
       >({
         method: "get",
         url: `https://api.groww.in/v1/historical/candles`,
         params: {
-          candle_interval: validationResult.interval,
-          start_time: validationResult.start_time,
-          end_time: validationResult.end_time,
+          candle_interval: rest.interval,
+          start_time: startTimeIST,
+          end_time: endTimeIST,
           exchange: "NSE",
           segment: "CASH",
-          groww_symbol: `NSE-${validationResult.symbol}`,
+          groww_symbol: `NSE-${rest.symbol}`,
         },
       });
 
@@ -202,17 +213,14 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { symbol, date: dateParam } = validationResult;
+      const { symbol, date: dateParam, timezone = "Asia/Kolkata" } = validationResult;
 
-      // Parse the selected date (it comes in as UTC ISO string)
-      const selectedDate = dayjs(dateParam);
-      if (!selectedDate.isValid()) {
-        return reply.badRequest("Invalid date format");
-      }
+      // Convert date string to UTC Date representing midnight IST of that date
+      const dateUTC = parseDateInTimezone(dateParam, timezone);
 
       // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
       // Extract just the date part (YYYY-MM-DD) and create new dayjs object in IST
-      const dateStr = selectedDate.format("YYYY-MM-DD");
+      const dateStr = dayjs(dateUTC).format("YYYY-MM-DD");
       const marketStart = dayjs.tz(`${dateStr} 09:14:00`, "Asia/Kolkata");
       const marketEnd = dayjs.tz(`${dateStr} 15:31:00`, "Asia/Kolkata");
       const marketStartUtc = marketStart.utc();

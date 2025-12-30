@@ -4,7 +4,7 @@ import { createDeveloperUser } from "../../helpers/auth-helpers";
 import { createMultipleQuoteSnapshots, createQuoteSnapshot } from "../../helpers/db-helpers";
 import {
   createValidGrowwQuotePayload,
-  TEST_DATE,
+  QUOTE_TIMELINES_TEST_DATE,
   TEST_SYMBOL,
   createQuoteTimelineQueryForDashboard,
 } from "../../fixtures/test-data";
@@ -56,7 +56,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
   });
 
   test("should return 400 when symbol is missing", async () => {
-    const query = { date: TEST_DATE };
+    const query = { date: QUOTE_TIMELINES_TEST_DATE };
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
@@ -116,9 +116,9 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
 
   test("should return 200 with quote timeline when valid params provided", async ({ tracker }) => {
     const snapshotCount = 3;
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, snapshotCount, tracker);
+    await createMultipleQuoteSnapshots(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE, snapshotCount, tracker);
 
-    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
+    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
@@ -136,9 +136,9 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
   test("should validate timeline entries structure (id, timestamp, nseSymbol, quoteData, createdAt, updatedAt)", async ({
     tracker,
   }) => {
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 2, tracker);
+    await createMultipleQuoteSnapshots(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE, 2, tracker);
 
-    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
+    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
@@ -165,9 +165,9 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
   });
 
   test("should validate quoteData structure matches schema", async ({ tracker }) => {
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 2, tracker);
+    await createMultipleQuoteSnapshots(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE, 2, tracker);
 
-    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
+    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
@@ -193,9 +193,9 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
   test("should validate timeline entries are ordered by timestamp ascending", async ({
     tracker,
   }) => {
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 5, tracker);
+    await createMultipleQuoteSnapshots(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE, 5, tracker);
 
-    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
+    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
@@ -219,9 +219,9 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
   test("should validate timestamps are within market hours (9:14 AM - 3:31 PM IST)", async ({
     tracker,
   }) => {
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 3, tracker);
+    await createMultipleQuoteSnapshots(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE, 3, tracker);
 
-    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
+    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
@@ -235,8 +235,8 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
       );
 
     // Market hours: 9:14 AM - 3:31 PM IST
-    const marketStart = dayjs.tz(`${TEST_DATE} 09:14:00`, "Asia/Kolkata").utc();
-    const marketEnd = dayjs.tz(`${TEST_DATE} 15:31:00`, "Asia/Kolkata").utc();
+    const marketStart = dayjs.tz(`${QUOTE_TIMELINES_TEST_DATE} 09:14:00`, "Asia/Kolkata").utc();
+    const marketEnd = dayjs.tz(`${QUOTE_TIMELINES_TEST_DATE} 15:31:00`, "Asia/Kolkata").utc();
 
     validatedData.data.quoteTimeline.forEach((entry) => {
       const entryTime = dayjs(entry.timestamp);
@@ -246,9 +246,9 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
   });
 
   test("should validate exact timestamp values ", async ({ tracker }) => {
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, TEST_DATE, 2, tracker);
+    await createMultipleQuoteSnapshots(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE, 2, tracker);
 
-    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
+    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
@@ -267,7 +267,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
       expect(firstEntry).toHaveProperty("nseSymbol");
 
       expect(new Date(firstEntry.timestamp).toISOString()).toBe(
-        new Date("2025-12-26T03:45:00.000Z").toISOString()
+        new Date("2025-12-30T03:45:00.000Z").toISOString()
       );
       expect(firstEntry.nseSymbol).toBe("RELIANCE");
     }
@@ -275,9 +275,9 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
 
   test("should validate exact quoteData values ", async ({ tracker }) => {
     const testQuoteData = createValidGrowwQuotePayload();
-    await createQuoteSnapshot(TEST_SYMBOL, `${TEST_DATE}T10:06:00`, testQuoteData, tracker);
+    await createQuoteSnapshot(TEST_SYMBOL, `${QUOTE_TIMELINES_TEST_DATE}T10:06:00`, testQuoteData, tracker);
 
-    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, TEST_DATE);
+    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,

@@ -1,30 +1,23 @@
-import { test, expect } from "../../helpers/test-fixtures";
-import { createDeveloperUser } from "../../helpers/auth-helpers";
 import {
   createDeveloperTestData,
-  createInvalidDeveloperTestData,
   createEmptyDeveloperTestData,
+  createInvalidDeveloperTestData,
   generateUUID,
 } from "../../fixtures/test-data";
 import {
-  createTestDeveloper,
-  getDeveloperById,
-  getAllDevelopers,
-  seedAdminUser,
-} from "../../helpers/db-helpers";
-import { TestDataTracker } from "../../helpers/test-tracker";
-import {
-  authenticatedGet,
-  authenticatedPost,
-  authenticatedPatch,
   authenticatedDelete,
-  unauthenticatedGet,
-  unauthenticatedPost,
-  unauthenticatedPatch,
+  authenticatedGet,
+  authenticatedPatch,
+  authenticatedPost,
   unauthenticatedDelete,
+  unauthenticatedGet,
+  unauthenticatedPatch,
+  unauthenticatedPost,
 } from "../../helpers/api-client";
-import { prisma } from "../../../src/utils/prisma";
-import { randomUUID } from "crypto";
+import { createDeveloperUser } from "../../helpers/auth-helpers";
+import { createTestDeveloper, getDeveloperById } from "../../helpers/db-helpers";
+import { expect, test } from "../../helpers/test-fixtures";
+import { TestDataTracker } from "../../helpers/test-tracker";
 
 let adminToken: string;
 let sharedTracker: TestDataTracker;
@@ -82,7 +75,7 @@ test.describe("GET /v1/admin/developers", () => {
 
 test.describe("GET /v1/admin/developers/:id", () => {
   test("should return developer by valid ID", async ({ tracker }) => {
-    const dev = await createTestDeveloper("test-get-dev", tracker);
+    const dev = await createTestDeveloper(tracker, "test-get-dev");
 
     const response = await authenticatedGet(`/v1/admin/developers/${dev.id}`, adminToken);
 
@@ -117,7 +110,7 @@ test.describe("GET /v1/admin/developers/:id", () => {
   });
 
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
-    const dev = await createTestDeveloper(undefined, tracker);
+    const dev = await createTestDeveloper(tracker);
 
     const response = await unauthenticatedGet(`/v1/admin/developers/${dev.id}`);
 
@@ -145,7 +138,7 @@ test.describe("POST /v1/admin/developers", () => {
   });
 
   test("should return 409 when creating developer with duplicate username", async ({ tracker }) => {
-    const dev = await createTestDeveloper("duplicate-username", tracker);
+    const dev = await createTestDeveloper(tracker, "duplicate-username");
 
     const response = await authenticatedPost(
       "/v1/admin/developers",
@@ -201,7 +194,7 @@ test.describe("POST /v1/admin/developers", () => {
 
 test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
   test("should refresh developer key successfully", async ({ tracker }) => {
-    const dev = await createTestDeveloper("test-refresh-dev", tracker);
+    const dev = await createTestDeveloper(tracker, "test-refresh-dev");
     const oldToken = dev.token;
 
     const response = await authenticatedPatch(
@@ -241,7 +234,7 @@ test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
   });
 
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
-    const dev = await createTestDeveloper("test-refresh-dev", tracker);
+    const dev = await createTestDeveloper(tracker, "test-refresh-dev");
 
     const response = await unauthenticatedPatch(`/v1/admin/developers/${dev.id}/refresh-key`, {});
 
@@ -251,7 +244,7 @@ test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
 
 test.describe("DELETE /v1/admin/developers/:id", () => {
   test("should delete developer successfully", async ({ tracker }) => {
-    const dev = await createTestDeveloper("test-delete-dev", tracker);
+    const dev = await createTestDeveloper(tracker, "test-delete-dev");
     const response = await authenticatedDelete(`/v1/admin/developers/${dev.id}`, adminToken);
 
     expect(response.status).toBe(200);
@@ -281,7 +274,7 @@ test.describe("DELETE /v1/admin/developers/:id", () => {
   });
 
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
-    const dev = await createTestDeveloper(undefined, tracker);
+    const dev = await createTestDeveloper(tracker);
 
     const response = await unauthenticatedDelete(`/v1/admin/developers/${dev.id}`);
 
