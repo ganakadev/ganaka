@@ -4,7 +4,6 @@ import { createDeveloperUser } from "../../helpers/auth-helpers";
 import { createMultipleShortlistSnapshots } from "../../helpers/db-helpers";
 import {
   TEST_DATE,
-  TEST_DATE_FOR_DAILY_PERSISTENT_COMPANIES,
   createDailyPersistentCompaniesQuery,
   createValidShortlistEntries,
 } from "../../fixtures/test-data";
@@ -241,10 +240,7 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
   test("should validate exact company values ", async ({ tracker }) => {
     await createMultipleShortlistSnapshots("top-gainers", TEST_DATE, 5, tracker);
 
-    const query = createDailyPersistentCompaniesQuery(
-      TEST_DATE_FOR_DAILY_PERSISTENT_COMPANIES,
-      "TOP_GAINERS"
-    );
+    const query = createDailyPersistentCompaniesQuery(TEST_DATE, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,

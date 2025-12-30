@@ -66,8 +66,8 @@ export async function seedAdminUser(): Promise<{ id: string; token: string }> {
  * Creates a test developer
  */
 export async function createTestDeveloper(
-  username?: string,
-  tracker?: TestDataTracker
+  tracker: TestDataTracker,
+  username?: string
 ): Promise<{
   id: string;
   username: string;
@@ -131,7 +131,7 @@ export async function createQuoteSnapshot(
   symbol: string,
   datetime: string,
   quoteData: z.infer<typeof v1_developer_groww_schemas.growwQuoteSchema>,
-  tracker?: TestDataTracker,
+  tracker: TestDataTracker,
   timezone?: string
 ) {
   const timestamp = parseDateTimeInTimezone(datetime, timezone || "Asia/Kolkata");
@@ -158,7 +158,7 @@ export async function createShortlistSnapshot(
   type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
   datetime: string,
   entries: Array<z.infer<typeof v1_developer_lists_schemas.listSchema>>,
-  tracker?: TestDataTracker,
+  tracker: TestDataTracker,
   timezone?: string
 ) {
   const timestamp = parseDateTimeInTimezone(datetime, timezone || "Asia/Kolkata");
@@ -186,7 +186,7 @@ export async function createMultipleQuoteSnapshots(
   symbol: string,
   date: string,
   count: number,
-  tracker?: TestDataTracker
+  tracker: TestDataTracker
 ): Promise<Array<Pick<QuoteSnapshot, "id" | "timestamp" | "nseSymbol">>> {
   // Parse the date string (YYYY-MM-DD format)
   const dateStr = dayjs(date).format("YYYY-MM-DD");
@@ -297,14 +297,14 @@ export async function getShortlistSnapshotById(id: string) {
  */
 export async function createRun(
   developerId: string,
-  startTime: Date | string,
-  endTime: Date | string,
-  tracker?: TestDataTracker,
+  startTime: string,
+  endTime: string,
+  tracker: TestDataTracker,
   timezone?: string
 ) {
   const tz = timezone || "Asia/Kolkata";
-  const start = typeof startTime === "string" ? parseDateTimeInTimezone(startTime, tz) : startTime;
-  const end = typeof endTime === "string" ? parseDateTimeInTimezone(endTime, tz) : endTime;
+  const start = parseDateTimeInTimezone(startTime, tz);
+  const end = parseDateTimeInTimezone(endTime, tz);
 
   const run = await prisma.run.create({
     data: {
@@ -332,7 +332,7 @@ export async function createOrder(
   stopLossPrice: number,
   takeProfitPrice: number,
   timestamp: Date | string,
-  tracker?: TestDataTracker,
+  tracker: TestDataTracker,
   timezone?: string
 ) {
   const tz = timezone || "Asia/Kolkata";
@@ -363,7 +363,7 @@ export async function createMultipleShortlistSnapshots(
   type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
   date: string,
   count: number,
-  tracker?: TestDataTracker,
+  tracker: TestDataTracker,
   timezone?: string
 ): Promise<ShortlistSnapshot[]> {
   const tz = timezone || "Asia/Kolkata";
@@ -414,7 +414,7 @@ export async function createShortlistSnapshotsWithUniqueCompanies(
   type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
   date: string,
   uniqueCompanyCount: number = 10,
-  tracker?: TestDataTracker
+  tracker: TestDataTracker
 ): Promise<ShortlistSnapshot[]> {
   const baseDate = dayjs(date).utc();
   const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";

@@ -623,6 +623,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
             runId: order.runId,
             dynamicTakeProfitPrice: gainMetrics.dynamicTakeProfitPrice,
             targetAchieved: gainMetrics.targetAchieved,
+            targetGainPercentage: gainMetrics.targetGainPercentage,
             targetGainPercentageActual: gainMetrics.targetGainPercentageActual,
             timeToTargetMinutes: gainMetrics.timeToTargetMinutes,
             targetTimestamp: gainMetrics.targetTimestamp

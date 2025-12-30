@@ -8,7 +8,6 @@ import {
   TEST_DATE,
   TEST_DATETIME,
   TEST_SYMBOL,
-  TEST_SYMBOL_FOR_QUOTE_TIMELINE,
 } from "../../fixtures/test-data";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
@@ -578,7 +577,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
   });
 
   test("should return timeline array for valid date with known symbol", async ({ tracker }) => {
-    const testSymbol = TEST_SYMBOL_FOR_QUOTE_TIMELINE;
+    const testSymbol = TEST_SYMBOL;
     const testDate = TEST_DATE;
     const snapshotCount = 5;
 

@@ -1,5 +1,9 @@
 import { faker } from "@faker-js/faker";
-import { v1_developer_groww_schemas } from "@ganaka/schemas";
+import {
+  v1_developer_groww_schemas,
+  v1_developer_lists_schemas,
+  v1_dashboard_schemas,
+} from "@ganaka/schemas";
 import type { z } from "zod";
 
 /**
@@ -54,7 +58,6 @@ export function createEmptyDeveloperTestData() {
  * Known test symbol for consistent testing
  */
 export const TEST_SYMBOL = "RELIANCE";
-export const TEST_SYMBOL_FOR_QUOTE_TIMELINE = "TARC";
 
 /**
  * Known test datetime in format (YYYY-MM-DDTHH:mm:ss)
@@ -65,7 +68,6 @@ export const TEST_DATETIME = "2025-12-26T10:06:00";
  * Known test date in format (YYYY-MM-DD)
  */
 export const TEST_DATE = "2025-12-26";
-export const TEST_DATE_FOR_DAILY_PERSISTENT_COMPANIES = "2025-12-27";
 
 /**
  * Creates a valid Groww quote payload matching growwQuoteSchema
@@ -126,11 +128,9 @@ export function createValidGrowwQuotePayload(): z.infer<
 /**
  * Creates valid shortlist entries array matching listSchema[]
  */
-export function createValidShortlistEntries(): Array<{
-  name: string;
-  price: number;
-  nseSymbol: string;
-}> {
+export function createValidShortlistEntries(): z.infer<
+  typeof v1_developer_lists_schemas.listSchema
+>[] {
   return [
     { name: "Reliance Industries Ltd", price: 2500.0, nseSymbol: "RELIANCE" },
     { name: "Tata Consultancy Services", price: 3500.0, nseSymbol: "TCS" },
@@ -152,18 +152,20 @@ export function createQuoteSnapshotTestData(): z.infer<
 /**
  * Creates shortlist snapshot test data matching listSchema[]
  */
-export function createShortlistSnapshotTestData(): Array<{
-  name: string;
-  price: number;
-  nseSymbol: string;
-}> {
+export function createShortlistSnapshotTestData(): z.infer<
+  typeof v1_developer_lists_schemas.listSchema
+>[] {
   return createValidShortlistEntries();
 }
 
 /**
  * Creates valid quote query parameters
  */
-export function createGrowwQuoteQuery(symbol?: string, datetime?: string, timezone?: string) {
+export function createGrowwQuoteQuery(
+  symbol?: string,
+  datetime?: string,
+  timezone?: string
+): z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.query> {
   return {
     symbol: symbol || TEST_SYMBOL,
     timezone: timezone || "Asia/Kolkata",
@@ -176,11 +178,11 @@ export function createGrowwQuoteQuery(symbol?: string, datetime?: string, timezo
  */
 export function createHistoricalCandlesQuery(
   symbol?: string,
-  interval?: string,
+  interval?: z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.query>["interval"],
   startTime?: string,
   endTime?: string,
   timezone?: string
-) {
+): z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.query> {
   return {
     symbol: symbol || TEST_SYMBOL,
     interval: interval || "5minute",
@@ -193,7 +195,11 @@ export function createHistoricalCandlesQuery(
 /**
  * Creates valid quote timeline query parameters
  */
-export function createQuoteTimelineQuery(symbol?: string, date?: string, timezone?: string) {
+export function createQuoteTimelineQuery(
+  symbol?: string,
+  date?: string,
+  timezone?: string
+): z.infer<typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.query> {
   return {
     symbol: symbol || TEST_SYMBOL,
     date: date || TEST_DATE,
@@ -208,7 +214,7 @@ export function createListsQuery(
   type?: "top-gainers" | "volume-shockers",
   datetime?: string,
   timezone?: string
-) {
+): z.infer<typeof v1_developer_lists_schemas.getLists.query> {
   return {
     type: type || "top-gainers",
     timezone: timezone || "Asia/Kolkata",
@@ -221,7 +227,10 @@ export function createListsQuery(
 /**
  * Creates test data for creating a run
  */
-export function createRunTestData(startTime?: string, endTime?: string) {
+export function createRunTestData(
+  startTime?: string,
+  endTime?: string
+): z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.body> {
   const defaultStart = "2025-12-26T09:15:00";
   const defaultEnd = "2025-12-26T15:30:00";
   return {
@@ -239,14 +248,14 @@ export function createOrderTestData(
   stopLossPrice?: number,
   takeProfitPrice?: number,
   timestamp?: string
-) {
-  const defaultTimestamp = new Date("2025-12-26T10:00:00Z").toISOString();
+): z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.body> {
+  const defaultTimestamp = "2025-12-26T10:00:00";
   return {
     nseSymbol: nseSymbol || TEST_SYMBOL,
     entryPrice: entryPrice || 2500.0,
     stopLossPrice: stopLossPrice || 2400.0,
     takeProfitPrice: takeProfitPrice || 2600.0,
-    timestamp: timestamp || defaultTimestamp,
+    datetime: timestamp || defaultTimestamp,
   };
 }
 
@@ -256,9 +265,11 @@ export function createOrderTestData(
 export function createShortlistsQuery(
   datetime?: string,
   type?: "TOP_GAINERS" | "VOLUME_SHOCKERS",
-  method?: string,
+  method?: z.infer<
+    typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query
+  >["method"],
   timezone?: string
-) {
+): z.infer<typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query> {
   return {
     datetime: datetime || TEST_DATETIME,
     timezone: timezone || "Asia/Kolkata",
@@ -273,9 +284,11 @@ export function createShortlistsQuery(
 export function createCandlesQuery(
   symbol?: string,
   date?: string,
-  interval?: string,
+  interval?: z.infer<
+    typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.query
+  >["interval"],
   timezone?: string
-) {
+): z.infer<typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.query> {
   return {
     symbol: symbol || TEST_SYMBOL,
     date: date || TEST_DATE,
@@ -291,7 +304,7 @@ export function createQuoteTimelineQueryForDashboard(
   symbol?: string,
   date?: string,
   timezone?: string
-) {
+): z.infer<typeof v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.query> {
   return {
     symbol: symbol || TEST_SYMBOL,
     date: date || TEST_DATE,
@@ -306,7 +319,9 @@ export function createDailyPersistentCompaniesQuery(
   date?: string,
   type?: "TOP_GAINERS" | "VOLUME_SHOCKERS",
   timezone?: string
-) {
+): z.infer<
+  typeof v1_dashboard_schemas.v1_dashboard_daily_persistent_companies_schemas.getDailyPersistentCompanies.query
+> {
   return {
     date: date || TEST_DATE,
     timezone: timezone || "Asia/Kolkata",
@@ -321,7 +336,9 @@ export function createDailyUniqueCompaniesQuery(
   date?: string,
   type?: "TOP_GAINERS" | "VOLUME_SHOCKERS",
   timezone?: string
-) {
+): z.infer<
+  typeof v1_dashboard_schemas.v1_dashboard_daily_unique_companies_schemas.getDailyUniqueCompanies.query
+> {
   return {
     date: date || TEST_DATE,
     timezone: timezone || "Asia/Kolkata",
