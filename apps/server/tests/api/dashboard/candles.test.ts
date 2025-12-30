@@ -12,6 +12,7 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { TestDataTracker } from "../../helpers/test-tracker";
+import z from "zod";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -98,7 +99,7 @@ test.describe("GET /v1/dashboard/candles", () => {
   });
 
   test("should return 400 when interval is invalid enum value", async () => {
-    const query = createCandlesQuery(TEST_SYMBOL, TEST_DATE, "invalid-interval");
+    const query = createCandlesQuery(TEST_SYMBOL, TEST_DATE, "invalid-interval" as any);
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/candles?${queryString}`,
@@ -181,7 +182,12 @@ test.describe("GET /v1/dashboard/candles", () => {
   });
 
   test("should validate interval_in_minutes matches requested interval", async () => {
-    const intervals = [
+    const intervals: {
+      interval: z.infer<
+        typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.query
+      >["interval"];
+      expectedMinutes: number;
+    }[] = [
       { interval: "1minute", expectedMinutes: 1 },
       { interval: "2minute", expectedMinutes: 2 },
       { interval: "3minute", expectedMinutes: 3 },
