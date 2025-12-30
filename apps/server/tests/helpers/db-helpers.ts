@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { prisma } from "../../src/utils/prisma";
 import { randomUUID } from "crypto";
 import type { ShortlistType, QuoteSnapshot, ShortlistSnapshot, InputJsonValue } from "@ganaka/db";
@@ -9,6 +10,7 @@ import timezone from "dayjs/plugin/timezone";
 import { Decimal } from "@ganaka/db/prisma";
 import { createValidShortlistEntries } from "../fixtures/test-data";
 import type { TestDataTracker } from "./test-tracker";
+import { parseDateTimeInTimezone } from "../../src/utils/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -129,9 +131,10 @@ export async function createQuoteSnapshot(
   symbol: string,
   datetime: string,
   quoteData: z.infer<typeof v1_developer_groww_schemas.growwQuoteSchema>,
-  tracker?: TestDataTracker
+  tracker?: TestDataTracker,
+  timezone?: string
 ) {
-  const timestamp = dayjs(datetime).utc().toDate();
+  const timestamp = parseDateTimeInTimezone(datetime, timezone || "Asia/Kolkata");
 
   const snapshot = await prisma.quoteSnapshot.create({
     data: {
@@ -155,9 +158,10 @@ export async function createShortlistSnapshot(
   type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
   datetime: string,
   entries: Array<z.infer<typeof v1_developer_lists_schemas.listSchema>>,
-  tracker?: TestDataTracker
+  tracker?: TestDataTracker,
+  timezone?: string
 ) {
-  const timestamp = dayjs(datetime).utc().toDate();
+  const timestamp = parseDateTimeInTimezone(datetime, timezone || "Asia/Kolkata");
   const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
 
   const snapshot = await prisma.shortlistSnapshot.create({
@@ -295,10 +299,12 @@ export async function createRun(
   developerId: string,
   startTime: Date | string,
   endTime: Date | string,
-  tracker?: TestDataTracker
+  tracker?: TestDataTracker,
+  timezone?: string
 ) {
-  const start = typeof startTime === "string" ? new Date(startTime) : startTime;
-  const end = typeof endTime === "string" ? new Date(endTime) : endTime;
+  const tz = timezone || "Asia/Kolkata";
+  const start = typeof startTime === "string" ? parseDateTimeInTimezone(startTime, tz) : startTime;
+  const end = typeof endTime === "string" ? parseDateTimeInTimezone(endTime, tz) : endTime;
 
   const run = await prisma.run.create({
     data: {
@@ -326,9 +332,11 @@ export async function createOrder(
   stopLossPrice: number,
   takeProfitPrice: number,
   timestamp: Date | string,
-  tracker?: TestDataTracker
+  tracker?: TestDataTracker,
+  timezone?: string
 ) {
-  const ts = typeof timestamp === "string" ? new Date(timestamp) : timestamp;
+  const tz = timezone || "Asia/Kolkata";
+  const ts = typeof timestamp === "string" ? parseDateTimeInTimezone(timestamp, tz) : timestamp;
 
   const order = await prisma.order.create({
     data: {
@@ -355,9 +363,10 @@ export async function createMultipleShortlistSnapshots(
   type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
   date: string,
   count: number,
-  tracker?: TestDataTracker
+  tracker?: TestDataTracker,
+  timezone?: string
 ): Promise<ShortlistSnapshot[]> {
-  const baseDate = dayjs(date).utc();
+  const tz = timezone || "Asia/Kolkata";
   const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
   const snapshots: ShortlistSnapshot[] = [];
 
@@ -373,13 +382,15 @@ export async function createMultipleShortlistSnapshots(
     const hours = startHour + Math.floor(minutes / 60);
     const finalMinutes = minutes % 60;
 
-    // Convert IST to UTC (IST is UTC+5:30)
-    const istTime = baseDate.hour(hours).minute(finalMinutes).second(0);
-    const utcTime = istTime.subtract(5, "hour").subtract(30, "minute");
+    // Create IST datetime string and convert to UTC Date
+    const istDateTimeString = `${date}T${String(hours).padStart(2, "0")}:${String(
+      finalMinutes
+    ).padStart(2, "0")}:00`;
+    const utcTime = parseDateTimeInTimezone(istDateTimeString, tz);
 
     const snapshot = await prisma.shortlistSnapshot.create({
       data: {
-        timestamp: utcTime.toDate(),
+        timestamp: utcTime,
         shortlistType,
         entries: entries as InputJsonValue,
       },

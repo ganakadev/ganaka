@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { apiResponseSchema, datetimeFormatSchema } from "../../../common";
+import { apiResponseSchema, datetimeFormatSchema, timezoneSchema } from "../../../common";
 
 // ==================== Schemas ====================
 
@@ -15,6 +15,7 @@ export const getLists = {
   query: z.object({
     type: z.enum(["top-gainers", "volume-shockers"]),
     datetime: datetimeFormatSchema.optional(),
+    timezone: timezoneSchema.optional(),
   }),
   response: apiResponseSchema.extend({
     data: z.array(listSchema).nullable(),

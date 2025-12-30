@@ -10,6 +10,7 @@ import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse } from "axios";
 import { isEmpty, shuffle } from "lodash";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { parseDateTimeInTimezone } from "../../../../utils/timezone";
 
 dayjs.extend(utc);
 
@@ -94,13 +95,15 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
     if (validationResult.datetime) {
       try {
         const shortlistType = mapTypeToShortlistType(validationResult.type);
-        const selectedDateTime = dayjs(validationResult.datetime).utc();
+        const timezone = validationResult.timezone || "Asia/Kolkata";
+        // Convert datetime string to UTC Date object
+        const selectedDateTime = parseDateTimeInTimezone(validationResult.datetime, timezone);
 
         const shortlists = await prisma.shortlistSnapshot.findMany({
           where: {
             timestamp: {
-              gte: selectedDateTime.toDate(),
-              lte: selectedDateTime.add(1, "s").toDate(),
+              gte: selectedDateTime,
+              lte: new Date(selectedDateTime.getTime() + 1000), // Add 1 second
             },
             shortlistType: shortlistType,
           },

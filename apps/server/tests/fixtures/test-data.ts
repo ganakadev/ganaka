@@ -163,9 +163,10 @@ export function createShortlistSnapshotTestData(): Array<{
 /**
  * Creates valid quote query parameters
  */
-export function createGrowwQuoteQuery(symbol?: string, datetime?: string) {
+export function createGrowwQuoteQuery(symbol?: string, datetime?: string, timezone?: string) {
   return {
     symbol: symbol || TEST_SYMBOL,
+    timezone: timezone || "Asia/Kolkata",
     ...(datetime && { datetime }),
   };
 }
@@ -177,32 +178,40 @@ export function createHistoricalCandlesQuery(
   symbol?: string,
   interval?: string,
   startTime?: string,
-  endTime?: string
+  endTime?: string,
+  timezone?: string
 ) {
   return {
     symbol: symbol || TEST_SYMBOL,
     interval: interval || "5minute",
-    start_time: startTime || "2025-12-26T09:15:00",
-    end_time: endTime || "2025-12-26T10:00:00",
+    start_datetime: startTime || "2025-12-26T09:15:00",
+    end_datetime: endTime || "2025-12-26T10:00:00",
+    timezone: timezone || "Asia/Kolkata",
   };
 }
 
 /**
  * Creates valid quote timeline query parameters
  */
-export function createQuoteTimelineQuery(symbol?: string, date?: string) {
+export function createQuoteTimelineQuery(symbol?: string, date?: string, timezone?: string) {
   return {
     symbol: symbol || TEST_SYMBOL,
     date: date || TEST_DATE,
+    timezone: timezone || "Asia/Kolkata",
   };
 }
 
 /**
  * Creates valid lists query parameters
  */
-export function createListsQuery(type?: "top-gainers" | "volume-shockers", datetime?: string) {
+export function createListsQuery(
+  type?: "top-gainers" | "volume-shockers",
+  datetime?: string,
+  timezone?: string
+) {
   return {
     type: type || "top-gainers",
+    timezone: timezone || "Asia/Kolkata",
     ...(datetime && { datetime }),
   };
 }
@@ -247,10 +256,12 @@ export function createOrderTestData(
 export function createShortlistsQuery(
   date?: string,
   type?: "TOP_GAINERS" | "VOLUME_SHOCKERS",
-  method?: string
+  method?: string,
+  timezone?: string
 ) {
   return {
     date: date || TEST_DATE,
+    timezone: timezone || "Asia/Kolkata",
     type: type || "TOP_GAINERS",
     ...(method && { method }),
   };
@@ -259,10 +270,16 @@ export function createShortlistsQuery(
 /**
  * Creates valid candles query parameters for dashboard
  */
-export function createCandlesQuery(symbol?: string, date?: string, interval?: string) {
+export function createCandlesQuery(
+  symbol?: string,
+  date?: string,
+  interval?: string,
+  timezone?: string
+) {
   return {
     symbol: symbol || TEST_SYMBOL,
     date: date || TEST_DATE,
+    timezone: timezone || "Asia/Kolkata",
     ...(interval && { interval }),
   };
 }
@@ -270,10 +287,15 @@ export function createCandlesQuery(symbol?: string, date?: string, interval?: st
 /**
  * Creates valid quote timeline query parameters for dashboard
  */
-export function createQuoteTimelineQueryForDashboard(symbol?: string, date?: string) {
+export function createQuoteTimelineQueryForDashboard(
+  symbol?: string,
+  date?: string,
+  timezone?: string
+) {
   return {
     symbol: symbol || TEST_SYMBOL,
     date: date || TEST_DATE,
+    timezone: timezone || "Asia/Kolkata",
   };
 }
 
@@ -282,10 +304,12 @@ export function createQuoteTimelineQueryForDashboard(symbol?: string, date?: str
  */
 export function createDailyPersistentCompaniesQuery(
   date?: string,
-  type?: "TOP_GAINERS" | "VOLUME_SHOCKERS"
+  type?: "TOP_GAINERS" | "VOLUME_SHOCKERS",
+  timezone?: string
 ) {
   return {
     date: date || TEST_DATE,
+    timezone: timezone || "Asia/Kolkata",
     type: type || "TOP_GAINERS",
   };
 }
@@ -295,10 +319,12 @@ export function createDailyPersistentCompaniesQuery(
  */
 export function createDailyUniqueCompaniesQuery(
   date?: string,
-  type?: "TOP_GAINERS" | "VOLUME_SHOCKERS"
+  type?: "TOP_GAINERS" | "VOLUME_SHOCKERS",
+  timezone?: string
 ) {
   return {
     date: date || TEST_DATE,
+    timezone: timezone || "Asia/Kolkata",
     type: type || "TOP_GAINERS",
   };
 }

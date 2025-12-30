@@ -1,6 +1,6 @@
 import { shortlistTypeEnum } from "@ganaka/db";
 import { z } from "zod";
-import { apiResponseSchema, datetimeFormatSchema } from "../../common";
+import { apiResponseSchema, datetimeFormatSchema, timezoneSchema } from "../../common";
 
 // ==================== GET /shortlists ====================
 
@@ -67,7 +67,8 @@ const quoteDataSchema = z.object({
 
 export const getShortlists = {
   query: z.object({
-    date: datetimeFormatSchema,
+    datetime: datetimeFormatSchema,
+    timezone: timezoneSchema.optional(),
     type: z.enum(shortlistTypeEnum),
     method: buyerControlMethodSchema.optional(),
   }),

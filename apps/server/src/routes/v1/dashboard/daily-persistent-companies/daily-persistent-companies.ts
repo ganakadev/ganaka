@@ -8,6 +8,7 @@ import z from "zod";
 import { prisma } from "../../../../utils/prisma";
 import { sendResponse } from "../../../../utils/sendResponse";
 import { validateRequest } from "../../../../utils/validator";
+import { parseDateInTimezone } from "../../../../utils/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -91,14 +92,14 @@ const dailyPersistentCompaniesRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { date: dateParam, type: shortlistType } = validationResult;
+      const { date: dateParam, timezone = "Asia/Kolkata", type: shortlistType } = validationResult;
 
-      // Parse the date (expecting format like "2024-01-15" or ISO string)
-      const parsedDate = dayjs(dateParam);
+      // Convert date string to UTC Date representing midnight IST of that date
+      const dateUTC = parseDateInTimezone(dateParam, timezone);
 
       // Calculate start and end of day (in UTC to match database timestamps)
-      const startOfDay = parsedDate.utc().startOf("day");
-      const endOfDay = parsedDate.utc().endOf("day");
+      const startOfDay = dayjs(dateUTC).utc().startOf("day");
+      const endOfDay = dayjs(dateUTC).utc().endOf("day");
 
       // Fetch all snapshots for the requested list type for the entire day
       const snapshots = await prisma.shortlistSnapshot.findMany({
@@ -125,7 +126,7 @@ const dailyPersistentCompaniesRoutes: FastifyPluginAsync = async (fastify) => {
         statusCode: 200,
         message: "Daily persistent companies fetched successfully",
         data: {
-          date: parsedDate.format("YYYY-MM-DD"),
+          date: dayjs(dateUTC).format("YYYY-MM-DD"),
           type: shortlistType,
           totalSnapshots: snapshots.length,
           companies,

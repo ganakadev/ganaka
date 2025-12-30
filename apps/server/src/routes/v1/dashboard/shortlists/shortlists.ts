@@ -14,6 +14,7 @@ import {
   isQuoteData,
 } from "../../../../utils/buyerControl";
 import { prisma } from "../../../../utils/prisma";
+import { parseDateTimeInTimezone } from "../../../../utils/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -31,10 +32,15 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { date: dateParam, type: typeParam, method: methodParam } = validationResult;
+      const {
+        datetime: dateParam,
+        timezone = "Asia/Kolkata",
+        type: typeParam,
+        method: methodParam,
+      } = validationResult;
 
-      // Parse date with explicit UTC handling
-      const selectedDateTime = dayjs(dateParam).utc();
+      // Convert datetime string to UTC Date
+      const selectedDateTime = parseDateTimeInTimezone(dateParam, timezone);
 
       // Set method to provided value or default to "hybrid"
       const method: BuyerControlMethod = methodParam || "hybrid";
@@ -42,8 +48,8 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
       const shortlists = await prisma.shortlistSnapshot.findMany({
         where: {
           timestamp: {
-            gte: selectedDateTime.toDate(),
-            lte: selectedDateTime.add(1, "s").toDate(),
+            gte: selectedDateTime,
+            lte: new Date(selectedDateTime.getTime() + 1000), // Add 1 second
           },
           shortlistType: typeParam as ShortlistType,
         },
@@ -51,8 +57,8 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
       const quoteSnapshots = await prisma.quoteSnapshot.findMany({
         where: {
           timestamp: {
-            gte: selectedDateTime.toDate(),
-            lte: selectedDateTime.add(1, "m").toDate(),
+            gte: selectedDateTime,
+            lte: new Date(selectedDateTime.getTime() + 60000), // Add 1 minute
           },
         },
       });

@@ -11,6 +11,7 @@ import { validateRequest } from "../../../../utils/validator";
 import { RedisManager } from "../../../../utils/redis";
 import { TokenManager } from "../../../../utils/token-manager";
 import { makeGrowwAPIRequest } from "../../../../utils/groww-api-request";
+import { parseDateTimeInTimezone } from "../../../../utils/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -375,7 +376,11 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { startTime, endTime } = validationResult;
+      const { start_datetime, end_datetime, timezone = "Asia/Kolkata" } = validationResult;
+
+      // Convert datetime strings to UTC Date objects
+      const startTimeUTC = parseDateTimeInTimezone(start_datetime, timezone);
+      const endTimeUTC = parseDateTimeInTimezone(end_datetime, timezone);
       const token = request.headers.authorization?.split(" ")[1] || "";
 
       // Get developer from token
@@ -390,8 +395,8 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
       // Create a new run
       const run = await prisma.run.create({
         data: {
-          startTime: startTime,
-          endTime: endTime,
+          startTime: startTimeUTC,
+          endTime: endTimeUTC,
           developer: {
             connect: {
               id: developer.id,
@@ -663,8 +668,17 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
 
     try {
       const { runId } = paramsValidationResult;
-      const { nseSymbol, entryPrice, stopLossPrice, takeProfitPrice, timestamp } =
-        bodyValidationResult;
+      const {
+        nseSymbol,
+        entryPrice,
+        stopLossPrice,
+        takeProfitPrice,
+        datetime,
+        timezone = "Asia/Kolkata",
+      } = bodyValidationResult;
+
+      // Convert timestamp string to UTC Date object
+      const datetimeUTC = parseDateTimeInTimezone(datetime, timezone);
       const token = request.headers.authorization?.split(" ")[1] || "";
 
       // Verify the run belongs to the authenticated developer
@@ -688,7 +702,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
           entryPrice: new Decimal(entryPrice),
           stopLossPrice: new Decimal(stopLossPrice),
           takeProfitPrice: new Decimal(takeProfitPrice),
-          timestamp: timestamp,
+          timestamp: datetimeUTC,
           run: {
             connect: {
               id: runId,

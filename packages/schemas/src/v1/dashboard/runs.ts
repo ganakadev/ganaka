@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { apiResponseSchema } from "../../common";
+import { apiResponseSchema, datetimeFormatSchema, timezoneSchema } from "../../common";
 
 // ==================== GET /runs ====================
 
@@ -60,8 +60,9 @@ export const getRunOrders = {
 // ==================== POST /runs ====================
 
 const createRunBodySchema = z.object({
-  startTime: z.coerce.date(),
-  endTime: z.coerce.date(),
+  start_datetime: datetimeFormatSchema,
+  end_datetime: datetimeFormatSchema,
+  timezone: timezoneSchema.optional(),
 });
 
 const createRunResponseSchema = z.object({
@@ -121,7 +122,8 @@ const createOrderBodySchema = z.object({
   entryPrice: z.coerce.number(),
   stopLossPrice: z.coerce.number(),
   takeProfitPrice: z.coerce.number(),
-  timestamp: z.coerce.date(),
+  datetime: datetimeFormatSchema,
+  timezone: timezoneSchema.optional(),
 });
 
 const createOrderResponseSchema = z.object({
