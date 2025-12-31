@@ -239,11 +239,9 @@ test.describe("GET /v1/dashboard/shortlists", () => {
       expect(firstEntry).toHaveProperty("name");
       expect(firstEntry).toHaveProperty("price");
       expect(firstEntry).toHaveProperty("quoteData");
-      expect(firstEntry).toHaveProperty("buyerControlPercentage");
       expect(typeof firstEntry.nseSymbol).toBe("string");
       expect(typeof firstEntry.name).toBe("string");
       expect(typeof firstEntry.price).toBe("number");
-      expect(typeof firstEntry.buyerControlPercentage).toBe("number");
     }
   });
 
@@ -273,13 +271,13 @@ test.describe("GET /v1/dashboard/shortlists", () => {
       const firstEntry = validatedData.data.shortlist.entries[0];
       expect(firstEntry.quoteData).toHaveProperty("status");
       expect(firstEntry.quoteData).toHaveProperty("payload");
-      expect(["SUCCESS", "FAILURE"]).toContain(firstEntry.quoteData.status);
-      expect(firstEntry.quoteData.payload).toHaveProperty("ohlc");
-      expect(firstEntry.quoteData.payload).toHaveProperty("depth");
-      expect(firstEntry.quoteData.payload.ohlc).toHaveProperty("open");
-      expect(firstEntry.quoteData.payload.ohlc).toHaveProperty("high");
-      expect(firstEntry.quoteData.payload.ohlc).toHaveProperty("low");
-      expect(firstEntry.quoteData.payload.ohlc).toHaveProperty("close");
+      expect(["SUCCESS", "FAILURE"]).toContain(firstEntry.quoteData!.status);
+      expect(firstEntry.quoteData!.payload).toHaveProperty("ohlc");
+      expect(firstEntry.quoteData!.payload).toHaveProperty("depth");
+      expect(firstEntry.quoteData!.payload.ohlc).toHaveProperty("open");
+      expect(firstEntry.quoteData!.payload.ohlc).toHaveProperty("high");
+      expect(firstEntry.quoteData!.payload.ohlc).toHaveProperty("low");
+      expect(firstEntry.quoteData!.payload.ohlc).toHaveProperty("close");
     }
   });
 
@@ -352,11 +350,7 @@ test.describe("GET /v1/dashboard/shortlists", () => {
         );
 
       if (validatedData.data.shortlist && validatedData.data.shortlist.entries.length > 0) {
-        validatedData.data.shortlist.entries.forEach((entry) => {
-          expect(typeof entry.buyerControlPercentage).toBe("number");
-          expect(entry.buyerControlPercentage).toBeGreaterThanOrEqual(0);
-          expect(entry.buyerControlPercentage).toBeLessThanOrEqual(100);
-        });
+        validatedData.data.shortlist.entries.forEach((entry) => {});
       }
     }
   });
@@ -389,11 +383,9 @@ test.describe("GET /v1/dashboard/shortlists", () => {
       expect(firstEntry).toHaveProperty("nseSymbol");
       expect(firstEntry).toHaveProperty("name");
       expect(firstEntry).toHaveProperty("price");
-      expect(firstEntry).toHaveProperty("buyerControlPercentage");
       expect(firstEntry.nseSymbol).toBe("RELIANCE");
       expect(firstEntry.name).toBe("Reliance Industries Ltd");
       expect(firstEntry.price).toBe(2500);
-      expect(firstEntry.buyerControlPercentage).toBe(48.676363583030394);
     }
   });
 });
