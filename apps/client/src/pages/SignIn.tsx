@@ -7,6 +7,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRTKNotifier } from "../utils/hooks/useRTKNotifier";
 
+const signInSchema = z.object({
+  developerToken: z.string().min(1, "Developer key is required"),
+});
+
 export const SignIn = () => {
   // HOOKS
   const navigate = useNavigate();
@@ -15,11 +19,7 @@ export const SignIn = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(
-      z.object({
-        developerToken: z.string().min(1, "Developer key is required"),
-      })
-    ),
+    resolver: zodResolver(signInSchema),
   });
 
   // API

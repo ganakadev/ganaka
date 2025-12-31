@@ -1,17 +1,17 @@
+import { useState } from "react";
+import { QuoteDrawer } from "../../components/QuoteDrawer/QuoteDrawer";
+import { RunOrdersDrawer } from "../../components/RunDrawer/RunDrawer";
+import { dashboardAPI } from "../../store/api/dashboardApi";
+import type { Run, ShortlistEntryWithQuote } from "../../types";
+import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
 import { Header } from "./components/Header";
 import {
   PersistentCompaniesTable,
   type PersistentCompany,
 } from "./components/PersistentCompaniesTable";
-import { RunOrdersDrawer } from "../../components/RunDrawer/RunDrawer";
-import { useState } from "react";
-import type { ShortlistEntryWithQuote, ShortlistSnapshotWithEntries, Run } from "../../types";
-import { dashboardAPI } from "../../store/api/dashboardApi";
-import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
-import { UniqueCompaniesCard } from "./components/UniqueCompaniesCard";
-import { ShortlistTable } from "./components/ShortlistTable";
 import { RunsSidebar } from "./components/RunsSidebar";
-import { QuoteDrawer } from "../../components/QuoteDrawer/QuoteDrawer";
+import { ShortlistTable } from "./components/ShortlistTable";
+import { UniqueCompaniesCard } from "./components/UniqueCompaniesCard";
 
 export const Dashboard = () => {
   // STATE
@@ -63,7 +63,7 @@ export const Dashboard = () => {
   });
 
   // Transform shortlist data
-  const shortlist: ShortlistSnapshotWithEntries | null = shortlistsData?.data.shortlist
+  const shortlist = shortlistsData?.data.shortlist
     ? {
         id: shortlistsData.data.shortlist.id,
         timestamp: new Date(shortlistsData.data.shortlist.timestamp),
@@ -119,7 +119,7 @@ export const Dashboard = () => {
           <div className="w-full">
             {activeTab === "TOP_GAINERS" && (
               <ShortlistTable
-                shortlist={shortlist}
+                shortlist={shortlist?.entries || []}
                 loading={loadingShortlists}
                 onRowClick={handleRowClick}
                 selectedDate={selectedDate}
@@ -128,7 +128,7 @@ export const Dashboard = () => {
 
             {activeTab === "VOLUME_SHOCKERS" && (
               <ShortlistTable
-                shortlist={shortlist}
+                shortlist={shortlist?.entries || []}
                 onRowClick={handleRowClick}
                 loading={loadingShortlists}
                 selectedDate={selectedDate}

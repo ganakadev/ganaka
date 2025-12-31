@@ -1,6 +1,7 @@
-import { Skeleton, Table } from "@mantine/core";
-import { times } from "lodash";
-import type { ShortlistSnapshotWithEntries, ShortlistEntryWithQuote } from "../../../types";
+import type { shortlistEntrySchema } from "@ganaka/schemas";
+import { Table } from "@mantine/core";
+import { z } from "zod";
+import type { ShortlistEntryWithQuote } from "../../../types";
 
 export const ShortlistTable = ({
   shortlist,
@@ -8,11 +9,15 @@ export const ShortlistTable = ({
   loading,
   selectedDate,
 }: {
-  shortlist: ShortlistSnapshotWithEntries | null;
+  shortlist: z.infer<typeof shortlistEntrySchema>[] | null;
   onRowClick: (entry: ShortlistEntryWithQuote) => void;
   loading: boolean;
   selectedDate: Date | null;
 }) => {
+  console.log(shortlist);
+  console.log(onRowClick);
+  console.log(loading);
+  console.log(selectedDate);
   // DRAW
   return (
     <div className="mb-8">
@@ -34,7 +39,7 @@ export const ShortlistTable = ({
             </Table.Th>
           </Table.Tr>
         </Table.Thead>
-        <Table.Tbody>
+        {/* <Table.Tbody>
           {!selectedDate ? (
             <Table.Tr>
               <Table.Td colSpan={4} className="text-center py-8">
@@ -59,7 +64,7 @@ export const ShortlistTable = ({
               </Table.Tr>
             ))
           ) : (
-            shortlist.entries.map((entry, index) => (
+            shortlist.map((entry, index) => (
               <Table.Tr
                 key={`${entry.nseSymbol}-${index}`}
                 className="cursor-pointer"
@@ -90,7 +95,7 @@ export const ShortlistTable = ({
               </Table.Tr>
             ))
           )}
-        </Table.Tbody>
+        </Table.Tbody> */}
       </Table>
     </div>
   );
