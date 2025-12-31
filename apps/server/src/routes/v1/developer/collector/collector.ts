@@ -1,0 +1,158 @@
+import { ShortlistType } from "@ganaka/db";
+import { v1_developer_collector_schemas } from "@ganaka/schemas";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import { FastifyPluginAsync } from "fastify";
+import { prisma } from "../../../../utils/prisma";
+import { sendResponse } from "../../../../utils/sendResponse";
+import { parseDateTimeInTimezone } from "../../../../utils/timezone";
+import { validateRequest } from "../../../../utils/validator";
+import { Decimal } from "@ganaka/db/prisma";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const collectorRoutes: FastifyPluginAsync = async (fastify) => {
+  // ==================== POST /shortlists ====================
+  fastify.post("/shortlists", async (request, reply) => {
+    const validationResult = validateRequest(
+      request.body,
+      reply,
+      v1_developer_collector_schemas.createShortlistSnapshot.body,
+      "body"
+    );
+    if (!validationResult) {
+      return;
+    }
+
+    try {
+      const {
+        data: { timestamp: timestampStr, timezone = "UTC", shortlistType, entries },
+      } = validationResult;
+
+      // Convert datetime string to UTC Date
+      const timestamp = parseDateTimeInTimezone(timestampStr, timezone);
+
+      // Store shortlist in database
+      const shortlistSnapshot = await prisma.shortlistSnapshot.create({
+        data: {
+          timestamp,
+          shortlistType: shortlistType as ShortlistType,
+          entries: entries as any, // JSON data
+        },
+      });
+
+      return sendResponse(reply, {
+        statusCode: 201,
+        message: "Shortlist snapshot created successfully",
+        data: {
+          id: shortlistSnapshot.id,
+          timestamp: shortlistSnapshot.timestamp.toISOString(),
+          shortlistType: shortlistSnapshot.shortlistType,
+          entriesCount: entries.length,
+        },
+      });
+    } catch (error) {
+      fastify.log.error("Error creating shortlist snapshot: %s", JSON.stringify(error));
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to create shortlist snapshot";
+      return reply.internalServerError(errorMessage);
+    }
+  });
+
+  // ==================== POST /quotes ====================
+  fastify.post("/quotes", async (request, reply) => {
+    const validationResult = validateRequest(
+      request.body,
+      reply,
+      v1_developer_collector_schemas.createQuoteSnapshots.body,
+      "body"
+    );
+    if (!validationResult) {
+      return;
+    }
+
+    try {
+      const {
+        data: { timestamp: timestampStr, timezone = "UTC", quotes },
+      } = validationResult;
+
+      // Convert datetime string to UTC Date
+      const timestamp = parseDateTimeInTimezone(timestampStr, timezone);
+
+      // Prepare quote snapshot data array
+      const quoteData = quotes.map((quote) => ({
+        timestamp,
+        nseSymbol: quote.nseSymbol,
+        quoteData: quote.quoteData as any, // JSON data
+      }));
+
+      // Store quote snapshots in database
+      const createdQuotes = await prisma.quoteSnapshot.createMany({
+        data: quoteData,
+      });
+
+      return sendResponse(reply, {
+        statusCode: 201,
+        message: "Quote snapshots created successfully",
+        data: {
+          count: createdQuotes.count,
+          timestamp: timestamp.toISOString(),
+        },
+      });
+    } catch (error) {
+      fastify.log.error("Error creating quote snapshots: %s", JSON.stringify(error));
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to create quote snapshots";
+      return reply.internalServerError(errorMessage);
+    }
+  });
+
+  // ==================== POST /nifty ====================
+  fastify.post("/nifty", async (request, reply) => {
+    const validationResult = validateRequest(
+      request.body,
+      reply,
+      v1_developer_collector_schemas.createNiftyQuote.body,
+      "body"
+    );
+    if (!validationResult) {
+      return;
+    }
+
+    try {
+      const {
+        data: { timestamp: timestampStr, timezone = "UTC", quoteData, dayChangePerc },
+      } = validationResult;
+
+      // Convert datetime string to UTC Date
+      const timestamp = parseDateTimeInTimezone(timestampStr, timezone);
+
+      // Store NIFTY quote in database
+      const niftyQuote = await prisma.niftyQuote.create({
+        data: {
+          timestamp,
+          quoteData: quoteData as any, // JSON data
+          dayChangePerc: new Decimal(dayChangePerc),
+        },
+      });
+
+      return sendResponse(reply, {
+        statusCode: 201,
+        message: "NIFTY quote created successfully",
+        data: {
+          id: niftyQuote.id,
+          timestamp: niftyQuote.timestamp.toISOString(),
+          dayChangePerc: Number(niftyQuote.dayChangePerc),
+        },
+      });
+    } catch (error) {
+      fastify.log.error("Error creating NIFTY quote: %s", JSON.stringify(error));
+      const errorMessage = error instanceof Error ? error.message : "Failed to create NIFTY quote";
+      return reply.internalServerError(errorMessage);
+    }
+  });
+};
+
+export default collectorRoutes;

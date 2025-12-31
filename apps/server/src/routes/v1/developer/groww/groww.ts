@@ -1,4 +1,8 @@
-import { v1_developer_groww_schemas } from "@ganaka/schemas";
+import {
+  growwQuotePayloadSchema,
+  growwQuoteSchema,
+  v1_developer_groww_schemas,
+} from "@ganaka/schemas";
 import { FastifyPluginAsync } from "fastify";
 import z from "zod";
 import dayjs from "dayjs";
@@ -9,7 +13,6 @@ import { sendResponse } from "../../../../utils/sendResponse";
 import { TokenManager } from "../../../../utils/token-manager";
 import { validateRequest } from "../../../../utils/validator";
 import { prisma } from "../../../../utils/prisma";
-import { QuoteData } from "@ganaka/db";
 import { makeGrowwAPIRequest } from "../../../../utils/groww-api-request";
 import { parseDateInTimezone, parseDateTimeInTimezone } from "../../../../utils/timezone";
 
@@ -250,7 +253,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
             id: snapshot.id,
             timestamp: `${snapshot.timestamp.toISOString()}`,
             nseSymbol: snapshot.nseSymbol,
-            quoteData: snapshot.quoteData as unknown as QuoteData,
+            quoteData: snapshot.quoteData as unknown as z.infer<typeof growwQuoteSchema>,
             createdAt: `${snapshot.createdAt.toISOString()}`,
             updatedAt: `${snapshot.updatedAt.toISOString()}`,
           })),

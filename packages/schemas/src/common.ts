@@ -1,4 +1,13 @@
 import { z } from "zod";
+import { growwQuoteSchema } from "./v1/developer/groww/groww";
+export { growwQuotePayloadSchema, growwQuoteSchema } from "./v1/developer/groww/groww";
+
+export const shortlistEntrySchema = z.object({
+  nseSymbol: z.string(),
+  name: z.string(),
+  price: z.number(),
+  quoteData: growwQuoteSchema.nullable().optional(),
+});
 
 /**
  * Standard API response wrapper

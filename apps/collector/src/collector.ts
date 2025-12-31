@@ -1,18 +1,16 @@
-import { InputJsonValue, NiftyQuote, QuoteSnapshot, ShortlistSnapshot } from "@ganaka/db";
-import { Decimal } from "@ganaka/db/prisma";
-import { v1_developer_groww_schemas, v1_developer_lists_schemas } from "@ganaka/schemas";
+import {
+  v1_developer_groww_schemas,
+  v1_developer_lists_schemas,
+  v1_developer_collector_schemas,
+} from "@ganaka/schemas";
 import axios from "axios";
 import dayjs from "dayjs";
 import { chunk } from "lodash";
 import z from "zod";
-import { prisma } from "./utils/prisma";
 import { RedisManager } from "./utils/redis";
-
-// Enum matching Prisma schema (will be available from @prisma/client after generation)
-enum ShortlistType {
-  TOP_GAINERS = "TOP_GAINERS",
-  VOLUME_SHOCKERS = "VOLUME_SHOCKERS",
-}
+import { ShortlistType } from "@ganaka/db";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 const API_DOMAIN = process.env.API_DOMAIN ?? "https://api.ganaka.live";
 
@@ -55,6 +53,90 @@ export const getGrowwQuote = (developerKey: string) => async (symbol: string) =>
   );
 };
 
+// ==================== Collector Data Insertion APIs ====================
+
+export const createShortlistSnapshot =
+  (developerKey: string) =>
+  async (
+    timestamp: Date,
+    shortlistType: ShortlistType,
+    entries: z.infer<typeof v1_developer_collector_schemas.shortlistEntrySchema>[]
+  ) => {
+    const body: z.infer<typeof v1_developer_collector_schemas.createShortlistSnapshot.body> = {
+      data: {
+        timestamp: dayjs(timestamp).format("YYYY-MM-DDTHH:mm:ss"),
+        timezone: "Etc/UTC",
+        shortlistType,
+        entries,
+      },
+    };
+
+    return axios.post<
+      z.infer<typeof v1_developer_collector_schemas.createShortlistSnapshot.response>
+    >(`${API_DOMAIN}/v1/developer/collector/shortlists`, body, {
+      headers: {
+        Authorization: `Bearer ${developerKey}`,
+        "Content-Type": "application/json",
+      },
+    });
+  };
+
+export const createQuoteSnapshots =
+  (developerKey: string) =>
+  async (
+    timestamp: Date,
+    quotes: z.infer<typeof v1_developer_collector_schemas.quoteSnapshotDataSchema>[]
+  ) => {
+    const body: z.infer<typeof v1_developer_collector_schemas.createQuoteSnapshots.body> = {
+      data: {
+        timestamp: dayjs(timestamp).format("YYYY-MM-DDTHH:mm:ss"),
+        timezone: "Etc/UTC",
+        quotes,
+      },
+    };
+
+    return axios.post<z.infer<typeof v1_developer_collector_schemas.createQuoteSnapshots.response>>(
+      `${API_DOMAIN}/v1/developer/collector/quotes`,
+      body,
+      {
+        headers: {
+          Authorization: `Bearer ${developerKey}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  };
+
+export const createNiftyQuote =
+  (developerKey: string) =>
+  async (
+    timestamp: Date,
+    quoteData: z.infer<
+      typeof v1_developer_collector_schemas.createNiftyQuote.body
+    >["data"]["quoteData"],
+    dayChangePerc: number
+  ) => {
+    const body: z.infer<typeof v1_developer_collector_schemas.createNiftyQuote.body> = {
+      data: {
+        timestamp: dayjs(timestamp).format("YYYY-MM-DDTHH:mm:ss"),
+        timezone: "Etc/UTC",
+        quoteData,
+        dayChangePerc,
+      },
+    };
+
+    return axios.post<z.infer<typeof v1_developer_collector_schemas.createNiftyQuote.response>>(
+      `${API_DOMAIN}/v1/developer/collector/nifty`,
+      body,
+      {
+        headers: {
+          Authorization: `Bearer ${developerKey}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  };
+
 async function fetchQuotesWithRateLimit(symbols: string[]) {
   const results = new Map<
     string,
@@ -92,7 +174,7 @@ async function fetchQuotesWithRateLimit(symbols: string[]) {
  * Returns the symbolMap for the current run's top 5 companies
  */
 async function updateDailyBucket(): Promise<Set<string>> {
-  const timestamp = dayjs().toDate();
+  const timestamp = dayjs().utc().toDate();
   console.log("Updating daily bucket...");
 
   // 1. Fetch both shortlists in parallel
@@ -129,28 +211,25 @@ async function updateDailyBucket(): Promise<Set<string>> {
       `Top gainers: ${topGainersLimited.length}, Volume shockers: ${volumeShockersLimited.length}`
     );
 
-    // 3. Store shortlists in database
-    console.log("Storing shortlists in database...");
-    const shortlistData: (Omit<ShortlistSnapshot, "id" | "createdAt" | "entries" | "updatedAt"> & {
-      entries: InputJsonValue;
-    })[] = [];
+    // 3. Store shortlists via API
+    console.log("Storing shortlists via API...");
+    const topGainersShortlistType: ShortlistType = "TOP_GAINERS";
+    const volumeShockersShortlistType: ShortlistType = "VOLUME_SHOCKERS";
     if (topGainersLimited.length > 0) {
-      shortlistData.push({
+      await createShortlistSnapshot(process.env.DEVELOPER_KEY!)(
         timestamp,
-        shortlistType: ShortlistType.TOP_GAINERS,
-        entries: topGainersLimited as unknown as InputJsonValue,
-      });
+        topGainersShortlistType,
+        topGainersLimited
+      );
+      console.log("Stored TOP_GAINERS shortlist");
     }
     if (volumeShockersLimited.length > 0) {
-      shortlistData.push({
+      await createShortlistSnapshot(process.env.DEVELOPER_KEY!)(
         timestamp,
-        shortlistType: ShortlistType.VOLUME_SHOCKERS,
-        entries: volumeShockersLimited as unknown as InputJsonValue,
-      });
-    }
-
-    if (shortlistData.length > 0) {
-      await prisma.shortlistSnapshot.createMany({ data: shortlistData });
+        volumeShockersShortlistType,
+        volumeShockersLimited
+      );
+      console.log("Stored VOLUME_SHOCKERS shortlist");
     }
 
     // 4. Collect unique symbols from top 5 (de-duplicate across both lists)
@@ -209,7 +288,7 @@ async function updateDailyBucket(): Promise<Set<string>> {
  * Fetches quotes for all bucket companies and stores them in database
  */
 async function collectMarketDataForBucket(currentRunSymbolMap: Set<string>): Promise<void> {
-  const timestamp = dayjs().toDate();
+  const timestamp = dayjs().utc().toDate();
 
   // 1. Format symbols from current run symbol map
   const bucketSymbols = Array.from(currentRunSymbolMap.keys());
@@ -228,49 +307,43 @@ async function collectMarketDataForBucket(currentRunSymbolMap: Set<string>): Pro
   const quotesMap = await fetchQuotesWithRateLimit(bucketSymbols);
   console.log(`Successfully fetched ${quotesMap.size} quotes`);
 
-  // 4. Store data via Prisma
-  console.log("Storing quotes in database...");
+  // 4. Store data via APIs
+  console.log("Storing quotes via APIs...");
 
-  // Prepare quote snapshot data array
-  const quoteData: (Omit<QuoteSnapshot, "id" | "createdAt" | "updatedAt" | "quoteData"> & {
-    quoteData: InputJsonValue;
-  })[] = [];
+  // Prepare quote snapshot data array for API
+  const quotesData: z.infer<typeof v1_developer_collector_schemas.quoteSnapshotDataSchema>[] = [];
 
   for (const [symbol, quote] of quotesMap.entries()) {
-    quoteData.push({
-      timestamp,
-      nseSymbol: symbol,
-      quoteData: quote as unknown as InputJsonValue,
-    });
+    if (quote) {
+      quotesData.push({
+        nseSymbol: symbol,
+        quoteData: quote,
+      });
+    }
   }
 
-  // Prepare NIFTY quote data array
-  const niftyData: (Omit<NiftyQuote, "id" | "createdAt" | "updatedAt" | "quoteData"> & {
-    quoteData: InputJsonValue;
-  })[] = [];
+  // Store quotes via API (if any)
+  if (quotesData.length > 0) {
+    await createQuoteSnapshots(process.env.DEVELOPER_KEY!)(timestamp, quotesData);
+    console.log(`Stored ${quotesData.length} quote snapshots`);
+  }
+
+  // Store NIFTY quote via API (if available)
   if (niftybankQuote && niftybankQuote.data?.data?.status === "SUCCESS") {
-    niftyData.push({
+    const niftyData = niftybankQuote.data.data!;
+    await createNiftyQuote(process.env.DEVELOPER_KEY!)(
       timestamp,
-      quoteData: niftybankQuote.data.data as unknown as InputJsonValue,
-      dayChangePerc: new Decimal(niftybankQuote.data.data.payload.day_change_perc),
-    });
+      niftyData,
+      niftyData.payload.day_change_perc ?? 0
+    );
+    console.log("Stored NIFTY quote");
   }
-
-  // Use transaction for atomicity
-  await prisma.$transaction(async (tx) => {
-    if (quoteData.length > 0) {
-      await tx.quoteSnapshot.createMany({ data: quoteData });
-    }
-    if (niftyData.length > 0) {
-      await tx.niftyQuote.createMany({ data: niftyData });
-    }
-  });
 
   console.log("Quote collection completed successfully");
 }
 
 export async function collectMarketData(): Promise<void> {
-  const timestamp = dayjs().toDate();
+  const timestamp = dayjs().utc().toDate();
   console.log(`\n[${timestamp.toISOString()}] Starting market data collection...`);
 
   try {

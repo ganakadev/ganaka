@@ -1,4 +1,4 @@
-import { ShortlistEntry, ShortlistSnapshot } from "@ganaka/db";
+import { ShortlistSnapshot } from "@ganaka/db";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -9,6 +9,7 @@ import { prisma } from "../../../../utils/prisma";
 import { sendResponse } from "../../../../utils/sendResponse";
 import { validateRequest } from "../../../../utils/validator";
 import { parseDateInTimezone } from "../../../../utils/timezone";
+import { shortlistEntrySchema } from "@ganaka/schemas";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -30,7 +31,7 @@ function findPersistentCompanies(
   const symbolToNameMap = new Map<string, string>();
 
   for (const snapshot of snapshots) {
-    const entries = snapshot.entries as ShortlistEntry[] | null;
+    const entries = snapshot.entries as z.infer<typeof shortlistEntrySchema>[] | null;
     if (!entries || entries.length === 0) {
       // Skip empty snapshots - they just reduce the total count
       continue;

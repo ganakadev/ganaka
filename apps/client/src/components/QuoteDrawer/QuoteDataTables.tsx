@@ -1,11 +1,12 @@
-import type { QuoteData } from "@ganaka/db";
 import { Table } from "@mantine/core";
 import { isQuoteData } from "../../utils/buyerControl";
+import type { growwQuoteSchema } from "@ganaka/schemas";
+import { z } from "zod";
 
 export function QuoteDataTables({
   quoteData,
 }: {
-  quoteData: QuoteData | null | undefined;
+  quoteData: z.infer<typeof growwQuoteSchema>;
   selectedDate: Date | null;
 }) {
   // Validate and extract quote data
@@ -20,9 +21,7 @@ export function QuoteDataTables({
   if (quoteData.status !== "SUCCESS") {
     return (
       <div className="border rounded-md p-4">
-        <p className="text-sm text-gray-500">
-          Quote data status: {quoteData.status}
-        </p>
+        <p className="text-sm text-gray-500">Quote data status: {quoteData.status}</p>
       </div>
     );
   }
@@ -66,7 +65,7 @@ export function QuoteDataTables({
               <Table.Td>
                 <span className="font-medium">
                   ₹
-                  {ohlc.open.toLocaleString("en-IN", {
+                  {ohlc?.open?.toLocaleString("en-IN", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -75,7 +74,7 @@ export function QuoteDataTables({
               <Table.Td>
                 <span className="font-medium">
                   ₹
-                  {ohlc.high.toLocaleString("en-IN", {
+                  {ohlc?.high?.toLocaleString("en-IN", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -84,7 +83,7 @@ export function QuoteDataTables({
               <Table.Td>
                 <span className="font-medium">
                   ₹
-                  {ohlc.low.toLocaleString("en-IN", {
+                  {ohlc?.low?.toLocaleString("en-IN", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -93,7 +92,7 @@ export function QuoteDataTables({
               <Table.Td>
                 <span className="font-medium">
                   ₹
-                  {ohlc.close.toLocaleString("en-IN", {
+                  {ohlc?.close?.toLocaleString("en-IN", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -127,18 +126,16 @@ export function QuoteDataTables({
           <Table.Tbody>
             <Table.Tr>
               <Table.Td>
-                <span className="text-sm">
-                  {volume.toLocaleString("en-IN")}
-                </span>
+                <span className="text-sm">{volume?.toLocaleString("en-IN")}</span>
               </Table.Td>
               <Table.Td>
                 <span
                   className={`text-sm font-medium ${
-                    day_change >= 0 ? "text-green-600" : "text-red-600"
+                    day_change || 0 >= 0 ? "text-green-600" : "text-red-600"
                   }`}
                 >
                   ₹
-                  {day_change.toLocaleString("en-IN", {
+                  {day_change?.toLocaleString("en-IN", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -147,10 +144,10 @@ export function QuoteDataTables({
               <Table.Td>
                 <span
                   className={`text-sm font-medium ${
-                    day_change_perc >= 0 ? "text-green-600" : "text-red-600"
+                    day_change_perc || 0 >= 0 ? "text-green-600" : "text-red-600"
                   }`}
                 >
-                  {day_change_perc.toLocaleString("en-IN", {
+                  {day_change_perc?.toLocaleString("en-IN", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -158,14 +155,10 @@ export function QuoteDataTables({
                 </span>
               </Table.Td>
               <Table.Td>
-                <span className="text-sm">
-                  {total_buy_quantity.toLocaleString("en-IN")}
-                </span>
+                <span className="text-sm">{total_buy_quantity?.toLocaleString("en-IN")}</span>
               </Table.Td>
               <Table.Td>
-                <span className="text-sm">
-                  {total_sell_quantity.toLocaleString("en-IN")}
-                </span>
+                <span className="text-sm">{total_sell_quantity?.toLocaleString("en-IN")}</span>
               </Table.Td>
             </Table.Tr>
           </Table.Tbody>
@@ -198,16 +191,14 @@ export function QuoteDataTables({
                     <Table.Td>
                       <span className="text-sm">
                         ₹
-                        {order.price.toLocaleString("en-IN", {
+                        {order.price?.toLocaleString("en-IN", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
                       </span>
                     </Table.Td>
                     <Table.Td>
-                      <span className="text-sm">
-                        {order.quantity.toLocaleString("en-IN")}
-                      </span>
+                      <span className="text-sm">{order.quantity?.toLocaleString("en-IN")}</span>
                     </Table.Td>
                   </Table.Tr>
                 ))}
@@ -244,16 +235,14 @@ export function QuoteDataTables({
                     <Table.Td>
                       <span className="text-sm">
                         ₹
-                        {order.price.toLocaleString("en-IN", {
+                        {order.price?.toLocaleString("en-IN", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
                       </span>
                     </Table.Td>
                     <Table.Td>
-                      <span className="text-sm">
-                        {order.quantity.toLocaleString("en-IN")}
-                      </span>
+                      <span className="text-sm">{order.quantity?.toLocaleString("en-IN")}</span>
                     </Table.Td>
                   </Table.Tr>
                 ))}

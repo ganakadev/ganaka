@@ -23,55 +23,61 @@ export const growwHistoricalCandlesSchema = z.object({
   }),
 });
 
-export const growwQuoteSchema = z.object({
-  status: z.enum(["SUCCESS", "FAILURE"]),
-  payload: z.object({
-    average_price: z.number().nullable(),
-    bid_quantity: z.number().nullable(),
-    bid_price: z.number().nullable(),
-    day_change: z.number(),
-    day_change_perc: z.number(),
-    upper_circuit_limit: z.number(),
-    lower_circuit_limit: z.number(),
-    ohlc: z.object({
-      open: z.number(),
-      high: z.number(),
-      low: z.number(),
-      close: z.number(),
-    }),
-    depth: z.object({
+export const growwQuotePayloadSchema = z.object({
+  average_price: z.number().nullable(),
+  bid_quantity: z.number().nullable(),
+  bid_price: z.number().nullable(),
+  day_change: z.number().nullable(),
+  day_change_perc: z.number().nullable(),
+  upper_circuit_limit: z.number().nullable(),
+  lower_circuit_limit: z.number().nullable(),
+  ohlc: z
+    .object({
+      open: z.number().nullable(),
+      high: z.number().nullable(),
+      low: z.number().nullable(),
+      close: z.number().nullable(),
+    })
+    .nullable(),
+  depth: z
+    .object({
       buy: z.array(
         z.object({
-          price: z.number(),
-          quantity: z.number(),
+          price: z.number().nullable(),
+          quantity: z.number().nullable(),
         })
       ),
       sell: z.array(
         z.object({
-          price: z.number(),
-          quantity: z.number(),
+          price: z.number().nullable(),
+          quantity: z.number().nullable(),
         })
       ),
-    }),
-    high_trade_range: z.null(),
-    implied_volatility: z.null(),
-    last_trade_quantity: z.number(),
-    last_trade_time: z.number(),
-    low_trade_range: z.null(),
-    last_price: z.number(),
-    market_cap: z.null(),
-    offer_price: z.null(),
-    offer_quantity: z.null(),
-    oi_day_change: z.number(),
-    oi_day_change_percentage: z.number(),
-    open_interest: z.number().nullable(),
-    previous_open_interest: z.null(),
-    total_buy_quantity: z.number(),
-    total_sell_quantity: z.number(),
-    volume: z.number(),
-    week_52_high: z.number(),
-    week_52_low: z.number(),
-  }),
+    })
+    .nullable(),
+  high_trade_range: z.null().nullable(),
+  implied_volatility: z.null().nullable(),
+  last_trade_quantity: z.number().nullable(),
+  last_trade_time: z.number().nullable(),
+  low_trade_range: z.null().nullable(),
+  last_price: z.number().nullable(),
+  market_cap: z.number().nullable(),
+  offer_price: z.number().nullable(),
+  offer_quantity: z.number().nullable(),
+  oi_day_change: z.number().nullable(),
+  oi_day_change_percentage: z.number().nullable(),
+  open_interest: z.number().nullable(),
+  previous_open_interest: z.null().nullable(),
+  total_buy_quantity: z.number().nullable(),
+  total_sell_quantity: z.number().nullable(),
+  volume: z.number().nullable(),
+  week_52_high: z.number().nullable(),
+  week_52_low: z.number().nullable(),
+});
+
+export const growwQuoteSchema = z.object({
+  status: z.enum(["SUCCESS", "FAILURE"]),
+  payload: growwQuotePayloadSchema,
 });
 
 // ==================== GET /historical-candles ====================

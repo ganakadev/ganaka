@@ -6,7 +6,7 @@
  */
 
 import { z } from "zod";
-import type { QuoteData } from "../types";
+import type { growwQuoteSchema } from "@ganaka/schemas";
 
 export type BuyerControlMethod =
   | "simple"
@@ -92,17 +92,17 @@ const quoteDataSchema = z.object({
  *
  * Formula: (totalDepthBuy / (totalDepthBuy + totalDepthSell)) * 100
  */
-function calculateSimpleQuantityRatio(quoteData: QuoteData): number | null {
+function calculateSimpleQuantityRatio(quoteData: z.infer<typeof growwQuoteSchema>): number | null {
   if (quoteData.status !== "SUCCESS" || !quoteData.payload.depth) {
     return null;
   }
 
   const totalDepthBuy = quoteData.payload.depth.buy.reduce(
-    (acc, curr) => acc + curr.quantity,
+    (acc, curr) => acc + (curr.quantity || 0),
     0
   );
   const totalDepthSell = quoteData.payload.depth.sell.reduce(
-    (acc, curr) => acc + curr.quantity,
+    (acc, curr) => acc + (curr.quantity || 0),
     0
   );
 
@@ -123,19 +123,19 @@ function calculateSimpleQuantityRatio(quoteData: QuoteData): number | null {
  *
  * Formula: (total_buy_quantity / (total_buy_quantity + total_sell_quantity)) * 100
  */
-function calculateTotalQuantityMethod(quoteData: QuoteData): number | null {
+function calculateTotalQuantityMethod(quoteData: z.infer<typeof growwQuoteSchema>): number | null {
   if (quoteData.status !== "SUCCESS") {
     return null;
   }
 
   const { total_buy_quantity, total_sell_quantity } = quoteData.payload;
-  const total = total_buy_quantity + total_sell_quantity;
+  const total = (total_buy_quantity || 0) + (total_sell_quantity || 0);
 
   if (total === 0) {
     return null;
   }
 
-  return (total_buy_quantity / total) * 100;
+  return ((total_buy_quantity || 0) / total) * 100;
 }
 
 /**
@@ -147,7 +147,7 @@ function calculateTotalQuantityMethod(quoteData: QuoteData): number | null {
  * Formula: (weightedBuy / (weightedBuy + weightedSell)) * 100
  * Weight: e^(-distance * decay_factor)
  */
-function calculatePriceWeightedDepth(quoteData: QuoteData): number | null {
+function calculatePriceWeightedDepth(quoteData: z.infer<typeof growwQuoteSchema>): number | null {
   if (quoteData.status !== "SUCCESS" || !quoteData.payload.depth) {
     return null;
   }
@@ -164,16 +164,16 @@ function calculatePriceWeightedDepth(quoteData: QuoteData): number | null {
 
   // Calculate weighted buy orders
   for (const order of quoteData.payload.depth.buy) {
-    const distance = Math.abs(order.price - currentPrice) / currentPrice;
+    const distance = Math.abs((order.price || 0) - currentPrice) / currentPrice;
     const weight = Math.exp(-distance * decayFactor);
-    weightedBuy += order.quantity * weight;
+    weightedBuy += (order.quantity || 0) * weight;
   }
 
   // Calculate weighted sell orders
   for (const order of quoteData.payload.depth.sell) {
-    const distance = Math.abs(order.price - currentPrice) / currentPrice;
+    const distance = Math.abs((order.price || 0) - currentPrice) / currentPrice;
     const weight = Math.exp(-distance * decayFactor);
-    weightedSell += order.quantity * weight;
+    weightedSell += (order.quantity || 0) * weight;
   }
 
   const total = weightedBuy + weightedSell;
@@ -192,7 +192,9 @@ function calculatePriceWeightedDepth(quoteData: QuoteData): number | null {
  *
  * Formula: (nearBuy / (nearBuy + nearSell)) * 100
  */
-function calculateNearPriceConcentration(quoteData: QuoteData): number | null {
+function calculateNearPriceConcentration(
+  quoteData: z.infer<typeof growwQuoteSchema>
+): number | null {
   if (quoteData.status !== "SUCCESS" || !quoteData.payload.depth) {
     return null;
   }
@@ -211,15 +213,15 @@ function calculateNearPriceConcentration(quoteData: QuoteData): number | null {
 
   // Count buy orders within price range
   for (const order of quoteData.payload.depth.buy) {
-    if (order.price >= minPrice && order.price <= maxPrice) {
-      nearBuy += order.quantity;
+    if ((order.price || 0) >= minPrice && (order.price || 0) <= maxPrice) {
+      nearBuy += order.quantity || 0;
     }
   }
 
   // Count sell orders within price range
   for (const order of quoteData.payload.depth.sell) {
-    if (order.price >= minPrice && order.price <= maxPrice) {
-      nearSell += order.quantity;
+    if ((order.price || 0) >= minPrice && (order.price || 0) <= maxPrice) {
+      nearSell += order.quantity || 0;
     }
   }
 
@@ -239,7 +241,9 @@ function calculateNearPriceConcentration(quoteData: QuoteData): number | null {
  *
  * Formula: (weightedBuyVolume / (weightedBuyVolume + weightedSellVolume)) * 100
  */
-function calculateVolumeWeightedImbalance(quoteData: QuoteData): number | null {
+function calculateVolumeWeightedImbalance(
+  quoteData: z.infer<typeof growwQuoteSchema>
+): number | null {
   if (quoteData.status !== "SUCCESS" || !quoteData.payload.depth) {
     return null;
   }
@@ -254,16 +258,16 @@ function calculateVolumeWeightedImbalance(quoteData: QuoteData): number | null {
 
   // Calculate weighted buy volume
   for (const order of quoteData.payload.depth.buy) {
-    const priceRatio = order.price / currentPrice;
+    const priceRatio = (order.price || 0) / currentPrice;
     const weight = Math.max(0, 1 - Math.abs(priceRatio - 1)); // Higher weight for prices closer to current
-    weightedBuyVolume += order.quantity * weight;
+    weightedBuyVolume += (order.quantity || 0) * weight;
   }
 
   // Calculate weighted sell volume
   for (const order of quoteData.payload.depth.sell) {
-    const priceRatio = order.price / currentPrice;
+    const priceRatio = (order.price || 0) / currentPrice;
     const weight = Math.max(0, 1 - Math.abs(priceRatio - 1)); // Higher weight for prices closer to current
-    weightedSellVolume += order.quantity * weight;
+    weightedSellVolume += (order.quantity || 0) * weight;
   }
 
   const total = weightedBuyVolume + weightedSellVolume;
@@ -282,7 +286,7 @@ function calculateVolumeWeightedImbalance(quoteData: QuoteData): number | null {
  *
  * Formula: (bid_quantity / (bid_quantity + ask_quantity)) * 100
  */
-function calculateBidAskSpread(quoteData: QuoteData): number | null {
+function calculateBidAskSpread(quoteData: z.infer<typeof growwQuoteSchema>): number | null {
   if (quoteData.status !== "SUCCESS") {
     return null;
   }
@@ -310,7 +314,7 @@ function calculateBidAskSpread(quoteData: QuoteData): number | null {
  *
  * Most comprehensive approach, balancing multiple signals.
  */
-function calculateHybridMethod(quoteData: QuoteData): number | null {
+function calculateHybridMethod(quoteData: z.infer<typeof growwQuoteSchema>): number | null {
   const priceWeighted = calculatePriceWeightedDepth(quoteData);
   const totalQuantity = calculateTotalQuantityMethod(quoteData);
   const nearPrice = calculateNearPriceConcentration(quoteData);
@@ -363,7 +367,7 @@ function calculateHybridMethod(quoteData: QuoteData): number | null {
  * @returns Buyer control percentage (0-100) or null if calculation fails
  */
 export function calculateBuyerControlPercentage(
-  quoteData: QuoteData | null | undefined,
+  quoteData: z.infer<typeof growwQuoteSchema>,
   method: BuyerControlMethod = "hybrid"
 ): number | null {
   if (!quoteData) {
@@ -407,9 +411,7 @@ const buyerControlMethodSchema = z.enum([
  * Validates if a method string is a valid BuyerControlMethod
  * Uses Zod for validation
  */
-export function isValidBuyerControlMethod(
-  method: string | null
-): method is BuyerControlMethod {
+export function isValidBuyerControlMethod(method: string | null): method is BuyerControlMethod {
   if (method === null) {
     return false;
   }
@@ -421,7 +423,6 @@ export function isValidBuyerControlMethod(
  * Used to safely cast Prisma.JsonValue to QuoteData
  * Uses Zod for validation
  */
-export function isQuoteData(data: unknown): data is QuoteData {
+export function isQuoteData(data: unknown): data is z.infer<typeof growwQuoteSchema> {
   return quoteDataSchema.safeParse(data).success;
 }
-

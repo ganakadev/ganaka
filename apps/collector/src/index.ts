@@ -5,7 +5,6 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { isWithinCollectionWindow } from "./utils/time";
 import { collectMarketData } from "./collector";
-import { prisma } from "./utils/prisma";
 import { RedisManager } from "./utils/redis";
 
 dayjs.extend(utc);
@@ -18,9 +17,7 @@ async function runCollection(): Promise<void> {
   if (!isWithinCollectionWindow()) {
     const nowIST = dayjs().tz("Asia/Kolkata");
     console.log(
-      `Outside collection window. Current time: ${nowIST.format(
-        "YYYY-MM-DD HH:mm:ss"
-      )} IST`
+      `Outside collection window. Current time: ${nowIST.format("YYYY-MM-DD HH:mm:ss")} IST`
     );
     console.log(`Collection window: 8:45 AM - 3:30 PM IST, Monday-Friday`);
     return;
@@ -77,7 +74,6 @@ function main() {
   const shutdown = async (signal: string) => {
     console.log(`Received ${signal}, shutting down gracefully...`);
     job.stop();
-    await prisma.$disconnect();
     const redisManager = RedisManager.getInstance();
     await redisManager.close();
     process.exit(0);
