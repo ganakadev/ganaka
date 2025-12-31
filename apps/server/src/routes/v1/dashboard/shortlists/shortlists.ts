@@ -5,8 +5,9 @@ import { FastifyPluginAsync } from "fastify";
 import z from "zod";
 import { sendResponse } from "../../../../utils/sendResponse";
 import { validateRequest } from "../../../../utils/validator";
-import { v1_dashboard_schemas } from "@ganaka/schemas";
-import { QuoteData, ShortlistEntry, ShortlistType } from "@ganaka/db";
+import { growwQuotePayloadSchema, growwQuoteSchema, v1_dashboard_schemas } from "@ganaka/schemas";
+import { ShortlistType } from "@ganaka/db";
+import { shortlistEntrySchema } from "@ganaka/schemas";
 import {
   BuyerControlMethod,
   QuoteData as BuyerControlQuoteData,
@@ -78,14 +79,10 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
       }
 
       const shortlistFromDb = shortlists[0];
-      const shortlistEntries = shortlistFromDb.entries as ShortlistEntry[] | null;
-      let entries: Array<{
-        nseSymbol: string;
-        name: string;
-        price: number;
-        quoteData: QuoteData;
-        buyerControlPercentage: number;
-      }> = [];
+      const shortlistEntries = shortlistFromDb.entries as
+        | z.infer<typeof shortlistEntrySchema>[]
+        | null;
+      let entries: Array<z.infer<typeof shortlistEntrySchema>> = [];
 
       if (shortlistEntries) {
         entries = shortlistEntries.flatMap((entry) => {
@@ -115,12 +112,15 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
           }
 
           if (quoteData) {
-            const data = {
+            const data: NonNullable<
+              z.infer<
+                typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response
+              >["data"]["shortlist"]
+            >["entries"][number] = {
               nseSymbol: entry.nseSymbol,
               name: entry.name,
               price: entry.price,
-              quoteData: quoteData as unknown as QuoteData,
-              buyerControlPercentage: buyerControlPercentage,
+              quoteData: quoteData as unknown as z.infer<typeof growwQuoteSchema>,
             };
 
             return data;

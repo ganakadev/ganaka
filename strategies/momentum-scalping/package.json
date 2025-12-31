@@ -12,7 +12,8 @@
     "@ganaka/sdk": "workspace:*",
     "axios": "^1.13.2",
     "dayjs": "^1.11.19",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "zod": "^4.3.2"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.21",

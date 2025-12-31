@@ -1,11 +1,11 @@
-// Re-export types from @ganaka/db for convenience
-import type { QuoteData, ShortlistEntry } from "@ganaka/db";
+import type { growwQuoteSchema, shortlistEntrySchema } from "@ganaka/schemas";
+import { z } from "zod";
 
-export type { QuoteData, ShortlistEntry };
+export type ShortlistEntry = z.infer<typeof shortlistEntrySchema>;
 
 // Type for shortlist entry with quote data and buyer control
 export interface ShortlistEntryWithQuote extends ShortlistEntry {
-  quoteData: QuoteData;
+  quoteData: z.infer<typeof growwQuoteSchema>;
   buyerControlPercentage: number;
 }
 

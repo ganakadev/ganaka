@@ -1,4 +1,3 @@
-import type { QuoteData } from "@ganaka/db";
 import { Drawer } from "@mantine/core";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -16,12 +15,14 @@ import {
   type SeriesMarkerConfig,
 } from "../CandleChart";
 import { QuoteDataTables } from "./QuoteDataTables";
+import type { growwQuoteSchema } from "@ganaka/schemas";
+import { z } from "zod";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 interface QuotePanelProps {
-  quoteData: QuoteData | null | undefined;
+  quoteData: z.infer<typeof growwQuoteSchema>;
   selectedEntry: ShortlistEntryWithQuote | null;
   selectedDate: Date | null;
 }
@@ -79,7 +80,7 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
             id: string;
             timestamp: string;
             nseSymbol: string;
-            quoteData: QuoteData;
+            quoteData: z.infer<typeof growwQuoteSchema>;
           }) => {
             const buyerControlPercentage = calculateBuyerControlPercentage(
               timeline.quoteData,

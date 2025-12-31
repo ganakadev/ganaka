@@ -2,6 +2,8 @@ import {
   v1_developer_groww_schemas,
   v1_developer_lists_schemas,
   v1_dashboard_schemas,
+  growwQuotePayloadSchema,
+  growwQuoteSchema,
 } from "@ganaka/schemas";
 import dotenv from "dotenv";
 import { z } from "zod";
@@ -15,24 +17,24 @@ import { placeOrder, PlaceOrderData } from "./callbacks/placeOrder";
 import { runMinuteLoop } from "./utils/minute-loop";
 dotenv.config();
 
+export { growwQuotePayloadSchema, growwQuoteSchema };
+
+export type FetchQuoteTimelineResponse = Awaited<ReturnType<ReturnType<typeof fetchQuoteTimeline>>>;
+export type FetchQuoteResponse = Awaited<ReturnType<ReturnType<typeof fetchQuote>>>;
+export type FetchCandlesResponse = Awaited<ReturnType<ReturnType<typeof fetchCandles>>>;
+export type FetchShortlistResponse = Awaited<ReturnType<ReturnType<typeof fetchShortlist>>>;
+
 export interface RunContext {
   placeOrder: (data: PlaceOrderData) => Promise<void>;
   fetchCandles: (
-    params: z.infer<
-      typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.query
-    >
+    params: z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.query>
   ) => Promise<
-    z.infer<
-      typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response
-    >["data"]
+    z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response>["data"]
   >;
   fetchQuote: (
     symbol: string,
     datetime?: Date
-  ) => Promise<
-    | z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"]
-    | null
-  >;
+  ) => Promise<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"] | null>;
   fetchQuoteTimeline: (
     symbol: string,
     date: Date
@@ -44,9 +46,7 @@ export interface RunContext {
   fetchShortlist: (
     type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
     datetime?: Date
-  ) => Promise<
-    z.infer<typeof v1_developer_lists_schemas.getLists.response>["data"] | null
-  >;
+  ) => Promise<z.infer<typeof v1_developer_lists_schemas.getLists.response>["data"] | null>;
   currentTimestamp: Date;
 }
 
@@ -85,9 +85,7 @@ export async function ganaka<T>({
   let runId: string | null = null;
   try {
     const createRunResponse = await apiClient.post<
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response
-      >
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response>
     >("/v1/dashboard/runs", {
       startTime: startTime.toISOString(),
       endTime: endTime.toISOString(),
@@ -145,9 +143,7 @@ export async function ganaka<T>({
     logger.info(`Marking run as completed: ${runId}`);
     try {
       await apiClient.patch<
-        z.infer<
-          typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response
-        >
+        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response>
       >(`/v1/dashboard/runs/${runId}`, {
         completed: true,
       });
@@ -163,9 +159,7 @@ export async function ganaka<T>({
       logger.info(`Deleting run after completion: ${runId}`);
       try {
         await apiClient.delete<
-          z.infer<
-            typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.response
-          >
+          z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.response>
         >(`/v1/dashboard/runs/${runId}`);
       } catch (error) {
         logger.error(`Failed to delete run: ${error}`);

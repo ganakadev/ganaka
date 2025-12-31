@@ -417,6 +417,9 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+      zod:
+        specifier: ^4.3.2
+        version: 4.3.2
     devDependencies:
       '@types/lodash':
         specifier: ^4.17.21
@@ -4776,6 +4779,9 @@ packages:
   zod@4.2.1:
     resolution: {integrity: sha512-0wZ1IRqGGhMP76gLqz8EyfBXKk0J2qo2+H3fi4mcUP/KtTocoX08nmIAHl1Z2kJIZbZee8KOpBCSNPRgauucjw==}
 
+  zod@4.3.2:
+    resolution: {integrity: sha512-b8L8yn4rIVfiXyHAmnr52/ZEpDumlT0bmxiq3Ws1ybrinhflGpt12Hvv54kYnEsGPRs6o/Ka3/ppA2OWY21IVg==}
+
 snapshots:
 
   '@babel/code-frame@7.27.1':
@@ -9054,3 +9060,5 @@ snapshots:
   zod@4.2.0: {}
 
   zod@4.2.1: {}
+
+  zod@4.3.2: {}

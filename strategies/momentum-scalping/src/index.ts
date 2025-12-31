@@ -1,6 +1,12 @@
-import { ganaka } from "@ganaka/sdk";
+import {
+  FetchQuoteTimelineResponse,
+  ganaka,
+  growwQuotePayloadSchema,
+  growwQuoteSchema,
+} from "@ganaka/sdk";
 import dayjs from "dayjs";
 import dotenv from "dotenv";
+import z from "zod";
 dotenv.config();
 
 // Configuration constants
@@ -20,19 +26,7 @@ const stocksWithOrders = new Set<string>();
  * Calculate buyer control percentage using hybrid method
  * Simplified version for strategy use
  */
-function calculateBuyerControl(quoteData: {
-  status: string;
-  payload: {
-    last_price: number;
-    depth: {
-      buy: { price: number; quantity: number }[];
-      sell: { price: number; quantity: number }[];
-    };
-    total_buy_quantity: number;
-    total_sell_quantity: number;
-    bid_quantity: number | null;
-  };
-}): number | null {
+function calculateBuyerControl(quoteData: z.infer<typeof growwQuoteSchema>): number | null {
   if (quoteData.status !== "SUCCESS" || !quoteData.payload.depth) {
     return null;
   }
@@ -48,23 +42,23 @@ function calculateBuyerControl(quoteData: {
   let weightedSell = 0;
 
   for (const order of quoteData.payload.depth.buy) {
-    const distance = Math.abs(order.price - currentPrice) / currentPrice;
+    const distance = Math.abs((order.price || 0) - currentPrice) / currentPrice;
     const weight = Math.exp(-distance * decayFactor);
-    weightedBuy += order.quantity * weight;
+    weightedBuy += (order.quantity || 0) * weight;
   }
 
   for (const order of quoteData.payload.depth.sell) {
-    const distance = Math.abs(order.price - currentPrice) / currentPrice;
+    const distance = Math.abs((order.price || 0) - currentPrice) / currentPrice;
     const weight = Math.exp(-distance * decayFactor);
-    weightedSell += order.quantity * weight;
+    weightedSell += (order.quantity || 0) * weight;
   }
 
   const priceWeighted =
     weightedBuy + weightedSell > 0 ? (weightedBuy / (weightedBuy + weightedSell)) * 100 : null;
 
   // Total quantity method
-  const totalBuy = quoteData.payload.total_buy_quantity;
-  const totalSell = quoteData.payload.total_sell_quantity;
+  const totalBuy = quoteData.payload.total_buy_quantity || 0;
+  const totalSell = quoteData.payload.total_sell_quantity || 0;
   const totalQuantity = totalBuy + totalSell > 0 ? (totalBuy / (totalBuy + totalSell)) * 100 : null;
 
   // Hybrid: 40% price-weighted + 30% total quantity + 20% near-price + 10% bid-ask
@@ -92,33 +86,25 @@ function calculateBuyerControl(quoteData: {
 }
 
 function calculateNearPriceConcentration(
-  quoteData: {
-    payload: {
-      last_price: number;
-      depth: {
-        buy: { price: number; quantity: number }[];
-        sell: { price: number; quantity: number }[];
-      };
-    };
-  },
-  currentPrice: number
+  quoteData: z.infer<typeof growwQuoteSchema>,
+  currentPrice: number | null
 ): number | null {
   const priceRange = 0.005; // ±0.5%
-  const minPrice = currentPrice * (1 - priceRange);
-  const maxPrice = currentPrice * (1 + priceRange);
+  const minPrice = (currentPrice || 0) * (1 - priceRange);
+  const maxPrice = (currentPrice || 0) * (1 + priceRange);
 
   let nearBuy = 0;
   let nearSell = 0;
 
-  for (const order of quoteData.payload.depth.buy) {
-    if (order.price >= minPrice && order.price <= maxPrice) {
-      nearBuy += order.quantity;
+  for (const order of quoteData.payload.depth?.buy || []) {
+    if ((order.price || 0) >= minPrice && (order.price || 0) <= maxPrice) {
+      nearBuy += order.quantity || 0;
     }
   }
 
-  for (const order of quoteData.payload.depth.sell) {
-    if (order.price >= minPrice && order.price <= maxPrice) {
-      nearSell += order.quantity;
+  for (const order of quoteData.payload.depth?.sell || []) {
+    if ((order.price || 0) >= minPrice && (order.price || 0) <= maxPrice) {
+      nearSell += order.quantity || 0;
     }
   }
 
@@ -126,16 +112,9 @@ function calculateNearPriceConcentration(
   return total > 0 ? (nearBuy / total) * 100 : null;
 }
 
-function calculateBidAsk(quoteData: {
-  payload: {
-    bid_quantity: number | null;
-    depth: {
-      sell: { price: number; quantity: number }[];
-    };
-  };
-}): number | null {
+function calculateBidAsk(quoteData: z.infer<typeof growwQuoteSchema>): number | null {
   const bidQuantity = quoteData.payload.bid_quantity || 0;
-  const askQuantity = quoteData.payload.depth.sell[0]?.quantity || 0;
+  const askQuantity = quoteData.payload.depth?.sell?.[0]?.quantity || 0;
   const total = bidQuantity + askQuantity;
   return total > 0 ? (bidQuantity / total) * 100 : null;
 }
@@ -143,24 +122,7 @@ function calculateBidAsk(quoteData: {
 /**
  * Analyze order book trend from quote timeline
  */
-function analyzeOrderBookTrend(
-  quoteTimeline: Array<{
-    timestamp: string;
-    quoteData: {
-      status: string;
-      payload: {
-        last_price: number;
-        depth: {
-          buy: { price: number; quantity: number }[];
-          sell: { price: number; quantity: number }[];
-        };
-        total_buy_quantity: number;
-        total_sell_quantity: number;
-        bid_quantity: number | null;
-      };
-    };
-  }>
-): {
+function analyzeOrderBookTrend(quoteTimeline: FetchQuoteTimelineResponse): {
   buyerControlTrend: number; // -1 to 1, positive = increasing
   averageBuyerControl: number;
   isValid: boolean;
@@ -413,18 +375,20 @@ async function main() {
           }
 
           const entryPrice = currentQuote.payload.last_price;
-          const openPrice = currentQuote.payload.ohlc.open;
+          const openPrice = currentQuote.payload.ohlc?.open || 0;
 
           console.log(
-            `[${symbol}] Entry price: ${entryPrice.toFixed(2)}, Open price: ${openPrice.toFixed(2)}`
+            `[${symbol}] Entry price: ${entryPrice?.toFixed(2)}, Open price: ${openPrice?.toFixed(
+              2
+            )}`
           );
 
           // Calculate prediction score
           const predictionScore = calculatePredictionScore(
             orderBookTrend,
             candleMomentum,
-            entryPrice,
-            openPrice
+            entryPrice || 0,
+            openPrice || 0
           );
 
           console.log(
@@ -442,18 +406,18 @@ async function main() {
             }
 
             const { stopLossPrice, takeProfitPrice } = calculateStopLossAndTakeProfit(
-              entryPrice,
+              entryPrice || 0,
               candleMomentum.volatility
             );
 
             console.log(
-              `[${symbol}] Placing order: Entry=${entryPrice.toFixed(2)}, ` +
+              `[${symbol}] Placing order: Entry=${entryPrice?.toFixed(2)}, ` +
                 `StopLoss=${stopLossPrice.toFixed(2)}, TakeProfit=${takeProfitPrice.toFixed(2)}`
             );
 
             try {
               await placeOrder({
-                entryPrice,
+                entryPrice: entryPrice || 0,
                 nseSymbol: symbol,
                 stopLossPrice,
                 takeProfitPrice,

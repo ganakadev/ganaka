@@ -2,13 +2,14 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { FastifyPluginAsync } from "fastify";
-import z from "zod";
 import { prisma } from "../../../../utils/prisma";
 import { sendResponse } from "../../../../utils/sendResponse";
 import { validateRequest } from "../../../../utils/validator";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
-import { ShortlistEntry, ShortlistSnapshot, ShortlistType } from "@ganaka/db";
+import { ShortlistSnapshot, ShortlistType } from "@ganaka/db";
 import { parseDateInTimezone } from "../../../../utils/timezone";
+import { z } from "zod";
+import { shortlistEntrySchema } from "@ganaka/schemas";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -20,7 +21,7 @@ function countUniqueCompanies(snapshots: Array<ShortlistSnapshot>): number {
   const uniqueSymbols = new Set<string>();
 
   for (const snapshot of snapshots) {
-    const entries = snapshot.entries as ShortlistEntry[] | null;
+    const entries = snapshot.entries as z.infer<typeof shortlistEntrySchema>[] | null;
     if (!entries || entries.length === 0) {
       continue;
     }

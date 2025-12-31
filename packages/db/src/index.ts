@@ -1,6 +1,5 @@
 import type { ShortlistType } from "./generated/prisma";
 
-export type { QuoteData, ShortlistEntry } from "./types";
 export {
   type ShortlistSnapshot,
   type QuoteSnapshot,

@@ -6,8 +6,7 @@ import z from "zod";
 import { prisma } from "../../../../utils/prisma";
 import { sendResponse } from "../../../../utils/sendResponse";
 import { validateRequest } from "../../../../utils/validator";
-import { v1_dashboard_schemas } from "@ganaka/schemas";
-import { QuoteData } from "@ganaka/db";
+import { growwQuoteSchema, v1_dashboard_schemas } from "@ganaka/schemas";
 import { parseDateInTimezone } from "../../../../utils/timezone";
 
 dayjs.extend(utc);
@@ -69,7 +68,7 @@ const quoteSnapshotsRoutes: FastifyPluginAsync = async (fastify) => {
                   id: snapshot.id,
                   timestamp: `${snapshot.timestamp.toISOString()}`,
                   nseSymbol: snapshot.nseSymbol,
-                  quoteData: snapshot.quoteData as unknown as QuoteData,
+                  quoteData: snapshot.quoteData as unknown as z.infer<typeof growwQuoteSchema>,
                   createdAt: `${snapshot.createdAt.toISOString()}`,
                   updatedAt: `${snapshot.updatedAt.toISOString()}`,
                 };
