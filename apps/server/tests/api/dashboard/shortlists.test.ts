@@ -209,7 +209,7 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     }
   });
 
-  test("should validate entries structure (nseSymbol, name, price, quoteData, buyerControlPercentage)", async ({
+  test("should validate entries structure (nseSymbol, name, price, quoteData)", async ({
     tracker,
   }) => {
     const testEntries = createValidShortlistEntries();
@@ -309,49 +309,6 @@ test.describe("GET /v1/dashboard/shortlists", () => {
       const returnedTime = new Date(validatedData.data.shortlist.timestamp).getTime();
       const timeDiff = Math.abs(returnedTime - requestedTime);
       expect(timeDiff).toBeLessThan(1000); // Within 1 second
-    }
-  });
-
-  test("should validate buyerControlPercentage calculation for each method", async ({
-    tracker,
-  }) => {
-    const testEntries = createValidShortlistEntries();
-    const testQuoteData = createValidGrowwQuotePayload();
-
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
-    for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData, tracker);
-    }
-
-    const methods: z.infer<
-      typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query
-    >["method"][] = [
-      "simple",
-      "total",
-      "price-weighted",
-      "near-price",
-      "volume-weighted",
-      "bid-ask",
-      "hybrid",
-    ];
-
-    for (const method of methods) {
-      const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS", method);
-      const queryString = new URLSearchParams(query).toString();
-      const response = await authenticatedGet(
-        `/v1/dashboard/shortlists?${queryString}`,
-        developerToken
-      );
-
-      expect(response.status).toBe(200);
-      const validatedData =
-        v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
-          response.data
-        );
-
-      if (validatedData.data.shortlist && validatedData.data.shortlist.entries.length > 0) {
-        validatedData.data.shortlist.entries.forEach((entry) => {});
-      }
     }
   });
 

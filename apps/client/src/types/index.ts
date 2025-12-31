@@ -6,7 +6,6 @@ export type ShortlistEntry = z.infer<typeof shortlistEntrySchema>;
 // Type for shortlist entry with quote data and buyer control
 export interface ShortlistEntryWithQuote extends ShortlistEntry {
   quoteData: z.infer<typeof growwQuoteSchema>;
-  buyerControlPercentage: number;
 }
 
 // Type for shortlist snapshot with entries

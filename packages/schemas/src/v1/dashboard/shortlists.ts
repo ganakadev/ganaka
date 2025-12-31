@@ -9,22 +9,11 @@ import {
 
 // ==================== GET /shortlists ====================
 
-const buyerControlMethodSchema = z.enum([
-  "simple",
-  "total",
-  "price-weighted",
-  "near-price",
-  "volume-weighted",
-  "bid-ask",
-  "hybrid",
-]);
-
 export const getShortlists = {
   query: z.object({
     datetime: datetimeFormatSchema,
     timezone: timezoneSchema.optional(),
     type: z.enum(shortlistTypeEnum),
-    method: buyerControlMethodSchema.optional(),
   }),
   response: apiResponseSchema.extend({
     data: z.object({

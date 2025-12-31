@@ -91,26 +91,6 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
           );
           const quoteData = quoteSnapshot?.quoteData;
 
-          // Calculate buyer control percentage
-          let buyerControlPercentage: number = 0;
-
-          // Safely cast quoteData if it's valid
-          const validQuoteData: BuyerControlQuoteData | null =
-            quoteData && isQuoteData(quoteData) ? quoteData : null;
-
-          // If method is specified, calculate on-the-fly
-          // Otherwise, use stored value if available
-          if (methodParam !== null && methodParam !== undefined) {
-            buyerControlPercentage = calculateBuyerControlPercentage(validQuoteData, method) ?? 0;
-          } else {
-            // Use stored value from database if available
-            buyerControlPercentage =
-              calculateBuyerControlPercentage(
-                validQuoteData,
-                "hybrid" // Default to hybrid if no stored value
-              ) ?? 0;
-          }
-
           if (quoteData) {
             const data: NonNullable<
               z.infer<
