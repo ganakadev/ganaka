@@ -108,20 +108,6 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     expect(response.status).toBe(400);
   });
 
-  test("should return 400 when method is invalid enum value", async () => {
-    const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS", "invalid-method" as any);
-    const queryString = new URLSearchParams(query).toString();
-    const response = await authenticatedGet(
-      `/v1/dashboard/shortlists?${queryString}`,
-      developerToken,
-      {
-        validateStatus: () => true,
-      }
-    );
-
-    expect(response.status).toBe(400);
-  });
-
   test("should return 200 with null shortlist when snapshot not found", async () => {
     const futureDatetime = "2099-01-01T10:06:00";
     const query = createShortlistsQuery(futureDatetime, "TOP_GAINERS");

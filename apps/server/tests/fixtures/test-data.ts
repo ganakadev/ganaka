@@ -330,16 +330,12 @@ export function createOrderTestData(
 export function createShortlistsQuery(
   datetime?: string,
   type?: "TOP_GAINERS" | "VOLUME_SHOCKERS",
-  method?: z.infer<
-    typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query
-  >["method"],
   timezone?: string
 ): z.infer<typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query> {
   return {
     datetime: datetime || TEST_DATETIME,
     timezone: timezone || "Asia/Kolkata",
     type: type || "TOP_GAINERS",
-    ...(method && { method }),
   };
 }
 

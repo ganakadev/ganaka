@@ -1,21 +1,14 @@
+import { ShortlistType } from "@ganaka/db";
+import { growwQuoteSchema, shortlistEntrySchema, v1_dashboard_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { FastifyPluginAsync } from "fastify";
 import z from "zod";
-import { sendResponse } from "../../../../utils/sendResponse";
-import { validateRequest } from "../../../../utils/validator";
-import { growwQuotePayloadSchema, growwQuoteSchema, v1_dashboard_schemas } from "@ganaka/schemas";
-import { ShortlistType } from "@ganaka/db";
-import { shortlistEntrySchema } from "@ganaka/schemas";
-import {
-  BuyerControlMethod,
-  QuoteData as BuyerControlQuoteData,
-  calculateBuyerControlPercentage,
-  isQuoteData,
-} from "../../../../utils/buyerControl";
 import { prisma } from "../../../../utils/prisma";
+import { sendResponse } from "../../../../utils/sendResponse";
 import { parseDateTimeInTimezone } from "../../../../utils/timezone";
+import { validateRequest } from "../../../../utils/validator";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -33,18 +26,10 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const {
-        datetime: dateParam,
-        timezone = "Asia/Kolkata",
-        type: typeParam,
-        method: methodParam,
-      } = validationResult;
+      const { datetime: dateParam, timezone = "Asia/Kolkata", type: typeParam } = validationResult;
 
       // Convert datetime string to UTC Date
       const selectedDateTime = parseDateTimeInTimezone(dateParam, timezone);
-
-      // Set method to provided value or default to "hybrid"
-      const method: BuyerControlMethod = methodParam || "hybrid";
 
       const shortlists = await prisma.shortlistSnapshot.findMany({
         where: {
