@@ -2,6 +2,7 @@ import { faker } from "@faker-js/faker";
 import {
   v1_developer_groww_schemas,
   v1_developer_lists_schemas,
+  v1_developer_collector_schemas,
   v1_dashboard_schemas,
 } from "@ganaka/schemas";
 import type { z } from "zod";
@@ -164,6 +165,65 @@ export function createShortlistSnapshotTestData(): z.infer<
   typeof v1_developer_lists_schemas.listSchema
 >[] {
   return createValidShortlistEntries();
+}
+
+/**
+ * Creates collector shortlist snapshot request body
+ */
+export function createCollectorShortlistRequest(
+  shortlistType: "TOP_GAINERS" | "VOLUME_SHOCKERS" = "TOP_GAINERS",
+  entries?: z.infer<typeof v1_developer_lists_schemas.listSchema>[]
+): z.infer<typeof v1_developer_collector_schemas.createShortlistSnapshot.body> {
+  return {
+    data: {
+      timestamp: TEST_DATETIME,
+      timezone: "Etc/UTC",
+      shortlistType,
+      entries: entries || createValidShortlistEntries(),
+    },
+  };
+}
+
+/**
+ * Creates collector quote snapshots request body
+ */
+export function createCollectorQuotesRequest(
+  quotes?: z.infer<typeof v1_developer_collector_schemas.quoteSnapshotDataSchema>[]
+): z.infer<typeof v1_developer_collector_schemas.createQuoteSnapshots.body> {
+  const defaultQuotes: z.infer<typeof v1_developer_collector_schemas.quoteSnapshotDataSchema>[] = [
+    {
+      nseSymbol: "RELIANCE",
+      quoteData: createValidGrowwQuotePayload(),
+    },
+    {
+      nseSymbol: "TCS",
+      quoteData: createValidGrowwQuotePayload(),
+    },
+  ];
+
+  return {
+    data: {
+      timestamp: TEST_DATETIME,
+      timezone: "Etc/UTC",
+      quotes: quotes || defaultQuotes,
+    },
+  };
+}
+
+/**
+ * Creates collector NIFTY quote request body
+ */
+export function createCollectorNiftyRequest(
+  dayChangePerc: number = 0.5
+): z.infer<typeof v1_developer_collector_schemas.createNiftyQuote.body> {
+  return {
+    data: {
+      timestamp: TEST_DATETIME,
+      timezone: "Etc/UTC",
+      quoteData: createValidGrowwQuotePayload(),
+      dayChangePerc,
+    },
+  };
 }
 
 /**
