@@ -267,6 +267,6 @@ test.describe("POST /v1/developer/collector/shortlists", () => {
     });
 
     expect(storedShortlist).toBeDefined();
-    expect(storedShortlist!.timestamp.toISOString()).toBe("2025-12-26T10:06:00.000Z");
+    expect(storedShortlist!.timestamp.toISOString()).toBe("2025-12-31T09:15:00");
   });
 });
