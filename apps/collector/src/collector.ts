@@ -334,7 +334,7 @@ async function collectMarketDataForBucket(currentRunSymbolMap: Set<string>): Pro
     await createNiftyQuote(process.env.DEVELOPER_KEY!)(
       timestamp,
       niftyData,
-      niftyData.payload.day_change_perc
+      niftyData.payload.day_change_perc ?? 0
     );
     console.log("Stored NIFTY quote");
   }
