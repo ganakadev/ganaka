@@ -56,6 +56,13 @@
       "onlySingle": true,
       "cwd": "./packages/groww_access_token_generator",
       "command": "uv run main.py"
+    },
+    {
+      "name": "actions-runner",
+      "focus": true,
+      "onlySingle": true,
+      "cwd": "./actions-runner",
+      "command": "./run.sh"
     }
   ]
 }
