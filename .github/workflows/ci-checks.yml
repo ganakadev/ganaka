@@ -46,9 +46,6 @@ jobs:
           NEON_PRODUCTION_BRANCH_ID=${{ secrets.NEON_PRODUCTION_BRANCH_ID }}
           EOF
 
-      - name: Reset test database
-        run: pnpm run reset:test-db
-
       - name: Prepare for CI
         run: pnpm run prepare:ci
 
