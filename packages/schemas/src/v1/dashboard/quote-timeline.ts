@@ -1,6 +1,10 @@
 import { z } from "zod";
-import { apiResponseSchema, dateFormatSchema, timezoneSchema } from "../../common";
-import { growwQuoteSchema } from "../developer/groww/groww";
+import {
+  apiResponseSchema,
+  dateFormatSchema,
+  growwQuoteSchema,
+  timezoneSchema,
+} from "../../common";
 
 // ==================== GET /quote-timeline ====================
 

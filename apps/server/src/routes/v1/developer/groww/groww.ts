@@ -1,20 +1,16 @@
-import {
-  growwQuotePayloadSchema,
-  growwQuoteSchema,
-  v1_developer_groww_schemas,
-} from "@ganaka/schemas";
+import { growwQuoteSchema, v1_developer_groww_schemas } from "@ganaka/schemas";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { FastifyPluginAsync } from "fastify";
 import z from "zod";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
+import { makeGrowwAPIRequest } from "../../../../utils/groww-api-request";
+import { prisma } from "../../../../utils/prisma";
 import { RedisManager } from "../../../../utils/redis";
 import { sendResponse } from "../../../../utils/sendResponse";
+import { parseDateInTimezone, parseDateTimeInTimezone } from "../../../../utils/timezone";
 import { TokenManager } from "../../../../utils/token-manager";
 import { validateRequest } from "../../../../utils/validator";
-import { prisma } from "../../../../utils/prisma";
-import { makeGrowwAPIRequest } from "../../../../utils/groww-api-request";
-import { parseDateInTimezone, parseDateTimeInTimezone } from "../../../../utils/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -81,9 +77,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         }
 
         const quoteSnapshot = quoteSnapshots[0];
-        const quoteData = quoteSnapshot.quoteData as z.infer<
-          typeof v1_developer_groww_schemas.growwQuoteSchema
-        > | null;
+        const quoteData = quoteSnapshot.quoteData as z.infer<typeof growwQuoteSchema> | null;
 
         if (!quoteData) {
           return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(
@@ -118,9 +112,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
 
     // If no datetime, fetch live data from Groww API
     try {
-      const response = await growwAPIRequest<
-        z.infer<typeof v1_developer_groww_schemas.growwQuoteSchema>
-      >({
+      const response = await growwAPIRequest<z.infer<typeof growwQuoteSchema>>({
         method: "get",
         url: `https://api.groww.in/v1/live-data/quote`,
         params: {

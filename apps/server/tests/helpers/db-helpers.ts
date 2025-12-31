@@ -3,7 +3,11 @@ import { prisma } from "../../src/utils/prisma";
 import { randomUUID } from "crypto";
 import type { ShortlistType, QuoteSnapshot, ShortlistSnapshot, InputJsonValue } from "@ganaka/db";
 import type { z } from "zod";
-import { v1_developer_groww_schemas, v1_developer_lists_schemas } from "@ganaka/schemas";
+import {
+  growwQuoteSchema,
+  v1_developer_groww_schemas,
+  v1_developer_lists_schemas,
+} from "@ganaka/schemas";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -130,7 +134,7 @@ export async function getAllDevelopers() {
 export async function createQuoteSnapshot(
   symbol: string,
   datetime: string,
-  quoteData: z.infer<typeof v1_developer_groww_schemas.growwQuoteSchema>,
+  quoteData: z.infer<typeof growwQuoteSchema>,
   tracker: TestDataTracker,
   timezone?: string
 ) {

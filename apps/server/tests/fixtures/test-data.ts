@@ -4,6 +4,7 @@ import {
   v1_developer_lists_schemas,
   v1_developer_collector_schemas,
   v1_dashboard_schemas,
+  growwQuoteSchema,
 } from "@ganaka/schemas";
 import type { z } from "zod";
 
@@ -81,9 +82,7 @@ export const QUOTE_TIMELINES_TEST_DATE = "2025-12-30";
 /**
  * Creates a valid Groww quote payload matching growwQuoteSchema
  */
-export function createValidGrowwQuotePayload(): z.infer<
-  typeof v1_developer_groww_schemas.growwQuoteSchema
-> {
+export function createValidGrowwQuotePayload(): z.infer<typeof growwQuoteSchema> {
   return {
     status: "SUCCESS",
     payload: {
@@ -152,9 +151,7 @@ export function createValidShortlistEntries(): z.infer<
 /**
  * Creates quote snapshot test data matching growwQuoteSchema
  */
-export function createQuoteSnapshotTestData(): z.infer<
-  typeof v1_developer_groww_schemas.growwQuoteSchema
-> {
+export function createQuoteSnapshotTestData(): z.infer<typeof growwQuoteSchema> {
   return createValidGrowwQuotePayload();
 }
 

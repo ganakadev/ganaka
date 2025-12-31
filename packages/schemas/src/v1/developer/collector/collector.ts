@@ -1,6 +1,10 @@
 import { z } from "zod";
-import { apiResponseSchema, datetimeFormatSchema, timezoneSchema } from "../../../common";
-import { growwQuoteSchema } from "../groww/groww";
+import {
+  apiResponseSchema,
+  datetimeFormatSchema,
+  growwQuoteSchema,
+  timezoneSchema,
+} from "../../../common";
 import { ShortlistType } from "@ganaka/db";
 
 // ==================== Schemas ====================
