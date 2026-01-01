@@ -1,10 +1,5 @@
 import { z } from "zod";
-import {
-  apiResponseSchema,
-  dateFormatSchema,
-  timezoneSchema,
-  validCandleIntervals,
-} from "../../common";
+import { apiResponseSchema, dateFormatSchema, validCandleIntervals } from "../../common";
 
 // ==================== GET /candles ====================
 
@@ -12,7 +7,6 @@ export const getCandles = {
   query: z.object({
     symbol: z.string(),
     date: dateFormatSchema,
-    timezone: timezoneSchema.optional(),
     interval: z.enum(validCandleIntervals).optional(),
   }),
   response: apiResponseSchema.extend({

@@ -11,6 +11,7 @@ import { validateRequest } from "../../../../utils/validator";
 import { v1_dashboard_schemas, validCandleIntervals } from "@ganaka/schemas";
 import { makeGrowwAPIRequest } from "../../../../utils/groww-api-request";
 import { parseDateInTimezone } from "../../../../utils/timezone";
+import { formatDateTime } from "../../../../utils/date-formatter";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -49,10 +50,10 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { symbol, date: dateParam, timezone = "Asia/Kolkata", interval } = validationResult;
+      const { symbol, date: dateParam, interval } = validationResult;
 
       // Convert date string to UTC Date representing midnight IST of that date
-      const dateUTC = parseDateInTimezone(dateParam, timezone);
+      const dateUTC = parseDateInTimezone(dateParam, "Asia/Kolkata");
 
       // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
       // Extract just the date part (YYYY-MM-DD) and create new dayjs object in IST
@@ -132,8 +133,13 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
         message: "Candles fetched successfully",
         data: {
           candles: candleData,
-          start_time: response.payload.start_time,
-          end_time: response.payload.end_time,
+          // Convert start_time and end_time to UTC since Groww API returns times in IST
+          start_time: formatDateTime(
+            dayjs.tz(response.payload.start_time, "Asia/Kolkata").utc().toDate()
+          ),
+          end_time: formatDateTime(
+            dayjs.tz(response.payload.end_time, "Asia/Kolkata").utc().toDate()
+          ),
           interval_in_minutes: response.payload.interval_in_minutes,
         },
       });

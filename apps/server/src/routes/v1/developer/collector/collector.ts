@@ -9,6 +9,7 @@ import { sendResponse } from "../../../../utils/sendResponse";
 import { parseDateTimeInTimezone } from "../../../../utils/timezone";
 import { validateRequest } from "../../../../utils/validator";
 import { Decimal } from "@ganaka/db/prisma";
+import { formatDateTime } from "../../../../utils/date-formatter";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -28,7 +29,7 @@ const collectorRoutes: FastifyPluginAsync = async (fastify) => {
 
     try {
       const {
-        data: { timestamp: timestampStr, timezone = "UTC", shortlistType, entries },
+        data: { timestamp: timestampStr, timezone, shortlistType, entries },
       } = validationResult;
 
       // Convert datetime string to UTC Date
@@ -48,7 +49,7 @@ const collectorRoutes: FastifyPluginAsync = async (fastify) => {
         message: "Shortlist snapshot created successfully",
         data: {
           id: shortlistSnapshot.id,
-          timestamp: shortlistSnapshot.timestamp.toISOString(),
+          timestamp: formatDateTime(shortlistSnapshot.timestamp),
           shortlistType: shortlistSnapshot.shortlistType,
           entriesCount: entries.length,
         },
@@ -75,7 +76,7 @@ const collectorRoutes: FastifyPluginAsync = async (fastify) => {
 
     try {
       const {
-        data: { timestamp: timestampStr, timezone = "UTC", quotes },
+        data: { timestamp: timestampStr, timezone, quotes },
       } = validationResult;
 
       // Convert datetime string to UTC Date
@@ -98,7 +99,7 @@ const collectorRoutes: FastifyPluginAsync = async (fastify) => {
         message: "Quote snapshots created successfully",
         data: {
           count: createdQuotes.count,
-          timestamp: timestamp.toISOString(),
+          timestamp: formatDateTime(timestamp),
         },
       });
     } catch (error) {
@@ -123,7 +124,7 @@ const collectorRoutes: FastifyPluginAsync = async (fastify) => {
 
     try {
       const {
-        data: { timestamp: timestampStr, timezone = "UTC", quoteData, dayChangePerc },
+        data: { timestamp: timestampStr, timezone, quoteData, dayChangePerc },
       } = validationResult;
 
       // Convert datetime string to UTC Date
@@ -143,7 +144,7 @@ const collectorRoutes: FastifyPluginAsync = async (fastify) => {
         message: "NIFTY quote created successfully",
         data: {
           id: niftyQuote.id,
-          timestamp: niftyQuote.timestamp.toISOString(),
+          timestamp: formatDateTime(niftyQuote.timestamp),
           dayChangePerc: Number(niftyQuote.dayChangePerc),
         },
       });

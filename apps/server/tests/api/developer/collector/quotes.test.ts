@@ -90,7 +90,7 @@ test.describe("POST /v1/developer/collector/quotes", () => {
     const requestBody = {
       data: {
         timestamp: "2025-12-31T09:15:00",
-        timezone: "UTC",
+        timezone: "Asia/Kolkata",
       },
     };
     const response = await authenticatedPost(
@@ -148,7 +148,7 @@ test.describe("POST /v1/developer/collector/quotes", () => {
     expect(body.statusCode).toBe(201);
     expect(body.message).toBe("Quote snapshots created successfully");
     expect(body.data.count).toBe(2);
-    expect(body.data.timestamp).toBe("2025-12-26T10:06:00.000Z");
+    expect(body.data.timestamp).toBe("2025-12-26T10:06:00");
 
     // Validate response matches schema
     const validatedData = v1_developer_collector_schemas.createQuoteSnapshots.response.parse(body);

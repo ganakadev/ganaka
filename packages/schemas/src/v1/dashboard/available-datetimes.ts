@@ -9,8 +9,8 @@ export const getAvailableDatetimes = {
     data: z.object({
       dates: z.array(
         z.object({
-          date: z.string(),
-          timestamps: z.array(z.string()),
+          date: z.string(), // Format: YYYY-MM-DD
+          timestamps: z.array(z.string()), // Format: YYYY-MM-DDTHH:mm:ss (UTC)
         })
       ),
     }),

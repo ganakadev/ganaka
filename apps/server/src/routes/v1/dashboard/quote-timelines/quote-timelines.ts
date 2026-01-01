@@ -8,6 +8,7 @@ import { sendResponse } from "../../../../utils/sendResponse";
 import { validateRequest } from "../../../../utils/validator";
 import { growwQuoteSchema, v1_dashboard_schemas } from "@ganaka/schemas";
 import { parseDateInTimezone } from "../../../../utils/timezone";
+import { formatDateTime } from "../../../../utils/date-formatter";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -25,16 +26,12 @@ const quoteSnapshotsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { symbol, date: dateParam, timezone = "Asia/Kolkata" } = validationResult;
-
-      // Convert date string to UTC Date representing midnight IST of that date
-      const dateUTC = parseDateInTimezone(dateParam, timezone);
+      const { symbol, date } = validationResult;
 
       // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
       // Extract just the date part (YYYY-MM-DD) and create new dayjs object in IST
-      const dateStr = dayjs(dateUTC).format("YYYY-MM-DD");
-      const marketStart = dayjs.tz(`${dateStr} 09:14:00`, "Asia/Kolkata");
-      const marketEnd = dayjs.tz(`${dateStr} 15:31:00`, "Asia/Kolkata");
+      const marketStart = dayjs.tz(`${date} 09:14:00`, "Asia/Kolkata");
+      const marketEnd = dayjs.tz(`${date} 15:31:00`, "Asia/Kolkata");
       const marketStartUtc = marketStart.utc();
       const marketEndUtc = marketEnd.utc();
 
@@ -66,11 +63,11 @@ const quoteSnapshotsRoutes: FastifyPluginAsync = async (fastify) => {
                   typeof v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.response
                 >["data"]["quoteTimeline"][0] = {
                   id: snapshot.id,
-                  timestamp: `${snapshot.timestamp.toISOString()}`,
+                  timestamp: formatDateTime(snapshot.timestamp),
                   nseSymbol: snapshot.nseSymbol,
                   quoteData: snapshot.quoteData as unknown as z.infer<typeof growwQuoteSchema>,
-                  createdAt: `${snapshot.createdAt.toISOString()}`,
-                  updatedAt: `${snapshot.updatedAt.toISOString()}`,
+                  createdAt: formatDateTime(snapshot.createdAt),
+                  updatedAt: formatDateTime(snapshot.updatedAt),
                 };
                 return data;
               })

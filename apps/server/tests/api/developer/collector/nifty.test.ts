@@ -165,7 +165,7 @@ test.describe("POST /v1/developer/collector/nifty", () => {
     expect(body.statusCode).toBe(201);
     expect(body.message).toBe("NIFTY quote created successfully");
     expect(body.data.id).toBeDefined();
-    expect(body.data.timestamp).toBe("2025-12-26T10:06:00.000Z");
+    expect(body.data.timestamp).toBe("2025-12-26T10:06:00");
     expect(body.data.dayChangePerc).toBe(dayChangePerc);
 
     // Validate response matches schema

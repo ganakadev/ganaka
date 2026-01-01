@@ -174,7 +174,7 @@ export function createCollectorShortlistRequest(
   return {
     data: {
       timestamp: TEST_DATETIME,
-      timezone: "Etc/UTC",
+      timezone: "Asia/Kolkata",
       shortlistType,
       entries: entries || createValidShortlistEntries(),
     },
@@ -268,7 +268,6 @@ export function createQuoteTimelineQuery(
   return {
     symbol: symbol || TEST_SYMBOL,
     date: date || TEST_DATE,
-    timezone: timezone || "Asia/Kolkata",
   };
 }
 
@@ -301,6 +300,7 @@ export function createRunTestData(
   return {
     start_datetime: startTime || defaultStart,
     end_datetime: endTime || defaultEnd,
+    timezone: "Asia/Kolkata",
   };
 }
 
@@ -353,7 +353,6 @@ export function createCandlesQuery(
   return {
     symbol: symbol || TEST_SYMBOL,
     date: date || TEST_DATE,
-    timezone: timezone || "Asia/Kolkata",
     ...(interval && { interval }),
   };
 }
@@ -369,7 +368,6 @@ export function createQuoteTimelineQueryForDashboard(
   return {
     symbol: symbol || TEST_SYMBOL,
     date: date || TEST_DATE,
-    timezone: timezone || "Asia/Kolkata",
   };
 }
 
@@ -385,7 +383,6 @@ export function createDailyPersistentCompaniesQuery(
 > {
   return {
     date: date || TEST_DATE,
-    timezone: timezone || "Asia/Kolkata",
     type: type || "TOP_GAINERS",
   };
 }
@@ -402,7 +399,6 @@ export function createDailyUniqueCompaniesQuery(
 > {
   return {
     date: date || TEST_DATE,
-    timezone: timezone || "Asia/Kolkata",
     type: type || "TOP_GAINERS",
   };
 }

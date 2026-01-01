@@ -266,9 +266,7 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
       expect(firstEntry).toHaveProperty("timestamp");
       expect(firstEntry).toHaveProperty("nseSymbol");
 
-      expect(new Date(firstEntry.timestamp).toISOString()).toBe(
-        new Date("2025-12-30T03:45:00.000Z").toISOString()
-      );
+      expect(firstEntry.timestamp).toBe("2025-12-30T03:45:00");
       expect(firstEntry.nseSymbol).toBe("RELIANCE");
     }
   });

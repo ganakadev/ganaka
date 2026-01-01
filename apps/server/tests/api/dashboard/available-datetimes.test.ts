@@ -121,12 +121,12 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
         response.data
       );
 
-    // Validate timestamp format (ISO 8601)
+    // Validate timestamp format (YYYY-MM-DDTHH:mm:ss - no milliseconds, no timezone)
     validatedData.data.dates.forEach((dateEntry) => {
       dateEntry.timestamps.forEach((timestamp) => {
         expect(typeof timestamp).toBe("string");
-        // ISO 8601 format validation
-        expect(timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+        // Strict format validation: exactly YYYY-MM-DDTHH:mm:ss (no milliseconds, no timezone)
+        expect(timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/);
         // Should be valid date
         expect(() => new Date(timestamp)).not.toThrow();
       });

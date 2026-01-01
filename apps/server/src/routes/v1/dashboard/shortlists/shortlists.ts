@@ -9,6 +9,7 @@ import { prisma } from "../../../../utils/prisma";
 import { sendResponse } from "../../../../utils/sendResponse";
 import { parseDateTimeInTimezone } from "../../../../utils/timezone";
 import { validateRequest } from "../../../../utils/validator";
+import { formatDateTime } from "../../../../utils/date-formatter";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -26,16 +27,16 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { datetime: dateParam, timezone = "Asia/Kolkata", type: typeParam } = validationResult;
+      const { datetime: dateTimeParam, type: typeParam } = validationResult;
 
       // Convert datetime string to UTC Date
-      const selectedDateTime = parseDateTimeInTimezone(dateParam, timezone);
+      const selectedDateTimeUTC = parseDateTimeInTimezone(dateTimeParam, "Asia/Kolkata");
 
       const shortlists = await prisma.shortlistSnapshot.findMany({
         where: {
           timestamp: {
-            gte: selectedDateTime,
-            lte: new Date(selectedDateTime.getTime() + 1000), // Add 1 second
+            gte: selectedDateTimeUTC,
+            lte: new Date(selectedDateTimeUTC.getTime() + 1000), // Add 1 second
           },
           shortlistType: typeParam as ShortlistType,
         },
@@ -43,8 +44,8 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
       const quoteSnapshots = await prisma.quoteSnapshot.findMany({
         where: {
           timestamp: {
-            gte: selectedDateTime,
-            lte: new Date(selectedDateTime.getTime() + 60000), // Add 1 minute
+            gte: selectedDateTimeUTC,
+            lte: new Date(selectedDateTimeUTC.getTime() + 60000), // Add 1 minute
           },
         },
       });
@@ -103,7 +104,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
         data: {
           shortlist: {
             id: shortlistFromDb.id,
-            timestamp: `${shortlistFromDb.timestamp.toISOString()}`,
+            timestamp: formatDateTime(shortlistFromDb.timestamp),
             shortlistType: shortlistFromDb.shortlistType,
             entries,
           },
