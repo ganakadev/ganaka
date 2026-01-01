@@ -26,6 +26,9 @@ test.afterAll(async () => {
 });
 
 test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
+  // Run tests in serial to avoid race conditions with count of companies
+  test.describe.configure({ mode: "serial" });
+
   test("should return 401 when authorization header is missing", async () => {
     const query = createDailyPersistentCompaniesQuery();
     const queryString = new URLSearchParams(query).toString();
@@ -126,9 +129,17 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
   test("should return 200 with companies appearing in >=80% of snapshots", async ({ tracker }) => {
     // Create 10 snapshots with same entries (should appear in 100% of snapshots)
     const testEntries = createValidShortlistEntries();
-    await createMultipleShortlistSnapshots("top-gainers", DAILY_PERSISTENT_COMPANIES_TEST_DATE, 10, tracker);
+    await createMultipleShortlistSnapshots(
+      "top-gainers",
+      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      10,
+      tracker
+    );
 
-    const query = createDailyPersistentCompaniesQuery(DAILY_PERSISTENT_COMPANIES_TEST_DATE, "TOP_GAINERS");
+    const query = createDailyPersistentCompaniesQuery(
+      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      "TOP_GAINERS"
+    );
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
@@ -155,9 +166,17 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
   test("should validate response structure (date, type, totalSnapshots, companies)", async ({
     tracker,
   }) => {
-    await createMultipleShortlistSnapshots("top-gainers", DAILY_PERSISTENT_COMPANIES_TEST_DATE, 5, tracker);
+    await createMultipleShortlistSnapshots(
+      "top-gainers",
+      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      5,
+      tracker
+    );
 
-    const query = createDailyPersistentCompaniesQuery(DAILY_PERSISTENT_COMPANIES_TEST_DATE, "TOP_GAINERS");
+    const query = createDailyPersistentCompaniesQuery(
+      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      "TOP_GAINERS"
+    );
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
@@ -183,9 +202,17 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
   test("should validate company structure (nseSymbol, name, count, percentage)", async ({
     tracker,
   }) => {
-    await createMultipleShortlistSnapshots("top-gainers", DAILY_PERSISTENT_COMPANIES_TEST_DATE, 5, tracker);
+    await createMultipleShortlistSnapshots(
+      "top-gainers",
+      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      5,
+      tracker
+    );
 
-    const query = createDailyPersistentCompaniesQuery(DAILY_PERSISTENT_COMPANIES_TEST_DATE, "TOP_GAINERS");
+    const query = createDailyPersistentCompaniesQuery(
+      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      "TOP_GAINERS"
+    );
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
@@ -215,9 +242,17 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
   });
 
   test("should validate percentage is rounded to 1 decimal place", async ({ tracker }) => {
-    await createMultipleShortlistSnapshots("top-gainers", DAILY_PERSISTENT_COMPANIES_TEST_DATE, 5, tracker);
+    await createMultipleShortlistSnapshots(
+      "top-gainers",
+      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      5,
+      tracker
+    );
 
-    const query = createDailyPersistentCompaniesQuery(DAILY_PERSISTENT_COMPANIES_TEST_DATE, "TOP_GAINERS");
+    const query = createDailyPersistentCompaniesQuery(
+      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      "TOP_GAINERS"
+    );
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
@@ -238,9 +273,17 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
   });
 
   test("should validate exact company values ", async ({ tracker }) => {
-    await createMultipleShortlistSnapshots("top-gainers", DAILY_PERSISTENT_COMPANIES_TEST_DATE, 5, tracker);
+    await createMultipleShortlistSnapshots(
+      "top-gainers",
+      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      5,
+      tracker
+    );
 
-    const query = createDailyPersistentCompaniesQuery(DAILY_PERSISTENT_COMPANIES_TEST_DATE, "TOP_GAINERS");
+    const query = createDailyPersistentCompaniesQuery(
+      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      "TOP_GAINERS"
+    );
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,
@@ -268,9 +311,17 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
   });
 
   test("should validate date matches requested date format (YYYY-MM-DD)", async ({ tracker }) => {
-    await createMultipleShortlistSnapshots("top-gainers", DAILY_PERSISTENT_COMPANIES_TEST_DATE, 5, tracker);
+    await createMultipleShortlistSnapshots(
+      "top-gainers",
+      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      5,
+      tracker
+    );
 
-    const query = createDailyPersistentCompaniesQuery(DAILY_PERSISTENT_COMPANIES_TEST_DATE, "TOP_GAINERS");
+    const query = createDailyPersistentCompaniesQuery(
+      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      "TOP_GAINERS"
+    );
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-persistent-companies?${queryString}`,

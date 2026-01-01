@@ -94,7 +94,7 @@ test.describe("GET /v1/developer/lists", () => {
 
   test("should return snapshot data for top-gainers with valid datetime", async ({ tracker }) => {
     const testEntries = createValidShortlistEntries();
-    const snapshot = await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
+    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
 
     const query = createListsQuery("top-gainers", TEST_DATETIME);
     const queryString = buildQueryString(query);
@@ -117,9 +117,16 @@ test.describe("GET /v1/developer/lists", () => {
     }
   });
 
-  test("should return snapshot data for volume-shockers with valid datetime", async ({ tracker }) => {
+  test("should return snapshot data for volume-shockers with valid datetime", async ({
+    tracker,
+  }) => {
     const testEntries = createValidShortlistEntries();
-    const snapshot = await createShortlistSnapshot("volume-shockers", TEST_DATETIME, testEntries, tracker);
+    const snapshot = await createShortlistSnapshot(
+      "volume-shockers",
+      TEST_DATETIME,
+      testEntries,
+      tracker
+    );
 
     const query = createListsQuery("volume-shockers", TEST_DATETIME);
     const queryString = buildQueryString(query);
@@ -134,7 +141,9 @@ test.describe("GET /v1/developer/lists", () => {
     expect(body.data.length).toBeGreaterThan(0);
   });
 
-  test("should return list data matching stored snapshot with known datetime/type", async ({ tracker }) => {
+  test("should return list data matching stored snapshot with known datetime/type", async ({
+    tracker,
+  }) => {
     const testType = "top-gainers";
     const testDatetime = TEST_DATETIME;
     const testEntries = createValidShortlistEntries();
@@ -178,7 +187,9 @@ test.describe("GET /v1/developer/lists", () => {
     }
   });
 
-  test("should return list data matching stored snapshot for volume-shockers type", async ({ tracker }) => {
+  test("should return list data matching stored snapshot for volume-shockers type", async ({
+    tracker,
+  }) => {
     const testType = "volume-shockers";
     const testDatetime = TEST_DATETIME;
     const testEntries = createValidShortlistEntries();

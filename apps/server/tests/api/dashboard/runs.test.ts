@@ -290,8 +290,8 @@ test.describe("POST /v1/dashboard/runs", () => {
     );
     expect(validatedData.data).toHaveProperty("start_datetime");
     expect(validatedData.data).toHaveProperty("end_datetime");
-    expect(validatedData.data.start_datetime).toBe(testData.start_datetime);
-    expect(validatedData.data.end_datetime).toBe(testData.end_datetime);
+    expect(validatedData.data.start_datetime).toBe("2025-12-26T03:45:00");
+    expect(validatedData.data.end_datetime).toBe("2025-12-26T10:00:00");
   });
 });
 
@@ -430,7 +430,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
     expect(updatedRun?.completed).toBe(true);
   });
 
-  test("should validate exact timestamps preserved ", async ({ tracker }) => {
+  test("should validate response times are returned in UTC timezone", async ({ tracker }) => {
     const startTime = "2025-12-26T09:15:00";
     const endTime = "2025-12-26T15:30:00";
     const run = await createRun(developerId, startTime, endTime, tracker);
@@ -444,8 +444,8 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
       response.data
     );
 
-    expect(validatedData.data.start_datetime).toBe(startTime);
-    expect(validatedData.data.end_datetime).toBe(endTime);
+    expect(validatedData.data.start_datetime).toBe("2025-12-26T03:45:00");
+    expect(validatedData.data.end_datetime).toBe("2025-12-26T10:00:00");
   });
 });
 

@@ -179,7 +179,7 @@ test.describe("POST /v1/developer/collector/shortlists", () => {
     expect(body.statusCode).toBe(201);
     expect(body.message).toBe("Shortlist snapshot created successfully");
     expect(body.data.id).toBeDefined();
-    expect(body.data.timestamp).toBe("2025-12-26T10:06:00");
+    expect(body.data.timestamp).toBe("2025-12-26T04:36:00");
     expect(body.data.shortlistType).toBe("TOP_GAINERS");
     expect(body.data.entriesCount).toBe(5);
 
@@ -203,7 +203,7 @@ test.describe("POST /v1/developer/collector/shortlists", () => {
     expect(body.statusCode).toBe(201);
     expect(body.message).toBe("Shortlist snapshot created successfully");
     expect(body.data.id).toBeDefined();
-    expect(body.data.timestamp).toBe("2025-12-26T10:06:00");
+    expect(body.data.timestamp).toBe("2025-12-26T04:36:00");
     expect(body.data.shortlistType).toBe("VOLUME_SHOCKERS");
     expect(body.data.entriesCount).toBe(5);
 

@@ -116,7 +116,12 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
 
   test("should return 200 with quote timeline when valid params provided", async ({ tracker }) => {
     const snapshotCount = 3;
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE, snapshotCount, tracker);
+    await createMultipleQuoteSnapshots(
+      TEST_SYMBOL,
+      QUOTE_TIMELINES_TEST_DATE,
+      snapshotCount,
+      tracker
+    );
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
@@ -235,8 +240,14 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
       );
 
     // Market hours: 9:14 AM - 3:31 PM IST
-    const marketStart = dayjs.tz(`${QUOTE_TIMELINES_TEST_DATE} 09:14:00`, "Asia/Kolkata").utc();
-    const marketEnd = dayjs.tz(`${QUOTE_TIMELINES_TEST_DATE} 15:31:00`, "Asia/Kolkata").utc();
+    const marketStart = dayjs
+      .tz(`${QUOTE_TIMELINES_TEST_DATE} 09:14:00`, "Asia/Kolkata")
+      .utc()
+      .format("YYYY-MM-DDTHH:mm:ss");
+    const marketEnd = dayjs
+      .tz(`${QUOTE_TIMELINES_TEST_DATE} 15:31:00`, "Asia/Kolkata")
+      .utc()
+      .format("YYYY-MM-DDTHH:mm:ss");
 
     validatedData.data.quoteTimeline.forEach((entry) => {
       const entryTime = dayjs(entry.timestamp);
@@ -273,7 +284,12 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
 
   test("should validate exact quoteData values ", async ({ tracker }) => {
     const testQuoteData = createValidGrowwQuotePayload();
-    await createQuoteSnapshot(TEST_SYMBOL, `${QUOTE_TIMELINES_TEST_DATE}T10:06:00`, testQuoteData, tracker);
+    await createQuoteSnapshot(
+      TEST_SYMBOL,
+      `${QUOTE_TIMELINES_TEST_DATE}T10:06:00`,
+      testQuoteData,
+      tracker
+    );
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
@@ -294,10 +310,10 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
       expect(firstEntry.quoteData).toHaveProperty("payload");
 
       expect(firstEntry.quoteData.status).toBe("SUCCESS");
-      expect(firstEntry.quoteData.payload.ohlc.open).toBe(2475.0);
-      expect(firstEntry.quoteData.payload.ohlc.high).toBe(2510.0);
-      expect(firstEntry.quoteData.payload.ohlc.low).toBe(2470.0);
-      expect(firstEntry.quoteData.payload.ohlc.close).toBe(2500.0);
+      expect(firstEntry.quoteData.payload.ohlc?.open).toBe(2475.0);
+      expect(firstEntry.quoteData.payload.ohlc?.high).toBe(2510.0);
+      expect(firstEntry.quoteData.payload.ohlc?.low).toBe(2470.0);
+      expect(firstEntry.quoteData.payload.ohlc?.close).toBe(2500.0);
     }
   });
 });

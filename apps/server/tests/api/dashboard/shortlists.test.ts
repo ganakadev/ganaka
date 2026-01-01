@@ -10,7 +10,12 @@ import {
 } from "../../fixtures/test-data";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
 import { TestDataTracker } from "../../helpers/test-tracker";
-import z from "zod";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 let developerToken: string;
 let developerId: string;
@@ -291,10 +296,10 @@ test.describe("GET /v1/dashboard/shortlists", () => {
 
     if (validatedData.data.shortlist) {
       // Validate timestamp is within 1 second of requested datetime
-      const requestedTime = new Date(TEST_DATETIME).getTime();
-      const returnedTime = new Date(validatedData.data.shortlist.timestamp).getTime();
+      const requestedTime = dayjs(TEST_DATETIME).utc().toDate().getTime();
+      const returnedTime = dayjs.utc(validatedData.data.shortlist.timestamp).toDate().getTime();
       const timeDiff = Math.abs(returnedTime - requestedTime);
-      expect(timeDiff).toBeLessThan(1000); // Within 1 second
+      expect(timeDiff).toBeLessThan(1000); // Within 1 seconds
     }
   });
 

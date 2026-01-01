@@ -29,6 +29,9 @@ test.afterAll(async () => {
 });
 
 test.describe("GET /v1/dashboard/daily-unique-companies", () => {
+  // Run tests in serial to avoid race conditions with count of companies
+  test.describe.configure({ mode: "serial" });
+
   test("should return 401 when authorization header is missing", async () => {
     const query = createDailyUniqueCompaniesQuery();
     const queryString = new URLSearchParams(query).toString();
@@ -128,7 +131,12 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
   test("should return 200 with correct unique count when snapshots exist", async ({ tracker }) => {
     // Create snapshots with known entries
     const testEntries = createValidShortlistEntries();
-    await createMultipleShortlistSnapshots("top-gainers", DAILY_UNIQUE_COMPANIES_TEST_DATE, 5, tracker);
+    await createMultipleShortlistSnapshots(
+      "top-gainers",
+      DAILY_UNIQUE_COMPANIES_TEST_DATE,
+      5,
+      tracker
+    );
 
     const query = createDailyUniqueCompaniesQuery(DAILY_UNIQUE_COMPANIES_TEST_DATE, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
@@ -152,7 +160,12 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
   });
 
   test("should validate response structure (date, type, uniqueCount)", async ({ tracker }) => {
-    await createMultipleShortlistSnapshots("top-gainers", DAILY_UNIQUE_COMPANIES_TEST_DATE, 3, tracker);
+    await createMultipleShortlistSnapshots(
+      "top-gainers",
+      DAILY_UNIQUE_COMPANIES_TEST_DATE,
+      3,
+      tracker
+    );
 
     const query = createDailyUniqueCompaniesQuery(DAILY_UNIQUE_COMPANIES_TEST_DATE, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
@@ -178,7 +191,12 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
 
   test("should validate exact uniqueCount value", async ({ tracker }) => {
     // Create snapshots with exactly 10 unique companies
-    await createShortlistSnapshotsWithUniqueCompanies("top-gainers", DAILY_UNIQUE_COMPANIES_TEST_DATE, 10, tracker);
+    await createShortlistSnapshotsWithUniqueCompanies(
+      "top-gainers",
+      DAILY_UNIQUE_COMPANIES_TEST_DATE,
+      10,
+      tracker
+    );
 
     const query = createDailyUniqueCompaniesQuery(DAILY_UNIQUE_COMPANIES_TEST_DATE, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
@@ -199,7 +217,12 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
   });
 
   test("should validate date matches requested date format (YYYY-MM-DD)", async ({ tracker }) => {
-    await createMultipleShortlistSnapshots("top-gainers", DAILY_UNIQUE_COMPANIES_TEST_DATE, 3, tracker);
+    await createMultipleShortlistSnapshots(
+      "top-gainers",
+      DAILY_UNIQUE_COMPANIES_TEST_DATE,
+      3,
+      tracker
+    );
 
     const query = createDailyUniqueCompaniesQuery(DAILY_UNIQUE_COMPANIES_TEST_DATE, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();

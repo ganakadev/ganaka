@@ -166,9 +166,11 @@ test.describe("GET /v1/dashboard/candles", () => {
       // Market hours: 9:15 AM - 3:30 PM IST
       const expectedStart = dayjs
         .tz(`${CANDLES_TEST_DATE} 09:15:00`, "Asia/Kolkata")
+        .utc()
         .format("YYYY-MM-DDTHH:mm:ss");
       const expectedEnd = dayjs
         .tz(`${CANDLES_TEST_DATE} 15:30:00`, "Asia/Kolkata")
+        .utc()
         .format("YYYY-MM-DDTHH:mm:ss");
 
       expect(validatedData.data.start_time).toBe(expectedStart);
