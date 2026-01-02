@@ -11,6 +11,7 @@ import { sendResponse } from "../../../../utils/sendResponse";
 import { parseDateInTimezone, parseDateTimeInTimezone } from "../../../../utils/timezone";
 import { TokenManager } from "../../../../utils/token-manager";
 import { validateRequest } from "../../../../utils/validator";
+import { formatDateTime } from "../../../../utils/date-formatter";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -208,10 +209,10 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { symbol, date: dateParam, timezone = "Asia/Kolkata" } = validationResult;
+      const { symbol, date: dateParam } = validationResult;
 
       // Convert date string to UTC Date representing midnight IST of that date
-      const dateUTC = parseDateInTimezone(dateParam, timezone);
+      const dateUTC = parseDateInTimezone(dateParam, "Asia/Kolkata");
 
       // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
       // Extract just the date part (YYYY-MM-DD) and create new dayjs object in IST
@@ -243,11 +244,11 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         data: {
           quoteTimeline: quoteSnapshots.map((snapshot) => ({
             id: snapshot.id,
-            timestamp: `${snapshot.timestamp.toISOString()}`,
+            timestamp: formatDateTime(snapshot.timestamp),
             nseSymbol: snapshot.nseSymbol,
             quoteData: snapshot.quoteData as unknown as z.infer<typeof growwQuoteSchema>,
-            createdAt: `${snapshot.createdAt.toISOString()}`,
-            updatedAt: `${snapshot.updatedAt.toISOString()}`,
+            createdAt: formatDateTime(snapshot.createdAt),
+            updatedAt: formatDateTime(snapshot.updatedAt),
           })),
         },
       });

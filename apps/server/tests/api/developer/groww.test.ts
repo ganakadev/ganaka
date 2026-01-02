@@ -141,34 +141,34 @@ test.describe("GET /v1/developer/groww/quote", () => {
     if (validatedData.data) {
       expect(validatedData.data.status).toBe("SUCCESS");
       expect(validatedData.data.payload.ohlc).toHaveProperty("open");
-      expect(typeof validatedData.data.payload.ohlc.open).toBe("number");
+      expect(typeof validatedData.data.payload.ohlc?.open).toBe("number");
       expect(validatedData.data.payload.ohlc).toHaveProperty("high");
       expect(validatedData.data.payload.ohlc).toHaveProperty("low");
       expect(validatedData.data.payload.ohlc).toHaveProperty("close");
-      expect(validatedData.data.payload.depth.buy).toBeInstanceOf(Array);
-      expect(validatedData.data.payload.depth.sell).toBeInstanceOf(Array);
+      expect(validatedData.data.payload.depth?.buy).toBeInstanceOf(Array);
+      expect(validatedData.data.payload.depth?.sell).toBeInstanceOf(Array);
       expect(typeof validatedData.data.payload.day_change).toBe("number");
       expect(typeof validatedData.data.payload.day_change_perc).toBe("number");
       expect(typeof validatedData.data.payload.volume).toBe("number");
 
       // Validate exact snapshot data values
       // OHLC values
-      expect(validatedData.data.payload.ohlc.open).toBe(2475);
-      expect(validatedData.data.payload.ohlc.high).toBe(2510);
-      expect(validatedData.data.payload.ohlc.low).toBe(2470);
-      expect(validatedData.data.payload.ohlc.close).toBe(2500);
+      expect(validatedData.data.payload.ohlc?.open).toBe(2475);
+      expect(validatedData.data.payload.ohlc?.high).toBe(2510);
+      expect(validatedData.data.payload.ohlc?.low).toBe(2470);
+      expect(validatedData.data.payload.ohlc?.close).toBe(2500);
 
       // Depth buy array
-      expect(validatedData.data.payload.depth.buy).toHaveLength(3);
-      expect(validatedData.data.payload.depth.buy[0]).toEqual({ price: 2500, quantity: 100 });
-      expect(validatedData.data.payload.depth.buy[1]).toEqual({ price: 2499.5, quantity: 200 });
-      expect(validatedData.data.payload.depth.buy[2]).toEqual({ price: 2499, quantity: 150 });
+      expect(validatedData.data.payload.depth?.buy).toHaveLength(3);
+      expect(validatedData.data.payload.depth?.buy[0]).toEqual({ price: 2500, quantity: 100 });
+      expect(validatedData.data.payload.depth?.buy[1]).toEqual({ price: 2499.5, quantity: 200 });
+      expect(validatedData.data.payload.depth?.buy[2]).toEqual({ price: 2499, quantity: 150 });
 
       // Depth sell array
-      expect(validatedData.data.payload.depth.sell).toHaveLength(3);
-      expect(validatedData.data.payload.depth.sell[0]).toEqual({ price: 2501, quantity: 100 });
-      expect(validatedData.data.payload.depth.sell[1]).toEqual({ price: 2501.5, quantity: 200 });
-      expect(validatedData.data.payload.depth.sell[2]).toEqual({ price: 2502, quantity: 150 });
+      expect(validatedData.data.payload.depth?.sell).toHaveLength(3);
+      expect(validatedData.data.payload.depth?.sell[0]).toEqual({ price: 2501, quantity: 100 });
+      expect(validatedData.data.payload.depth?.sell[1]).toEqual({ price: 2501.5, quantity: 200 });
+      expect(validatedData.data.payload.depth?.sell[2]).toEqual({ price: 2502, quantity: 150 });
 
       // Numeric fields
       expect(validatedData.data.payload.volume).toBe(50000);
@@ -626,15 +626,15 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     const timeline = validatedData.data.quoteTimeline;
     if (timeline.length >= 1) {
       // First entry
-      expect(timeline[0].timestamp).toBe("2025-12-26T03:45:00.000Z");
+      expect(timeline[0].timestamp).toBe("2025-12-26T03:45:00");
       expect(timeline[0].nseSymbol).toBe(testSymbol);
       expect(timeline[0].quoteData.status).toBe("SUCCESS");
-      expect(timeline[0].quoteData.payload.ohlc.low).toBe(2470);
-      expect(timeline[0].quoteData.payload.ohlc.high).toBe(2510);
-      expect(timeline[0].quoteData.payload.ohlc.open).toBe(2475);
-      expect(timeline[0].quoteData.payload.ohlc.close).toBe(2500);
-      expect(timeline[0].quoteData.payload.depth.buy).toEqual([{ price: 2500, quantity: 100 }]);
-      expect(timeline[0].quoteData.payload.depth.sell).toEqual([{ price: 2501, quantity: 100 }]);
+      expect(timeline[0].quoteData.payload.ohlc?.low).toBe(2470);
+      expect(timeline[0].quoteData.payload.ohlc?.high).toBe(2510);
+      expect(timeline[0].quoteData.payload.ohlc?.open).toBe(2475);
+      expect(timeline[0].quoteData.payload.ohlc?.close).toBe(2500);
+      expect(timeline[0].quoteData.payload.depth?.buy).toEqual([{ price: 2500, quantity: 100 }]);
+      expect(timeline[0].quoteData.payload.depth?.sell).toEqual([{ price: 2501, quantity: 100 }]);
     }
 
     // Validate timeline entries are ordered by timestamp (ascending)

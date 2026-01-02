@@ -12,6 +12,7 @@ import { RedisManager } from "../../../../utils/redis";
 import { TokenManager } from "../../../../utils/token-manager";
 import { makeGrowwAPIRequest } from "../../../../utils/groww-api-request";
 import { parseDateTimeInTimezone } from "../../../../utils/timezone";
+import { formatDateTime } from "../../../../utils/date-formatter";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -320,8 +321,8 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         }
         groupedRuns[dateKey].push({
           id: run.id,
-          start_datetime: dayjs(run.startTime).format("YYYY-MM-DDTHH:mm:ss"),
-          end_datetime: dayjs(run.endTime).format("YYYY-MM-DDTHH:mm:ss"),
+          start_datetime: formatDateTime(run.startTime),
+          end_datetime: formatDateTime(run.endTime),
           completed: run.completed,
           orderCount: run._count.orders,
         });
@@ -412,8 +413,8 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         message: "Run created successfully",
         data: {
           id: run.id,
-          start_datetime: dayjs(run.startTime).format("YYYY-MM-DDTHH:mm:ss"),
-          end_datetime: dayjs(run.endTime).format("YYYY-MM-DDTHH:mm:ss"),
+          start_datetime: formatDateTime(run.startTime),
+          end_datetime: formatDateTime(run.endTime),
           completed: run.completed,
         },
       });
@@ -482,8 +483,8 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         message: "Run updated successfully",
         data: {
           id: updatedRun.id,
-          start_datetime: dayjs(updatedRun.startTime).format("YYYY-MM-DDTHH:mm:ss"),
-          end_datetime: dayjs(updatedRun.endTime).format("YYYY-MM-DDTHH:mm:ss"),
+          start_datetime: formatDateTime(updatedRun.startTime),
+          end_datetime: formatDateTime(updatedRun.endTime),
           completed: updatedRun.completed,
         },
       });
@@ -619,7 +620,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
             entryPrice: Number(order.entryPrice),
             stopLossPrice: Number(order.stopLossPrice),
             takeProfitPrice: Number(order.takeProfitPrice),
-            timestamp: dayjs(order.timestamp).format("YYYY-MM-DDTHH:mm:ss"),
+            timestamp: formatDateTime(order.timestamp),
             runId: order.runId,
             dynamicTakeProfitPrice: gainMetrics.dynamicTakeProfitPrice,
             targetAchieved: gainMetrics.targetAchieved,
@@ -627,11 +628,11 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
             targetGainPercentageActual: gainMetrics.targetGainPercentageActual,
             timeToTargetMinutes: gainMetrics.timeToTargetMinutes,
             targetTimestamp: gainMetrics.targetTimestamp
-              ? dayjs(gainMetrics.targetTimestamp).format("YYYY-MM-DDTHH:mm:ss")
+              ? formatDateTime(gainMetrics.targetTimestamp)
               : undefined,
             stopLossHit: gainMetrics.stopLossHit,
             stopLossTimestamp: gainMetrics.stopLossTimestamp
-              ? dayjs(gainMetrics.stopLossTimestamp).format("YYYY-MM-DDTHH:mm:ss")
+              ? formatDateTime(gainMetrics.stopLossTimestamp)
               : undefined,
             timeToStopLossMinutes: gainMetrics.timeToStopLossMinutes,
           };
@@ -734,7 +735,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
           entryPrice: Number(order.entryPrice),
           stopLossPrice: Number(order.stopLossPrice),
           takeProfitPrice: Number(order.takeProfitPrice),
-          datetime: dayjs(order.timestamp).format("YYYY-MM-DDTHH:mm:ss"),
+          datetime: formatDateTime(order.timestamp),
           runId: order.runId,
         },
       });

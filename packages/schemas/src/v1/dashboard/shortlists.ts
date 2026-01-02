@@ -20,7 +20,7 @@ export const getShortlists = {
       shortlist: z
         .object({
           id: z.string(),
-          timestamp: z.string(),
+          timestamp: z.string(), // Format: YYYY-MM-DDTHH:mm:ss (UTC)
           shortlistType: z.enum(shortlistTypeEnum),
           entries: z.array(shortlistEntrySchema),
         })

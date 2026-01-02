@@ -93,14 +93,16 @@ const dailyPersistentCompaniesRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { date: dateParam, timezone = "Asia/Kolkata", type: shortlistType } = validationResult;
+      const { date: dateParam, type: shortlistType } = validationResult;
 
-      // Convert date string to UTC Date representing midnight IST of that date
-      const dateUTC = parseDateInTimezone(dateParam, timezone);
+      // Get start of day in the specified timezone (midnight of that date)
+      const startOfDayInTimezone = dayjs.tz(`${dateParam} 00:00:00`, "Asia/Kolkata");
+      // Get end of day in the specified timezone (just before midnight of next day)
+      const endOfDayInTimezone = startOfDayInTimezone.add(1, "day").subtract(1, "millisecond");
 
-      // Calculate start and end of day (in UTC to match database timestamps)
-      const startOfDay = dayjs(dateUTC).utc().startOf("day");
-      const endOfDay = dayjs(dateUTC).utc().endOf("day");
+      // Convert to UTC for database query
+      const startOfDay = startOfDayInTimezone.utc();
+      const endOfDay = endOfDayInTimezone.utc();
 
       // Fetch all snapshots for the requested list type for the entire day
       const snapshots = await prisma.shortlistSnapshot.findMany({
@@ -127,7 +129,7 @@ const dailyPersistentCompaniesRoutes: FastifyPluginAsync = async (fastify) => {
         statusCode: 200,
         message: "Daily persistent companies fetched successfully",
         data: {
-          date: dayjs(dateUTC).format("YYYY-MM-DD"),
+          date: dayjs(startOfDayInTimezone).format("YYYY-MM-DD"),
           type: shortlistType,
           totalSnapshots: snapshots.length,
           companies,

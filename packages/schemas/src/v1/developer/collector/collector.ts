@@ -37,7 +37,7 @@ export const createShortlistSnapshot = {
   response: apiResponseSchema.extend({
     data: z.object({
       id: z.string(),
-      timestamp: z.string(),
+      timestamp: z.string(), // Format: YYYY-MM-DDTHH:mm:ss (UTC)
       shortlistType: shortlistTypeSchema,
       entriesCount: z.number(),
     }),
@@ -57,7 +57,7 @@ export const createQuoteSnapshots = {
   response: apiResponseSchema.extend({
     data: z.object({
       count: z.number(),
-      timestamp: z.string(),
+      timestamp: z.string(), // Format: YYYY-MM-DDTHH:mm:ss (UTC)
     }),
   }),
 };
@@ -76,7 +76,7 @@ export const createNiftyQuote = {
   response: apiResponseSchema.extend({
     data: z.object({
       id: z.string(),
-      timestamp: z.string(),
+      timestamp: z.string(), // Format: YYYY-MM-DDTHH:mm:ss (UTC)
       dayChangePerc: z.number(),
     }),
   }),

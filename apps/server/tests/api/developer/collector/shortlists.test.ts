@@ -105,7 +105,7 @@ test.describe("POST /v1/developer/collector/shortlists", () => {
     const requestBody = {
       data: {
         timestamp: "2025-12-31T09:15:00",
-        timezone: "UTC",
+        timezone: "Asia/Kolkata",
         shortlistType: "TOP_GAINERS" as const,
       },
     };
@@ -134,6 +134,7 @@ test.describe("POST /v1/developer/collector/shortlists", () => {
     const body = response.data;
     expect(body.statusCode).toBe(201);
     expect(body.data.shortlistType).toBe("TOP_GAINERS");
+    sharedTracker.trackShortlistSnapshot(response.data.data.id);
   });
 
   test("should return 400 when timestamp format is invalid", async () => {
@@ -179,7 +180,7 @@ test.describe("POST /v1/developer/collector/shortlists", () => {
     expect(body.statusCode).toBe(201);
     expect(body.message).toBe("Shortlist snapshot created successfully");
     expect(body.data.id).toBeDefined();
-    expect(body.data.timestamp).toBe("2025-12-26T10:06:00.000Z");
+    expect(body.data.timestamp).toBe("2025-12-26T04:36:00");
     expect(body.data.shortlistType).toBe("TOP_GAINERS");
     expect(body.data.entriesCount).toBe(5);
 
@@ -188,6 +189,7 @@ test.describe("POST /v1/developer/collector/shortlists", () => {
       v1_developer_collector_schemas.createShortlistSnapshot.response.parse(body);
     expect(validatedData.data.id).toBe(body.data.id);
     expect(validatedData.data.shortlistType).toBe("TOP_GAINERS");
+    sharedTracker.trackShortlistSnapshot(response.data.data.id);
   });
 
   test("should return 201 and create shortlist snapshot for VOLUME_SHOCKERS", async () => {
@@ -203,7 +205,7 @@ test.describe("POST /v1/developer/collector/shortlists", () => {
     expect(body.statusCode).toBe(201);
     expect(body.message).toBe("Shortlist snapshot created successfully");
     expect(body.data.id).toBeDefined();
-    expect(body.data.timestamp).toBe("2025-12-26T10:06:00.000Z");
+    expect(body.data.timestamp).toBe("2025-12-26T04:36:00");
     expect(body.data.shortlistType).toBe("VOLUME_SHOCKERS");
     expect(body.data.entriesCount).toBe(5);
 
@@ -212,6 +214,7 @@ test.describe("POST /v1/developer/collector/shortlists", () => {
       v1_developer_collector_schemas.createShortlistSnapshot.response.parse(body);
     expect(validatedData.data.id).toBe(body.data.id);
     expect(validatedData.data.shortlistType).toBe("VOLUME_SHOCKERS");
+    sharedTracker.trackShortlistSnapshot(response.data.data.id);
   });
 
   test("should return 201 with empty entries array", async () => {
@@ -226,6 +229,7 @@ test.describe("POST /v1/developer/collector/shortlists", () => {
     const body = response.data;
     expect(body.statusCode).toBe(201);
     expect(body.data.entriesCount).toBe(0);
+    sharedTracker.trackShortlistSnapshot(response.data.data.id);
   });
 
   test("should convert Asia/Kolkata timezone to correct UTC time in database", async () => {
@@ -239,6 +243,7 @@ test.describe("POST /v1/developer/collector/shortlists", () => {
       requestBody
     );
     expect(response.status).toBe(201);
+    sharedTracker.trackShortlistSnapshot(response.data.data.id);
 
     // Verify the stored timestamp is converted to UTC (IST is UTC+5:30, so 9:15 AM IST = 3:45 AM UTC)
     const storedShortlist = await prisma.shortlistSnapshot.findUnique({
@@ -260,6 +265,7 @@ test.describe("POST /v1/developer/collector/shortlists", () => {
       requestBody
     );
     expect(response.status).toBe(201);
+    sharedTracker.trackShortlistSnapshot(response.data.data.id);
 
     // Verify the stored timestamp remains the same (no conversion needed)
     const storedShortlist = await prisma.shortlistSnapshot.findUnique({

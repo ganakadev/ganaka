@@ -7,6 +7,7 @@ import {
   QUOTE_TIMELINES_TEST_DATE,
   TEST_SYMBOL,
   createQuoteTimelineQueryForDashboard,
+  generateUniqueTestDate,
 } from "../../fixtures/test-data";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
@@ -116,7 +117,12 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
 
   test("should return 200 with quote timeline when valid params provided", async ({ tracker }) => {
     const snapshotCount = 3;
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE, snapshotCount, tracker);
+    await createMultipleQuoteSnapshots(
+      TEST_SYMBOL,
+      QUOTE_TIMELINES_TEST_DATE,
+      snapshotCount,
+      tracker
+    );
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
@@ -235,8 +241,14 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
       );
 
     // Market hours: 9:14 AM - 3:31 PM IST
-    const marketStart = dayjs.tz(`${QUOTE_TIMELINES_TEST_DATE} 09:14:00`, "Asia/Kolkata").utc();
-    const marketEnd = dayjs.tz(`${QUOTE_TIMELINES_TEST_DATE} 15:31:00`, "Asia/Kolkata").utc();
+    const marketStart = dayjs
+      .tz(`${QUOTE_TIMELINES_TEST_DATE} 09:14:00`, "Asia/Kolkata")
+      .utc()
+      .format("YYYY-MM-DDTHH:mm:ss");
+    const marketEnd = dayjs
+      .tz(`${QUOTE_TIMELINES_TEST_DATE} 15:31:00`, "Asia/Kolkata")
+      .utc()
+      .format("YYYY-MM-DDTHH:mm:ss");
 
     validatedData.data.quoteTimeline.forEach((entry) => {
       const entryTime = dayjs(entry.timestamp);
@@ -246,9 +258,10 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
   });
 
   test("should validate exact timestamp values ", async ({ tracker }) => {
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE, 2, tracker);
+    const testDate = generateUniqueTestDate("2025-12-30");
+    await createMultipleQuoteSnapshots(TEST_SYMBOL, testDate, 2, tracker);
 
-    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE);
+    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, testDate);
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
@@ -266,16 +279,21 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
       expect(firstEntry).toHaveProperty("timestamp");
       expect(firstEntry).toHaveProperty("nseSymbol");
 
-      expect(new Date(firstEntry.timestamp).toISOString()).toBe(
-        new Date("2025-12-30T03:45:00.000Z").toISOString()
-      );
+      // First snapshot is created at 9:15 AM IST = 3:45 AM UTC
+      const expectedTimestamp = dayjs.tz(`${testDate} 09:15:00`, "Asia/Kolkata").utc().format("YYYY-MM-DDTHH:mm:ss");
+      expect(firstEntry.timestamp).toBe(expectedTimestamp);
       expect(firstEntry.nseSymbol).toBe("RELIANCE");
     }
   });
 
   test("should validate exact quoteData values ", async ({ tracker }) => {
     const testQuoteData = createValidGrowwQuotePayload();
-    await createQuoteSnapshot(TEST_SYMBOL, `${QUOTE_TIMELINES_TEST_DATE}T10:06:00`, testQuoteData, tracker);
+    await createQuoteSnapshot(
+      TEST_SYMBOL,
+      `${QUOTE_TIMELINES_TEST_DATE}T10:06:00`,
+      testQuoteData,
+      tracker
+    );
 
     const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE);
     const queryString = new URLSearchParams(query).toString();
@@ -296,10 +314,10 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
       expect(firstEntry.quoteData).toHaveProperty("payload");
 
       expect(firstEntry.quoteData.status).toBe("SUCCESS");
-      expect(firstEntry.quoteData.payload.ohlc.open).toBe(2475.0);
-      expect(firstEntry.quoteData.payload.ohlc.high).toBe(2510.0);
-      expect(firstEntry.quoteData.payload.ohlc.low).toBe(2470.0);
-      expect(firstEntry.quoteData.payload.ohlc.close).toBe(2500.0);
+      expect(firstEntry.quoteData.payload.ohlc?.open).toBe(2475.0);
+      expect(firstEntry.quoteData.payload.ohlc?.high).toBe(2510.0);
+      expect(firstEntry.quoteData.payload.ohlc?.low).toBe(2470.0);
+      expect(firstEntry.quoteData.payload.ohlc?.close).toBe(2500.0);
     }
   });
 });

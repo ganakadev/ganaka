@@ -7,10 +7,16 @@ import {
   createValidGrowwQuotePayload,
   createShortlistsQuery,
   TEST_DATETIME,
+  generateUniqueTestDatetime,
 } from "../../fixtures/test-data";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
 import { TestDataTracker } from "../../helpers/test-tracker";
-import z from "zod";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 let developerToken: string;
 let developerId: string;
@@ -128,18 +134,19 @@ test.describe("GET /v1/dashboard/shortlists", () => {
   });
 
   test("should return 200 with shortlist data when valid params provided", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
     // Create shortlist snapshot
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
     // Create quote snapshots for each entry
     for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData, tracker);
+      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
     }
 
-    const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
+    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/shortlists?${queryString}`,
@@ -161,15 +168,16 @@ test.describe("GET /v1/dashboard/shortlists", () => {
   test("should validate shortlist structure (id, timestamp, shortlistType, entries)", async ({
     tracker,
   }) => {
+    const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
     for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData, tracker);
+      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
     }
 
-    const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
+    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/shortlists?${queryString}`,
@@ -198,15 +206,16 @@ test.describe("GET /v1/dashboard/shortlists", () => {
   test("should validate entries structure (nseSymbol, name, price, quoteData)", async ({
     tracker,
   }) => {
+    const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
     for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData, tracker);
+      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
     }
 
-    const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
+    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/shortlists?${queryString}`,
@@ -232,15 +241,16 @@ test.describe("GET /v1/dashboard/shortlists", () => {
   });
 
   test("should validate quoteData structure matches schema", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
     for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData, tracker);
+      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
     }
 
-    const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
+    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/shortlists?${queryString}`,
@@ -268,15 +278,16 @@ test.describe("GET /v1/dashboard/shortlists", () => {
   });
 
   test("should validate exact timestamp matches requested datetime", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
     for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData, tracker);
+      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
     }
 
-    const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
+    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/shortlists?${queryString}`,
@@ -291,23 +302,24 @@ test.describe("GET /v1/dashboard/shortlists", () => {
 
     if (validatedData.data.shortlist) {
       // Validate timestamp is within 1 second of requested datetime
-      const requestedTime = new Date(TEST_DATETIME).getTime();
-      const returnedTime = new Date(validatedData.data.shortlist.timestamp).getTime();
+      const requestedTime = dayjs(testDatetime).utc().toDate().getTime();
+      const returnedTime = dayjs.utc(validatedData.data.shortlist.timestamp).toDate().getTime();
       const timeDiff = Math.abs(returnedTime - requestedTime);
-      expect(timeDiff).toBeLessThan(1000); // Within 1 second
+      expect(timeDiff).toBeLessThan(1000); // Within 1 seconds
     }
   });
 
   test("should validate exact entry values ", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
     for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, TEST_DATETIME, testQuoteData, tracker);
+      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
     }
 
-    const query = createShortlistsQuery(TEST_DATETIME, "TOP_GAINERS");
+    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/shortlists?${queryString}`,

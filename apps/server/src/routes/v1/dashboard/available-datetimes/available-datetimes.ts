@@ -3,6 +3,7 @@ import { prisma } from "../../../../utils/prisma";
 import { sendResponse } from "../../../../utils/sendResponse";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
 import z from "zod";
+import { formatDateTime, formatDate } from "../../../../utils/date-formatter";
 
 const availableDatetimesRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/", async (request, reply) => {
@@ -22,14 +23,14 @@ const availableDatetimesRoutes: FastifyPluginAsync = async (fastify) => {
       const dateMap = new Map<string, string[]>();
 
       snapshots.forEach((snapshot) => {
-        const dateKey = snapshot.timestamp.toISOString().split("T")[0];
-        const timestampISO = snapshot.timestamp.toISOString();
+        const dateKey = formatDate(snapshot.timestamp);
+        const timestampUTC = formatDateTime(snapshot.timestamp);
 
         if (!dateMap.has(dateKey)) {
           dateMap.set(dateKey, []);
         }
 
-        dateMap.get(dateKey)!.push(timestampISO);
+        dateMap.get(dateKey)!.push(timestampUTC);
       });
 
       // Convert to response format
