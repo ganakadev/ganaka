@@ -1,21 +1,19 @@
-import {
-  v1_developer_groww_schemas,
-  v1_developer_lists_schemas,
-  v1_dashboard_schemas,
-  growwQuotePayloadSchema,
-  growwQuoteSchema,
-} from "@ganaka/schemas";
+import { growwQuotePayloadSchema, growwQuoteSchema, v1_dashboard_schemas } from "@ganaka/schemas";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
 import dotenv from "dotenv";
 import { z } from "zod";
 import { fetchCandles } from "./callbacks/fetchCandles";
 import { fetchQuote } from "./callbacks/fetchQuote";
 import { fetchQuoteTimeline } from "./callbacks/fetchQuoteTimeline";
 import { fetchShortlist } from "./callbacks/fetchShortlist";
-import { logger } from "./utils/logger";
+import { placeOrder } from "./callbacks/placeOrder";
 import { ApiClient } from "./utils/apiClient";
-import { placeOrder, PlaceOrderData } from "./callbacks/placeOrder";
+import { logger } from "./utils/logger";
 import { runMinuteLoop } from "./utils/minute-loop";
 dotenv.config();
+
+dayjs.extend(timezone);
 
 export { growwQuotePayloadSchema, growwQuoteSchema };
 
@@ -25,28 +23,11 @@ export type FetchCandlesResponse = Awaited<ReturnType<ReturnType<typeof fetchCan
 export type FetchShortlistResponse = Awaited<ReturnType<ReturnType<typeof fetchShortlist>>>;
 
 export interface RunContext {
-  placeOrder: (data: PlaceOrderData) => Promise<void>;
-  fetchCandles: (
-    params: z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.query>
-  ) => Promise<
-    z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response>["data"]
-  >;
-  fetchQuote: (
-    symbol: string,
-    datetime?: Date
-  ) => Promise<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"] | null>;
-  fetchQuoteTimeline: (
-    symbol: string,
-    date: Date
-  ) => Promise<
-    z.infer<
-      typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.response
-    >["data"]["quoteTimeline"]
-  >;
-  fetchShortlist: (
-    type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
-    datetime?: Date
-  ) => Promise<z.infer<typeof v1_developer_lists_schemas.getLists.response>["data"] | null>;
+  placeOrder: ReturnType<typeof placeOrder>;
+  fetchCandles: ReturnType<typeof fetchCandles>;
+  fetchQuote: ReturnType<typeof fetchQuote>;
+  fetchQuoteTimeline: ReturnType<typeof fetchQuoteTimeline>;
+  fetchShortlist: ReturnType<typeof fetchShortlist>;
   currentTimestamp: Date;
 }
 
@@ -83,13 +64,17 @@ export async function ganaka<T>({
 
   // Create a new run via API
   let runId: string | null = null;
+  const createRunBody: z.infer<
+    typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.body
+  > = {
+    start_datetime: dayjs.tz(startTime, "Asia/Kolkata").format("YYYY-MM-DDTHH:mm:ss"),
+    end_datetime: dayjs.tz(endTime, "Asia/Kolkata").format("YYYY-MM-DDTHH:mm:ss"),
+    timezone: "Asia/Kolkata",
+  };
   try {
     const createRunResponse = await apiClient.post<
       z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response>
-    >("/v1/dashboard/runs", {
-      startTime: startTime.toISOString(),
-      endTime: endTime.toISOString(),
-    });
+    >("/v1/dashboard/runs", createRunBody);
 
     if (createRunResponse.data) {
       runId = createRunResponse.data.id;

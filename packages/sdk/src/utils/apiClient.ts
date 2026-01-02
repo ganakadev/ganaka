@@ -89,7 +89,9 @@ export class ApiClient {
   async delete<T>(path: string): Promise<T> {
     try {
       const response = await axios.delete<T>(`${this.apiDomain}${path}`, {
-        headers: this.getHeaders(),
+        headers: {
+          Authorization: this.getHeaders().Authorization,
+        },
       });
       return response.data;
     } catch (error) {

@@ -39,6 +39,7 @@ export default defineConfig({
         "module",
         "fs",
         "stream",
+        "dayjs",
         "crypto",
         // Node.js built-in modules (node: prefix)
         /^node:/,
