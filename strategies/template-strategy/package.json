@@ -1,0 +1,26 @@
+{
+  "name": "@ganaka/template-strategy",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "env-cmd -f ../../.env --silent nodemon",
+    "build": "env-cmd -f ../../.env --silent tsc",
+    "start": "env-cmd -f ../../.env --silent node dist/index.js",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ganaka/sdk": "workspace:*",
+    "axios": "^1.13.2",
+    "dayjs": "^1.11.19",
+    "lodash": "^4.17.21",
+    "zod": "^4.3.2"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.21",
+    "@types/node": "^20.10.5",
+    "nodemon": "^3.0.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.3.3"
+  }
+}
