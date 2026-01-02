@@ -191,21 +191,17 @@ test.describe("GET /v1/dashboard/daily-unique-companies", () => {
   test("should validate exact uniqueCount value", async ({ tracker }) => {
     // Create snapshots with exactly 10 unique companies
     const testDateTime = generateUniqueTestDatetime();
-    console.log("testDateTime", testDateTime);
     await createShortlistSnapshotsWithUniqueCompanies("top-gainers", testDateTime, 10, tracker);
 
     const query = createDailyUniqueCompaniesQuery(
       dayjs.tz(testDateTime, "Asia/Kolkata").format("YYYY-MM-DD"),
       "TOP_GAINERS"
     );
-    console.log("query", query);
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/daily-unique-companies?${queryString}`,
       developerToken
     );
-
-    console.log("response", response.data);
 
     expect(response.status).toBe(200);
     const validatedData =
