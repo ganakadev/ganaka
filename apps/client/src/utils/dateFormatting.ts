@@ -22,3 +22,12 @@ export function formatDateForAPI(date: Date | null | undefined): string {
   if (!date) return "";
   return dayjs(date).format("YYYY-MM-DD");
 }
+
+/**
+ * Converts a UTC Date object to an IST Dayjs object with the correct offset
+ * @param date - Date object to convert to IST
+ * @returns Dayjs object in IST timezone
+ */
+export const convertUTCToIST = (date: Date): dayjs.Dayjs => {
+  return dayjs.utc(date).add(330, "minute").tz("Asia/Kolkata");
+};

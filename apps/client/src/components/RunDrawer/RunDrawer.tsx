@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 import { dashboardAPI } from "../../store/api/dashboardApi";
 import type { Order, Run } from "../../types";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
-import { formatDateForAPI } from "../../utils/dateFormatting";
+import { convertUTCToIST, formatDateForAPI } from "../../utils/dateFormatting";
 import {
   CandleChart,
   type CandleData,
@@ -75,18 +75,16 @@ const StockChart = ({
 
     // Create markers for each order
     return orders.map((order, index) => {
-      // Convert order timestamp to UTC dayjs and find closest candle
-      const orderTime = dayjs.utc(order.timestamp).format("YYYY-MM-DDTHH:mm");
+      // Convert order timestamp (already UTC Date) to Unix timestamp and find closest candle
+      const orderTime = convertUTCToIST(order.timestamp);
+      // TODO: Find a better way to convert to Unix timestamp instead of converting to UTC and then to Unix timestamp
+      const orderUnixTime = dayjs.utc(orderTime.format("YYYY-MM-DDTHH:mm:ss")).unix();
       let closestCandle = candleData[0];
       let minDiff = Infinity;
 
       for (const candle of candleData) {
-        const candleTime = dayjs
-          .unix(candle.time as number)
-          .utc()
-          .format("YYYY-MM-DDTHH:mm");
-        const diff = Math.abs(dayjs.utc(orderTime).diff(dayjs.utc(candleTime), "minutes"));
-
+        // Compare Unix timestamps directly (both are in UTC)
+        const diff = Math.abs(orderUnixTime - (candle.time as number));
         if (diff < minDiff) {
           minDiff = diff;
           closestCandle = candle;
@@ -95,6 +93,7 @@ const StockChart = ({
 
       // Use different colors for multiple orders
       const color = colors[index % colors.length];
+      console.log("closestCandle.time", closestCandle.time);
 
       return {
         time: closestCandle.time,
@@ -439,7 +438,7 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
                 </Table.Td>
                 <Table.Td>
                   <span className="text-sm">
-                    {dayjs(order.timestamp).format("DD-MM-YYYY HH:mm:ss")}
+                    {dayjs(convertUTCToIST(order.timestamp)).format("DD-MM-YYYY HH:mm:ss")}
                   </span>
                 </Table.Td>
               </Table.Tr>

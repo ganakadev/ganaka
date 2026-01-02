@@ -8,7 +8,7 @@ import { dashboardAPI } from "../../store/api/dashboardApi";
 import type { ShortlistEntryWithQuote } from "../../types";
 import { calculateBuyerControlPercentage } from "../../utils/buyerControl";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
-import { formatDateForAPI } from "../../utils/dateFormatting";
+import { convertUTCToIST, formatDateForAPI } from "../../utils/dateFormatting";
 import {
   CandleChart,
   type CandleData,
@@ -94,8 +94,7 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
             // API returns UTC timestamps, so we parse them as UTC directly
             // Unix timestamps are timezone-agnostic, so no timezone conversion needed
             // TODO: Find a better way to implement this offset instead of hardcoding it
-            const offsetToISTFromUTC = 330;
-            const time = dayjs.utc(timeline.timestamp).add(offsetToISTFromUTC, "minute");
+            const time = convertUTCToIST(dayjs.utc(timeline.timestamp).toDate());
             return {
               time: time.unix() as Time,
               value: buyerControlPercentage,
