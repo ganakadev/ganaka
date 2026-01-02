@@ -134,6 +134,7 @@ test.describe("POST /v1/developer/collector/nifty", () => {
     const body = response.data;
     expect(body.statusCode).toBe(201);
     expect(body.data.dayChangePerc).toBe(0.75);
+    sharedTracker.trackNiftyQuote(response.data.data.id);
   });
 
   test("should return 400 when timestamp format is invalid", async () => {
@@ -172,6 +173,7 @@ test.describe("POST /v1/developer/collector/nifty", () => {
     const validatedData = v1_developer_collector_schemas.createNiftyQuote.response.parse(body);
     expect(validatedData.data.id).toBe(body.data.id);
     expect(validatedData.data.dayChangePerc).toBe(dayChangePerc);
+    sharedTracker.trackNiftyQuote(response.data.data.id);
   });
 
   test("should return 201 with negative dayChangePerc", async () => {
@@ -187,6 +189,7 @@ test.describe("POST /v1/developer/collector/nifty", () => {
     const body = response.data;
     expect(body.statusCode).toBe(201);
     expect(body.data.dayChangePerc).toBe(dayChangePerc);
+    sharedTracker.trackNiftyQuote(response.data.data.id);
   });
 
   test("should return 201 with zero dayChangePerc", async () => {
@@ -202,6 +205,7 @@ test.describe("POST /v1/developer/collector/nifty", () => {
     const body = response.data;
     expect(body.statusCode).toBe(201);
     expect(body.data.dayChangePerc).toBe(dayChangePerc);
+    sharedTracker.trackNiftyQuote(response.data.data.id);
   });
 
   test("should convert Asia/Kolkata timezone to correct UTC time in database", async () => {
@@ -223,6 +227,7 @@ test.describe("POST /v1/developer/collector/nifty", () => {
 
     expect(storedNifty).toBeDefined();
     expect(storedNifty!.timestamp.toISOString()).toBe("2025-12-31T03:45:00.000Z");
+    sharedTracker.trackNiftyQuote(response.data.data.id);
   });
 
   test("should store UTC timezone unchanged in database", async () => {
@@ -245,5 +250,6 @@ test.describe("POST /v1/developer/collector/nifty", () => {
 
     expect(storedNifty).toBeDefined();
     expect(storedNifty!.timestamp.toISOString()).toBe("2025-12-31T16:45:00.000Z");
+    sharedTracker.trackNiftyQuote(response.data.data.id);
   });
 });

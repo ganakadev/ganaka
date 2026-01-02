@@ -444,7 +444,6 @@ export async function createShortlistSnapshotsWithUniqueCompanies(
   const startHour = 9;
   const startMinute = 15;
   const intervalMinutes = Math.floor((15 * 60 - 15) / snapshotsNeeded);
-  console.log("snapshotsNeeded", snapshotsNeeded);
 
   for (let i = 0; i < snapshotsNeeded; i++) {
     const minutes = startMinute + i * intervalMinutes;
@@ -461,8 +460,6 @@ export async function createShortlistSnapshotsWithUniqueCompanies(
     if (i === snapshotsNeeded - 1 && endIdx < uniqueCompanyCount) {
       snapshotEntries.push(...allCompanies.slice(endIdx));
     }
-
-    console.log("snapshotEntries", snapshotEntries);
 
     const snapshot = await prisma.shortlistSnapshot.create({
       data: {
