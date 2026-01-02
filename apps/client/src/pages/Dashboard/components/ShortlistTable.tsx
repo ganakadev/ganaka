@@ -1,7 +1,8 @@
 import type { shortlistEntrySchema } from "@ganaka/schemas";
-import { Table } from "@mantine/core";
+import { Skeleton, Table } from "@mantine/core";
 import { z } from "zod";
 import type { ShortlistEntryWithQuote } from "../../../types";
+import { times } from "lodash";
 
 export const ShortlistTable = ({
   shortlist,
@@ -14,10 +15,6 @@ export const ShortlistTable = ({
   loading: boolean;
   selectedDate: Date | null;
 }) => {
-  console.log(shortlist);
-  console.log(onRowClick);
-  console.log(loading);
-  console.log(selectedDate);
   // DRAW
   return (
     <div className="mb-8">
@@ -33,13 +30,12 @@ export const ShortlistTable = ({
           <Table.Tr>
             <Table.Th className="w-[55%]">Company Name</Table.Th>
             <Table.Th className="w-[20%]">Symbol</Table.Th>
-            <Table.Th className="w-[15%]">Buyer Control %</Table.Th>
             <Table.Th ta="right" className="text-right w-[15%]">
               Price per share
             </Table.Th>
           </Table.Tr>
         </Table.Thead>
-        {/* <Table.Tbody>
+        <Table.Tbody>
           {!selectedDate ? (
             <Table.Tr>
               <Table.Td colSpan={4} className="text-center py-8">
@@ -68,20 +64,22 @@ export const ShortlistTable = ({
               <Table.Tr
                 key={`${entry.nseSymbol}-${index}`}
                 className="cursor-pointer"
-                onClick={() => onRowClick(entry)}
+                onClick={() => {
+                  if (entry.quoteData) {
+                    onRowClick({
+                      name: entry.name,
+                      nseSymbol: entry.nseSymbol,
+                      price: entry.price,
+                      quoteData: entry.quoteData,
+                    });
+                  }
+                }}
               >
                 <Table.Td className="w-[55%]">
                   <span className="font-medium">{entry.name}</span>
                 </Table.Td>
                 <Table.Td className="w-[20%]">
                   <span className="text-sm">{entry.nseSymbol}</span>
-                </Table.Td>
-                <Table.Td className="w-[20%]">
-                  <span className="text-sm">
-                    {entry.buyerControlPercentage
-                      ? `${entry.buyerControlPercentage.toFixed(2)}%`
-                      : "N/A"}
-                  </span>
                 </Table.Td>
                 <Table.Td className="text-right w-[25%]">
                   <span className="font-bold">
@@ -95,7 +93,7 @@ export const ShortlistTable = ({
               </Table.Tr>
             ))
           )}
-        </Table.Tbody> */}
+        </Table.Tbody>
       </Table>
     </div>
   );

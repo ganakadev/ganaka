@@ -1,12 +1,17 @@
 import { ActionIcon, Badge, Button, Card, Checkbox, ScrollArea, Text, Title } from "@mantine/core";
 import { Icon } from "@iconify/react";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { useEffect, useMemo, useState } from "react";
 import type { MouseEvent } from "react";
 import { dashboardAPI } from "../../../store/api/dashboardApi";
 import type { Run } from "../../../types";
 import { useRTKNotifier } from "../../../utils/hooks/useRTKNotifier";
 import { useDeleteConfirmModal } from "../../../utils/hooks/useDeleteConfirmModal";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const RunsSidebar = ({
   onRunClick,
@@ -216,6 +221,7 @@ export const RunsSidebar = ({
                       onClick={() =>
                         onRunClick?.({
                           ...run,
+                          // API returns UTC datetime strings, Date constructor handles them correctly
                           startTime: new Date(run.start_datetime),
                           endTime: new Date(run.end_datetime),
                         })
@@ -237,8 +243,9 @@ export const RunsSidebar = ({
                             </div>
                             <div className="h-full min-w-0 flex-1">
                               <Text size="xs" c="dimmed" truncate className="leading-none!">
-                                {dayjs(run.start_datetime).format("HH:mm")} -{" "}
-                                {dayjs(run.end_datetime).format("HH:mm")}
+                                {/* Parse UTC datetime strings and convert to local time for display */}
+                                {dayjs.utc(run.start_datetime).tz("Asia/Kolkata").format("HH:mm")} -{" "}
+                                {dayjs.utc(run.end_datetime).tz("Asia/Kolkata").format("HH:mm")}
                               </Text>
                             </div>
                           </div>
@@ -260,6 +267,7 @@ export const RunsSidebar = ({
                                 handleDelete(
                                   {
                                     ...run,
+                                    // API returns UTC datetime strings, Date constructor handles them correctly
                                     startTime: new Date(run.start_datetime),
                                     endTime: new Date(run.end_datetime),
                                   },

@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { dashboardAPI } from "../../store/api/dashboardApi";
 import type { Order, Run } from "../../types";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
+import { convertUTCToIST, formatDateForAPI } from "../../utils/dateFormatting";
 import {
   CandleChart,
   type CandleData,
@@ -29,18 +30,18 @@ const StockChart = ({
   isExpanded: boolean;
 }) => {
   // API
-  // Normalize runStartTime to ISO string: handle both Date objects and string values
-  const runStartTimeISO =
+  // Normalize runStartTime to date string for API: handle both Date objects and string values
+  const runStartTimeDate =
     runStartTime === null || runStartTime === undefined
-      ? ""
+      ? null
       : typeof runStartTime === "string"
-      ? runStartTime
-      : runStartTime.toISOString();
+      ? new Date(runStartTime)
+      : runStartTime;
 
   const { data: candlesData, error: candleError } = dashboardAPI.useGetCandlesQuery(
     {
       symbol: symbol,
-      date: runStartTimeISO,
+      date: formatDateForAPI(runStartTimeDate),
       interval: "1minute",
     },
     {
@@ -74,18 +75,16 @@ const StockChart = ({
 
     // Create markers for each order
     return orders.map((order, index) => {
-      // Convert order timestamp to dayjs and find closest candle
-      const orderTime = dayjs(order.timestamp).format("YYYY-MM-DDTHH:mm");
+      // Convert order timestamp (already UTC Date) to Unix timestamp and find closest candle
+      const orderTime = convertUTCToIST(order.timestamp);
+      // TODO: Find a better way to convert to Unix timestamp instead of converting to UTC and then to Unix timestamp
+      const orderUnixTime = dayjs.utc(orderTime.format("YYYY-MM-DDTHH:mm:ss")).unix();
       let closestCandle = candleData[0];
       let minDiff = Infinity;
 
       for (const candle of candleData) {
-        const candleTime = dayjs
-          .unix(candle.time as number)
-          .utc()
-          .format("YYYY-MM-DDTHH:mm");
-        const diff = Math.abs(dayjs(orderTime).diff(dayjs(candleTime), "minutes"));
-
+        // Compare Unix timestamps directly (both are in UTC)
+        const diff = Math.abs(orderUnixTime - (candle.time as number));
         if (diff < minDiff) {
           minDiff = diff;
           closestCandle = candle;
@@ -94,6 +93,7 @@ const StockChart = ({
 
       // Use different colors for multiple orders
       const color = colors[index % colors.length];
+      console.log("closestCandle.time", closestCandle.time);
 
       return {
         time: closestCandle.time,
@@ -203,10 +203,12 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
   });
 
   // VARIABLES
+  // Parse UTC datetime strings from API responses
+  // Date constructor correctly handles UTC strings in YYYY-MM-DDTHH:mm:ss format
   const orders: Order[] =
     runOrdersAPI.data?.data.map((order) => ({
       ...order,
-      timestamp: new Date(order.timestamp),
+      timestamp: new Date(order.timestamp), // API returns UTC string, Date constructor handles it correctly
       stopLossTimestamp: order.stopLossTimestamp ? new Date(order.stopLossTimestamp) : undefined,
       targetTimestamp: order.targetTimestamp ? new Date(order.targetTimestamp) : undefined,
       timeToStopLossMinutes: order.timeToStopLossMinutes,
@@ -436,7 +438,7 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
                 </Table.Td>
                 <Table.Td>
                   <span className="text-sm">
-                    {dayjs(order.timestamp).format("DD-MM-YYYY HH:mm:ss")}
+                    {dayjs(convertUTCToIST(order.timestamp)).format("DD-MM-YYYY HH:mm:ss")}
                   </span>
                 </Table.Td>
               </Table.Tr>
