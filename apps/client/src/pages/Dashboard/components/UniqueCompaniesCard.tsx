@@ -1,6 +1,7 @@
 import { Card, Skeleton } from "@mantine/core";
 import { dashboardAPI } from "../../../store/api/dashboardApi";
 import { useRTKNotifier } from "../../../utils/hooks/useRTKNotifier";
+import { formatDateForAPI } from "../../../utils/dateFormatting";
 
 export const UniqueCompaniesCard = ({
   selectedDate,
@@ -17,7 +18,7 @@ export const UniqueCompaniesCard = ({
     error,
   } = dashboardAPI.useGetDailyUniqueCompaniesQuery(
     {
-      date: selectedDate?.toISOString() || "",
+      date: formatDateForAPI(selectedDate),
       type: activeTab || "TOP_GAINERS",
     },
     {

@@ -1,12 +1,18 @@
 import { Avatar, Menu, SegmentedControl } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { startTransition, useCallback, useEffect, useRef, useState } from "react";
 import { dashboardAPI } from "../../../store/api/dashboardApi";
 import { useRTKNotifier } from "../../../utils/hooks/useRTKNotifier";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
 import { authLocalStorage } from "../../../utils/authLocalStorage";
+import { formatDateTimeForAPI } from "../../../utils/dateFormatting";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const Header = ({
   activeTab,
@@ -43,7 +49,10 @@ export const Header = ({
       const dateKey = dayjs(date).format("YYYY-MM-DD");
       const dateData = getAvailableDatetimesAPI.data.data.dates.find((d) => d.date === dateKey);
       if (!dateData) return [];
-      return Array.from(new Set(dateData.timestamps.map((ts) => dayjs(ts).format("HH:mm"))));
+      // API returns UTC timestamps, convert to local time for display
+      return Array.from(
+        new Set(dateData.timestamps.map((ts) => dayjs.utc(ts).tz("Asia/Kolkata").format("HH:mm")))
+      );
     },
     [getAvailableDatetimesAPI.data]
   );
@@ -65,7 +74,9 @@ export const Header = ({
 
       // only update state if the time is not at default (00:00)
       if (valueDayjs.format("HH:mm") !== "00:00") {
-        searchParams.set("date", valueDayjs.format("YYYY-MM-DDTHH:mm"));
+        // Store datetime in UTC format for search params (YYYY-MM-DDTHH:mm:ss)
+        const utcDateTime = formatDateTimeForAPI(valueDayjs.toDate());
+        searchParams.set("date", utcDateTime);
         setSearchParams(searchParams);
         setSelectedDate(valueDayjs.toDate());
         setLocalSelectedDate(valueDayjs.toDate());
@@ -87,7 +98,8 @@ export const Header = ({
   const processSearchParamDate = useCallback(
     (date: string) => {
       try {
-        const dateDayjs = dayjs(date);
+        // Parse the UTC datetime string from search params
+        const dateDayjs = dayjs.utc(date);
         if (!dateDayjs.isValid()) {
           notifications.show({
             title: "Invalid date",
@@ -97,10 +109,11 @@ export const Header = ({
           return;
         }
 
+        const dateKey = dateDayjs.format("YYYY-MM-DD");
         if (
-          !getAvailableDatetimesAPI.data?.data.dates?.some(
-            (d) => d.date === dateDayjs.format("YYYY-MM-DD")
-          )
+          !getAvailableDatetimesAPI.data?.data.dates?.some((d) => {
+            return d.date === dateKey;
+          })
         ) {
           notifications.show({
             title: "No data available",
@@ -112,14 +125,15 @@ export const Header = ({
           return;
         }
 
-        if (
-          !getAvailableDatetimesAPI.data?.data.dates
-            ?.find((d) => d.date === dateDayjs.format("YYYY-MM-DD"))
-            // timestamp is in UTC with format 2025-12-23T03:39:00.031Z
-            ?.timestamps.find((timestamp) => {
-              return dayjs(timestamp).format("HH:mm") === dateDayjs.format("HH:mm");
-            })
-        ) {
+        // Compare UTC timestamps - API returns UTC strings in YYYY-MM-DDTHH:mm:ss format
+        const timeMatch = getAvailableDatetimesAPI.data?.data.dates
+          ?.find((d) => d.date === dateKey)
+          ?.timestamps.find((timestamp) => {
+            // Compare UTC times
+            return dayjs.utc(timestamp).format("HH:mm") === dateDayjs.format("HH:mm");
+          });
+
+        if (!timeMatch) {
           notifications.show({
             title: "No data available",
             message: "No data available for the time you provided",
@@ -130,7 +144,8 @@ export const Header = ({
           return;
         }
 
-        setTimePresets(getAvailableTimesForDate(dayjs(dateDayjs).format("YYYY-MM-DD")));
+        setTimePresets(getAvailableTimesForDate(dateKey));
+        // Convert UTC datetime to local Date object for the picker
         setSelectedDate(dateDayjs.toDate());
         setLocalSelectedDate(dateDayjs.toDate());
       } catch (error) {
@@ -167,6 +182,7 @@ export const Header = ({
       const date = searchParams.get("date");
       if (date) {
         startTransition(() => {
+          console.log("processSearchParamDate", date);
           processSearchParamDate(date);
         });
       }

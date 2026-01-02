@@ -4,6 +4,7 @@ import { RunOrdersDrawer } from "../../components/RunDrawer/RunDrawer";
 import { dashboardAPI } from "../../store/api/dashboardApi";
 import type { Run, ShortlistEntryWithQuote } from "../../types";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
+import { formatDateTimeForAPI, formatDateForAPI } from "../../utils/dateFormatting";
 import { Header } from "./components/Header";
 import {
   PersistentCompaniesTable,
@@ -33,7 +34,8 @@ export const Dashboard = () => {
     error: getShortlistsAPIError,
   } = dashboardAPI.useGetShortlistsQuery(
     {
-      datetime: selectedDate?.toISOString() || "",
+      datetime: formatDateTimeForAPI(selectedDate),
+      timezone: "Asia/Kolkata",
       type: activeTab || "TOP_GAINERS",
     },
     {
@@ -50,7 +52,7 @@ export const Dashboard = () => {
     error: getPersistentCompaniesAPIError,
   } = dashboardAPI.useGetDailyPersistentCompaniesQuery(
     {
-      date: selectedDate?.toISOString() || "",
+      date: formatDateForAPI(selectedDate),
       type: activeTab || "TOP_GAINERS",
     },
     {
@@ -66,7 +68,7 @@ export const Dashboard = () => {
   const shortlist = shortlistsData?.data.shortlist
     ? {
         id: shortlistsData.data.shortlist.id,
-        timestamp: new Date(shortlistsData.data.shortlist.timestamp),
+        timestamp: new Date(shortlistsData.data.shortlist.timestamp), // API returns UTC string, Date constructor handles it correctly
         shortlistType: shortlistsData.data.shortlist.shortlistType,
         entries: shortlistsData.data.shortlist.entries,
       }

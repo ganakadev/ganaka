@@ -8,6 +8,7 @@ import { dashboardAPI } from "../../store/api/dashboardApi";
 import type { ShortlistEntryWithQuote } from "../../types";
 import { calculateBuyerControlPercentage } from "../../utils/buyerControl";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
+import { formatDateForAPI } from "../../utils/dateFormatting";
 import {
   CandleChart,
   type CandleData,
@@ -33,7 +34,7 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
   const { data: candlesData, error: candleError } = dashboardAPI.useGetCandlesQuery(
     {
       symbol: selectedEntry?.nseSymbol || "",
-      date: selectedDate?.toISOString() || "",
+      date: formatDateForAPI(selectedDate),
       interval: "1minute",
     },
     {
@@ -50,7 +51,7 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
     dashboardAPI.useGetQuoteTimelineQuery(
       {
         symbol: selectedEntry?.nseSymbol || "",
-        date: selectedDate?.toISOString() || "",
+        date: formatDateForAPI(selectedDate),
       },
       {
         skip: !selectedEntry || !selectedDate,
@@ -89,8 +90,12 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
             if (buyerControlPercentage === null) {
               return null;
             }
-            // Convert timestamp to Unix timestamp (seconds)
-            const time = dayjs.utc(timeline.timestamp).add(5, "hours").add(30, "minutes"); // Add 5 hours and 30 minutes to the UTC timestamp to get the IST timestamp
+            // Convert UTC timestamp to Unix timestamp (seconds)
+            // API returns UTC timestamps, so we parse them as UTC directly
+            // Unix timestamps are timezone-agnostic, so no timezone conversion needed
+            // TODO: Find a better way to implement this offset instead of hardcoding it
+            const offsetToISTFromUTC = 330;
+            const time = dayjs.utc(timeline.timestamp).add(offsetToISTFromUTC, "minute");
             return {
               time: time.unix() as Time,
               value: buyerControlPercentage,
@@ -161,22 +166,22 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
   const seriesMarkers: SeriesMarkerConfig[] = useMemo(() => {
     if (!selectedDate || !candleData || candleData.length === 0) return [];
 
-    // Convert selectedDate to dayjs object
-    const selectedTime = dayjs(selectedDate).format("YYYY-MM-DDTHH:mm");
+    // Convert selectedDate to UTC dayjs object for comparison
+    const selectedTime = dayjs.utc(selectedDate).format("YYYY-MM-DDTHH:mm");
     let closestCandle = candleData[0];
     const referenceIndex = Math.min(30, candleData.length - 1);
     const firstCandleTime = dayjs
       .unix(candleData[referenceIndex].time as number)
       .utc()
       .format("YYYY-MM-DDTHH:mm");
-    let minDiff = Math.abs(dayjs(selectedTime).diff(dayjs(firstCandleTime), "minutes"));
+    let minDiff = Math.abs(dayjs.utc(selectedTime).diff(dayjs.utc(firstCandleTime), "minutes"));
 
     for (const candle of candleData) {
       const candleTime = dayjs
         .unix(candle.time as number)
         .utc()
         .format("YYYY-MM-DDTHH:mm");
-      const diff = dayjs(selectedTime).diff(dayjs(candleTime), "minutes");
+      const diff = dayjs.utc(selectedTime).diff(dayjs.utc(candleTime), "minutes");
 
       if (Math.abs(diff) < minDiff) {
         minDiff = Math.abs(diff);
@@ -192,7 +197,7 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
         color: "orange",
         size: 1,
         shape: "circle",
-        text: `${dayjs(selectedTime).format("HH:mm")}`,
+        text: `${dayjs.utc(selectedTime).format("HH:mm")}`,
       },
     ];
   }, [selectedDate, candleData]);

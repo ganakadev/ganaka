@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { dashboardAPI } from "../../store/api/dashboardApi";
 import type { Order, Run } from "../../types";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
+import { formatDateForAPI } from "../../utils/dateFormatting";
 import {
   CandleChart,
   type CandleData,
@@ -29,18 +30,18 @@ const StockChart = ({
   isExpanded: boolean;
 }) => {
   // API
-  // Normalize runStartTime to ISO string: handle both Date objects and string values
-  const runStartTimeISO =
+  // Normalize runStartTime to date string for API: handle both Date objects and string values
+  const runStartTimeDate =
     runStartTime === null || runStartTime === undefined
-      ? ""
+      ? null
       : typeof runStartTime === "string"
-      ? runStartTime
-      : runStartTime.toISOString();
+      ? new Date(runStartTime)
+      : runStartTime;
 
   const { data: candlesData, error: candleError } = dashboardAPI.useGetCandlesQuery(
     {
       symbol: symbol,
-      date: runStartTimeISO,
+      date: formatDateForAPI(runStartTimeDate),
       interval: "1minute",
     },
     {
@@ -74,8 +75,8 @@ const StockChart = ({
 
     // Create markers for each order
     return orders.map((order, index) => {
-      // Convert order timestamp to dayjs and find closest candle
-      const orderTime = dayjs(order.timestamp).format("YYYY-MM-DDTHH:mm");
+      // Convert order timestamp to UTC dayjs and find closest candle
+      const orderTime = dayjs.utc(order.timestamp).format("YYYY-MM-DDTHH:mm");
       let closestCandle = candleData[0];
       let minDiff = Infinity;
 
@@ -84,7 +85,7 @@ const StockChart = ({
           .unix(candle.time as number)
           .utc()
           .format("YYYY-MM-DDTHH:mm");
-        const diff = Math.abs(dayjs(orderTime).diff(dayjs(candleTime), "minutes"));
+        const diff = Math.abs(dayjs.utc(orderTime).diff(dayjs.utc(candleTime), "minutes"));
 
         if (diff < minDiff) {
           minDiff = diff;
@@ -203,10 +204,12 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
   });
 
   // VARIABLES
+  // Parse UTC datetime strings from API responses
+  // Date constructor correctly handles UTC strings in YYYY-MM-DDTHH:mm:ss format
   const orders: Order[] =
     runOrdersAPI.data?.data.map((order) => ({
       ...order,
-      timestamp: new Date(order.timestamp),
+      timestamp: new Date(order.timestamp), // API returns UTC string, Date constructor handles it correctly
       stopLossTimestamp: order.stopLossTimestamp ? new Date(order.stopLossTimestamp) : undefined,
       targetTimestamp: order.targetTimestamp ? new Date(order.targetTimestamp) : undefined,
       timeToStopLossMinutes: order.timeToStopLossMinutes,
