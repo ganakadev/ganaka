@@ -4,20 +4,10 @@ import z from "zod";
 import { logger } from "../utils/logger";
 
 export const fetchQuote =
-  ({
-    developerToken,
-    apiDomain,
-  }: {
-    developerToken: string;
-    apiDomain: string;
-  }) =>
+  ({ developerToken, apiDomain }: { developerToken: string; apiDomain: string }) =>
   async (
-    symbol: string,
-    datetime?: Date
-  ): Promise<
-    | z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"]
-    | null
-  > => {
+    params: z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.query>
+  ): Promise<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"] | null> => {
     if (!developerToken) {
       throw new Error(
         "Developer token not found. Please set DEVELOPER_TOKEN environment variable."
@@ -26,20 +16,7 @@ export const fetchQuote =
 
     try {
       // Validate input params
-      const params: {
-        symbol: string;
-        datetime?: string;
-      } = {
-        symbol,
-      };
-
-      // If datetime is provided, convert to ISO string and include in params
-      if (datetime) {
-        params.datetime = datetime.toISOString();
-      }
-
-      const validatedParams =
-        v1_developer_groww_schemas.getGrowwQuote.query.parse(params);
+      const validatedParams = v1_developer_groww_schemas.getGrowwQuote.query.parse(params);
 
       const response = await axios.get<
         z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>
@@ -53,12 +30,8 @@ export const fetchQuote =
       return response.data.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        logger.error(`Error fetching quote for ${symbol}: ${error.message}`);
-        throw new Error(
-          `Failed to fetch quote: ${
-            error.response?.data?.message || error.message
-          }`
-        );
+        logger.error(`Error fetching quote for ${params.symbol}: ${error.message}`);
+        throw new Error(`Failed to fetch quote: ${error.response?.data?.message || error.message}`);
       }
       logger.error(`Unexpected error fetching quote: ${error}`);
       throw error;

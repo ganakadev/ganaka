@@ -1,13 +1,13 @@
-import {
-  FetchQuoteTimelineResponse,
-  ganaka,
-  growwQuotePayloadSchema,
-  growwQuoteSchema,
-} from "@ganaka/sdk";
+import { FetchQuoteTimelineResponse, ganaka, growwQuoteSchema } from "@ganaka/sdk";
 import dayjs from "dayjs";
 import dotenv from "dotenv";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import z from "zod";
 dotenv.config();
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 // Configuration constants
 const MIN_ORDER_BOOK_SNAPSHOTS = 30; // Minimum 30 minutes of data
@@ -16,8 +16,21 @@ const TARGET_GAIN_PERCENT = 2.0; // Target 2% gain
 const DEFAULT_STOP_LOSS_PERCENT = 1.5; // Default 1.5% stop loss
 
 // Trading window
-const tradingWindowStart = dayjs().set("date", 22).set("hour", 10).set("minute", 0);
-const tradingWindowEnd = dayjs().set("date", 22).set("hour", 10).set("minute", 10);
+// the time window is assumed to be set in IST
+const tradingWindowStart = dayjs()
+  .set("year", 2025)
+  .set("month", 11)
+  .set("day", 26)
+  .set("hour", 10)
+  .set("minute", 0)
+  .format("YYYY-MM-DDTHH:mm:ss");
+const tradingWindowEnd = dayjs()
+  .set("year", 2025)
+  .set("month", 11)
+  .set("day", 26)
+  .set("hour", 10)
+  .set("minute", 45)
+  .format("YYYY-MM-DDTHH:mm:ss");
 
 // Track stocks that have already had orders placed
 const stocksWithOrders = new Set<string>();
@@ -273,13 +286,19 @@ async function main() {
       placeOrder,
       currentTimestamp,
     }) => {
-      const currentTime = dayjs(currentTimestamp);
-      const currentDate = dayjs(currentTimestamp).format("YYYY-MM-DD");
+      const currentTimestampIST = dayjs
+        .tz(currentTimestamp, "Asia/Kolkata")
+        .format("YYYY-MM-DDTHH:mm:ss");
+      const currentTime = dayjs.tz(currentTimestampIST, "Asia/Kolkata");
+      const currentDate = dayjs.tz(currentTimestampIST, "Asia/Kolkata").format("YYYY-MM-DD");
 
       console.log(`[${currentTime.format("HH:mm:ss")}] Running momentum scalping strategy...`);
 
       // Fetch shortlists
-      const topGainers = await fetchShortlist("top-gainers", currentTimestamp);
+      const topGainers = await fetchShortlist({
+        type: "top-gainers",
+        datetime: currentTimestampIST,
+      });
 
       // Combine and deduplicate stocks
       const allStocks = new Set<string>();
@@ -315,7 +334,7 @@ async function main() {
           }
 
           // Fetch historical candles (last 5 days + today)
-          const endDate = dayjs(currentTimestamp);
+          const endDate = dayjs.tz(currentTimestampIST, "Asia/Kolkata");
           const startDate = endDate.subtract(5, "days");
 
           console.log(
@@ -365,7 +384,10 @@ async function main() {
           );
 
           // Get current quote for entry price
-          const currentQuote = await fetchQuote(symbol, currentTimestamp);
+          const currentQuote = await fetchQuote({
+            symbol,
+            datetime: currentTimestampIST,
+          });
 
           console.log(`[${symbol}] Current quote: ${currentQuote?.payload.last_price}`);
 
@@ -417,11 +439,11 @@ async function main() {
 
             try {
               await placeOrder({
-                entryPrice: entryPrice || 0,
                 nseSymbol: symbol,
+                entryPrice: entryPrice || 0,
                 stopLossPrice,
                 takeProfitPrice,
-                timestamp: currentTimestamp,
+                datetime: currentTimestampIST,
               });
 
               // Track that we've placed an order for this stock only if successful
@@ -441,8 +463,8 @@ async function main() {
       }
     },
     intervalMinutes: 5,
-    startTime: tradingWindowStart.toDate(),
-    endTime: tradingWindowEnd.toDate(),
+    startTime: dayjs.tz(tradingWindowStart, "Asia/Kolkata").toDate(),
+    endTime: dayjs.tz(tradingWindowEnd, "Asia/Kolkata").toDate(),
     deleteRunAfterCompletion: false,
   });
 }
