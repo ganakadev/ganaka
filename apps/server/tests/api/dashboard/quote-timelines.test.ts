@@ -7,6 +7,7 @@ import {
   QUOTE_TIMELINES_TEST_DATE,
   TEST_SYMBOL,
   createQuoteTimelineQueryForDashboard,
+  generateUniqueTestDate,
 } from "../../fixtures/test-data";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
@@ -257,9 +258,10 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
   });
 
   test("should validate exact timestamp values ", async ({ tracker }) => {
-    await createMultipleQuoteSnapshots(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE, 2, tracker);
+    const testDate = generateUniqueTestDate("2025-12-30");
+    await createMultipleQuoteSnapshots(TEST_SYMBOL, testDate, 2, tracker);
 
-    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, QUOTE_TIMELINES_TEST_DATE);
+    const query = createQuoteTimelineQueryForDashboard(TEST_SYMBOL, testDate);
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
       `/v1/dashboard/quote-timelines?${queryString}`,
@@ -277,7 +279,9 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
       expect(firstEntry).toHaveProperty("timestamp");
       expect(firstEntry).toHaveProperty("nseSymbol");
 
-      expect(firstEntry.timestamp).toBe("2025-12-30T03:45:00");
+      // First snapshot is created at 9:15 AM IST = 3:45 AM UTC
+      const expectedTimestamp = dayjs.tz(`${testDate} 09:15:00`, "Asia/Kolkata").utc().format("YYYY-MM-DDTHH:mm:ss");
+      expect(firstEntry.timestamp).toBe(expectedTimestamp);
       expect(firstEntry.nseSymbol).toBe("RELIANCE");
     }
   });

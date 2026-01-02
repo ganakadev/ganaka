@@ -7,6 +7,12 @@ import {
   growwQuoteSchema,
 } from "@ganaka/schemas";
 import type { z } from "zod";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 /**
  * Generates a random username for testing
@@ -78,6 +84,43 @@ export const DAILY_PERSISTENT_COMPANIES_TEST_DATE = "2025-12-27";
 export const DAILY_UNIQUE_COMPANIES_TEST_DATE = "2025-12-28";
 export const CANDLES_TEST_DATE = "2025-12-29";
 export const QUOTE_TIMELINES_TEST_DATE = "2025-12-30";
+
+// ==================== Unique Timestamp Generators ====================
+
+/**
+ * Counter to ensure uniqueness across parallel test executions
+ */
+let testDatetimeCounter = 0;
+let testDateCounter = 0;
+
+/**
+ * Generates a unique datetime string per test execution
+ * Uses base date + counter + timestamp to ensure uniqueness across parallel workers
+ * @param baseDate Base date in YYYY-MM-DD format (default: "2025-12-26")
+ * @returns Unique datetime string in YYYY-MM-DDTHH:mm:ss format
+ */
+export function generateUniqueTestDatetime(baseDate = "2025-12-26"): string {
+  const counter = ++testDatetimeCounter;
+  const now = Date.now();
+  // Use milliseconds from now + counter to ensure uniqueness
+  // Modulo to keep within the day, add counter for additional uniqueness
+  const offsetMs = (now % 86400000) + (counter * 1000);
+  const base = dayjs.tz(`${baseDate}T00:00:00`, "Asia/Kolkata");
+  return base.add(offsetMs, "millisecond").format("YYYY-MM-DDTHH:mm:ss");
+}
+
+/**
+ * Generates a unique date string per test execution
+ * Uses base date + counter to ensure uniqueness across parallel workers
+ * @param baseDate Base date in YYYY-MM-DD format (default: "2025-12-26")
+ * @returns Unique date string in YYYY-MM-DD format
+ */
+export function generateUniqueTestDate(baseDate = "2025-12-26"): string {
+  const counter = ++testDateCounter;
+  const base = dayjs(baseDate);
+  // Add counter days to ensure uniqueness
+  return base.add(counter, "day").format("YYYY-MM-DD");
+}
 
 /**
  * Creates a valid Groww quote payload matching growwQuoteSchema

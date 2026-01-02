@@ -6,6 +6,7 @@ import {
   DAILY_PERSISTENT_COMPANIES_TEST_DATE,
   createDailyPersistentCompaniesQuery,
   createValidShortlistEntries,
+  generateUniqueTestDate,
 } from "../../fixtures/test-data";
 import { v1_dashboard_schemas } from "@ganaka/schemas";
 import { TestDataTracker } from "../../helpers/test-tracker";
@@ -128,16 +129,17 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
 
   test("should return 200 with companies appearing in >=80% of snapshots", async ({ tracker }) => {
     // Create 10 snapshots with same entries (should appear in 100% of snapshots)
+    const testDate = generateUniqueTestDate();
     const testEntries = createValidShortlistEntries();
     await createMultipleShortlistSnapshots(
       "top-gainers",
-      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      testDate,
       10,
       tracker
     );
 
     const query = createDailyPersistentCompaniesQuery(
-      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      testDate,
       "TOP_GAINERS"
     );
     const queryString = new URLSearchParams(query).toString();
@@ -166,15 +168,16 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
   test("should validate response structure (date, type, totalSnapshots, companies)", async ({
     tracker,
   }) => {
+    const testDate = generateUniqueTestDate();
     await createMultipleShortlistSnapshots(
       "top-gainers",
-      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      testDate,
       5,
       tracker
     );
 
     const query = createDailyPersistentCompaniesQuery(
-      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      testDate,
       "TOP_GAINERS"
     );
     const queryString = new URLSearchParams(query).toString();
@@ -202,15 +205,16 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
   test("should validate company structure (nseSymbol, name, count, percentage)", async ({
     tracker,
   }) => {
+    const testDate = generateUniqueTestDate();
     await createMultipleShortlistSnapshots(
       "top-gainers",
-      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      testDate,
       5,
       tracker
     );
 
     const query = createDailyPersistentCompaniesQuery(
-      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      testDate,
       "TOP_GAINERS"
     );
     const queryString = new URLSearchParams(query).toString();
@@ -242,15 +246,16 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
   });
 
   test("should validate percentage is rounded to 1 decimal place", async ({ tracker }) => {
+    const testDate = generateUniqueTestDate();
     await createMultipleShortlistSnapshots(
       "top-gainers",
-      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      testDate,
       5,
       tracker
     );
 
     const query = createDailyPersistentCompaniesQuery(
-      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      testDate,
       "TOP_GAINERS"
     );
     const queryString = new URLSearchParams(query).toString();
@@ -273,15 +278,16 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
   });
 
   test("should validate exact company values ", async ({ tracker }) => {
+    const testDate = generateUniqueTestDate();
     await createMultipleShortlistSnapshots(
       "top-gainers",
-      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      testDate,
       5,
       tracker
     );
 
     const query = createDailyPersistentCompaniesQuery(
-      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      testDate,
       "TOP_GAINERS"
     );
     const queryString = new URLSearchParams(query).toString();
@@ -311,15 +317,16 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
   });
 
   test("should validate date matches requested date format (YYYY-MM-DD)", async ({ tracker }) => {
+    const testDate = generateUniqueTestDate();
     await createMultipleShortlistSnapshots(
       "top-gainers",
-      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      testDate,
       5,
       tracker
     );
 
     const query = createDailyPersistentCompaniesQuery(
-      DAILY_PERSISTENT_COMPANIES_TEST_DATE,
+      testDate,
       "TOP_GAINERS"
     );
     const queryString = new URLSearchParams(query).toString();
@@ -334,7 +341,7 @@ test.describe("GET /v1/dashboard/daily-persistent-companies", () => {
         response.data
       );
 
-    expect(validatedData.data.date).toBe(DAILY_PERSISTENT_COMPANIES_TEST_DATE);
+    expect(validatedData.data.date).toBe(testDate);
     expect(validatedData.data.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 });

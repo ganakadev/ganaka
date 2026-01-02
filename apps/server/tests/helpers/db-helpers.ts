@@ -416,11 +416,11 @@ export async function createMultipleShortlistSnapshots(
  */
 export async function createShortlistSnapshotsWithUniqueCompanies(
   type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
-  date: string,
+  datetime: string,
   uniqueCompanyCount: number = 10,
   tracker: TestDataTracker
 ): Promise<ShortlistSnapshot[]> {
-  const baseDate = dayjs(date).utc();
+  const baseDate = dayjs.tz(datetime, "Asia/Kolkata").utc();
   const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
   const snapshots: ShortlistSnapshot[] = [];
 
@@ -444,15 +444,12 @@ export async function createShortlistSnapshotsWithUniqueCompanies(
   const startHour = 9;
   const startMinute = 15;
   const intervalMinutes = Math.floor((15 * 60 - 15) / snapshotsNeeded);
+  console.log("snapshotsNeeded", snapshotsNeeded);
 
   for (let i = 0; i < snapshotsNeeded; i++) {
     const minutes = startMinute + i * intervalMinutes;
     const hours = startHour + Math.floor(minutes / 60);
     const finalMinutes = minutes % 60;
-
-    // Convert IST to UTC (IST is UTC+5:30)
-    const istTime = baseDate.hour(hours).minute(finalMinutes).second(0);
-    const utcTime = istTime.subtract(5, "hour").subtract(30, "minute");
 
     // Distribute companies across snapshots
     // Each snapshot gets a subset, ensuring all companies appear across all snapshots
@@ -465,9 +462,11 @@ export async function createShortlistSnapshotsWithUniqueCompanies(
       snapshotEntries.push(...allCompanies.slice(endIdx));
     }
 
+    console.log("snapshotEntries", snapshotEntries);
+
     const snapshot = await prisma.shortlistSnapshot.create({
       data: {
-        timestamp: utcTime.toDate(),
+        timestamp: baseDate.toDate(),
         shortlistType,
         entries: snapshotEntries as InputJsonValue,
       },

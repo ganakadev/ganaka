@@ -5,6 +5,7 @@ import {
   createValidShortlistEntries,
   TEST_DATETIME,
   buildQueryString,
+  generateUniqueTestDatetime,
 } from "../../fixtures/test-data";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
@@ -93,10 +94,11 @@ test.describe("GET /v1/developer/lists", () => {
   });
 
   test("should return snapshot data for top-gainers with valid datetime", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
-    await createShortlistSnapshot("top-gainers", TEST_DATETIME, testEntries, tracker);
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
-    const query = createListsQuery("top-gainers", TEST_DATETIME);
+    const query = createListsQuery("top-gainers", testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
 
@@ -120,15 +122,16 @@ test.describe("GET /v1/developer/lists", () => {
   test("should return snapshot data for volume-shockers with valid datetime", async ({
     tracker,
   }) => {
+    const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
     const snapshot = await createShortlistSnapshot(
       "volume-shockers",
-      TEST_DATETIME,
+      testDatetime,
       testEntries,
       tracker
     );
 
-    const query = createListsQuery("volume-shockers", TEST_DATETIME);
+    const query = createListsQuery("volume-shockers", testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
 
@@ -145,7 +148,7 @@ test.describe("GET /v1/developer/lists", () => {
     tracker,
   }) => {
     const testType = "top-gainers";
-    const testDatetime = TEST_DATETIME;
+    const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
 
     // Create snapshot in database
@@ -191,7 +194,7 @@ test.describe("GET /v1/developer/lists", () => {
     tracker,
   }) => {
     const testType = "volume-shockers";
-    const testDatetime = TEST_DATETIME;
+    const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
 
     // Create snapshot in database
