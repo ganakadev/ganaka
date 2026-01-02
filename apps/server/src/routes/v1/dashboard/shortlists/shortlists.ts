@@ -27,10 +27,14 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { datetime: dateTimeParam, type: typeParam } = validationResult;
+      const {
+        datetime: dateTimeParam,
+        timezone: timezoneParam,
+        type: typeParam,
+      } = validationResult;
 
       // Convert datetime string to UTC Date
-      const selectedDateTimeUTC = parseDateTimeInTimezone(dateTimeParam, "Asia/Kolkata");
+      const selectedDateTimeUTC = parseDateTimeInTimezone(dateTimeParam, timezoneParam);
 
       const shortlists = await prisma.shortlistSnapshot.findMany({
         where: {
