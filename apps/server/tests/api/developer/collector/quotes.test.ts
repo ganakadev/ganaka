@@ -8,6 +8,7 @@ import {
 import { v1_developer_collector_schemas } from "@ganaka/schemas";
 import { TestDataTracker } from "../../../helpers/test-tracker";
 import { prisma } from "../../../../src/utils/prisma";
+import { parseDateTimeInTimezone } from "../../../../src/utils/timezone";
 
 let developerToken: string;
 let developerId: string;
@@ -25,6 +26,33 @@ test.afterAll(async () => {
     await sharedTracker.cleanup();
   }
 });
+
+/**
+ * Helper function to query and track quote snapshots created at a specific timestamp
+ * This is needed because createMany() doesn't return IDs, so we need to query by timestamp
+ */
+async function trackQuoteSnapshotsByTimestamp(
+  timestamp: string,
+  timezone: string,
+  tracker: TestDataTracker,
+  bufferSeconds: number = 5
+): Promise<void> {
+  const utcTimestamp = parseDateTimeInTimezone(timestamp, timezone);
+  const bufferMs = bufferSeconds * 1000;
+
+  const storedQuotes = await prisma.quoteSnapshot.findMany({
+    where: {
+      timestamp: {
+        gte: new Date(utcTimestamp.getTime() - bufferMs),
+        lte: new Date(utcTimestamp.getTime() + bufferMs),
+      },
+    },
+  });
+
+  storedQuotes.forEach((quote) => {
+    tracker.trackQuoteSnapshot(quote.id);
+  });
+}
 
 test.describe("POST /v1/developer/collector/quotes", () => {
   test("should return 401 when authorization header is missing", async () => {
@@ -118,6 +146,13 @@ test.describe("POST /v1/developer/collector/quotes", () => {
     const body = response.data;
     expect(body.statusCode).toBe(201);
     expect(body.data.count).toBe(2);
+
+    // Track quote snapshots for cleanup
+    await trackQuoteSnapshotsByTimestamp(
+      requestBody.data.timestamp,
+      requestBody.data.timezone,
+      sharedTracker
+    );
   });
 
   test("should return 400 when timestamp format is invalid", async () => {
@@ -153,6 +188,13 @@ test.describe("POST /v1/developer/collector/quotes", () => {
     // Validate response matches schema
     const validatedData = v1_developer_collector_schemas.createQuoteSnapshots.response.parse(body);
     expect(validatedData.data.count).toBe(2);
+
+    // Track quote snapshots for cleanup
+    await trackQuoteSnapshotsByTimestamp(
+      requestBody.data.timestamp,
+      requestBody.data.timezone,
+      sharedTracker
+    );
   });
 
   test("should return 201 with single quote", async () => {
@@ -173,6 +215,13 @@ test.describe("POST /v1/developer/collector/quotes", () => {
     const body = response.data;
     expect(body.statusCode).toBe(201);
     expect(body.data.count).toBe(1);
+
+    // Track quote snapshots for cleanup
+    await trackQuoteSnapshotsByTimestamp(
+      requestBody.data.timestamp,
+      requestBody.data.timezone,
+      sharedTracker
+    );
   });
 
   test("should return 201 with empty quotes array", async () => {
@@ -214,6 +263,8 @@ test.describe("POST /v1/developer/collector/quotes", () => {
     expect(storedQuotes.length).toBeGreaterThan(0);
     storedQuotes.forEach((quote) => {
       expect(quote.timestamp.toISOString()).toBe("2025-12-31T03:45:00.000Z");
+      // Track quote snapshots for cleanup
+      sharedTracker.trackQuoteSnapshot(quote.id);
     });
   });
 
@@ -243,6 +294,8 @@ test.describe("POST /v1/developer/collector/quotes", () => {
     expect(storedQuotes.length).toBeGreaterThan(0);
     storedQuotes.forEach((quote) => {
       expect(quote.timestamp.toISOString()).toBe("2025-12-31T14:30:00.000Z");
+      // Track quote snapshots for cleanup
+      sharedTracker.trackQuoteSnapshot(quote.id);
     });
   });
 });
