@@ -103,7 +103,7 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
           where: {
             timestamp: {
               gte: selectedDateTime,
-              lte: new Date(selectedDateTime.getTime() + 1000), // Add 1 second
+              lte: dayjs.utc(selectedDateTime).add(1, "second").toDate(), // Add 1 second
             },
             shortlistType: shortlistType,
           },

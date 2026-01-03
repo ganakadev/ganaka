@@ -193,7 +193,7 @@ export async function createMultipleQuoteSnapshots(
   tracker: TestDataTracker
 ): Promise<Array<Pick<QuoteSnapshot, "id" | "timestamp" | "nseSymbol">>> {
   // Parse the date string (YYYY-MM-DD format)
-  const dateStr = dayjs(date).format("YYYY-MM-DD");
+  const dateStr = dayjs.utc(date).format("YYYY-MM-DD");
   const snapshots: Array<Pick<QuoteSnapshot, "id" | "timestamp" | "nseSymbol">> = [];
 
   // Create snapshots at different times during market hours (9:15 AM - 3:30 PM IST)

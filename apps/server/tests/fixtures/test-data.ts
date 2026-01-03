@@ -104,7 +104,7 @@ export function generateUniqueTestDatetime(baseDate = "2025-12-26"): string {
   const now = Date.now();
   // Use milliseconds from now + counter to ensure uniqueness
   // Modulo to keep within the day, add counter for additional uniqueness
-  const offsetMs = (now % 86400000) + (counter * 1000);
+  const offsetMs = (now % 86400000) + counter * 1000;
   const base = dayjs.tz(`${baseDate}T00:00:00`, "Asia/Kolkata");
   return base.add(offsetMs, "millisecond").format("YYYY-MM-DDTHH:mm:ss");
 }
@@ -117,7 +117,7 @@ export function generateUniqueTestDatetime(baseDate = "2025-12-26"): string {
  */
 export function generateUniqueTestDate(baseDate = "2025-12-26"): string {
   const counter = ++testDateCounter;
-  const base = dayjs(baseDate);
+  const base = dayjs.utc(baseDate);
   // Add counter days to ensure uniqueness
   return base.add(counter, "day").format("YYYY-MM-DD");
 }

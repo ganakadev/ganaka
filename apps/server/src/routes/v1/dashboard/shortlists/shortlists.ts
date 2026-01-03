@@ -40,7 +40,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
         where: {
           timestamp: {
             gte: selectedDateTimeUTC,
-            lte: new Date(selectedDateTimeUTC.getTime() + 1000), // Add 1 second
+            lte: dayjs.utc(selectedDateTimeUTC).add(1, "second").toDate(), // Add 1 second
           },
           shortlistType: typeParam as ShortlistType,
         },
@@ -49,7 +49,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
         where: {
           timestamp: {
             gte: selectedDateTimeUTC,
-            lte: new Date(selectedDateTimeUTC.getTime() + 60000), // Add 1 minute
+            lte: dayjs.utc(selectedDateTimeUTC).add(1, "minute").toDate(), // Add 1 minute
           },
         },
       });

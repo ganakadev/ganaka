@@ -216,8 +216,8 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
 
     // Validate entries are ordered by timestamp ascending
     for (let i = 1; i < validatedData.data.quoteTimeline.length; i++) {
-      const prevTimestamp = dayjs(validatedData.data.quoteTimeline[i - 1].timestamp).valueOf();
-      const currTimestamp = dayjs(validatedData.data.quoteTimeline[i].timestamp).valueOf();
+      const prevTimestamp = dayjs.utc(validatedData.data.quoteTimeline[i - 1].timestamp).valueOf();
+      const currTimestamp = dayjs.utc(validatedData.data.quoteTimeline[i].timestamp).valueOf();
       expect(currTimestamp).toBeGreaterThanOrEqual(prevTimestamp);
     }
   });
@@ -251,9 +251,13 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
       .format("YYYY-MM-DDTHH:mm:ss");
 
     validatedData.data.quoteTimeline.forEach((entry) => {
-      const entryTime = dayjs(entry.timestamp);
-      expect(entryTime.isAfter(marketStart) || entryTime.isSame(marketStart)).toBe(true);
-      expect(entryTime.isBefore(marketEnd) || entryTime.isSame(marketEnd)).toBe(true);
+      const entryTime = dayjs.utc(entry.timestamp);
+      expect(
+        entryTime.isAfter(dayjs.utc(marketStart)) || entryTime.isSame(dayjs.utc(marketStart))
+      ).toBe(true);
+      expect(
+        entryTime.isBefore(dayjs.utc(marketEnd)) || entryTime.isSame(dayjs.utc(marketEnd))
+      ).toBe(true);
     });
   });
 
@@ -280,7 +284,10 @@ test.describe("GET /v1/dashboard/quote-timelines", () => {
       expect(firstEntry).toHaveProperty("nseSymbol");
 
       // First snapshot is created at 9:15 AM IST = 3:45 AM UTC
-      const expectedTimestamp = dayjs.tz(`${testDate} 09:15:00`, "Asia/Kolkata").utc().format("YYYY-MM-DDTHH:mm:ss");
+      const expectedTimestamp = dayjs
+        .tz(`${testDate} 09:15:00`, "Asia/Kolkata")
+        .utc()
+        .format("YYYY-MM-DDTHH:mm:ss");
       expect(firstEntry.timestamp).toBe(expectedTimestamp);
       expect(firstEntry.nseSymbol).toBe("RELIANCE");
     }

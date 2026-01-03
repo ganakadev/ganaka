@@ -5,6 +5,10 @@ import { createDeveloperUser } from "../../helpers/auth-helpers";
 import { createShortlistSnapshot } from "../../helpers/db-helpers";
 import { expect, test } from "../../helpers/test-fixtures";
 import { TestDataTracker } from "../../helpers/test-tracker";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 let developerToken: string;
 let sharedTracker: TestDataTracker;
@@ -106,8 +110,8 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
     // Validate timestamps are sorted ascending within each date
     dateMap.forEach((timestamps) => {
       for (let i = 1; i < timestamps.length; i++) {
-        const prevTimestamp = new Date(timestamps[i - 1]).getTime();
-        const currTimestamp = new Date(timestamps[i]).getTime();
+        const prevTimestamp = dayjs.utc(timestamps[i - 1]).valueOf();
+        const currTimestamp = dayjs.utc(timestamps[i]).valueOf();
         expect(currTimestamp).toBeGreaterThanOrEqual(prevTimestamp);
       }
     });
@@ -133,7 +137,7 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
         // Strict format validation: exactly YYYY-MM-DDTHH:mm:ss (no milliseconds, no timezone)
         expect(timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/);
         // Should be valid date
-        expect(() => new Date(timestamp)).not.toThrow();
+        expect(() => dayjs.utc(timestamp)).not.toThrow();
       });
     });
   });
@@ -187,7 +191,7 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
     for (let i = 1; i < validatedData.data.dates.length; i++) {
       const prevDate = validatedData.data.dates[i - 1].date;
       const currDate = validatedData.data.dates[i].date;
-      expect(new Date(currDate).getTime()).toBeGreaterThanOrEqual(new Date(prevDate).getTime());
+      expect(dayjs.utc(currDate).valueOf()).toBeGreaterThanOrEqual(dayjs.utc(prevDate).valueOf());
     }
   });
 

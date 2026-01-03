@@ -57,7 +57,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
           where: {
             timestamp: {
               gte: selectedDateTime,
-              lte: new Date(selectedDateTime.getTime() + 60000), // Add 1 minute
+              lte: dayjs.utc(selectedDateTime).add(1, "minute").toDate(), // Add 1 minute
             },
             nseSymbol: validationResult.symbol,
           },

@@ -13,6 +13,10 @@ import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
 import { createMultipleQuoteSnapshots, createQuoteSnapshot } from "../../helpers/db-helpers";
 import { TestDataTracker } from "../../helpers/test-tracker";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 // Helper function to convert query object to URLSearchParams-compatible format
 function buildQueryString(query: Record<string, string | undefined>): string {
@@ -382,8 +386,8 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
         for (let i = 1; i < validatedData.data.payload.candles.length; i++) {
           const prevTimestamp = validatedData.data.payload.candles[i - 1][0] as string;
           const currTimestamp = validatedData.data.payload.candles[i][0] as string;
-          expect(new Date(currTimestamp).getTime()).toBeGreaterThanOrEqual(
-            new Date(prevTimestamp).getTime()
+          expect(dayjs.utc(currTimestamp).valueOf()).toBeGreaterThanOrEqual(
+            dayjs.utc(prevTimestamp).valueOf()
           );
         }
 
@@ -639,8 +643,8 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
 
     // Validate timeline entries are ordered by timestamp (ascending)
     for (let i = 1; i < validatedData.data.quoteTimeline.length; i++) {
-      const prevTimestamp = new Date(validatedData.data.quoteTimeline[i - 1].timestamp).getTime();
-      const currTimestamp = new Date(validatedData.data.quoteTimeline[i].timestamp).getTime();
+      const prevTimestamp = dayjs.utc(validatedData.data.quoteTimeline[i - 1].timestamp).valueOf();
+      const currTimestamp = dayjs.utc(validatedData.data.quoteTimeline[i].timestamp).valueOf();
       expect(currTimestamp).toBeGreaterThanOrEqual(prevTimestamp);
     }
   });

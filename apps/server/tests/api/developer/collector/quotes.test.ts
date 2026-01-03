@@ -9,6 +9,10 @@ import { v1_developer_collector_schemas } from "@ganaka/schemas";
 import { TestDataTracker } from "../../../helpers/test-tracker";
 import { prisma } from "../../../../src/utils/prisma";
 import { parseDateTimeInTimezone } from "../../../../src/utils/timezone";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 let developerToken: string;
 let developerId: string;
@@ -43,8 +47,8 @@ async function trackQuoteSnapshotsByTimestamp(
   const storedQuotes = await prisma.quoteSnapshot.findMany({
     where: {
       timestamp: {
-        gte: new Date(utcTimestamp.getTime() - bufferMs),
-        lte: new Date(utcTimestamp.getTime() + bufferMs),
+        gte: dayjs.utc(utcTimestamp).subtract(bufferMs, "milliseconds").toDate(),
+        lte: dayjs.utc(utcTimestamp).add(bufferMs, "milliseconds").toDate(),
       },
     },
   });
@@ -192,7 +196,7 @@ test.describe("POST /v1/developer/collector/quotes", () => {
     // Track quote snapshots for cleanup
     await trackQuoteSnapshotsByTimestamp(
       requestBody.data.timestamp,
-      requestBody.data.timezone,
+      requestBody.data.timezone || "Asia/Kolkata",
       sharedTracker
     );
   });
@@ -219,7 +223,7 @@ test.describe("POST /v1/developer/collector/quotes", () => {
     // Track quote snapshots for cleanup
     await trackQuoteSnapshotsByTimestamp(
       requestBody.data.timestamp,
-      requestBody.data.timezone,
+      requestBody.data.timezone || "Asia/Kolkata",
       sharedTracker
     );
   });
@@ -254,8 +258,8 @@ test.describe("POST /v1/developer/collector/quotes", () => {
     const storedQuotes = await prisma.quoteSnapshot.findMany({
       where: {
         timestamp: {
-          gte: new Date("2025-12-31T03:40:00.000Z"),
-          lte: new Date("2025-12-31T03:50:00.000Z"),
+          gte: dayjs.utc("2025-12-31T03:40:00").toDate(),
+          lte: dayjs.utc("2025-12-31T03:50:00").toDate(),
         },
       },
     });
@@ -285,8 +289,8 @@ test.describe("POST /v1/developer/collector/quotes", () => {
     const storedQuotes = await prisma.quoteSnapshot.findMany({
       where: {
         timestamp: {
-          gte: new Date("2025-12-31T14:25:00.000Z"),
-          lte: new Date("2025-12-31T14:35:00.000Z"),
+          gte: dayjs.utc("2025-12-31T14:25:00").toDate(),
+          lte: dayjs.utc("2025-12-31T14:35:00").toDate(),
         },
       },
     });

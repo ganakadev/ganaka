@@ -302,7 +302,7 @@ test.describe("GET /v1/dashboard/shortlists", () => {
 
     if (validatedData.data.shortlist) {
       // Validate timestamp is within 1 second of requested datetime
-      const requestedTime = dayjs(testDatetime).utc().toDate().getTime();
+      const requestedTime = dayjs.tz(testDatetime, "Asia/Kolkata").utc().toDate().getTime();
       const returnedTime = dayjs.utc(validatedData.data.shortlist.timestamp).toDate().getTime();
       const timeDiff = Math.abs(returnedTime - requestedTime);
       expect(timeDiff).toBeLessThan(1000); // Within 1 seconds

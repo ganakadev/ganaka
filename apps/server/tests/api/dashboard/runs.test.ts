@@ -123,8 +123,8 @@ test.describe("GET /v1/dashboard/runs", () => {
     const dateKeys = Object.keys(validatedData.data);
 
     for (let i = 1; i < dateKeys.length; i++) {
-      const prevDate = new Date(dateKeys[i - 1]).getTime();
-      const currDate = new Date(dateKeys[i]).getTime();
+      const prevDate = dayjs.utc(dateKeys[i - 1]).valueOf();
+      const currDate = dayjs.utc(dateKeys[i]).valueOf();
       expect(prevDate).toBeGreaterThanOrEqual(currDate);
     }
   });
@@ -778,8 +778,8 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(response.data);
 
     for (let i = 1; i < validatedData.data.length; i++) {
-      const prevTimestamp = dayjs(validatedData.data[i - 1].timestamp).valueOf();
-      const currTimestamp = dayjs(validatedData.data[i].timestamp).valueOf();
+      const prevTimestamp = dayjs.utc(validatedData.data[i - 1].timestamp).valueOf();
+      const currTimestamp = dayjs.utc(validatedData.data[i].timestamp).valueOf();
       expect(currTimestamp).toBeGreaterThanOrEqual(prevTimestamp);
     }
   });
