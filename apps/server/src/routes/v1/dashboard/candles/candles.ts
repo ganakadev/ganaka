@@ -52,14 +52,9 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const { symbol, date: dateParam, interval } = validationResult;
 
-      // Convert date string to UTC Date representing midnight IST of that date
-      const dateUTC = parseDateInTimezone(dateParam, "Asia/Kolkata");
-
-      // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
-      // Extract just the date part (YYYY-MM-DD) and create new dayjs object in IST
-      const dateStr = dayjs.utc(dateUTC).format("YYYY-MM-DD");
-      const marketStart = dayjs.tz(`${dateStr} 09:15:00`, "Asia/Kolkata");
-      const marketEnd = dayjs.tz(`${dateStr} 15:30:00`, "Asia/Kolkata");
+      // using dateParam directly as it is in UTC
+      const marketStart = dayjs.tz(`${dateParam} 09:15:00`, "Asia/Kolkata");
+      const marketEnd = dayjs.tz(`${dateParam} 15:30:00`, "Asia/Kolkata");
 
       // Convert to format expected by Groww API: YYYY-MM-DDTHH:mm:ss (no milliseconds, no Z)
       // The API expects times in IST format without timezone suffix
