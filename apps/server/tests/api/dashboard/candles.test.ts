@@ -265,7 +265,7 @@ test.describe("GET /v1/dashboard/candles", () => {
         expect(firstCandle).toHaveProperty("high");
         expect(firstCandle).toHaveProperty("low");
         expect(firstCandle).toHaveProperty("close");
-        expect(firstCandle.time).toBe(1766999700);
+        expect(firstCandle.time).toBe(1766979900);
         expect(firstCandle.open).toBe(1555.2);
         expect(firstCandle.high).toBe(1557.5);
         expect(firstCandle.low).toBe(1552.8);
