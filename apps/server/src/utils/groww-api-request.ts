@@ -16,7 +16,7 @@ export const makeGrowwAPIRequest =
     method: string;
     params?: Record<string, any>;
   }): Promise<T> => {
-    const maxAttempts = 3;
+    const maxAttempts = 5;
     let lastError: unknown;
 
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
