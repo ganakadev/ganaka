@@ -84,7 +84,7 @@ const dailyUniqueCompaniesRoutes: FastifyPluginAsync = async (fastify) => {
         statusCode: 200,
         message: "Daily unique companies fetched successfully",
         data: {
-          date: dayjs(startOfDayInTimezone).format("YYYY-MM-DD"),
+          date: startOfDayInTimezone.format("YYYY-MM-DD"),
           type: shortlistType,
           uniqueCount,
         },

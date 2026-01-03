@@ -157,10 +157,12 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
       const { start_datetime, end_datetime, timezone = "Asia/Kolkata", ...rest } = validationResult;
 
       // Convert datetime strings to IST format for Groww API
-      const startTimeIST = dayjs(parseDateTimeInTimezone(start_datetime, timezone))
+      const startTimeIST = dayjs
+        .utc(parseDateTimeInTimezone(start_datetime, timezone))
         .tz("Asia/Kolkata")
         .format("YYYY-MM-DDTHH:mm:ss");
-      const endTimeIST = dayjs(parseDateTimeInTimezone(end_datetime, timezone))
+      const endTimeIST = dayjs
+        .utc(parseDateTimeInTimezone(end_datetime, timezone))
         .tz("Asia/Kolkata")
         .format("YYYY-MM-DDTHH:mm:ss");
 
@@ -211,14 +213,9 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const { symbol, date: dateParam } = validationResult;
 
-      // Convert date string to UTC Date representing midnight IST of that date
-      const dateUTC = parseDateInTimezone(dateParam, "Asia/Kolkata");
-
-      // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
-      // Extract just the date part (YYYY-MM-DD) and create new dayjs object in IST
-      const dateStr = dayjs(dateUTC).format("YYYY-MM-DD");
-      const marketStart = dayjs.tz(`${dateStr} 09:14:00`, "Asia/Kolkata");
-      const marketEnd = dayjs.tz(`${dateStr} 15:31:00`, "Asia/Kolkata");
+      // using dateParam directly as it is in UTC
+      const marketStart = dayjs.tz(`${dateParam} 09:14:00`, "Asia/Kolkata");
+      const marketEnd = dayjs.tz(`${dateParam} 15:31:00`, "Asia/Kolkata");
       const marketStartUtc = marketStart.utc();
       const marketEndUtc = marketEnd.utc();
 

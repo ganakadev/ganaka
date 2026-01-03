@@ -62,7 +62,7 @@ async function calculateOrderGainMetrics({
 }> {
   try {
     // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
-    const dateStr = dayjs(orderTimestamp).tz("Asia/Kolkata").format("YYYY-MM-DD");
+    const dateStr = dayjs.utc(orderTimestamp).tz("Asia/Kolkata").format("YYYY-MM-DD");
     const marketStart = dayjs.tz(`${dateStr} 09:15:00`, "Asia/Kolkata");
     const marketEnd = dayjs.tz(`${dateStr} 15:30:00`, "Asia/Kolkata");
 
@@ -107,7 +107,7 @@ async function calculateOrderGainMetrics({
       const [timestamp, open, high, low, close] = candle;
       return {
         // convert to UTC since orderTimestamp is in UTC
-        timestamp: dayjs.utc(timestamp).toDate(),
+        timestamp: dayjs.tz(timestamp, "Asia/Kolkata").utc().toDate(),
         open,
         high,
         low,
@@ -121,8 +121,8 @@ async function calculateOrderGainMetrics({
       const candle = candles[i];
       // Only ignore candles strictly after order placement (not equal to orderTimestamp)
       if (
-        dayjs(candle.timestamp).isAfter(orderTimestamp, "minute") &&
-        !dayjs(candle.timestamp).isSame(orderTimestamp, "minute")
+        dayjs.utc(candle.timestamp).isAfter(dayjs.utc(orderTimestamp), "minute") &&
+        !dayjs.utc(candle.timestamp).isSame(dayjs.utc(orderTimestamp), "minute")
       ) {
         continue;
       }
@@ -171,10 +171,8 @@ async function calculateOrderGainMetrics({
 
     // Check all candles after order placement to see if target or stop loss was reached
     for (const candle of candles) {
-      const candleTimestamp = dayjs(candle.timestamp).utc().format("YYYY-MM-DD HH:mm:ss");
-
       // Only consider candles strictly after order placement (not equal to)
-      if (!dayjs(candleTimestamp).isAfter(orderTimestamp, "minute")) {
+      if (!dayjs.utc(candle.timestamp).isAfter(dayjs.utc(orderTimestamp), "minute")) {
         continue;
       }
 
@@ -209,12 +207,10 @@ async function calculateOrderGainMetrics({
     let targetTimeDiffSeconds = Infinity;
 
     if (stopLossTimestamp !== null) {
-      const stopLossTimestampUTC = dayjs(stopLossTimestamp).utc().format("YYYY-MM-DD HH:mm:ss");
-      stopLossTimeDiffSeconds = dayjs(stopLossTimestampUTC).diff(
-        dayjs(orderTimestamp),
-        "second",
-        true
-      );
+      const stopLossTimestampUTC = dayjs.utc(stopLossTimestamp).format("YYYY-MM-DD HH:mm:ss");
+      stopLossTimeDiffSeconds = dayjs
+        .utc(stopLossTimestampUTC)
+        .diff(dayjs.utc(orderTimestamp), "second", true);
 
       // Ensure the timestamp is truly after the order (at least 1 second difference)
       if (stopLossTimeDiffSeconds >= 1) {
@@ -223,8 +219,10 @@ async function calculateOrderGainMetrics({
     }
 
     if (targetTimestamp !== null) {
-      const targetTimestampUTC = dayjs(targetTimestamp).utc().format("YYYY-MM-DD HH:mm:ss");
-      targetTimeDiffSeconds = dayjs(targetTimestampUTC).diff(dayjs(orderTimestamp), "second", true);
+      const targetTimestampUTC = dayjs.utc(targetTimestamp).format("YYYY-MM-DD HH:mm:ss");
+      targetTimeDiffSeconds = dayjs
+        .utc(targetTimestampUTC)
+        .diff(dayjs.utc(orderTimestamp), "second", true);
     }
 
     // If stop loss was hit, mark it
@@ -315,7 +313,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
       > = {};
 
       for (const run of runs) {
-        const dateKey = dayjs(run.startTime).format("YYYY-MM-DD");
+        const dateKey = dayjs.utc(run.startTime).format("YYYY-MM-DD");
         if (!groupedRuns[dateKey]) {
           groupedRuns[dateKey] = [];
         }
@@ -330,7 +328,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
 
       // Sort dates descending (newest first)
       const sortedDates = Object.keys(groupedRuns).sort((a, b) => {
-        return dayjs(b).valueOf() - dayjs(a).valueOf();
+        return dayjs.utc(b).valueOf() - dayjs.utc(a).valueOf();
       });
 
       // Create final grouped object with sorted dates

@@ -99,7 +99,7 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
         // candle is [timestamp, open, high, low, close, volume, turnover]
         const [timestamp, open, high, low, close] = candle;
         // Convert timestamp string to Unix timestamp
-        const time = dayjs.utc(timestamp).unix() as number;
+        const time = dayjs.tz(timestamp, "Asia/Kolkata").utc().unix() as number;
         if (
           !open ||
           !high ||

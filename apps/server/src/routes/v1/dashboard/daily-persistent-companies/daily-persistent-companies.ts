@@ -129,7 +129,7 @@ const dailyPersistentCompaniesRoutes: FastifyPluginAsync = async (fastify) => {
         statusCode: 200,
         message: "Daily persistent companies fetched successfully",
         data: {
-          date: dayjs(startOfDayInTimezone).format("YYYY-MM-DD"),
+          date: startOfDayInTimezone.format("YYYY-MM-DD"),
           type: shortlistType,
           totalSnapshots: snapshots.length,
           companies,
