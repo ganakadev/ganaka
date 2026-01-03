@@ -30,6 +30,9 @@ export const makeGrowwAPIRequest =
 
         const headers = {
           Authorization: `Bearer ${accessToken}`,
+          "User-Agent": "PostmanRuntime/7.32.3",
+          "Accept-Encoding": "gzip, deflate, br",
+          Accept: "application/json",
         };
 
         const response = await axios({
@@ -42,6 +45,11 @@ export const makeGrowwAPIRequest =
         return response.data;
       } catch (error) {
         lastError = error;
+
+        if (axios.isAxiosError(error)) {
+          const fullUrl = error.config?.url + "?" + new URLSearchParams(params).toString();
+          console.log("Full URL that would be sent:", fullUrl);
+        }
 
         // Check if it's a 401 Unauthorized error
         const isUnauthorized =
