@@ -164,9 +164,10 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
   // Transform selectedDate into series markers format
   const seriesMarkers: SeriesMarkerConfig[] = useMemo(() => {
     if (!selectedDate || !candleData || candleData.length === 0) return [];
+    console.log("selectedDate", selectedDate);
 
     // Convert selectedDate to UTC dayjs object for comparison
-    const selectedTime = dayjs.utc(selectedDate).format("YYYY-MM-DDTHH:mm");
+    const selectedTime = dayjs.tz(selectedDate, "Asia/Kolkata").format("YYYY-MM-DDTHH:mm");
     let closestCandle = candleData[0];
     const referenceIndex = Math.min(30, candleData.length - 1);
     const firstCandleTime = dayjs
