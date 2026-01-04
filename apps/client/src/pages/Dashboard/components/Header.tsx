@@ -9,7 +9,7 @@ import { useRTKNotifier } from "../../../utils/hooks/useRTKNotifier";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
 import { authLocalStorage } from "../../../utils/authLocalStorage";
-import { formatDateTimeForAPI } from "../../../utils/dateFormatting";
+import { formatDateTimeForURL } from "../../../utils/dateFormatting";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -75,7 +75,7 @@ export const Header = ({
       // only update state if the time is not at default (00:00)
       if (valueDayjs.format("HH:mm") !== "00:00") {
         // Store datetime in UTC format for search params (YYYY-MM-DDTHH:mm:ss)
-        const utcDateTime = formatDateTimeForAPI(valueDayjs.toDate());
+        const utcDateTime = formatDateTimeForURL(valueDayjs.toDate());
         searchParams.set("date", utcDateTime);
         setSearchParams(searchParams);
         setSelectedDate(valueDayjs.toDate());
