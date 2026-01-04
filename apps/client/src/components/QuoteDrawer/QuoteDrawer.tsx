@@ -31,7 +31,7 @@ interface QuotePanelProps {
 function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps) {
   // API
   // Fetch candle data using RTK Query
-  const { data: candlesData, error: candleError } = dashboardAPI.useGetCandlesQuery(
+  const getCandlesAPI = dashboardAPI.useGetCandlesQuery(
     {
       symbol: selectedEntry?.nseSymbol || "",
       date: formatDateForAPI(selectedDate),
@@ -43,28 +43,27 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
   );
   useRTKNotifier({
     requestName: "Get Candles",
-    error: candleError,
+    error: getCandlesAPI.error,
   });
 
   // Fetch quote snapshots using RTK Query
-  const { data: quoteTimelineData, error: quoteTimelineError } =
-    dashboardAPI.useGetQuoteTimelineQuery(
-      {
-        symbol: selectedEntry?.nseSymbol || "",
-        date: formatDateForAPI(selectedDate),
-      },
-      {
-        skip: !selectedEntry || !selectedDate,
-      }
-    );
+  const getQuoteTimelineAPI = dashboardAPI.useGetQuoteTimelineQuery(
+    {
+      symbol: selectedEntry?.nseSymbol || "",
+      date: formatDateForAPI(selectedDate),
+    },
+    {
+      skip: !selectedEntry || !selectedDate,
+    }
+  );
   useRTKNotifier({
     requestName: "Get Quote Timeline",
-    error: quoteTimelineError,
+    error: getQuoteTimelineAPI.error,
   });
 
   // VARIABLES
-  const candleData: CandleData[] | null = candlesData?.data.candles
-    ? candlesData.data.candles.map((candle) => ({
+  const candleData: CandleData[] | null = getCandlesAPI.data?.data.candles
+    ? getCandlesAPI.data.data.candles.map((candle) => ({
         time: candle.time as Time,
         open: candle.open,
         high: candle.high,
@@ -73,9 +72,9 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
       }))
     : null;
   // Process quote snapshots to calculate buyerControlPercentage for each
-  const buyerControlData: Array<{ time: Time; value: number }> | null = quoteTimelineData?.data
-    .quoteTimeline
-    ? quoteTimelineData.data.quoteTimeline
+  const buyerControlData: Array<{ time: Time; value: number }> | null = getQuoteTimelineAPI.data
+    ?.data.quoteTimeline
+    ? getQuoteTimelineAPI.data.data.quoteTimeline
         .map(
           (timeline: {
             id: string;
@@ -106,12 +105,12 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
             item !== null
         )
     : null;
-  const errorMessage = candleError
-    ? "data" in candleError &&
-      typeof candleError.data === "object" &&
-      candleError.data !== null &&
-      "error" in candleError.data
-      ? String(candleError.data.error)
+  const errorMessage = getCandlesAPI.error
+    ? "data" in getCandlesAPI.error &&
+      typeof getCandlesAPI.error.data === "object" &&
+      getCandlesAPI.error.data !== null &&
+      "error" in getCandlesAPI.error.data
+      ? String(getCandlesAPI.error.data.error)
       : "Failed to fetch candle data"
     : null;
 
