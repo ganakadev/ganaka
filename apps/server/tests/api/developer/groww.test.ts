@@ -26,9 +26,8 @@ import {
 import { expect, test } from "../../helpers/test-fixtures";
 import { TestDataTracker } from "../../helpers/test-tracker";
 
-dayjs.extend(timezone);
-
 dayjs.extend(utc);
+dayjs.extend(timezone);
 
 // Helper function to convert query object to URLSearchParams-compatible format
 function buildQueryString(query: Record<string, string | undefined>): string {

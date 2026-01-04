@@ -1,5 +1,6 @@
 import { growwQuotePayloadSchema, growwQuoteSchema, v1_dashboard_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import dotenv from "dotenv";
 import { z } from "zod";
@@ -11,8 +12,9 @@ import { placeOrder } from "./callbacks/placeOrder";
 import { ApiClient } from "./utils/apiClient";
 import { logger } from "./utils/logger";
 import { runMinuteLoop } from "./utils/minute-loop";
-dotenv.config();
 
+dotenv.config();
+dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export { growwQuotePayloadSchema, growwQuoteSchema };

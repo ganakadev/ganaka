@@ -2,9 +2,11 @@ import { v1_developer_groww_schemas } from "@ganaka/schemas";
 import axios from "axios";
 import z from "zod";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { logger } from "../utils/logger";
 
+dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export const fetchCandles =

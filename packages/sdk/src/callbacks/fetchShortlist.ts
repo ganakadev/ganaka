@@ -3,8 +3,10 @@ import axios from "axios";
 import z from "zod";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { logger } from "../utils/logger";
 
+dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export const fetchShortlist =
