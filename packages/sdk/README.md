@@ -4,20 +4,7 @@ TypeScript/JavaScript client library for the Ganaka trading platform.
 
 ## Installation
 
-This package is published to GitHub Packages. To install it, you need to configure npm to authenticate with GitHub Packages.
-
-### 1. Create or update `.npmrc` file
-
-Create an `.npmrc` file in your project root (or in your home directory for global configuration) with the following content:
-
-```
-@ganaka:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
-```
-
-Replace `YOUR_GITHUB_TOKEN` with a GitHub Personal Access Token (PAT) that has `read:packages` permission.
-
-### 2. Install the package
+Install the package using your preferred package manager:
 
 ```bash
 npm install @ganaka/sdk
@@ -25,28 +12,6 @@ npm install @ganaka/sdk
 yarn add @ganaka/sdk
 # or
 pnpm add @ganaka/sdk
-```
-
-### Getting a GitHub Token
-
-1. Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
-2. Generate a new token with `read:packages` scope
-3. Use this token in your `.npmrc` file
-
-**Note:** For CI/CD environments, use the `GITHUB_TOKEN` secret provided by GitHub Actions, or create a PAT and store it as a secret.
-
-### Alternative: Using environment variable
-
-You can also set the token as an environment variable:
-
-```bash
-export NPM_TOKEN=your_github_token
-```
-
-Then create `.npmrc`:
-```
-@ganaka:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${NPM_TOKEN}
 ```
 
 ## Quick Start
@@ -248,23 +213,23 @@ pnpm run lint
 
 ### Publishing
 
-The package is automatically published to GitHub Packages when a git tag is created. The workflow triggers on tags matching `sdk/v*` or `v*` patterns.
-
-To manually publish (requires authentication):
+To publish a new version to npm:
 
 ```bash
 # Build before publishing
 pnpm run build
 
-# Configure npm registry (if not already done)
-echo "@ganaka:registry=https://npm.pkg.github.com" >> .npmrc
-echo "//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN" >> .npmrc
+# Login to npm (if not already logged in)
+npm login
 
-# Publish to GitHub Packages
-pnpm publish
+# Publish to npm
+npm publish
 ```
 
-**Note:** Publishing requires a GitHub Personal Access Token with `write:packages` permission.
+**Note:** 
+- You must be a member of the `ganaka` organization on npm to publish
+- The package will be published as `@ganaka/sdk` to the public npm registry
+- Ensure you have the correct version number in `package.json` before publishing
 
 ## License
 

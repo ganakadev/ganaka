@@ -1,6 +1,6 @@
 {
   "name": "@ganaka/sdk",
-  "version": "1.0.1",
+  "version": "0.0.1",
   "description": "Ganaka SDK - TypeScript client library",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -39,9 +39,22 @@
     "trading",
     "api"
   ],
-  "author": "",
+  "author": {
+    "name": "Rohit Raj",
+    "email": "rohitrajnovember@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ganakadev/ganaka.git",
+    "directory": "packages/sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/ganakadev/ganaka/issues"
+  },
+  "homepage": "https://github.com/ganakadev/ganaka#readme",
   "license": "MIT",
   "devDependencies": {
+    "@ganaka/schemas": "workspace:*",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-typescript": "^12.3.0",
@@ -63,23 +76,12 @@
     "vitest": "^2.1.8"
   },
   "publishConfig": {
-    "access": "public",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/shimorojune/ganaka.git",
-    "directory": "packages/sdk"
-  },
-  "bugs": {
-    "url": "https://github.com/shimorojune/ganaka/issues"
-  },
-  "homepage": "https://github.com/shimorojune/ganaka#readme",
   "engines": {
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@ganaka/schemas": "workspace:*",
     "axios": "^1.12.2",
     "cheerio": "^1.1.2",
     "csv-parser": "^3.2.0",
