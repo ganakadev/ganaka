@@ -436,7 +436,7 @@ export async function createShortlistSnapshotsWithUniqueCompanies(
   ];
 
   // Combine to get exactly uniqueCompanyCount companies
-  const allCompanies = [...baseEntries, ...additionalCompanies].slice(0, uniqueCompanyCount);
+  const allCompanies = baseEntries.concat(additionalCompanies).slice(0, uniqueCompanyCount);
 
   // Create snapshots with different subsets of companies
   // Distribute companies across snapshots to ensure all uniqueCompanyCount companies appear
@@ -458,7 +458,10 @@ export async function createShortlistSnapshotsWithUniqueCompanies(
 
     // If this is the last snapshot and we need more companies, add remaining companies
     if (i === snapshotsNeeded - 1 && endIdx < uniqueCompanyCount) {
-      snapshotEntries.push(...allCompanies.slice(endIdx));
+      const remainingCompanies = allCompanies.slice(endIdx);
+      for (const company of remainingCompanies) {
+        snapshotEntries.push(company);
+      }
     }
 
     const snapshot = await prisma.shortlistSnapshot.create({

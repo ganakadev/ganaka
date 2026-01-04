@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from "axios";
 
 const baseURL = process.env.API_DOMAIN || "http://localhost:4000";
