@@ -63,13 +63,16 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
 
   // VARIABLES
   const candleData: CandleData[] | null = getCandlesAPI.data?.data.candles
-    ? getCandlesAPI.data.data.candles.map((candle) => ({
-        time: candle.time as Time,
-        open: candle.open,
-        high: candle.high,
-        low: candle.low,
-        close: candle.close,
-      }))
+    ? getCandlesAPI.data.data.candles.map((candle) => {
+        const time = convertUTCToIST(dayjs.unix(candle.time).toDate());
+        return {
+          time: time.unix() as Time,
+          open: candle.open,
+          high: candle.high,
+          low: candle.low,
+          close: candle.close,
+        };
+      })
     : null;
   // Process quote snapshots to calculate buyerControlPercentage for each
   const buyerControlData: Array<{ time: Time; value: number }> | null = getQuoteTimelineAPI.data
@@ -163,7 +166,6 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
   // Transform selectedDate into series markers format
   const seriesMarkers: SeriesMarkerConfig[] = useMemo(() => {
     if (!selectedDate || !candleData || candleData.length === 0) return [];
-    console.log("selectedDate", selectedDate);
 
     // Convert selectedDate to UTC dayjs object for comparison
     const selectedTime = dayjs.tz(selectedDate, "Asia/Kolkata").format("YYYY-MM-DDTHH:mm");
