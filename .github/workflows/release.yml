@@ -3,15 +3,26 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      apps_to_deploy:
-        description: "Select apps to deploy"
-        required: true
-        type: choice
-        options:
-          - client
-          - server
-          - collector
-          - sdk
+      deploy_client:
+        description: "Deploy client"
+        required: false
+        type: boolean
+        default: false
+      deploy_server:
+        description: "Deploy server"
+        required: false
+        type: boolean
+        default: false
+      deploy_collector:
+        description: "Deploy collector"
+        required: false
+        type: boolean
+        default: false
+      deploy_sdk:
+        description: "Deploy SDK"
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   ci-checks:
@@ -43,7 +54,7 @@ jobs:
   publish-sdk:
     runs-on: ubuntu-latest
     needs: create-build-tag
-    if: contains(fromJson(github.event.inputs.apps_to_deploy), 'sdk')
+    if: github.event.inputs.deploy_sdk == 'true'
     permissions:
       contents: write
       packages: write
@@ -112,10 +123,10 @@ jobs:
   deploy-apps:
     runs-on: ubuntu-latest
     needs: create-build-tag
-    if: always() && (contains(fromJson(github.event.inputs.apps_to_deploy), 'client') || contains(fromJson(github.event.inputs.apps_to_deploy), 'server') || contains(fromJson(github.event.inputs.apps_to_deploy), 'collector') || contains(fromJson(github.event.inputs.apps_to_deploy), 'access_token_generator'))
+    if: always() && (github.event.inputs.deploy_client == 'true' || github.event.inputs.deploy_server == 'true' || github.event.inputs.deploy_collector == 'true')
     steps:
       - name: Deploy client
-        if: contains(fromJson(github.event.inputs.apps_to_deploy), 'client')
+        if: github.event.inputs.deploy_client == 'true'
         run: |
           if [ -z "${{ secrets.RENDER_CLIENT_DEPLOY_HOOK }}" ]; then
             echo "RENDER_CLIENT_DEPLOY_HOOK secret not set, skipping client deployment"
@@ -124,7 +135,7 @@ jobs:
           curl -X POST "${{ secrets.RENDER_CLIENT_DEPLOY_HOOK }}"
 
       - name: Deploy server
-        if: contains(fromJson(github.event.inputs.apps_to_deploy), 'server')
+        if: github.event.inputs.deploy_server == 'true'
         run: |
           if [ -z "${{ secrets.RENDER_SERVER_DEPLOY_HOOK }}" ]; then
             echo "RENDER_SERVER_DEPLOY_HOOK secret not set, skipping server deployment"
@@ -133,7 +144,7 @@ jobs:
           curl -X POST "${{ secrets.RENDER_SERVER_DEPLOY_HOOK }}"
 
       - name: Deploy collector
-        if: contains(fromJson(github.event.inputs.apps_to_deploy), 'collector')
+        if: github.event.inputs.deploy_collector == 'true'
         run: |
           if [ -z "${{ secrets.RENDER_COLLECTOR_DEPLOY_HOOK }}" ]; then
             echo "RENDER_COLLECTOR_DEPLOY_HOOK secret not set, skipping collector deployment"
