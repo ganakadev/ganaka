@@ -297,10 +297,10 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
             select: { orders: true },
           },
         },
-        orderBy: { startTime: "desc" },
+        orderBy: { createdAt: "desc" },
       });
 
-      // Group runs by date (startTime date)
+      // Group runs by creation date (createdAt date)
       const groupedRuns: Record<
         string,
         Array<{
@@ -313,7 +313,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
       > = {};
 
       for (const run of runs) {
-        const dateKey = dayjs.utc(run.startTime).format("YYYY-MM-DD");
+        const dateKey = dayjs.utc(run.createdAt).format("YYYY-MM-DD");
         if (!groupedRuns[dateKey]) {
           groupedRuns[dateKey] = [];
         }
