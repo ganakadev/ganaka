@@ -27,6 +27,13 @@ on:
 jobs:
   ci-checks:
     uses: ./.github/workflows/ci-checks.yml
+    secrets:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      GROWW_API_KEY: ${{ secrets.GROWW_API_KEY }}
+      GROWW_API_SECRET: ${{ secrets.GROWW_API_SECRET }}
+      REDIS_URL: ${{ secrets.REDIS_URL }}
+      DEVELOPER_KEY: ${{ secrets.DEVELOPER_KEY }}
+      WEBSHARE_API_KEY: ${{ secrets.WEBSHARE_API_KEY }}
 
   create-build-tag:
     runs-on: ubuntu-latest
