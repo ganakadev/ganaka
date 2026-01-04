@@ -16,7 +16,7 @@
       "@semantic-release/release-notes-generator",
       {
         "writerOpts": {
-          "headerPartial": "## [@ganaka/sdk v{{version}}](https://github.com/shimorojune/ganaka/packages)\n\nPublished to GitHub Packages\n\n"
+          "headerPartial": "## [@ganaka/sdk v{{version}}](https://www.npmjs.com/package/@ganaka/sdk)\n\nPublished to npm\n\n"
         }
       }
     ],
