@@ -6,6 +6,7 @@
     "lint": "pnpm -r --parallel run lint",
     "prepare:ci": "./scripts/prepare-for-ci.sh",
     "prepare:release": "./scripts/prepare-for-release.sh",
+    "prepare:local-run": "./scripts/prepare-for-local-run.sh",
     "test:server": "pnpm --filter @ganaka/server test",
     "clean:node_modules": "find . -name 'node_modules' -type d -prune -exec rm -rf {} +"
   },
