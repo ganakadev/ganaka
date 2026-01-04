@@ -1,20 +1,32 @@
 import { v1_developer_groww_schemas } from "@ganaka/schemas";
-import { expect, test } from "../../helpers/test-fixtures";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import { parseDateTimeInTimezone } from "../../../src/utils/timezone";
 import {
   createGrowwQuoteQuery,
   createHistoricalCandlesQuery,
   createQuoteTimelineQuery,
   createValidGrowwQuotePayload,
-  TEST_DATE,
-  TEST_DATETIME,
+  generateUniqueTestDate,
+  generateUniqueTestDatetime,
   TEST_SYMBOL,
 } from "../../fixtures/test-data";
-import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
+import {
+  authenticatedGet,
+  authenticatedGetWithRunContext,
+  unauthenticatedGet,
+} from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createMultipleQuoteSnapshots, createQuoteSnapshot } from "../../helpers/db-helpers";
+import {
+  createMultipleQuoteSnapshots,
+  createQuoteSnapshot,
+  createRun,
+} from "../../helpers/db-helpers";
+import { expect, test } from "../../helpers/test-fixtures";
 import { TestDataTracker } from "../../helpers/test-tracker";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
+
+dayjs.extend(timezone);
 
 dayjs.extend(utc);
 
@@ -30,12 +42,14 @@ function buildQueryString(query: Record<string, string | undefined>): string {
 }
 
 let developerToken: string;
+let developerId: string;
 let sharedTracker: TestDataTracker;
 
 test.beforeAll(async () => {
   sharedTracker = new TestDataTracker();
   const dev = await createDeveloperUser(undefined, sharedTracker);
   developerToken = dev.token;
+  developerId = dev.id;
 });
 
 test.afterAll(async () => {
@@ -122,9 +136,10 @@ test.describe("GET /v1/developer/groww/quote", () => {
     tracker,
   }) => {
     const testQuoteData = createValidGrowwQuotePayload();
-    await createQuoteSnapshot(TEST_SYMBOL, TEST_DATETIME, testQuoteData, tracker);
+    const testDatetime = generateUniqueTestDatetime();
+    await createQuoteSnapshot(TEST_SYMBOL, testDatetime, testQuoteData, tracker);
 
-    const query = createGrowwQuoteQuery(TEST_SYMBOL, TEST_DATETIME);
+    const query = createGrowwQuoteQuery(TEST_SYMBOL, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
       `/v1/developer/groww/quote?${queryString}`,
@@ -219,6 +234,108 @@ test.describe("GET /v1/developer/groww/quote", () => {
     expect(body.statusCode).toBe(200);
     expect(body.message).toBe("Quote snapshot not found");
     expect(body.data).toBeNull();
+  });
+
+  test("should allow request with datetime < currentTimestamp when headers are present", async ({
+    tracker,
+  }) => {
+    const testDatetime = generateUniqueTestDatetime();
+    const testSymbol = TEST_SYMBOL;
+    await createQuoteSnapshot(testSymbol, testDatetime, createValidGrowwQuotePayload(), tracker);
+
+    // Create a run and set currentTimestamp to 1 hour after testDatetime
+    const currentTimestamp = parseDateTimeInTimezone(testDatetime, "Asia/Kolkata");
+    currentTimestamp.setHours(currentTimestamp.getHours() + 1);
+    const run = await createRun(developerId, testDatetime, currentTimestamp.toISOString(), tracker);
+
+    const query = createGrowwQuoteQuery(testSymbol, testDatetime);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGetWithRunContext(
+      `/v1/developer/groww/quote?${queryString}`,
+      developerToken,
+      run.id,
+      currentTimestamp
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
+    expect(body.data).not.toBeNull();
+  });
+
+  test("should return 403 when datetime equals currentTimestamp", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
+    const testSymbol = TEST_SYMBOL;
+    await createQuoteSnapshot(testSymbol, testDatetime, createValidGrowwQuotePayload(), tracker);
+
+    const currentTimestamp = parseDateTimeInTimezone(testDatetime, "Asia/Kolkata");
+    const run = await createRun(
+      developerId,
+      testDatetime,
+      dayjs.tz(testDatetime, "Asia/Kolkata").add(1, "hour").format("YYYY-MM-DDTHH:mm:ss"),
+      tracker
+    );
+
+    const query = createGrowwQuoteQuery(testSymbol, testDatetime);
+    const queryString = buildQueryString(query);
+
+    const response = await authenticatedGetWithRunContext(
+      `/v1/developer/groww/quote?${queryString}`,
+      developerToken,
+      run.id,
+      currentTimestamp,
+      "Asia/Kolkata",
+      { validateStatus: () => true }
+    );
+
+    expect(response.status).toBe(403);
+    const body = response.data;
+    expect(body.statusCode).toBe(403);
+    expect(body.message).toContain("Cannot access data");
+    expect(body.message).toContain("before current execution timestamp");
+  });
+
+  test("should return 403 when datetime > currentTimestamp", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
+    const testSymbol = TEST_SYMBOL;
+    await createQuoteSnapshot(testSymbol, testDatetime, createValidGrowwQuotePayload(), tracker);
+
+    const currentTimestamp = parseDateTimeInTimezone(testDatetime, "Asia/Kolkata");
+    currentTimestamp.setHours(currentTimestamp.getHours() - 1); // currentTimestamp is 1 hour before testDatetime
+    const run = await createRun(developerId, testDatetime, currentTimestamp.toISOString(), tracker);
+
+    const query = createGrowwQuoteQuery(testSymbol, testDatetime);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGetWithRunContext(
+      `/v1/developer/groww/quote?${queryString}`,
+      developerToken,
+      run.id,
+      currentTimestamp,
+      "Asia/Kolkata",
+      { validateStatus: () => true }
+    );
+
+    expect(response.status).toBe(403);
+    const body = response.data;
+    expect(body.statusCode).toBe(403);
+    expect(body.message).toContain("Cannot access data");
+  });
+
+  test("should allow request without headers (backward compatibility)", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
+    const testSymbol = TEST_SYMBOL;
+    await createQuoteSnapshot(testSymbol, testDatetime, createValidGrowwQuotePayload(), tracker);
+
+    const query = createGrowwQuoteQuery(testSymbol, testDatetime);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(
+      `/v1/developer/groww/quote?${queryString}`,
+      developerToken
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
   });
 });
 
@@ -531,6 +648,114 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
       expect(response.status).toBe(500);
     }
   });
+
+  test("should allow request with start_datetime and end_datetime < currentTimestamp when headers are present", async ({
+    tracker,
+  }) => {
+    const startDatetime = generateUniqueTestDatetime();
+    const endDatetime = dayjs
+      .tz(startDatetime, "Asia/Kolkata")
+      .add(1, "hour")
+      .format("YYYY-MM-DDTHH:mm:ss");
+    const currentTimestamp = parseDateTimeInTimezone(endDatetime, "Asia/Kolkata");
+    currentTimestamp.setHours(currentTimestamp.getHours() + 1); // currentTimestamp is 1 hour after endDatetime
+    const run = await createRun(
+      developerId,
+      startDatetime,
+      currentTimestamp.toISOString(),
+      tracker
+    );
+
+    const query = createHistoricalCandlesQuery(TEST_SYMBOL, "5minute", startDatetime, endDatetime);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGetWithRunContext(
+      `/v1/developer/groww/historical-candles?${queryString}`,
+      developerToken,
+      run.id,
+      currentTimestamp,
+      "Asia/Kolkata",
+      { validateStatus: () => true }
+    );
+
+    // May return 200 or error from external API, but should not return 403
+    expect(response.status).not.toBe(403);
+  });
+
+  test("should return 403 when end_datetime equals currentTimestamp", async ({ tracker }) => {
+    const startDatetime = generateUniqueTestDatetime();
+    const endDatetime = dayjs
+      .tz(startDatetime, "Asia/Kolkata")
+      .add(1, "hour")
+      .format("YYYY-MM-DDTHH:mm:ss");
+    const currentTimestamp = parseDateTimeInTimezone(endDatetime, "Asia/Kolkata");
+    const run = await createRun(
+      developerId,
+      startDatetime,
+      currentTimestamp.toISOString(),
+      tracker
+    );
+
+    const query = createHistoricalCandlesQuery(TEST_SYMBOL, "5minute", startDatetime, endDatetime);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGetWithRunContext(
+      `/v1/developer/groww/historical-candles?${queryString}`,
+      developerToken,
+      run.id,
+      currentTimestamp,
+      "Asia/Kolkata",
+      { validateStatus: () => true }
+    );
+
+    expect(response.status).toBe(403);
+    const body = response.data;
+    expect(body.statusCode).toBe(403);
+    expect(body.message).toContain("Cannot access data");
+  });
+
+  test("should return 403 when end_datetime > currentTimestamp", async ({ tracker }) => {
+    const startDatetime = generateUniqueTestDatetime();
+    const endDatetime = dayjs
+      .tz(startDatetime, "Asia/Kolkata")
+      .add(1, "hour")
+      .format("YYYY-MM-DDTHH:mm:ss");
+    const currentTimestamp = parseDateTimeInTimezone(startDatetime, "Asia/Kolkata");
+    currentTimestamp.setMinutes(currentTimestamp.getMinutes() + 30); // currentTimestamp is 30 min after start, but end is 1 hour after
+    const run = await createRun(
+      developerId,
+      startDatetime,
+      currentTimestamp.toISOString(),
+      tracker
+    );
+
+    const query = createHistoricalCandlesQuery(TEST_SYMBOL, "5minute", startDatetime, endDatetime);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGetWithRunContext(
+      `/v1/developer/groww/historical-candles?${queryString}`,
+      developerToken,
+      run.id,
+      currentTimestamp,
+      "Asia/Kolkata",
+      { validateStatus: () => true }
+    );
+
+    expect(response.status).toBe(403);
+    const body = response.data;
+    expect(body.statusCode).toBe(403);
+    expect(body.message).toContain("Cannot access data");
+  });
+
+  test("should allow request without headers (backward compatibility)", async () => {
+    const query = createHistoricalCandlesQuery();
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(
+      `/v1/developer/groww/historical-candles?${queryString}`,
+      developerToken,
+      { validateStatus: () => true }
+    );
+
+    // May return 200 or error from external API, but should not return 403
+    expect(response.status).not.toBe(403);
+  });
 });
 
 test.describe("GET /v1/developer/groww/quote-timeline", () => {
@@ -609,7 +834,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
 
   test("should return timeline array for valid date with known symbol", async ({ tracker }) => {
     const testSymbol = TEST_SYMBOL;
-    const testDate = TEST_DATE;
+    const testDate = generateUniqueTestDate();
     const snapshotCount = 5;
 
     // Create multiple snapshots for the date
@@ -657,7 +882,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     const timeline = validatedData.data.quoteTimeline;
     if (timeline.length >= 1) {
       // First entry
-      expect(timeline[0].timestamp).toBe("2025-12-26T03:45:00");
+      expect(dayjs.utc(timeline[0].timestamp).format("YYYY-MM-DD")).toBe(testDate);
       expect(timeline[0].nseSymbol).toBe(testSymbol);
       expect(timeline[0].quoteData.status).toBe("SUCCESS");
       expect(timeline[0].quoteData.payload.ohlc?.low).toBe(2470);
@@ -674,5 +899,88 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
       const currTimestamp = dayjs.utc(validatedData.data.quoteTimeline[i].timestamp).valueOf();
       expect(currTimestamp).toBeGreaterThanOrEqual(prevTimestamp);
     }
+  });
+
+  test("should allow request with date < currentTimestamp when headers are present", async ({
+    tracker,
+  }) => {
+    const testDate = generateUniqueTestDate();
+    const testSymbol = TEST_SYMBOL;
+    await createMultipleQuoteSnapshots(testSymbol, testDate, 3, tracker);
+
+    // Set currentTimestamp to next day
+    const currentTimestamp = dayjs
+      .tz(`${testDate} 15:31:00`, "Asia/Kolkata")
+      .add(1, "day")
+      .toDate();
+    const run = await createRun(
+      developerId,
+      `${testDate} 09:15:00`,
+      currentTimestamp.toISOString(),
+      tracker
+    );
+
+    const query = createQuoteTimelineQuery(testSymbol, testDate);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGetWithRunContext(
+      `/v1/developer/groww/quote-timeline?${queryString}`,
+      developerToken,
+      run.id,
+      currentTimestamp
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
+  });
+
+  test("should return only snapshots before currentTimestamp", async ({ tracker }) => {
+    const testDate = generateUniqueTestDate();
+    const testSymbol = TEST_SYMBOL;
+    await createMultipleQuoteSnapshots(testSymbol, testDate, 10, tracker);
+
+    // Set currentTimestamp to previous day
+    const currentTimestamp = dayjs.tz(`${testDate} 11:30:00`, "Asia/Kolkata").toDate();
+    const run = await createRun(
+      developerId,
+      `${testDate} 09:15:00`,
+      currentTimestamp.toISOString(),
+      tracker
+    );
+
+    const query = createQuoteTimelineQuery(testSymbol, testDate);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGetWithRunContext(
+      `/v1/developer/groww/quote-timeline?${queryString}`,
+      developerToken,
+      run.id,
+      currentTimestamp,
+      "Asia/Kolkata",
+      { validateStatus: () => true }
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
+    expect(body.message).toBe("Quote timeline fetched successfully");
+    expect(body.data.quoteTimeline).toBeInstanceOf(Array);
+    expect(body.data.quoteTimeline.length).toEqual(3);
+  });
+
+  test("should allow request without headers (backward compatibility)", async ({ tracker }) => {
+    const testDate = generateUniqueTestDate();
+    const testSymbol = TEST_SYMBOL;
+    await createMultipleQuoteSnapshots(testSymbol, testDate, 3, tracker);
+
+    const query = createQuoteTimelineQuery(testSymbol, testDate);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(
+      `/v1/developer/groww/quote-timeline?${queryString}`,
+      developerToken
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
   });
 });

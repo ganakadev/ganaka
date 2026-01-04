@@ -4,14 +4,15 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { FastifyPluginAsync } from "fastify";
 import z from "zod";
+import { validateCurrentTimestamp } from "../../../../utils/current-timestamp-validator";
+import { formatDateTime } from "../../../../utils/date-formatter";
 import { makeGrowwAPIRequest } from "../../../../utils/groww-api-request";
 import { prisma } from "../../../../utils/prisma";
 import { RedisManager } from "../../../../utils/redis";
 import { sendResponse } from "../../../../utils/sendResponse";
-import { parseDateInTimezone, parseDateTimeInTimezone } from "../../../../utils/timezone";
+import { parseDateTimeInTimezone } from "../../../../utils/timezone";
 import { TokenManager } from "../../../../utils/token-manager";
 import { validateRequest } from "../../../../utils/validator";
-import { formatDateTime } from "../../../../utils/date-formatter";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -52,6 +53,16 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
       try {
         // Convert datetime string to UTC Date object
         const selectedDateTime = parseDateTimeInTimezone(datetime, timezone);
+
+        // Validate against currentTimestamp if present
+        if (request.currentTimestamp) {
+          try {
+            validateCurrentTimestamp(request.currentTimestamp, [selectedDateTime], reply);
+          } catch (error) {
+            // Error already sent via reply in validator
+            return;
+          }
+        }
 
         const quoteSnapshots = await prisma.quoteSnapshot.findMany({
           where: {
@@ -154,15 +165,36 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
+      // Convert datetime strings to UTC Date objects for validation
+      const startDateTimeUTC = parseDateTimeInTimezone(
+        validationResult.start_datetime,
+        validationResult.timezone ?? "Asia/Kolkata"
+      );
+      const endDateTimeUTC = parseDateTimeInTimezone(
+        validationResult.end_datetime,
+        validationResult.timezone ?? "Asia/Kolkata"
+      );
+
+      // Validate against currentTimestamp if present
+      if (request.currentTimestamp) {
+        try {
+          validateCurrentTimestamp(
+            request.currentTimestamp,
+            [startDateTimeUTC, endDateTimeUTC],
+            reply
+          );
+        } catch (error) {
+          // Error already sent via reply in validator
+          return;
+        }
+      }
+
       // Convert datetime strings to IST format for Groww API
       const startTimeIST = dayjs
-        .utc(parseDateTimeInTimezone(validationResult.start_datetime, validationResult.timezone ?? "Asia/Kolkata"))
+        .utc(startDateTimeUTC)
         .tz("Asia/Kolkata")
         .format("YYYY-MM-DDTHH:mm:ss");
-      const endTimeIST = dayjs
-        .utc(parseDateTimeInTimezone(validationResult.end_datetime, validationResult.timezone ?? "Asia/Kolkata"))
-        .tz("Asia/Kolkata")
-        .format("YYYY-MM-DDTHH:mm:ss");
+      const endTimeIST = dayjs.utc(endDateTimeUTC).tz("Asia/Kolkata").format("YYYY-MM-DDTHH:mm:ss");
 
       const response = await growwAPIRequest<
         z.infer<typeof v1_developer_groww_schemas.growwHistoricalCandlesSchema>
@@ -229,13 +261,22 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
 
+      // Filter snapshots to only include those before currentTimestamp
+      // This allows users to request data from mid-day and get all data from start of day till currentTimestamp
+      const currentTimestamp = request.currentTimestamp;
+      const filteredSnapshots = currentTimestamp
+        ? quoteSnapshots.filter((snapshot) => {
+            return dayjs.utc(snapshot.timestamp).isBefore(dayjs.utc(currentTimestamp));
+          })
+        : quoteSnapshots;
+
       return sendResponse<
         z.infer<typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.response>
       >(reply, {
         statusCode: 200,
         message: "Quote timeline fetched successfully",
         data: {
-          quoteTimeline: quoteSnapshots.map((snapshot) => ({
+          quoteTimeline: filteredSnapshots.map((snapshot) => ({
             id: snapshot.id,
             timestamp: formatDateTime(snapshot.timestamp),
             nseSymbol: snapshot.nseSymbol,

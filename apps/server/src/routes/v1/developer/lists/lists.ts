@@ -11,6 +11,7 @@ import { isEmpty, shuffle } from "lodash";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { parseDateTimeInTimezone } from "../../../../utils/timezone";
+import { validateCurrentTimestamp } from "../../../../utils/current-timestamp-validator";
 
 dayjs.extend(utc);
 
@@ -98,6 +99,16 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
         const timezone = validationResult.timezone || "Asia/Kolkata";
         // Convert datetime string to UTC Date object
         const selectedDateTime = parseDateTimeInTimezone(validationResult.datetime, timezone);
+
+        // Validate against currentTimestamp if present
+        if (request.currentTimestamp) {
+          try {
+            validateCurrentTimestamp(request.currentTimestamp, [selectedDateTime], reply);
+          } catch (error) {
+            // Error already sent via reply in validator
+            return;
+          }
+        }
 
         const shortlists = await prisma.shortlistSnapshot.findMany({
           where: {
