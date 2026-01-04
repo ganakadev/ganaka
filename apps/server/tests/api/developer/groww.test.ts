@@ -1,19 +1,21 @@
 import { v1_developer_groww_schemas } from "@ganaka/schemas";
-import { expect, test } from "../../helpers/test-fixtures";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import { parseDateTimeInTimezone } from "../../../src/utils/timezone";
 import {
   createGrowwQuoteQuery,
   createHistoricalCandlesQuery,
   createQuoteTimelineQuery,
   createValidGrowwQuotePayload,
-  TEST_DATE,
-  TEST_DATETIME,
-  TEST_SYMBOL,
+  generateUniqueTestDate,
   generateUniqueTestDatetime,
+  TEST_SYMBOL,
 } from "../../fixtures/test-data";
 import {
   authenticatedGet,
-  unauthenticatedGet,
   authenticatedGetWithRunContext,
+  unauthenticatedGet,
 } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
 import {
@@ -21,11 +23,8 @@ import {
   createQuoteSnapshot,
   createRun,
 } from "../../helpers/db-helpers";
+import { expect, test } from "../../helpers/test-fixtures";
 import { TestDataTracker } from "../../helpers/test-tracker";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-import { parseDateTimeInTimezone } from "../../../src/utils/timezone";
 
 dayjs.extend(timezone);
 
@@ -137,9 +136,10 @@ test.describe("GET /v1/developer/groww/quote", () => {
     tracker,
   }) => {
     const testQuoteData = createValidGrowwQuotePayload();
-    await createQuoteSnapshot(TEST_SYMBOL, TEST_DATETIME, testQuoteData, tracker);
+    const testDatetime = generateUniqueTestDatetime();
+    await createQuoteSnapshot(TEST_SYMBOL, testDatetime, testQuoteData, tracker);
 
-    const query = createGrowwQuoteQuery(TEST_SYMBOL, TEST_DATETIME);
+    const query = createGrowwQuoteQuery(TEST_SYMBOL, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
       `/v1/developer/groww/quote?${queryString}`,
@@ -278,9 +278,6 @@ test.describe("GET /v1/developer/groww/quote", () => {
 
     const query = createGrowwQuoteQuery(testSymbol, testDatetime);
     const queryString = buildQueryString(query);
-
-    console.log(dayjs.tz(testDatetime, "Asia/Kolkata").format("YYYY-MM-DDTHH:mm:ss"));
-    console.log(query);
 
     const response = await authenticatedGetWithRunContext(
       `/v1/developer/groww/quote?${queryString}`,
@@ -837,7 +834,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
 
   test("should return timeline array for valid date with known symbol", async ({ tracker }) => {
     const testSymbol = TEST_SYMBOL;
-    const testDate = TEST_DATE;
+    const testDate = generateUniqueTestDate();
     const snapshotCount = 5;
 
     // Create multiple snapshots for the date
@@ -885,7 +882,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     const timeline = validatedData.data.quoteTimeline;
     if (timeline.length >= 1) {
       // First entry
-      expect(timeline[0].timestamp).toBe("2025-12-26T03:45:00");
+      expect(dayjs.utc(timeline[0].timestamp).format("YYYY-MM-DD")).toBe(testDate);
       expect(timeline[0].nseSymbol).toBe(testSymbol);
       expect(timeline[0].quoteData.status).toBe("SUCCESS");
       expect(timeline[0].quoteData.payload.ohlc?.low).toBe(2470);
@@ -907,7 +904,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
   test("should allow request with date < currentTimestamp when headers are present", async ({
     tracker,
   }) => {
-    const testDate = TEST_DATE;
+    const testDate = generateUniqueTestDate();
     const testSymbol = TEST_SYMBOL;
     await createMultipleQuoteSnapshots(testSymbol, testDate, 3, tracker);
 
@@ -938,7 +935,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
   });
 
   test("should return only snapshots before currentTimestamp", async ({ tracker }) => {
-    const testDate = TEST_DATE;
+    const testDate = generateUniqueTestDate();
     const testSymbol = TEST_SYMBOL;
     await createMultipleQuoteSnapshots(testSymbol, testDate, 10, tracker);
 
@@ -971,7 +968,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
   });
 
   test("should allow request without headers (backward compatibility)", async ({ tracker }) => {
-    const testDate = TEST_DATE;
+    const testDate = generateUniqueTestDate();
     const testSymbol = TEST_SYMBOL;
     await createMultipleQuoteSnapshots(testSymbol, testDate, 3, tracker);
 
