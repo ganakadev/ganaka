@@ -39,6 +39,13 @@ const authPlugin =
               );
             }
 
+            // Attach admin info to request object
+            request.admin = {
+              id: adminRecord.id,
+              username: adminRecord.username,
+              token: token,
+            };
+
             fastify.log.info(`Admin authenticated: ${adminRecord.username}`);
             break;
           }
@@ -52,6 +59,13 @@ const authPlugin =
                 "Authorization failed for this developer request. Please check your credentials and try again."
               );
             }
+
+            // Attach developer info to request object
+            request.developer = {
+              id: developer.id,
+              username: developer.username,
+              token: token,
+            };
 
             // Authentication successful, continue to the route handler
             fastify.log.info(`Developer authenticated: ${developer.username}`);

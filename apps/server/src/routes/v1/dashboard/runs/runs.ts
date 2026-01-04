@@ -288,9 +288,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
       // Fetch runs with order count for the authenticated developer
       const runs = await prisma.run.findMany({
         where: {
-          developer: {
-            token: request.headers.authorization?.split(" ")[1] || "",
-          },
+          developerId: request.developer?.id,
         },
         include: {
           _count: {
@@ -384,14 +382,8 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         validationResult.end_datetime,
         validationResult.timezone ?? "Asia/Kolkata"
       );
-      const token = request.headers.authorization?.split(" ")[1] || "";
 
-      // Get developer from token
-      const developer = await prisma.developer.findUnique({
-        where: { token },
-      });
-
-      if (!developer) {
+      if (!request.developer) {
         return reply.unauthorized("Developer not found or invalid token");
       }
 
@@ -402,7 +394,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
           endTime: endTimeUTC,
           developer: {
             connect: {
-              id: developer.id,
+              id: request.developer.id,
             },
           },
         },
@@ -452,15 +444,11 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const token = request.headers.authorization?.split(" ")[1] || "";
-
       // Verify the run belongs to the authenticated developer
       const run = await prisma.run.findFirst({
         where: {
           id: paramsValidationResult.runId,
-          developer: {
-            token: token,
-          },
+          developerId: request.developer?.id,
         },
       });
 
@@ -510,15 +498,11 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const token = request.headers.authorization?.split(" ")[1] || "";
-
       // Verify the run belongs to the authenticated developer
       const run = await prisma.run.findFirst({
         where: {
           id: validationResult.runId,
-          developer: {
-            token: token,
-          },
+          developerId: request.developer?.id,
         },
       });
 
@@ -573,15 +557,11 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const token = request.headers.authorization?.split(" ")[1] || "";
-
       // Verify the run belongs to the authenticated developer
       const run = await prisma.run.findFirst({
         where: {
           id: paramsValidationResult.runId,
-          developer: {
-            token: token,
-          },
+          developerId: request.developer?.id,
         },
       });
 
@@ -682,15 +662,12 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         bodyValidationResult.datetime,
         bodyValidationResult.timezone ?? "Asia/Kolkata"
       );
-      const token = request.headers.authorization?.split(" ")[1] || "";
 
       // Verify the run belongs to the authenticated developer
       const run = await prisma.run.findFirst({
         where: {
           id: paramsValidationResult.runId,
-          developer: {
-            token: token,
-          },
+          developerId: request.developer?.id,
         },
       });
 
