@@ -1,5 +1,6 @@
 import { FastifyPluginAsync } from "fastify";
 import { prisma } from "../utils/prisma";
+import "../types/fastify";
 
 const authPlugin =
   (type: "admin" | "developer"): FastifyPluginAsync =>
