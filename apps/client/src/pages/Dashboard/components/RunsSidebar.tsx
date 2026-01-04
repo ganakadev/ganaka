@@ -220,7 +220,9 @@ export const RunsSidebar = ({
                         .join(" ")}
                       onClick={() =>
                         onRunClick?.({
-                          ...run,
+                          id: run.id,
+                          completed: run.completed,
+                          orderCount: run.orderCount,
                           // API returns UTC datetime strings, Date constructor handles them correctly
                           startTime: new Date(run.start_datetime),
                           endTime: new Date(run.end_datetime),
@@ -276,7 +278,9 @@ export const RunsSidebar = ({
                               onClick={(e) =>
                                 handleDelete(
                                   {
-                                    ...run,
+                                    id: run.id,
+                                    completed: run.completed,
+                                    orderCount: run.orderCount,
                                     // API returns UTC datetime strings, Date constructor handles them correctly
                                     startTime: new Date(run.start_datetime),
                                     endTime: new Date(run.end_datetime),

@@ -249,7 +249,12 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
 
   test("should return 400 when symbol is missing", async () => {
     const query = createHistoricalCandlesQuery();
-    const { symbol, ...queryWithoutSymbol } = query;
+    const queryWithoutSymbol = {
+      interval: query.interval,
+      start_datetime: query.start_datetime,
+      end_datetime: query.end_datetime,
+      timezone: query.timezone,
+    };
     const queryString = buildQueryString(queryWithoutSymbol);
     const response = await authenticatedGet(
       `/v1/developer/groww/historical-candles?${queryString}`,
@@ -264,7 +269,12 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
 
   test("should return 400 when interval is missing", async () => {
     const query = createHistoricalCandlesQuery();
-    const { interval, ...queryWithoutInterval } = query;
+    const queryWithoutInterval = {
+      symbol: query.symbol,
+      start_datetime: query.start_datetime,
+      end_datetime: query.end_datetime,
+      timezone: query.timezone,
+    };
     const queryString = buildQueryString(queryWithoutInterval);
     const response = await authenticatedGet(
       `/v1/developer/groww/historical-candles?${queryString}`,
@@ -279,7 +289,12 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
 
   test("should return 400 when start_time is missing", async () => {
     const query = createHistoricalCandlesQuery();
-    const { start_datetime, ...queryWithoutStartTime } = query;
+    const queryWithoutStartTime = {
+      symbol: query.symbol,
+      interval: query.interval,
+      end_datetime: query.end_datetime,
+      timezone: query.timezone,
+    };
     const queryString = buildQueryString(queryWithoutStartTime);
     const response = await authenticatedGet(
       `/v1/developer/groww/historical-candles?${queryString}`,
@@ -294,7 +309,12 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
 
   test("should return 400 when end_time is missing", async () => {
     const query = createHistoricalCandlesQuery();
-    const { end_datetime, ...queryWithoutEndTime } = query;
+    const queryWithoutEndTime = {
+      symbol: query.symbol,
+      interval: query.interval,
+      start_datetime: query.start_datetime,
+      timezone: query.timezone,
+    };
     const queryString = buildQueryString(queryWithoutEndTime);
     const response = await authenticatedGet(
       `/v1/developer/groww/historical-candles?${queryString}`,
@@ -310,7 +330,10 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
   test("should return 400 when interval is invalid", async () => {
     const query = createHistoricalCandlesQuery();
     const queryWithInvalidInterval = {
-      ...query,
+      symbol: query.symbol,
+      start_datetime: query.start_datetime,
+      end_datetime: query.end_datetime,
+      timezone: query.timezone,
       interval: "invalid-interval",
     };
     const queryString = buildQueryString(queryWithInvalidInterval);
@@ -535,7 +558,9 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
 
   test("should return 400 when symbol is missing", async () => {
     const query = createQuoteTimelineQuery();
-    const { symbol, ...queryWithoutSymbol } = query;
+    const queryWithoutSymbol = {
+      date: query.date,
+    };
     const queryString = buildQueryString(queryWithoutSymbol);
     const response = await authenticatedGet(
       `/v1/developer/groww/quote-timeline?${queryString}`,
@@ -550,7 +575,9 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
 
   test("should return 400 when date is missing", async () => {
     const query = createQuoteTimelineQuery();
-    const { date, ...queryWithoutDate } = query;
+    const queryWithoutDate = {
+      symbol: query.symbol,
+    };
     const queryString = buildQueryString(queryWithoutDate);
     const response = await authenticatedGet(
       `/v1/developer/groww/quote-timeline?${queryString}`,

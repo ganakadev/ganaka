@@ -3,3 +3,13 @@ alwaysApply: true
 ---
 
 When making changes to the client app using Mantine UI, make sure to not use the Mantine layout components (Group, Center, Grid, Flex, etc). For layouts, only use divs with tailwind CSS styling.
+
+Do not use spread operators (`...`) except for conditional spreads. Conditional spreads like `...(condition && { prop: value })` and react-hook-form register spreads like `{...register("developerToken")}` are acceptable. All other spread operations should be replaced with explicit property assignments or proper parameter passing:
+
+- Object cloning/spreading: `{ ...obj }` → Use explicit property extraction or `Object.assign({}, obj)`
+- Object merging: `{ ...obj1, ...obj2 }` → Use explicit property assignments
+- Array concatenation: `[...arr1, ...arr2]` → Use `arr1.concat(arr2)` or explicit array building
+- Function argument spreads: `func(...args)` → Use explicit parameters or `func.apply(null, args)`
+- Destructuring with rest: `const { a, ...rest } = obj` → Use explicit destructuring or `Object.keys()` filtering
+
+Do not destructure any objects. Access object properties using object.property every time.

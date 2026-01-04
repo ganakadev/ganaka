@@ -943,7 +943,12 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       "Asia/Kolkata"
     );
     const orderData = createOrderTestData();
-    const { nseSymbol, ...orderDataWithoutSymbol } = orderData;
+    const orderDataWithoutSymbol = {
+      entryPrice: orderData.entryPrice,
+      stopLossPrice: orderData.stopLossPrice,
+      takeProfitPrice: orderData.takeProfitPrice,
+      datetime: orderData.datetime,
+    };
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
       developerToken,
@@ -963,7 +968,12 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       "Asia/Kolkata"
     );
     const orderData = createOrderTestData();
-    const { entryPrice, ...orderDataWithoutEntryPrice } = orderData;
+    const orderDataWithoutEntryPrice = {
+      nseSymbol: orderData.nseSymbol,
+      stopLossPrice: orderData.stopLossPrice,
+      takeProfitPrice: orderData.takeProfitPrice,
+      datetime: orderData.datetime,
+    };
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
       developerToken,
@@ -983,7 +993,12 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       "Asia/Kolkata"
     );
     const orderData = createOrderTestData();
-    const { stopLossPrice, ...orderDataWithoutStopLoss } = orderData;
+    const orderDataWithoutStopLoss = {
+      nseSymbol: orderData.nseSymbol,
+      entryPrice: orderData.entryPrice,
+      takeProfitPrice: orderData.takeProfitPrice,
+      datetime: orderData.datetime,
+    };
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
       developerToken,
@@ -1003,7 +1018,12 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       "Asia/Kolkata"
     );
     const orderData = createOrderTestData();
-    const { takeProfitPrice, ...orderDataWithoutTakeProfit } = orderData;
+    const orderDataWithoutTakeProfit = {
+      nseSymbol: orderData.nseSymbol,
+      entryPrice: orderData.entryPrice,
+      stopLossPrice: orderData.stopLossPrice,
+      datetime: orderData.datetime,
+    };
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
       developerToken,
@@ -1023,7 +1043,12 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       "Asia/Kolkata"
     );
     const orderData = createOrderTestData();
-    const { datetime, ...orderDataWithoutTimestamp } = orderData;
+    const orderDataWithoutTimestamp = {
+      nseSymbol: orderData.nseSymbol,
+      entryPrice: orderData.entryPrice,
+      stopLossPrice: orderData.stopLossPrice,
+      takeProfitPrice: orderData.takeProfitPrice,
+    };
     const response = await authenticatedPost(
       `/v1/dashboard/runs/${run.id}/orders`,
       developerToken,
@@ -1044,7 +1069,10 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     );
     const orderData = createOrderTestData();
     const orderDataWithInvalidDatetime = {
-      ...orderData,
+      nseSymbol: orderData.nseSymbol,
+      entryPrice: orderData.entryPrice,
+      stopLossPrice: orderData.stopLossPrice,
+      takeProfitPrice: orderData.takeProfitPrice,
       datetime: "invalid-date",
     };
     const response = await authenticatedPost(

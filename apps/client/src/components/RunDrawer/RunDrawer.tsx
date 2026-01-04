@@ -207,8 +207,19 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
   // Date constructor correctly handles UTC strings in YYYY-MM-DDTHH:mm:ss format
   const orders: Order[] =
     runOrdersAPI.data?.data.map((order) => ({
-      ...order,
-      timestamp: new Date(order.timestamp), // API returns UTC string, Date constructor handles it correctly
+      id: order.id,
+      nseSymbol: order.nseSymbol,
+      entryPrice: order.entryPrice,
+      stopLossPrice: order.stopLossPrice,
+      takeProfitPrice: order.takeProfitPrice,
+      runId: order.runId,
+      targetGainPercentage: order.targetGainPercentage,
+      targetAchieved: order.targetAchieved,
+      targetGainPercentageActual: order.targetGainPercentageActual,
+      dynamicTakeProfitPrice: order.dynamicTakeProfitPrice,
+      stopLossHit: order.stopLossHit,
+      // API returns UTC datetime strings, Date constructor handles them correctly
+      timestamp: new Date(order.timestamp),
       stopLossTimestamp: order.stopLossTimestamp ? new Date(order.stopLossTimestamp) : undefined,
       targetTimestamp: order.targetTimestamp ? new Date(order.targetTimestamp) : undefined,
       timeToStopLossMinutes: order.timeToStopLossMinutes,
