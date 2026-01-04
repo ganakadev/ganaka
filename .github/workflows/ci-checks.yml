@@ -34,25 +34,31 @@ jobs:
         run: echo "CI checks skipped by user" && exit 0
 
       - name: Checkout code
+        if: inputs.skip_ci_checks != true
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        if: inputs.skip_ci_checks != true
         uses: actions/setup-node@v4
         with:
           node-version: "22"
 
       - name: Setup pnpm
+        if: inputs.skip_ci_checks != true
         uses: pnpm/action-setup@v4
 
       - name: Get pnpm store directory
+        if: inputs.skip_ci_checks != true
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
       - name: Install dependencies
+        if: inputs.skip_ci_checks != true
         run: pnpm install --frozen-lockfile
 
       - name: Create .env file for database reset
+        if: inputs.skip_ci_checks != true
         run: |
           cat > .env << EOF
           DATABASE_URL=${{ secrets.DATABASE_URL }}
@@ -66,10 +72,13 @@ jobs:
           EOF
 
       - name: Prepare for CI
+        if: inputs.skip_ci_checks != true
         run: pnpm run prepare:ci
 
       - name: Run lint
+        if: inputs.skip_ci_checks != true
         run: pnpm run lint
 
       - name: Run tests
+        if: inputs.skip_ci_checks != true
         run: pnpm run test:server

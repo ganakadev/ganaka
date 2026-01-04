@@ -33,7 +33,7 @@ jobs:
   ci-checks:
     uses: ./.github/workflows/ci-checks.yml
     with:
-      skip_ci_checks: ${{ github.event.inputs.skip_ci_checks }}
+      skip_ci_checks: ${{ github.event.inputs.skip_ci_checks == 'true' }}
     secrets:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       GROWW_API_KEY: ${{ secrets.GROWW_API_KEY }}
