@@ -2,6 +2,11 @@ name: CI Checks
 
 on:
   workflow_call:
+    inputs:
+      skip_ci_checks:
+        required: false
+        type: boolean
+        default: false
     secrets:
       DATABASE_URL:
         required: true
@@ -24,6 +29,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Skip CI checks
+        if: inputs.skip_ci_checks == true
+        run: echo "CI checks skipped by user" && exit 0
+
       - name: Checkout code
         uses: actions/checkout@v4
 
