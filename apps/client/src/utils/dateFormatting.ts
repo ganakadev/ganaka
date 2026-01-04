@@ -14,6 +14,16 @@ export function formatDateTimeForAPI(date: Date | null | undefined): string {
 }
 
 /**
+ * Formats a Date object to YYYY-MM-DDTHH:mm:ss format (UTC) for URL search params
+ * @param date - Date object to format
+ * @returns Formatted datetime string in UTC (e.g., "2025-12-26T05:36:00")
+ */
+export function formatDateTimeForURL(date: Date | null | undefined): string {
+  if (!date) return "";
+  return dayjs.utc(date).format("YYYY-MM-DDTHH:mm:ss");
+}
+
+/**
  * Formats a Date object to YYYY-MM-DD format (UTC) for API date-only parameters
  * @param date - Date object to format
  * @returns Formatted date string in UTC (e.g., "2025-12-26")
