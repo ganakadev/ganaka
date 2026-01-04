@@ -286,18 +286,28 @@ async function main() {
       placeOrder,
       currentTimestamp,
     }) => {
+      console.log("currentTimestamp", currentTimestamp);
       const currentTimestampIST = dayjs
-        .tz(currentTimestamp, "Asia/Kolkata")
+        .utc(currentTimestamp)
+        .tz("Asia/Kolkata")
         .format("YYYY-MM-DDTHH:mm:ss");
+      console.log("currentTimestampIST", currentTimestampIST);
       const currentTime = dayjs.tz(currentTimestampIST, "Asia/Kolkata");
       const currentDate = dayjs.tz(currentTimestampIST, "Asia/Kolkata").format("YYYY-MM-DD");
+
+      // Calculate data timestamp (1 minute before current execution time)
+      // This ensures requested timestamps are before the execution timestamp for validation
+      const dataTimestampIST = dayjs
+        .tz(currentTimestampIST, "Asia/Kolkata")
+        .subtract(1, "minute")
+        .format("YYYY-MM-DDTHH:mm:ss");
 
       console.log(`[${currentTime.format("HH:mm:ss")}] Running momentum scalping strategy...`);
 
       // Fetch shortlists
       const topGainers = await fetchShortlist({
         type: "top-gainers",
-        datetime: currentTimestampIST,
+        datetime: dataTimestampIST,
       });
 
       // Combine and deduplicate stocks
@@ -334,7 +344,7 @@ async function main() {
           }
 
           // Fetch historical candles (last 5 days + today)
-          const endDate = dayjs.tz(currentTimestampIST, "Asia/Kolkata");
+          const endDate = dayjs.tz(dataTimestampIST, "Asia/Kolkata");
           const startDate = endDate.subtract(5, "days");
 
           console.log(
@@ -386,7 +396,7 @@ async function main() {
           // Get current quote for entry price
           const currentQuote = await fetchQuote({
             symbol,
-            datetime: currentTimestampIST,
+            datetime: dataTimestampIST,
           });
 
           console.log(`[${symbol}] Current quote: ${currentQuote?.payload.last_price}`);
