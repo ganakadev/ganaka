@@ -28,11 +28,7 @@ export const Dashboard = () => {
   const [selectedRun, setSelectedRun] = useState<Run | null>(null);
 
   // API
-  const {
-    data: shortlistsData,
-    isLoading: loadingShortlists,
-    error: getShortlistsAPIError,
-  } = dashboardAPI.useGetShortlistsQuery(
+  const getShortlistsAPI = dashboardAPI.useGetShortlistsQuery(
     {
       datetime: formatDateTimeForAPI(selectedDate),
       timezone: "Asia/Kolkata",
@@ -44,13 +40,9 @@ export const Dashboard = () => {
   );
   useRTKNotifier({
     requestName: "Get Shortlists",
-    error: getShortlistsAPIError,
+    error: getShortlistsAPI.error,
   });
-  const {
-    data: persistentCompaniesData,
-    isLoading: loadingPersistentCompanies,
-    error: getPersistentCompaniesAPIError,
-  } = dashboardAPI.useGetDailyPersistentCompaniesQuery(
+  const getPersistentCompaniesAPI = dashboardAPI.useGetDailyPersistentCompaniesQuery(
     {
       date: formatDateForAPI(selectedDate),
       type: activeTab || "TOP_GAINERS",
@@ -61,22 +53,23 @@ export const Dashboard = () => {
   );
   useRTKNotifier({
     requestName: "Get Daily Persistent Companies",
-    error: getPersistentCompaniesAPIError,
+    error: getPersistentCompaniesAPI.error,
   });
 
   // Transform shortlist data
-  const shortlist = shortlistsData?.data.shortlist
+  const shortlist = getShortlistsAPI.data?.data.shortlist
     ? {
-        id: shortlistsData.data.shortlist.id,
-        timestamp: new Date(shortlistsData.data.shortlist.timestamp), // API returns UTC string, Date constructor handles it correctly
-        shortlistType: shortlistsData.data.shortlist.shortlistType,
-        entries: shortlistsData.data.shortlist.entries,
+        id: getShortlistsAPI.data.data.shortlist.id,
+        timestamp: new Date(getShortlistsAPI.data.data.shortlist.timestamp), // API returns UTC string, Date constructor handles it correctly
+        shortlistType: getShortlistsAPI.data.data.shortlist.shortlistType,
+        entries: getShortlistsAPI.data.data.shortlist.entries,
       }
     : null;
 
   // Transform persistent companies data
-  const persistentCompanies: PersistentCompany[] = persistentCompaniesData?.data.companies || [];
-  const totalSnapshots = persistentCompaniesData?.data.totalSnapshots;
+  const persistentCompanies: PersistentCompany[] =
+    getPersistentCompaniesAPI.data?.data.companies || [];
+  const totalSnapshots = getPersistentCompaniesAPI.data?.data.totalSnapshots;
 
   const handleRowClick = (entry: ShortlistEntryWithQuote) => {
     setSelectedEntry(entry);
@@ -122,7 +115,7 @@ export const Dashboard = () => {
             {activeTab === "TOP_GAINERS" && (
               <ShortlistTable
                 shortlist={shortlist?.entries || []}
-                loading={loadingShortlists}
+                loading={getShortlistsAPI.isLoading}
                 onRowClick={handleRowClick}
                 selectedDate={selectedDate}
               />
@@ -132,14 +125,14 @@ export const Dashboard = () => {
               <ShortlistTable
                 shortlist={shortlist?.entries || []}
                 onRowClick={handleRowClick}
-                loading={loadingShortlists}
+                loading={getShortlistsAPI.isLoading}
                 selectedDate={selectedDate}
               />
             )}
             <UniqueCompaniesCard selectedDate={selectedDate} activeTab={activeTab} />
             <PersistentCompaniesTable
               companies={persistentCompanies}
-              loading={loadingPersistentCompanies}
+              loading={getPersistentCompaniesAPI.isLoading}
               selectedDate={selectedDate}
               totalSnapshots={totalSnapshots}
             />

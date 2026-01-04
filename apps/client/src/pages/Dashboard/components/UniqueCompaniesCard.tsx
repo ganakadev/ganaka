@@ -12,11 +12,7 @@ export const UniqueCompaniesCard = ({
 }) => {
   // API
   // Fetch unique companies count
-  const {
-    data,
-    isLoading: loading,
-    error,
-  } = dashboardAPI.useGetDailyUniqueCompaniesQuery(
+  const getDailyUniqueCompaniesAPI = dashboardAPI.useGetDailyUniqueCompaniesQuery(
     {
       date: formatDateForAPI(selectedDate),
       type: activeTab || "TOP_GAINERS",
@@ -27,17 +23,17 @@ export const UniqueCompaniesCard = ({
   );
   useRTKNotifier({
     requestName: "Get Daily Unique Companies",
-    error: error,
+    error: getDailyUniqueCompaniesAPI.error,
   });
 
   // VARIABLES
-  const uniqueCount = data?.data.uniqueCount ?? null;
-  const errorMessage = error
-    ? "data" in error &&
-      typeof error.data === "object" &&
-      error.data !== null &&
-      "error" in error.data
-      ? String(error.data.error)
+  const uniqueCount = getDailyUniqueCompaniesAPI.data?.data.uniqueCount ?? null;
+  const errorMessage = getDailyUniqueCompaniesAPI.error
+    ? "data" in getDailyUniqueCompaniesAPI.error &&
+      typeof getDailyUniqueCompaniesAPI.error.data === "object" &&
+      getDailyUniqueCompaniesAPI.error.data !== null &&
+      "error" in getDailyUniqueCompaniesAPI.error.data
+      ? String(getDailyUniqueCompaniesAPI.error.data.error)
       : "Failed to fetch unique companies count"
     : null;
 
@@ -45,10 +41,8 @@ export const UniqueCompaniesCard = ({
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder className="mb-8">
       <div className="flex flex-col gap-2">
-        <h3 className="text-sm font-medium text-gray-400">
-          Unique Companies across the day
-        </h3>
-        {loading ? (
+        <h3 className="text-sm font-medium text-gray-400">Unique Companies across the day</h3>
+        {getDailyUniqueCompaniesAPI.isLoading ? (
           <Skeleton height={40} width="100%" />
         ) : errorMessage ? (
           <p className="text-sm text-red-500">{errorMessage}</p>

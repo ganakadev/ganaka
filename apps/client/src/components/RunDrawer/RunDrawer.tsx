@@ -38,7 +38,7 @@ const StockChart = ({
       ? new Date(runStartTime)
       : runStartTime;
 
-  const { data: candlesData, error: candleError } = dashboardAPI.useGetCandlesQuery(
+  const getCandlesAPI = dashboardAPI.useGetCandlesQuery(
     {
       symbol: symbol,
       date: formatDateForAPI(runStartTimeDate),
@@ -50,12 +50,12 @@ const StockChart = ({
   );
   useRTKNotifier({
     requestName: "Get Candles",
-    error: candleError,
+    error: getCandlesAPI.error,
   });
 
   // VARIABLES
-  const candleData: CandleData[] | null = candlesData?.data.candles
-    ? candlesData.data.candles.map((candle) => ({
+  const candleData: CandleData[] | null = getCandlesAPI.data?.data.candles
+    ? getCandlesAPI.data.data.candles.map((candle) => ({
         time: candle.time as Time,
         open: candle.open,
         high: candle.high,
@@ -143,12 +143,12 @@ const StockChart = ({
     return priceLinesList;
   }, [orders]);
 
-  const errorMessage = candleError
-    ? "data" in candleError &&
-      typeof candleError.data === "object" &&
-      candleError.data !== null &&
-      "error" in candleError.data
-      ? String(candleError.data.error)
+  const errorMessage = getCandlesAPI.error
+    ? "data" in getCandlesAPI.error &&
+      typeof getCandlesAPI.error.data === "object" &&
+      getCandlesAPI.error.data !== null &&
+      "error" in getCandlesAPI.error.data
+      ? String(getCandlesAPI.error.data.error)
       : "Failed to fetch candle data"
     : null;
 
