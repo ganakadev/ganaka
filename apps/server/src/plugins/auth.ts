@@ -1,6 +1,14 @@
 import { FastifyPluginAsync } from "fastify";
 import { prisma } from "../utils/prisma";
+import { parseDateTimeInTimezone } from "../utils/timezone";
+import { datetimeFormatSchema } from "@ganaka/schemas";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import "../types/fastify";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const authPlugin =
   (type: "admin" | "developer"): FastifyPluginAsync =>
@@ -67,6 +75,61 @@ const authPlugin =
               username: developer.username,
               token: token,
             };
+
+            // when algorithms call APIs, tagging their run id for analytics
+            const runIdHeader = request.headers["x-run-id"];
+            if (runIdHeader && typeof runIdHeader === "string") {
+              request.runId = runIdHeader;
+            }
+
+            // used to time block the data being sent back (for backtesting)
+            const currentTimestampHeader = request.headers["x-current-timestamp"];
+            const currentTimezoneHeader = request.headers["x-current-timezone"];
+            const timezone =
+              currentTimezoneHeader && typeof currentTimezoneHeader === "string"
+                ? currentTimezoneHeader
+                : "Asia/Kolkata"; // Default to Asia/Kolkata if not provided
+
+            if (currentTimestampHeader && typeof currentTimestampHeader === "string") {
+              // Validate timestamp format - must be YYYY-MM-DDTHH:mm:ss without Z or timezone offset
+              const validationResult = datetimeFormatSchema.safeParse(currentTimestampHeader);
+              if (!validationResult.success) {
+                const errorMessage = validationResult.error.issues
+                  .map((err) => err.message)
+                  .join(", ");
+                fastify.log.warn(
+                  `Invalid X-Current-Timestamp format: ${currentTimestampHeader}. ${errorMessage}`
+                );
+                return reply.badRequest(
+                  `Invalid X-Current-Timestamp header format: ${errorMessage}. Timestamp must be in format YYYY-MM-DDTHH:mm:ss without timezone information (Z or offset).`
+                );
+              }
+
+              try {
+                // Parse the validated datetime string in the specified timezone
+                const parsedTimestamp = parseDateTimeInTimezone(validationResult.data, timezone);
+                request.currentTimestamp = parsedTimestamp;
+                request.currentTimezone = timezone;
+              } catch (error) {
+                fastify.log.warn(
+                  `Failed to parse X-Current-Timestamp: ${currentTimestampHeader}. Error: ${
+                    error instanceof Error ? error.message : String(error)
+                  }`
+                );
+                return reply.badRequest(
+                  `Failed to parse X-Current-Timestamp: ${
+                    error instanceof Error ? error.message : String(error)
+                  }`
+                );
+              }
+            }
+
+            // Log warning if runId is present but currentTimestamp is missing
+            if (request.runId && !request.currentTimestamp) {
+              fastify.log.warn(
+                `X-Run-Id header present but X-Current-Timestamp is missing for run: ${request.runId}`
+              );
+            }
 
             // Authentication successful, continue to the route handler
             fastify.log.info(`Developer authenticated: ${developer.username}`);

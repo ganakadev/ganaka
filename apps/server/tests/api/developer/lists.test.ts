@@ -7,18 +7,25 @@ import {
   buildQueryString,
   generateUniqueTestDatetime,
 } from "../../fixtures/test-data";
-import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
+import {
+  authenticatedGet,
+  unauthenticatedGet,
+  authenticatedGetWithRunContext,
+} from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createShortlistSnapshot } from "../../helpers/db-helpers";
+import { createShortlistSnapshot, createRun } from "../../helpers/db-helpers";
 import { TestDataTracker } from "../../helpers/test-tracker";
+import { parseDateTimeInTimezone } from "../../../src/utils/timezone";
 
 let developerToken: string;
+let developerId: string;
 let sharedTracker: TestDataTracker;
 
 test.beforeAll(async () => {
   sharedTracker = new TestDataTracker();
   const dev = await createDeveloperUser(undefined, sharedTracker);
   developerToken = dev.token;
+  developerId = dev.id;
 });
 
 test.afterAll(async () => {
@@ -250,5 +257,99 @@ test.describe("GET /v1/developer/lists", () => {
       expect(body.message).toBeTruthy();
       expect(Array.isArray(body.data)).toBe(true);
     }
+  });
+
+  test("should allow request with datetime < currentTimestamp when headers are present", async ({
+    tracker,
+  }) => {
+    const testDatetime = generateUniqueTestDatetime();
+    const testEntries = createValidShortlistEntries();
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+
+    // Create a run and set currentTimestamp to 1 hour after testDatetime
+    const currentTimestamp = parseDateTimeInTimezone(testDatetime, "Asia/Kolkata");
+    currentTimestamp.setHours(currentTimestamp.getHours() + 1);
+    const run = await createRun(developerId, testDatetime, currentTimestamp.toISOString(), tracker);
+
+    const query = createListsQuery("top-gainers", testDatetime);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGetWithRunContext(
+      `/v1/developer/lists?${queryString}`,
+      developerToken,
+      run.id,
+      currentTimestamp,
+      "Asia/Kolkata"
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
+    expect(body.data).not.toBeNull();
+  });
+
+  test("should return 403 when datetime equals currentTimestamp", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
+    const testEntries = createValidShortlistEntries();
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+
+    const currentTimestamp = parseDateTimeInTimezone(testDatetime, "Asia/Kolkata");
+    const run = await createRun(developerId, testDatetime, currentTimestamp.toISOString(), tracker);
+
+    const query = createListsQuery("top-gainers", testDatetime);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGetWithRunContext(
+      `/v1/developer/lists?${queryString}`,
+      developerToken,
+      run.id,
+      currentTimestamp,
+      "Asia/Kolkata",
+      { validateStatus: () => true }
+    );
+
+    expect(response.status).toBe(403);
+    const body = response.data;
+    expect(body.statusCode).toBe(403);
+    expect(body.message).toContain("Cannot access data");
+    expect(body.message).toContain("before current execution timestamp");
+  });
+
+  test("should return 403 when datetime > currentTimestamp", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
+    const testEntries = createValidShortlistEntries();
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+
+    const currentTimestamp = parseDateTimeInTimezone(testDatetime, "Asia/Kolkata");
+    currentTimestamp.setHours(currentTimestamp.getHours() - 1); // currentTimestamp is 1 hour before testDatetime
+    const run = await createRun(developerId, testDatetime, currentTimestamp.toISOString(), tracker);
+
+    const query = createListsQuery("top-gainers", testDatetime);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGetWithRunContext(
+      `/v1/developer/lists?${queryString}`,
+      developerToken,
+      run.id,
+      currentTimestamp,
+      "Asia/Kolkata",
+      { validateStatus: () => true }
+    );
+
+    expect(response.status).toBe(403);
+    const body = response.data;
+    expect(body.statusCode).toBe(403);
+    expect(body.message).toContain("Cannot access data");
+  });
+
+  test("should allow request without headers (backward compatibility)", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
+    const testEntries = createValidShortlistEntries();
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+
+    const query = createListsQuery("top-gainers", testDatetime);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
   });
 });

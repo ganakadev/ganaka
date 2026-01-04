@@ -1,5 +1,11 @@
 /// <reference types="node" />
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from "axios";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const baseURL = process.env.API_DOMAIN || "http://localhost:4000";
 
@@ -26,6 +32,33 @@ export async function authenticatedGet(url: string, token: string, config?: Axio
     headers: {
       ...config?.headers,
       Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+/**
+ * Makes an authenticated GET request with run context headers
+ */
+export async function authenticatedGetWithRunContext(
+  url: string,
+  token: string,
+  runId: string,
+  currentTimestamp: Date,
+  currentTimezone: string = "Asia/Kolkata",
+  config?: AxiosRequestConfig
+) {
+  const client = createApiClient();
+
+  return client.get(url, {
+    ...config,
+    headers: {
+      ...config?.headers,
+      Authorization: `Bearer ${token}`,
+      "X-Run-Id": runId,
+      "X-Current-Timestamp": dayjs
+        .tz(currentTimestamp, currentTimezone)
+        .format("YYYY-MM-DDTHH:mm:ss"),
+      "X-Current-Timezone": currentTimezone,
     },
   });
 }

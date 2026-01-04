@@ -106,18 +106,30 @@ export async function ganaka<T>({
           fetchCandles: fetchCandles({
             developerToken,
             apiDomain,
+            runId,
+            currentTimestamp,
+            currentTimezone: "Asia/Kolkata",
           }),
           fetchQuote: fetchQuote({
             developerToken,
             apiDomain,
+            runId,
+            currentTimestamp,
+            currentTimezone: "Asia/Kolkata",
           }),
           fetchQuoteTimeline: fetchQuoteTimeline({
             developerToken,
             apiDomain,
+            runId,
+            currentTimestamp,
+            currentTimezone: "Asia/Kolkata",
           }),
           fetchShortlist: fetchShortlist({
             developerToken,
             apiDomain,
+            runId,
+            currentTimestamp,
+            currentTimezone: "Asia/Kolkata",
           }),
           currentTimestamp,
         });

@@ -12,5 +12,10 @@ declare module "fastify" {
       username: string;
       token: string;
     };
+    runId?: string;
+    // used to time block the data being sent back (for backtesting)
+    currentTimestamp?: Date;
+    // timezone for the current timestamp
+    currentTimezone?: string;
   }
 }
