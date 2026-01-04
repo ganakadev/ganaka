@@ -19,7 +19,7 @@ export function validateCurrentTimestamp(
   reply: FastifyReply
 ): void {
   for (const requestedDatetime of requestedDatetimes) {
-    if (dayjs.utc(requestedDatetime).isAfter(dayjs.utc(currentTimestamp))) {
+    if (!dayjs.utc(requestedDatetime).isBefore(dayjs.utc(currentTimestamp))) {
       const errorMessage = `Cannot access data at ${requestedDatetime.toISOString()}. Data must be before current execution timestamp (${currentTimestamp.toISOString()})`;
       reply.code(403).send({
         statusCode: 403,

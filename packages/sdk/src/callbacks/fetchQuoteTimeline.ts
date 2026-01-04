@@ -35,7 +35,7 @@ export const fetchQuoteTimeline =
 
     try {
       // Format date as YYYY-MM-DD
-      const dateStr = date.toISOString().split("T")[0];
+      const dateStr = dayjs.tz(date, currentTimezone).format("YYYY-MM-DD");
 
       const validatedParams = v1_developer_groww_schemas.getGrowwQuoteTimeline.query.parse({
         symbol,

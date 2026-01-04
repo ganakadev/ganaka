@@ -265,9 +265,9 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
       // This allows users to request data from mid-day and get all data from start of day till currentTimestamp
       const currentTimestamp = request.currentTimestamp;
       const filteredSnapshots = currentTimestamp
-        ? quoteSnapshots.filter((snapshot) =>
-            dayjs.utc(snapshot.timestamp).isBefore(dayjs.utc(currentTimestamp))
-          )
+        ? quoteSnapshots.filter((snapshot) => {
+            return dayjs.utc(snapshot.timestamp).isBefore(dayjs.utc(currentTimestamp));
+          })
         : quoteSnapshots;
 
       return sendResponse<
