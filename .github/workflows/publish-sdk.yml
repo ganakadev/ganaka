@@ -1,5 +1,8 @@
 name: Publish SDK to GitHub Packages
 
+# DEPRECATED: This workflow is deprecated in favor of the unified release workflow (.github/workflows/release.yml)
+# Use the release workflow instead, which provides better integration with CI checks and deployment hooks.
+
 on:
   workflow_dispatch:
 
