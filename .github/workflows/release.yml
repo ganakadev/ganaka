@@ -75,11 +75,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+
+      - name: Upgrade npm to latest
+        run: npm install -g npm@latest
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -111,6 +116,12 @@ jobs:
       - name: Build SDK package
         working-directory: packages/sdk
         run: pnpm run build
+
+      - name: Verify npm version and OIDC setup
+        run: |
+          npm --version
+          echo "ACTIONS_ID_TOKEN_REQUEST_URL: ${ACTIONS_ID_TOKEN_REQUEST_URL:-not set}"
+          echo "ACTIONS_ID_TOKEN_REQUEST_TOKEN: ${ACTIONS_ID_TOKEN_REQUEST_TOKEN:+set}"
 
       - name: Configure Git
         run: |
