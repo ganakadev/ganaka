@@ -163,7 +163,7 @@ test.describe("GET /v1/dashboard/runs", () => {
   test("should validate exact date grouping ", async ({ tracker }) => {
     const startTime = "2025-12-26T09:15:00";
     const endTime = "2025-12-26T15:30:00";
-    await createRun(developerId, startTime, endTime, tracker);
+    const run = await createRun(developerId, startTime, endTime, tracker);
 
     const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
 
@@ -172,8 +172,10 @@ test.describe("GET /v1/dashboard/runs", () => {
       response.data
     );
 
-    expect(validatedData.data).toHaveProperty("2025-12-26");
-    expect(validatedData.data["2025-12-26"].length).toBe(1);
+    // Group by creation date (createdAt), not execution date (startTime)
+    const creationDateKey = dayjs.utc(run.createdAt).format("YYYY-MM-DD");
+    expect(validatedData.data).toHaveProperty(creationDateKey);
+    expect(validatedData.data[creationDateKey].length).toBe(1);
   });
 });
 

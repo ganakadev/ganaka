@@ -20,14 +20,14 @@ const DEFAULT_STOP_LOSS_PERCENT = 1.5; // Default 1.5% stop loss
 const tradingWindowStart = dayjs()
   .set("year", 2025)
   .set("month", 11)
-  .set("day", 26)
+  .set("day", 24)
   .set("hour", 10)
   .set("minute", 0)
   .format("YYYY-MM-DDTHH:mm:ss");
 const tradingWindowEnd = dayjs()
   .set("year", 2025)
   .set("month", 11)
-  .set("day", 26)
+  .set("day", 24)
   .set("hour", 10)
   .set("minute", 45)
   .format("YYYY-MM-DDTHH:mm:ss");

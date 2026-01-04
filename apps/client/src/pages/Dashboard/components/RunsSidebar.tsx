@@ -244,20 +244,30 @@ export const RunsSidebar = ({
                             <div className="h-full min-w-0 flex-1">
                               <Text size="xs" c="dimmed" truncate className="leading-none!">
                                 {/* Parse UTC datetime strings and convert to local time for display */}
-                                {dayjs.utc(run.start_datetime).tz("Asia/Kolkata").format("HH:mm")} -{" "}
-                                {dayjs.utc(run.end_datetime).tz("Asia/Kolkata").format("HH:mm")}
+                                {(() => {
+                                  const startDate = dayjs
+                                    .utc(run.start_datetime)
+                                    .tz("Asia/Kolkata");
+                                  const endDate = dayjs.utc(run.end_datetime).tz("Asia/Kolkata");
+                                  const isSameDay = startDate.isSame(endDate, "day");
+
+                                  if (isSameDay) {
+                                    // Same day: "MMM DD, YYYY HH:mm A - HH:mm A"
+                                    return `${startDate.format(
+                                      "MMM DD, YYYY hh:mm A"
+                                    )} - ${endDate.format("hh:mm A")}`;
+                                  } else {
+                                    // Different days: "MMM DD, YYYY HH:mm A - MMM DD, YYYY HH:mm A"
+                                    return `${startDate.format(
+                                      "MMM DD, YYYY hh:mm A"
+                                    )} - ${endDate.format("MMM DD, YYYY hh:mm A")}`;
+                                  }
+                                })()}
                               </Text>
                             </div>
                           </div>
 
                           <div className="flex items-center gap-2">
-                            <Badge
-                              color={run.completed ? "green" : "yellow"}
-                              size="xs"
-                              variant="light"
-                            >
-                              {run.completed ? "Completed" : "In Progress"}
-                            </Badge>
                             <ActionIcon
                               variant="subtle"
                               color="red"
@@ -282,9 +292,18 @@ export const RunsSidebar = ({
                           </div>
                         </div>
 
-                        <Text size="xs" c="dimmed">
-                          {run.orderCount} {run.orderCount === 1 ? "order" : "orders"}
-                        </Text>
+                        <div className="flex items-center justify-between gap-2">
+                          <Text size="xs" c="dimmed">
+                            {run.orderCount} {run.orderCount === 1 ? "order" : "orders"}
+                          </Text>
+                          <Badge
+                            color={run.completed ? "green" : "yellow"}
+                            size="xs"
+                            variant="light"
+                          >
+                            {run.completed ? "Completed" : "In Progress"}
+                          </Badge>
+                        </div>
                       </div>
                     </Card>
                   );
