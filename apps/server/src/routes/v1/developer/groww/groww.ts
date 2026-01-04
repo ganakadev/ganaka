@@ -154,15 +154,13 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { start_datetime, end_datetime, timezone = "Asia/Kolkata", ...rest } = validationResult;
-
       // Convert datetime strings to IST format for Groww API
       const startTimeIST = dayjs
-        .utc(parseDateTimeInTimezone(start_datetime, timezone))
+        .utc(parseDateTimeInTimezone(validationResult.start_datetime, validationResult.timezone ?? "Asia/Kolkata"))
         .tz("Asia/Kolkata")
         .format("YYYY-MM-DDTHH:mm:ss");
       const endTimeIST = dayjs
-        .utc(parseDateTimeInTimezone(end_datetime, timezone))
+        .utc(parseDateTimeInTimezone(validationResult.end_datetime, validationResult.timezone ?? "Asia/Kolkata"))
         .tz("Asia/Kolkata")
         .format("YYYY-MM-DDTHH:mm:ss");
 
@@ -172,12 +170,12 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         method: "get",
         url: `https://api.groww.in/v1/historical/candles`,
         params: {
-          candle_interval: rest.interval,
+          candle_interval: validationResult.interval,
           start_time: startTimeIST,
           end_time: endTimeIST,
           exchange: "NSE",
           segment: "CASH",
-          groww_symbol: `NSE-${rest.symbol}`,
+          groww_symbol: `NSE-${validationResult.symbol}`,
         },
       });
 
@@ -211,11 +209,9 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { symbol, date: dateParam } = validationResult;
-
-      // using dateParam directly as it is in UTC
-      const marketStart = dayjs.tz(`${dateParam} 09:14:00`, "Asia/Kolkata");
-      const marketEnd = dayjs.tz(`${dateParam} 15:31:00`, "Asia/Kolkata");
+      // using validationResult.date directly as it is in UTC
+      const marketStart = dayjs.tz(`${validationResult.date} 09:14:00`, "Asia/Kolkata");
+      const marketEnd = dayjs.tz(`${validationResult.date} 15:31:00`, "Asia/Kolkata");
       const marketStartUtc = marketStart.utc();
       const marketEndUtc = marketEnd.utc();
 
@@ -226,7 +222,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
             gte: marketStartUtc.toDate(),
             lte: marketEndUtc.toDate(),
           },
-          nseSymbol: symbol,
+          nseSymbol: validationResult.symbol,
         },
         orderBy: {
           timestamp: "asc",

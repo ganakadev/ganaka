@@ -50,11 +50,9 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { symbol, date: dateParam, interval } = validationResult;
-
-      // using dateParam directly as it is in UTC
-      const marketStart = dayjs.tz(`${dateParam} 09:15:00`, "Asia/Kolkata");
-      const marketEnd = dayjs.tz(`${dateParam} 15:30:00`, "Asia/Kolkata");
+      // using validationResult.date directly as it is in UTC
+      const marketStart = dayjs.tz(`${validationResult.date} 09:15:00`, "Asia/Kolkata");
+      const marketEnd = dayjs.tz(`${validationResult.date} 15:30:00`, "Asia/Kolkata");
 
       // Convert to format expected by Groww API: YYYY-MM-DDTHH:mm:ss (no milliseconds, no Z)
       // The API expects times in IST format without timezone suffix
@@ -62,14 +60,14 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
       const end_time = marketEnd.format("YYYY-MM-DDTHH:mm:ss");
 
       // Validate interval
-      if (interval && !validCandleIntervals.includes(interval)) {
+      if (validationResult.interval && !validCandleIntervals.includes(validationResult.interval)) {
         return reply.badRequest(
           `Invalid interval. Must be one of: ${validCandleIntervals.join(", ")}`
         );
       }
 
       // Use interval from query or default to 1minute
-      const candleInterval = interval || "1minute";
+      const candleInterval = validationResult.interval || "1minute";
 
       // Make API request
       const response = await growwAPIRequest<{
@@ -90,7 +88,7 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
           end_time,
           exchange: "NSE",
           segment: "CASH",
-          groww_symbol: `NSE-${symbol}`,
+          groww_symbol: `NSE-${validationResult.symbol}`,
         },
       });
 
@@ -139,11 +137,10 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error) {
-      const { symbol, date: dateParam } = validationResult;
       fastify.log.error(
         "Error fetching candles - Symbol: %s, Date: %s, Error: %s",
-        symbol,
-        dateParam,
+        validationResult.symbol,
+        validationResult.date,
         JSON.stringify(error)
       );
 
@@ -164,8 +161,8 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
 
             fastify.log.error(
               "Groww API Rate Limit Error - Symbol: %s, Date: %s, Response: %s",
-              symbol,
-              dateParam,
+              validationResult.symbol,
+              validationResult.date,
               JSON.stringify(error.response.data)
             );
           } else if (status === 500) {
@@ -178,13 +175,13 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
               ) || undefined;
 
             errorMessage = growwErrorMessage
-              ? `Groww API error: ${growwErrorMessage}. Please verify the date (${dateParam}) and symbol (${symbol}) are valid.`
-              : `Groww API returned a server error. Please verify the date (${dateParam}) and symbol (${symbol}) are valid. Historical data may not be available for this date.`;
+              ? `Groww API error: ${growwErrorMessage}. Please verify the date (${validationResult.date}) and symbol (${validationResult.symbol}) are valid.`
+              : `Groww API returned a server error. Please verify the date (${validationResult.date}) and symbol (${validationResult.symbol}) are valid. Historical data may not be available for this date.`;
 
             fastify.log.error(
               "Groww API 500 Error - Symbol: %s, Date: %s, Response: %s",
-              symbol,
-              dateParam,
+              validationResult.symbol,
+              validationResult.date,
               JSON.stringify(error.response.data)
             );
           } else {

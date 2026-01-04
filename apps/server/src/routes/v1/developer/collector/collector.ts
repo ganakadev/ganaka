@@ -28,19 +28,18 @@ const collectorRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const {
-        data: { timestamp: timestampStr, timezone, shortlistType, entries },
-      } = validationResult;
-
       // Convert datetime string to UTC Date
-      const timestamp = parseDateTimeInTimezone(timestampStr, timezone);
+      const timestamp = parseDateTimeInTimezone(
+        validationResult.data.timestamp,
+        validationResult.data.timezone
+      );
 
       // Store shortlist in database
       const shortlistSnapshot = await prisma.shortlistSnapshot.create({
         data: {
           timestamp,
-          shortlistType: shortlistType as ShortlistType,
-          entries: entries as any, // JSON data
+          shortlistType: validationResult.data.shortlistType as ShortlistType,
+          entries: validationResult.data.entries as any, // JSON data
         },
       });
 
@@ -51,7 +50,7 @@ const collectorRoutes: FastifyPluginAsync = async (fastify) => {
           id: shortlistSnapshot.id,
           timestamp: formatDateTime(shortlistSnapshot.timestamp),
           shortlistType: shortlistSnapshot.shortlistType,
-          entriesCount: entries.length,
+          entriesCount: validationResult.data.entries.length,
         },
       });
     } catch (error) {
@@ -75,15 +74,14 @@ const collectorRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const {
-        data: { timestamp: timestampStr, timezone, quotes },
-      } = validationResult;
-
       // Convert datetime string to UTC Date
-      const timestamp = parseDateTimeInTimezone(timestampStr, timezone);
+      const timestamp = parseDateTimeInTimezone(
+        validationResult.data.timestamp,
+        validationResult.data.timezone
+      );
 
       // Prepare quote snapshot data array
-      const quoteData = quotes.map((quote) => ({
+      const quoteData = validationResult.data.quotes.map((quote) => ({
         timestamp,
         nseSymbol: quote.nseSymbol,
         quoteData: quote.quoteData as any, // JSON data
@@ -123,19 +121,18 @@ const collectorRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const {
-        data: { timestamp: timestampStr, timezone, quoteData, dayChangePerc },
-      } = validationResult;
-
       // Convert datetime string to UTC Date
-      const timestamp = parseDateTimeInTimezone(timestampStr, timezone);
+      const timestamp = parseDateTimeInTimezone(
+        validationResult.data.timestamp,
+        validationResult.data.timezone
+      );
 
       // Store NIFTY quote in database
       const niftyQuote = await prisma.niftyQuote.create({
         data: {
           timestamp,
-          quoteData: quoteData as any, // JSON data
-          dayChangePerc: new Decimal(dayChangePerc),
+          quoteData: validationResult.data.quoteData as any, // JSON data
+          dayChangePerc: new Decimal(validationResult.data.dayChangePerc),
         },
       });
 

@@ -375,11 +375,15 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { start_datetime, end_datetime, timezone = "Asia/Kolkata" } = validationResult;
-
       // Convert datetime strings to UTC Date objects
-      const startTimeUTC = parseDateTimeInTimezone(start_datetime, timezone);
-      const endTimeUTC = parseDateTimeInTimezone(end_datetime, timezone);
+      const startTimeUTC = parseDateTimeInTimezone(
+        validationResult.start_datetime,
+        validationResult.timezone ?? "Asia/Kolkata"
+      );
+      const endTimeUTC = parseDateTimeInTimezone(
+        validationResult.end_datetime,
+        validationResult.timezone ?? "Asia/Kolkata"
+      );
       const token = request.headers.authorization?.split(" ")[1] || "";
 
       // Get developer from token
@@ -448,14 +452,12 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { runId } = paramsValidationResult;
-      const { completed } = bodyValidationResult;
       const token = request.headers.authorization?.split(" ")[1] || "";
 
       // Verify the run belongs to the authenticated developer
       const run = await prisma.run.findFirst({
         where: {
-          id: runId,
+          id: paramsValidationResult.runId,
           developer: {
             token: token,
           },
@@ -468,9 +470,9 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
 
       // Update the run
       const updatedRun = await prisma.run.update({
-        where: { id: runId },
+        where: { id: paramsValidationResult.runId },
         data: {
-          ...(completed !== undefined && { completed }),
+          ...(bodyValidationResult.completed !== undefined && { completed: bodyValidationResult.completed }),
         },
       });
 
@@ -508,13 +510,12 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { runId } = validationResult;
       const token = request.headers.authorization?.split(" ")[1] || "";
 
       // Verify the run belongs to the authenticated developer
       const run = await prisma.run.findFirst({
         where: {
-          id: runId,
+          id: validationResult.runId,
           developer: {
             token: token,
           },
@@ -527,7 +528,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
 
       // Delete the run
       await prisma.run.delete({
-        where: { id: runId },
+        where: { id: validationResult.runId },
       });
 
       return sendResponse<
@@ -536,7 +537,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         statusCode: 200,
         message: "Run deleted successfully",
         data: {
-          id: runId,
+          id: validationResult.runId,
         },
       });
     } catch (error) {
@@ -572,14 +573,12 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { runId } = paramsValidationResult;
-      const { targetGainPercentage } = queryValidationResult;
       const token = request.headers.authorization?.split(" ")[1] || "";
 
       // Verify the run belongs to the authenticated developer
       const run = await prisma.run.findFirst({
         where: {
-          id: runId,
+          id: paramsValidationResult.runId,
           developer: {
             token: token,
           },
@@ -593,7 +592,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
       // Fetch orders for the run
       const orders = await prisma.order.findMany({
         where: {
-          runId: runId,
+          runId: paramsValidationResult.runId,
         },
         orderBy: {
           timestamp: "asc",
@@ -608,7 +607,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
             entryPrice: Number(order.entryPrice),
             stopLossPrice: Number(order.stopLossPrice),
             orderTimestamp: order.timestamp,
-            targetGainPercentage,
+            targetGainPercentage: queryValidationResult.targetGainPercentage,
             growwAPIRequest,
           });
 
@@ -678,24 +677,17 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { runId } = paramsValidationResult;
-      const {
-        nseSymbol,
-        entryPrice,
-        stopLossPrice,
-        takeProfitPrice,
-        datetime,
-        timezone = "Asia/Kolkata",
-      } = bodyValidationResult;
-
       // Convert timestamp string to UTC Date object
-      const datetimeUTC = parseDateTimeInTimezone(datetime, timezone);
+      const datetimeUTC = parseDateTimeInTimezone(
+        bodyValidationResult.datetime,
+        bodyValidationResult.timezone ?? "Asia/Kolkata"
+      );
       const token = request.headers.authorization?.split(" ")[1] || "";
 
       // Verify the run belongs to the authenticated developer
       const run = await prisma.run.findFirst({
         where: {
-          id: runId,
+          id: paramsValidationResult.runId,
           developer: {
             token: token,
           },
@@ -709,14 +701,14 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
       // Create the order
       const order = await prisma.order.create({
         data: {
-          nseSymbol: nseSymbol,
-          entryPrice: new Decimal(entryPrice),
-          stopLossPrice: new Decimal(stopLossPrice),
-          takeProfitPrice: new Decimal(takeProfitPrice),
+          nseSymbol: bodyValidationResult.nseSymbol,
+          entryPrice: new Decimal(bodyValidationResult.entryPrice),
+          stopLossPrice: new Decimal(bodyValidationResult.stopLossPrice),
+          takeProfitPrice: new Decimal(bodyValidationResult.takeProfitPrice),
           timestamp: datetimeUTC,
           run: {
             connect: {
-              id: runId,
+              id: paramsValidationResult.runId,
             },
           },
         },
