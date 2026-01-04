@@ -93,10 +93,8 @@ const dailyPersistentCompaniesRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { date: dateParam, type: shortlistType } = validationResult;
-
       // Get start of day in the specified timezone (midnight of that date)
-      const startOfDayInTimezone = dayjs.tz(`${dateParam} 00:00:00`, "Asia/Kolkata");
+      const startOfDayInTimezone = dayjs.tz(`${validationResult.date} 00:00:00`, "Asia/Kolkata");
       // Get end of day in the specified timezone (just before midnight of next day)
       const endOfDayInTimezone = startOfDayInTimezone.add(1, "day").subtract(1, "millisecond");
 
@@ -111,7 +109,7 @@ const dailyPersistentCompaniesRoutes: FastifyPluginAsync = async (fastify) => {
             gte: startOfDay.toDate(),
             lte: endOfDay.toDate(),
           },
-          shortlistType: shortlistType,
+          shortlistType: validationResult.type,
         },
         orderBy: {
           timestamp: "asc",
@@ -130,7 +128,7 @@ const dailyPersistentCompaniesRoutes: FastifyPluginAsync = async (fastify) => {
         message: "Daily persistent companies fetched successfully",
         data: {
           date: startOfDayInTimezone.format("YYYY-MM-DD"),
-          type: shortlistType,
+          type: validationResult.type,
           totalSnapshots: snapshots.length,
           companies,
         },

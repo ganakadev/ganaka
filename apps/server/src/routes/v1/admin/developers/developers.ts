@@ -21,12 +21,10 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { limit, offset } = validationResult;
-
       const [developers, total] = await Promise.all([
         prisma.developer.findMany({
-          take: limit,
-          skip: offset,
+          take: validationResult.limit,
+          skip: validationResult.offset,
           orderBy: {
             createdAt: "desc",
           },
@@ -67,11 +65,9 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { id } = validationResult;
-
       // Check if developer exists
       const existingDeveloper = await prisma.developer.findUnique({
-        where: { id },
+        where: { id: validationResult.id },
       });
 
       if (!existingDeveloper) {
@@ -82,7 +78,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
       const newToken = randomUUID();
 
       const developer = await prisma.developer.update({
-        where: { id },
+        where: { id: validationResult.id },
         data: {
           token: newToken,
         },
@@ -123,10 +119,8 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { id } = validationResult;
-
       const developer = await prisma.developer.findUnique({
-        where: { id },
+        where: { id: validationResult.id },
       });
 
       if (!developer) {
@@ -162,11 +156,9 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { username } = validationResult;
-
       // Check if username already exists
       const existingDeveloper = await prisma.developer.findUnique({
-        where: { username },
+        where: { username: validationResult.username },
       });
 
       if (existingDeveloper) {
@@ -180,7 +172,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
       const developer = await prisma.developer.create({
         data: {
           id,
-          username,
+          username: validationResult.username,
           token,
         },
       });
@@ -220,11 +212,9 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { id } = validationResult;
-
       // Check if developer exists
       const existingDeveloper = await prisma.developer.findUnique({
-        where: { id },
+        where: { id: validationResult.id },
       });
 
       if (!existingDeveloper) {
@@ -233,7 +223,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
 
       // Delete developer (runs have optional developerId, so this should work)
       await prisma.developer.delete({
-        where: { id },
+        where: { id: validationResult.id },
       });
 
       return sendResponse<
@@ -242,7 +232,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
         statusCode: 200,
         message: "Developer deleted successfully",
         data: {
-          id,
+          id: validationResult.id,
           deleted: true,
         },
       });

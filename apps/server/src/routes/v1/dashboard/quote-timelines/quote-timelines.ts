@@ -26,12 +26,10 @@ const quoteSnapshotsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     try {
-      const { symbol, date } = validationResult;
-
       // Get the date in IST timezone and set market hours (9:15 AM - 3:30 PM IST)
       // Extract just the date part (YYYY-MM-DD) and create new dayjs object in IST
-      const marketStart = dayjs.tz(`${date} 09:14:00`, "Asia/Kolkata");
-      const marketEnd = dayjs.tz(`${date} 15:31:00`, "Asia/Kolkata");
+      const marketStart = dayjs.tz(`${validationResult.date} 09:14:00`, "Asia/Kolkata");
+      const marketEnd = dayjs.tz(`${validationResult.date} 15:31:00`, "Asia/Kolkata");
       const marketStartUtc = marketStart.utc();
       const marketEndUtc = marketEnd.utc();
 
@@ -42,7 +40,7 @@ const quoteSnapshotsRoutes: FastifyPluginAsync = async (fastify) => {
             gte: marketStartUtc.toDate(),
             lte: marketEndUtc.toDate(),
           },
-          nseSymbol: symbol,
+          nseSymbol: validationResult.symbol,
         },
         orderBy: {
           timestamp: "asc",

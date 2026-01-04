@@ -19,11 +19,9 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
         return;
       }
 
-      const { developerToken } = validationResult;
-
       // Get developer from database
       const developer = await prisma.developer.findUnique({
-        where: { token: developerToken },
+        where: { token: validationResult.developerToken },
       });
 
       if (!developer) {
