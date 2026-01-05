@@ -127,12 +127,12 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
         data: {
           candles: candleData,
           // Convert start_time and end_time to UTC since Groww API returns times in IST
-          start_time: formatDateTime(
-            dayjs.tz(response.payload.start_time, "Asia/Kolkata").utc().toDate()
-          ),
-          end_time: formatDateTime(
-            dayjs.tz(response.payload.end_time, "Asia/Kolkata").utc().toDate()
-          ),
+          start_time: response.payload.start_time
+            ? formatDateTime(dayjs.tz(response.payload.start_time, "Asia/Kolkata").utc().toDate())
+            : null,
+          end_time: response.payload.end_time
+            ? formatDateTime(dayjs.tz(response.payload.end_time, "Asia/Kolkata").utc().toDate())
+            : null,
           interval_in_minutes: response.payload.interval_in_minutes,
         },
       });

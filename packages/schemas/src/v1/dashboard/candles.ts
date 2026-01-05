@@ -20,8 +20,8 @@ export const getCandles = {
           close: z.number(),
         })
       ),
-      start_time: z.string(),
-      end_time: z.string(),
+      start_time: z.string().nullable(),
+      end_time: z.string().nullable(),
       interval_in_minutes: z.number(),
     }),
   }),

@@ -30,29 +30,32 @@ console.log({ tradingWindowEnd });
 async function main() {
   await ganaka({
     fn: async ({ fetchShortlist, fetchQuote, fetchCandles, placeOrder, currentTimestamp }) => {
-      const currentTimestampIST = dayjs
-        .tz(currentTimestamp, "Asia/Kolkata")
+      const currentTimestampIST = dayjs.tz(currentTimestamp, "Asia/Kolkata");
+
+      const currentTimestampForRequest = currentTimestampIST
+        .subtract(1, "minute")
         .format("YYYY-MM-DDTHH:mm:ss");
+
       console.log(currentTimestampIST);
 
       const fetchShortlistResponse = await fetchShortlist({
         type: "top-gainers",
-        datetime: currentTimestampIST,
+        datetime: currentTimestampForRequest,
       });
       console.log(fetchShortlistResponse);
 
       const fetchQuoteResponse = await fetchQuote({
         symbol: "TARC",
-        datetime: currentTimestampIST,
+        datetime: currentTimestampForRequest,
       });
       console.log(fetchQuoteResponse);
 
       const fetchCandlesResponse = await fetchCandles({
         symbol: "TARC",
         interval: "1minute",
-        start_datetime: currentTimestampIST,
+        start_datetime: currentTimestampForRequest,
         end_datetime: dayjs
-          .tz(currentTimestampIST, "Asia/Kolkata")
+          .tz(currentTimestampForRequest, "Asia/Kolkata")
           .add(1, "hour")
           .format("YYYY-MM-DDTHH:mm:ss"),
       });
@@ -63,7 +66,7 @@ async function main() {
         entryPrice: 100,
         stopLossPrice: 90,
         takeProfitPrice: 110,
-        datetime: currentTimestampIST,
+        datetime: currentTimestampIST.format("YYYY-MM-DDTHH:mm:ss"),
       });
 
       return;
