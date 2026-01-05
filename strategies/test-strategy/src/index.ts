@@ -9,71 +9,18 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 // the time window is assumed to be set in IST
-const tradingWindowStart = dayjs()
-  .set("year", 2025)
-  .set("month", 11)
-  .set("day", 26)
-  .set("hour", 10)
-  .set("minute", 0)
-  .format("YYYY-MM-DDTHH:mm:ss");
-const tradingWindowEnd = dayjs()
-  .set("year", 2025)
-  .set("month", 11)
-  .set("day", 26)
-  .set("hour", 10)
-  .set("minute", 10)
-  .format("YYYY-MM-DDTHH:mm:ss");
-
-console.log({ tradingWindowStart });
-console.log({ tradingWindowEnd });
+const tradingWindowStart = "2026-01-05T15:05:00";
+const tradingWindowEnd = "2026-01-05T15:50:00";
 
 async function main() {
   await ganaka({
     fn: async ({ fetchShortlist, fetchQuote, fetchCandles, placeOrder, currentTimestamp }) => {
-      const currentTimestampIST = dayjs.tz(currentTimestamp, "Asia/Kolkata");
-
-      const currentTimestampForRequest = currentTimestampIST
-        .subtract(1, "minute")
-        .format("YYYY-MM-DDTHH:mm:ss");
-
-      console.log(currentTimestampIST);
-
-      const fetchShortlistResponse = await fetchShortlist({
-        type: "top-gainers",
-        datetime: currentTimestampForRequest,
-      });
-      console.log(fetchShortlistResponse);
-
-      const fetchQuoteResponse = await fetchQuote({
-        symbol: "TARC",
-        datetime: currentTimestampForRequest,
-      });
-      console.log(fetchQuoteResponse);
-
-      const fetchCandlesResponse = await fetchCandles({
-        symbol: "TARC",
-        interval: "1minute",
-        start_datetime: currentTimestampForRequest,
-        end_datetime: dayjs
-          .tz(currentTimestampForRequest, "Asia/Kolkata")
-          .add(1, "hour")
-          .format("YYYY-MM-DDTHH:mm:ss"),
-      });
-      console.log(fetchCandlesResponse);
-
-      await placeOrder({
-        nseSymbol: "TARC",
-        entryPrice: 100,
-        stopLossPrice: 90,
-        takeProfitPrice: 110,
-        datetime: currentTimestampIST.format("YYYY-MM-DDTHH:mm:ss"),
-      });
-
-      return;
+      const currentTimestampDayJS = dayjs.tz(currentTimestamp, "Asia/Kolkata");
+      console.log(currentTimestampDayJS.format("YYYY-MM-DDTHH:mm:ss"));
     },
-    intervalMinutes: 1,
-    startTime: dayjs.tz(tradingWindowStart, "Asia/Kolkata").toDate(),
-    endTime: dayjs.tz(tradingWindowEnd, "Asia/Kolkata").toDate(),
+    intervalMinutes: 2,
+    startTime: tradingWindowStart,
+    endTime: tradingWindowEnd,
     deleteRunAfterCompletion: true,
   });
 }
