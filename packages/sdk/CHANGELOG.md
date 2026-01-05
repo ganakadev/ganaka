@@ -1,3 +1,16 @@
+## [@ganaka/sdk v1.0.2](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Bug Fixes
+
+* **candles:** handle nullable start_time and end_time in API response ([72dca1d](https://github.com/ganakadev/ganaka/commit/72dca1d223af5fd30b251a3f4095a6fe547f580e))
+* **RunDrawer:** convert candle timestamps to IST format ([bb83ba2](https://github.com/ganakadev/ganaka/commit/bb83ba27d489533ed65ce2c9233c812601016012))
+* **sdk:** enhance minute loop timestamp handling and update trading window ([5dc7465](https://github.com/ganakadev/ganaka/commit/5dc7465bd609ea633072bf76efbe3b4cea0c0d89))
+* **sdk:** update timestamp handling to string format in IST ([24ef5a9](https://github.com/ganakadev/ganaka/commit/24ef5a9df8ee5ee5c3ecdcbd2af4fdb6e25143ac))
+
 ## [@ganaka/sdk v1.0.1](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
