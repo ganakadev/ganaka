@@ -1,3 +1,20 @@
+## [@ganaka/sdk v1.0.1](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Bug Fixes
+
+* **MomentumScalping:** Adjust timestamp handling for data fetching ([338bcee](https://github.com/ganakadev/ganaka/commit/338bcee1654093df9ea7568947d312992608f71d))
+* **QuoteDrawer:** Correct candle timestamp handling by converting to IST format ([ad25807](https://github.com/ganakadev/ganaka/commit/ad258070ca036e04771671800fa84d620e435d7c))
+* **sdk:** Standardize quotes in bundledPackages configuration ([fadc293](https://github.com/ganakadev/ganaka/commit/fadc2934aaff0c38b6208713a4712db8a51f9979))
+
+
+### Features
+
+* **groww-api:** Add parameter serialization for consistent API requests to Groww API ([1dc4001](https://github.com/ganakadev/ganaka/commit/1dc4001b443a579ff6067779bb5efe0b23f86c71))
+
 ## [@ganaka/sdk v1.0.0](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
