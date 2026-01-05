@@ -69,7 +69,7 @@ export default defineConfig({
       insertTypesEntry: true,
       rollupTypes: true,
       copyDtsFiles: true,
-      bundledPackages: ['@ganaka/schemas'],
+      bundledPackages: ["@ganaka/schemas"],
     }),
   ],
 });
