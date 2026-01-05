@@ -55,13 +55,16 @@ const StockChart = ({
 
   // VARIABLES
   const candleData: CandleData[] | null = getCandlesAPI.data?.data.candles
-    ? getCandlesAPI.data.data.candles.map((candle) => ({
-        time: candle.time as Time,
-        open: candle.open,
-        high: candle.high,
-        low: candle.low,
-        close: candle.close,
-      }))
+    ? getCandlesAPI.data.data.candles.map((candle) => {
+        const time = convertUTCToIST(dayjs.unix(candle.time).toDate());
+        return {
+          time: time.unix() as Time,
+          open: candle.open,
+          high: candle.high,
+          low: candle.low,
+          close: candle.close,
+        };
+      })
     : null;
 
   // Transform orders into series markers format
@@ -93,7 +96,6 @@ const StockChart = ({
 
       // Use different colors for multiple orders
       const color = colors[index % colors.length];
-      console.log("closestCandle.time", closestCandle.time);
 
       return {
         time: closestCandle.time,
