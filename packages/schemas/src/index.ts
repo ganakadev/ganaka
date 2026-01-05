@@ -6,15 +6,21 @@
  */
 
 // Re-export developer groww endpoint schemas
-export * as v1_developer_collector_schemas from "./v1/developer/collector/collector";
-export * as v1_developer_groww_schemas from "./v1/developer/groww/groww";
-export * as v1_developer_lists_schemas from "./v1/developer/lists/lists";
+import * as v1_developer_collector_schemas from "./v1/developer/collector/collector";
+import * as v1_developer_groww_schemas from "./v1/developer/groww/groww";
+import * as v1_developer_lists_schemas from "./v1/developer/lists/lists";
 
 // Re-export dashboard endpoint schemas
-export * as v1_dashboard_schemas from "./v1/dashboard";
+import * as v1_dashboard_schemas from "./v1/dashboard";
 
 // Re-export admin endpoint schemas
-export * as v1_admin_schemas from "./v1/admin";
+import * as v1_admin_schemas from "./v1/admin";
 
 // Re-export common types
 export * from "./common";
+
+export { v1_developer_collector_schemas };
+export { v1_developer_groww_schemas };
+export { v1_developer_lists_schemas };
+export { v1_dashboard_schemas };
+export { v1_admin_schemas };
