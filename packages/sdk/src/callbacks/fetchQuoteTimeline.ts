@@ -25,7 +25,10 @@ export const fetchQuoteTimeline =
   }) =>
   async (
     symbol: string,
-    date: Date
+    /**
+     * Date in IST string format (YYYY-MM-DD)
+     */
+    date: string
   ): Promise<
     z.infer<
       typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.response
@@ -36,12 +39,9 @@ export const fetchQuoteTimeline =
     }
 
     try {
-      // Format date as YYYY-MM-DD
-      const dateStr = dayjs.tz(date, currentTimezone).format("YYYY-MM-DD");
-
       const validatedParams = v1_developer_groww_schemas.getGrowwQuoteTimeline.query.parse({
         symbol,
-        date: dateStr,
+        date,
       });
 
       const headers: Record<string, string> = {

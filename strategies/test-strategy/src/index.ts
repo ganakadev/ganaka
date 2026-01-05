@@ -14,7 +14,14 @@ const tradingWindowEnd = "2026-01-05T17:15:00";
 
 async function main() {
   await ganaka({
-    fn: async ({ fetchShortlist, fetchQuote, fetchCandles, placeOrder, currentTimestamp }) => {
+    fn: async ({
+      fetchShortlist,
+      fetchQuote,
+      fetchCandles,
+      placeOrder,
+      currentTimestamp,
+      fetchQuoteTimeline,
+    }) => {
       const currentTimestampForRequest = dayjs
         .tz(currentTimestamp, "Asia/Kolkata")
         .subtract(1, "minute")
