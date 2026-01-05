@@ -35,7 +35,7 @@ export async function runMinuteLoop({
   callback: (currentTimestamp: string) => Promise<void>;
   intervalMinutes: number;
 }): Promise<void> {
-  const currentISTDayJS = dayjs.utc().tz("Asia/Kolkata");
+  let currentISTDayJS = dayjs.utc().tz("Asia/Kolkata");
 
   logger.debug(`currentIST: ${currentISTDayJS.format("YYYY-MM-DDTHH:mm:ss")}`);
   logger.debug(`startTime: ${startTimeDayJS.format("YYYY-MM-DDTHH:mm:ss")}`);
@@ -56,6 +56,7 @@ export async function runMinuteLoop({
       )}`
     );
     await sleep(delayUntilStart);
+    currentISTDayJS = currentISTDayJS.add(delayUntilStart, "millisecond");
   }
 
   // if current time is after startTime but before endTime, set startTime to current time
@@ -127,6 +128,12 @@ export async function runMinuteLoop({
     // if we need to wait for the next boundary, wait for the delay
     const delay = nextBoundaryDayJS.diff(currentISTDayJS, "millisecond");
     if (delay > 0) {
+      logger.info(
+        `Waiting for ${nextBoundaryDayJS.from(
+          currentISTDayJS,
+          true
+        )} to reach next execution time: ${nextBoundaryDayJS.format("YYYY-MM-DD HH:mm:ss")}`
+      );
       await sleep(delay);
     }
 
