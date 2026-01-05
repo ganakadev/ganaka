@@ -1,3 +1,13 @@
+## [@ganaka/sdk v1.0.3](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Bug Fixes
+
+* **sdk:** update fetchQuoteTimeline to accept date as string in IST format ([580c413](https://github.com/ganakadev/ganaka/commit/580c41386451f471e755494ff94f434c3e4be7b6))
+
 ## [@ganaka/sdk v1.0.2](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
