@@ -20,7 +20,7 @@ export const fetchQuoteTimeline =
     developerToken: string;
     apiDomain: string;
     runId: string | null;
-    currentTimestamp: Date;
+    currentTimestamp: string;
     currentTimezone?: string;
   }) =>
   async (
@@ -52,11 +52,7 @@ export const fetchQuoteTimeline =
         headers["X-Run-Id"] = runId;
       }
       if (currentTimestamp) {
-        // Format timestamp in the specified timezone (YYYY-MM-DDTHH:mm:ss format)
-        const timestampStr = dayjs
-          .tz(currentTimestamp, currentTimezone)
-          .format("YYYY-MM-DDTHH:mm:ss");
-        headers["X-Current-Timestamp"] = timestampStr;
+        headers["X-Current-Timestamp"] = currentTimestamp;
       }
       if (currentTimezone) {
         headers["X-Current-Timezone"] = currentTimezone;

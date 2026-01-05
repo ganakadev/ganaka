@@ -4,14 +4,6 @@ import { ApiClient } from "../utils/apiClient";
 import { z } from "zod";
 import axios, { AxiosError } from "axios";
 
-export interface PlaceOrderData {
-  nseSymbol: string;
-  stopLossPrice: number;
-  takeProfitPrice: number;
-  entryPrice: number;
-  timestamp: Date;
-}
-
 /**
  * Determines if an error is retryable (network errors or 5xx server errors)
  * Since ApiClient wraps axios errors, we check error messages and types
@@ -131,7 +123,7 @@ export const placeOrder =
     data: z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.body>
   ): Promise<void> => {
     // Keep existing console.log for backward compatibility
-    console.log(data);
+    logger.debug(`data: ${JSON.stringify(data)}`);
 
     // Persist to database via API if runId is available
     if (runId) {

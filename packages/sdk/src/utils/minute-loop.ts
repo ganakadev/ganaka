@@ -1,39 +1,14 @@
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import calendar from "dayjs/plugin/calendar";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { logger } from "./logger";
 
-/**
- * Calculates the next interval boundary from a given timestamp.
- * Rounds up to the next interval boundary based on intervalMinutes.
- * @param timestamp - The current timestamp
- * @param intervalMinutes - The interval in minutes (e.g., 1, 2, 5)
- * @returns The next interval boundary Date
- */
-function getNextIntervalBoundary(
-  timestamp: Date,
-  intervalMinutes: number
-): Date {
-  const date = dayjs(timestamp);
-  const currentMinute = date.minute();
-  const currentSecond = date.second();
-  const currentMillisecond = date.millisecond();
-
-  // Calculate how many minutes into the current hour we are
-  const minutesIntoHour = currentMinute % intervalMinutes;
-
-  // If we're exactly on a boundary and at 0 seconds, return the next boundary
-  if (
-    minutesIntoHour === 0 &&
-    currentSecond === 0 &&
-    currentMillisecond === 0
-  ) {
-    return date.add(intervalMinutes, "minute").toDate();
-  }
-
-  // Calculate minutes to add to reach the next boundary
-  const minutesToAdd = intervalMinutes - minutesIntoHour;
-
-  // Round up to the next interval boundary
-  return date.add(minutesToAdd, "minute").second(0).millisecond(0).toDate();
-}
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(calendar);
+dayjs.extend(relativeTime);
 
 /**
  * Sleeps for a specified number of milliseconds
@@ -50,95 +25,130 @@ function sleep(ms: number): Promise<void> {
  * @param intervalMinutes - The interval in minutes (default: 1)
  */
 export async function runMinuteLoop({
-  startTime,
-  endTime,
-  callback,
+  startTimeDayJS,
+  endTimeDayJS,
   intervalMinutes,
+  callback,
 }: {
-  startTime: Date;
-  endTime: Date;
-  callback: (currentTimestamp: Date) => Promise<void>;
+  startTimeDayJS: dayjs.Dayjs;
+  endTimeDayJS: dayjs.Dayjs;
+  callback: (currentTimestamp: string) => Promise<void>;
   intervalMinutes: number;
 }): Promise<void> {
-  const now = new Date();
+  let currentISTDayJS = dayjs.utc().tz("Asia/Kolkata");
 
-  // Check if current time is outside the specified range
-  const isSimulationMode = now < startTime || now > endTime;
+  logger.debug(`currentIST: ${currentISTDayJS.format("YYYY-MM-DDTHH:mm:ss")}`);
+  logger.debug(`startTime: ${startTimeDayJS.format("YYYY-MM-DDTHH:mm:ss")}`);
+  logger.debug(`endTime: ${endTimeDayJS.format("YYYY-MM-DDTHH:mm:ss")}`);
+
+  // Check if current time is after endTime (past run - use simulation mode)
+  const isSimulationMode = currentISTDayJS.isAfter(endTimeDayJS);
   if (isSimulationMode) {
-    console.log("Current time is outside the specified range, simulating loop");
+    logger.info("Current time is after endTime, simulating loop");
   }
 
-  // Calculate the first interval boundary from startTime
-  // This ensures intervals align consistently (e.g., interval=2 runs at 9:00, 9:02, 9:04...)
-  const startDate = dayjs(startTime);
-  const startMinute = startDate.minute();
-  const minutesToFirstBoundary =
-    intervalMinutes - (startMinute % intervalMinutes);
+  // If current time is before startTime, wait until startTime arrives
+  if (currentISTDayJS.isBefore(startTimeDayJS)) {
+    const delayUntilStart = startTimeDayJS.diff(currentISTDayJS, "millisecond");
+    logger.info(
+      `Starting loop ${startTimeDayJS.from(currentISTDayJS)} at ${startTimeDayJS.format(
+        "YYYY-MM-DD HH:mm"
+      )}`
+    );
+    await sleep(delayUntilStart);
+    currentISTDayJS = currentISTDayJS.add(delayUntilStart, "millisecond");
+  }
+
+  // if current time is after startTime but before endTime, set startTime to current time
+  if (currentISTDayJS.isAfter(startTimeDayJS) && currentISTDayJS.isBefore(endTimeDayJS)) {
+    startTimeDayJS = currentISTDayJS;
+  }
+
+  /**
+   * Calculate the first interval boundary from startTime
+   * For a given intervalMinutes, boundaries are the exact times when the callback should run.
+   *
+   * Example with intervalMinutes = 2:
+   * Boundaries: 9:00:00.000, 9:02:00.000, 9:04:00.000, 9:06:00.000, etc.
+   * Not boundaries: 9:01:00.000, 9:03:00.000, 9:05:00.000, etc.
+   *
+   * Example with intervalMinutes = 5:
+   * Boundaries: 9:00:00.000, 9:05:00.000, 9:10:00.000, 9:15:00.000, etc.
+   * Not boundaries: 9:01:00.000, 9:07:00.000, 9:13:00.000, etc.
+   *
+   * The problem without boundaries:
+   * If you start a loop at 9:01:30 with intervalMinutes = 2 and just add 2 minutes each time:
+   * Without boundaries:
+   * 9:01:30, 9:03:30, 9:05:30, 9:07:30, etc.
+   * This creates drift and inconsistency.
+   */
+  const startMinute = startTimeDayJS.minute();
+  const minutesToFirstBoundary = intervalMinutes - (startMinute % intervalMinutes);
 
   // If startTime is exactly on a boundary, use it; otherwise go to next boundary
   const isOnBoundary =
     startMinute % intervalMinutes === 0 &&
-    startDate.second() === 0 &&
-    startDate.millisecond() === 0;
+    startTimeDayJS.second() === 0 &&
+    startTimeDayJS.millisecond() === 0;
 
-  let nextBoundary: Date;
+  let nextBoundaryDayJS: dayjs.Dayjs;
   if (isOnBoundary) {
-    nextBoundary = startTime;
+    nextBoundaryDayJS = startTimeDayJS;
   } else {
-    nextBoundary = startDate
+    nextBoundaryDayJS = startTimeDayJS
       .add(minutesToFirstBoundary, "minute")
       .second(0)
-      .millisecond(0)
-      .toDate();
+      .millisecond(0);
   }
 
-  // In simulation mode, execute all callbacks immediately without delays
+  logger.debug(`nextBoundary: ${nextBoundaryDayJS.format("YYYY-MM-DDTHH:mm:ss")}`);
+
+  // In simulation mode (past runs), execute all callbacks immediately without delays
   if (isSimulationMode) {
-    while (nextBoundary <= endTime) {
+    while (nextBoundaryDayJS.isBefore(endTimeDayJS) || nextBoundaryDayJS.isSame(endTimeDayJS)) {
       // Execute the callback with error handling
       try {
-        await callback(nextBoundary);
+        await callback(nextBoundaryDayJS.format("YYYY-MM-DDTHH:mm:ss"));
       } catch (error) {
         console.error(
-          `Error executing callback at ${nextBoundary.toISOString()}:`,
+          `Error executing callback at ${nextBoundaryDayJS.format("YYYY-MM-DDTHH:mm:ss")}:`,
           error
         );
         // Continue to next interval even if callback fails
       }
 
       // Calculate the next interval boundary
-      nextBoundary = dayjs(nextBoundary)
-        .add(intervalMinutes, "minute")
-        .toDate();
+      nextBoundaryDayJS = nextBoundaryDayJS.add(intervalMinutes, "minute");
     }
     return;
   }
 
   // Normal mode: wait for each interval boundary
-  // If startTime is in the past and we've missed the first boundary, start from current interval
-  if (startTime < now && nextBoundary < now) {
-    nextBoundary = getNextIntervalBoundary(now, intervalMinutes);
-  }
-
-  while (nextBoundary <= endTime) {
-    // Wait until the exact interval boundary arrives
-    const delay = nextBoundary.getTime() - Date.now();
+  while (nextBoundaryDayJS.isBefore(endTimeDayJS) || nextBoundaryDayJS.isSame(endTimeDayJS)) {
+    // if we need to wait for the next boundary, wait for the delay
+    const delay = nextBoundaryDayJS.diff(currentISTDayJS, "millisecond");
     if (delay > 0) {
+      logger.info(
+        `Waiting for ${nextBoundaryDayJS.from(
+          currentISTDayJS,
+          true
+        )} to reach next execution time: ${nextBoundaryDayJS.format("YYYY-MM-DD HH:mm:ss")}`
+      );
       await sleep(delay);
     }
 
     // Execute the callback with error handling
     try {
-      await callback(nextBoundary);
+      await callback(nextBoundaryDayJS.format("YYYY-MM-DDTHH:mm:ss"));
     } catch (error) {
       console.error(
-        `Error executing callback at ${nextBoundary.toISOString()}:`,
+        `Error executing callback at ${nextBoundaryDayJS.format("YYYY-MM-DDTHH:mm:ss")}:`,
         error
       );
       // Continue to next interval even if callback fails
     }
 
     // Calculate the next interval boundary
-    nextBoundary = dayjs(nextBoundary).add(intervalMinutes, "minute").toDate();
+    nextBoundaryDayJS = nextBoundaryDayJS.add(intervalMinutes, "minute");
   }
 }

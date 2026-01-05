@@ -30,7 +30,11 @@ export interface RunContext {
   fetchQuote: ReturnType<typeof fetchQuote>;
   fetchQuoteTimeline: ReturnType<typeof fetchQuoteTimeline>;
   fetchShortlist: ReturnType<typeof fetchShortlist>;
-  currentTimestamp: Date;
+  /**
+   * Current timestamp in IST string format (YYYY-MM-DDTHH:mm:ss)
+   * for every loop iteration
+   */
+  currentTimestamp: string;
 }
 
 export async function ganaka<T>({
@@ -41,8 +45,10 @@ export async function ganaka<T>({
   deleteRunAfterCompletion = false,
 }: {
   fn: (context: RunContext) => Promise<T>;
-  startTime: Date;
-  endTime: Date;
+  /** Start time in IST string format (YYYY-MM-DDTHH:mm:ss) */
+  startTime: string;
+  /** End time in IST string format (YYYY-MM-DDTHH:mm:ss) */
+  endTime: string;
   intervalMinutes: number;
   /**
    * Delete run after completion.
@@ -61,16 +67,25 @@ export async function ganaka<T>({
     );
   }
 
-  // Create API client
+  // ------------------------------------------------------------------------------------------------
+
   const apiClient = new ApiClient({ developerToken, apiDomain });
+  const startTimeDayJS = dayjs.tz(startTime, "Asia/Kolkata");
+  const endTimeDayJS = dayjs.tz(endTime, "Asia/Kolkata");
+
+  if (startTimeDayJS.isAfter(endTimeDayJS)) {
+    throw new Error("Start time cannot be after end time");
+  }
+
+  // ------------------------------------------------------------------------------------------------
 
   // Create a new run via API
   let runId: string | null = null;
   const createRunBody: z.infer<
     typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.body
   > = {
-    start_datetime: dayjs.tz(startTime, "Asia/Kolkata").format("YYYY-MM-DDTHH:mm:ss"),
-    end_datetime: dayjs.tz(endTime, "Asia/Kolkata").format("YYYY-MM-DDTHH:mm:ss"),
+    start_datetime: startTime,
+    end_datetime: endTime,
     timezone: "Asia/Kolkata",
   };
   try {
@@ -97,10 +112,12 @@ export async function ganaka<T>({
     throw new Error(`Error creating run: ${error}`);
   }
 
+  // ------------------------------------------------------------------------------------------------
+
   try {
     await runMinuteLoop({
-      startTime,
-      endTime,
+      startTimeDayJS,
+      endTimeDayJS,
       intervalMinutes,
       callback: async (currentTimestamp) => {
         await fn({

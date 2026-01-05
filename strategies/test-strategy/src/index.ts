@@ -9,34 +9,18 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 // the time window is assumed to be set in IST
-const tradingWindowStart = dayjs()
-  .set("year", 2025)
-  .set("month", 11)
-  .set("day", 26)
-  .set("hour", 10)
-  .set("minute", 0)
-  .format("YYYY-MM-DDTHH:mm:ss");
-const tradingWindowEnd = dayjs()
-  .set("year", 2025)
-  .set("month", 11)
-  .set("day", 26)
-  .set("hour", 10)
-  .set("minute", 10)
-  .format("YYYY-MM-DDTHH:mm:ss");
-
-console.log({ tradingWindowStart });
-console.log({ tradingWindowEnd });
+const tradingWindowStart = "2026-01-05T17:00:00";
+const tradingWindowEnd = "2026-01-05T17:15:00";
 
 async function main() {
   await ganaka({
     fn: async ({ fetchShortlist, fetchQuote, fetchCandles, placeOrder, currentTimestamp }) => {
-      const currentTimestampIST = dayjs.tz(currentTimestamp, "Asia/Kolkata");
-
-      const currentTimestampForRequest = currentTimestampIST
+      const currentTimestampForRequest = dayjs
+        .tz(currentTimestamp, "Asia/Kolkata")
         .subtract(1, "minute")
         .format("YYYY-MM-DDTHH:mm:ss");
 
-      console.log(currentTimestampIST);
+      console.log(currentTimestampForRequest);
 
       const fetchShortlistResponse = await fetchShortlist({
         type: "top-gainers",
@@ -53,11 +37,11 @@ async function main() {
       const fetchCandlesResponse = await fetchCandles({
         symbol: "TARC",
         interval: "1minute",
-        start_datetime: currentTimestampForRequest,
-        end_datetime: dayjs
+        start_datetime: dayjs
           .tz(currentTimestampForRequest, "Asia/Kolkata")
-          .add(1, "hour")
+          .subtract(1, "hour")
           .format("YYYY-MM-DDTHH:mm:ss"),
+        end_datetime: currentTimestampForRequest,
       });
       console.log(fetchCandlesResponse);
 
@@ -66,14 +50,14 @@ async function main() {
         entryPrice: 100,
         stopLossPrice: 90,
         takeProfitPrice: 110,
-        datetime: currentTimestampIST.format("YYYY-MM-DDTHH:mm:ss"),
+        datetime: currentTimestamp,
       });
 
       return;
     },
     intervalMinutes: 1,
-    startTime: dayjs.tz(tradingWindowStart, "Asia/Kolkata").toDate(),
-    endTime: dayjs.tz(tradingWindowEnd, "Asia/Kolkata").toDate(),
+    startTime: tradingWindowStart,
+    endTime: tradingWindowEnd,
     deleteRunAfterCompletion: true,
   });
 }
