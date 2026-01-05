@@ -2,18 +2,11 @@
   "autorun": false,
   "terminals": [
     {
-      "name": "@ganaka/momentum-scalping",
+      "name": "@ganaka/test-strategy",
       "focus": true,
       "onlySingle": true,
       "execute": false,
-      "command": "nvm use 22 && pnpm --filter @ganaka/momentum-scalping "
-    },
-    {
-      "name": "@ganaka/template-strategy",
-      "focus": true,
-      "onlySingle": true,
-      "execute": false,
-      "command": "nvm use 22 && pnpm --filter @ganaka/template-strategy "
+      "command": "nvm use 22 && pnpm --filter @ganaka/test-strategy "
     },
     {
       "name": "@ganaka/client",
