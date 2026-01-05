@@ -1,0 +1,79 @@
+name: Staging
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_client:
+        description: "Deploy client"
+        required: false
+        type: boolean
+        default: true
+      deploy_server:
+        description: "Deploy server"
+        required: false
+        type: boolean
+        default: true
+      skip_ci_checks:
+        description: "Skip CI checks"
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  ci-checks:
+    uses: ./.github/workflows/ci-checks.yml
+    with:
+      skip_ci_checks: ${{ github.event.inputs.skip_ci_checks == 'true' }}
+    secrets:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      GROWW_API_KEY: ${{ secrets.GROWW_API_KEY }}
+      GROWW_API_SECRET: ${{ secrets.GROWW_API_SECRET }}
+      REDIS_URL: ${{ secrets.REDIS_URL }}
+      DEVELOPER_KEY: ${{ secrets.DEVELOPER_KEY }}
+      WEBSHARE_API_KEY: ${{ secrets.WEBSHARE_API_KEY }}
+
+  create-build-tag:
+    runs-on: ubuntu-latest
+    needs: ci-checks
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create build tag
+        run: |
+          STAGING_TAG="staging/${{ github.run_number }}"
+          git tag -a "$STAGING_TAG" -m "Staging build tag for run ${{ github.run_number }}"
+          git push origin "$STAGING_TAG"
+
+  deploy-apps:
+    runs-on: ubuntu-latest
+    needs: create-build-tag
+    if: always() && (github.event.inputs.deploy_client == 'true' || github.event.inputs.deploy_server == 'true')
+    steps:
+      - name: Deploy client
+        if: github.event.inputs.deploy_client == 'true'
+        run: |
+          if [ -z "${{ secrets.RENDER_STAGING_CLIENT_DEPLOY_HOOK }}" ]; then
+            echo "RENDER_STAGING_CLIENT_DEPLOY_HOOK secret not set, skipping client deployment"
+            exit 0
+          fi
+          curl -X POST "${{ secrets.RENDER_STAGING_CLIENT_DEPLOY_HOOK }}"
+
+      - name: Deploy server
+        if: github.event.inputs.deploy_server == 'true'
+        run: |
+          if [ -z "${{ secrets.RENDER_STAGING_SERVER_DEPLOY_HOOK }}" ]; then
+            echo "RENDER_STAGING_SERVER_DEPLOY_HOOK secret not set, skipping server deployment"
+            exit 0
+          fi
+          curl -X POST "${{ secrets.RENDER_STAGING_SERVER_DEPLOY_HOOK }}"
