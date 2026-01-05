@@ -23,6 +23,7 @@
     [
       "@semantic-release/release-notes-generator",
       {
+        "preset": "angular",
         "writerOpts": {
           "headerPartial": "## [@ganaka/sdk v{{version}}](https://www.npmjs.com/package/@ganaka/sdk)\n\nPublished to npm\n\n"
         }
