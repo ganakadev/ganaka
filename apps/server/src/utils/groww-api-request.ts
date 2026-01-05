@@ -3,6 +3,22 @@ import axios, { AxiosError } from "axios";
 import { TokenManager } from "./token-manager";
 
 /**
+ * Helper function to serialize parameters using URLSearchParams (matching browser behavior)
+ * Filters out undefined and null values to ensure consistent encoding
+ */
+function serializeParams(params?: Record<string, any>): Record<string, string> {
+  const serialized: Record<string, string> = {};
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined && value !== null) {
+        serialized[key] = String(value);
+      }
+    }
+  }
+  return serialized;
+}
+
+/**
  * Helper function to make Groww API requests with automatic token refresh
  */
 export const makeGrowwAPIRequest =
@@ -35,11 +51,24 @@ export const makeGrowwAPIRequest =
           Accept: "application/json",
         };
 
+        // Serialize params to ensure consistent encoding matching browser behavior
+        const serializedParams = serializeParams(params);
+
         const response = await axios({
           method,
           url,
-          params,
+          params: serializedParams,
           headers,
+          // Use URLSearchParams serializer to match browser behavior (same as RTK Query)
+          paramsSerializer: (params) => {
+            const searchParams = new URLSearchParams();
+            for (const [key, value] of Object.entries(params)) {
+              if (value !== undefined && value !== null) {
+                searchParams.append(key, String(value));
+              }
+            }
+            return searchParams.toString();
+          },
         });
 
         return response.data;
@@ -47,7 +76,11 @@ export const makeGrowwAPIRequest =
         lastError = error;
 
         if (axios.isAxiosError(error)) {
-          const fullUrl = error.config?.url + "?" + new URLSearchParams(params).toString();
+          // Use error.config?.params instead of outer scope params to safely handle undefined
+          const errorParams = error.config?.params || params || {};
+          const serializedErrorParams = serializeParams(errorParams);
+          const fullUrl =
+            error.config?.url + "?" + new URLSearchParams(serializedErrorParams).toString();
           console.log("Full URL that would be sent:", fullUrl);
         }
 
