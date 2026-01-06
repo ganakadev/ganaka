@@ -282,6 +282,19 @@ export function createGrowwQuoteQuery(
 }
 
 /**
+ * Creates valid NIFTY quote query parameters
+ */
+export function createGrowwNiftyQuoteQuery(
+  datetime?: string,
+  timezone?: string
+): z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuote.query> {
+  return {
+    timezone: timezone || "Asia/Kolkata",
+    ...(datetime && { datetime }),
+  };
+}
+
+/**
  * Creates valid historical candles query parameters
  */
 export function createHistoricalCandlesQuery(
