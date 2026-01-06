@@ -8,6 +8,7 @@ import { fetchCandles } from "./callbacks/fetchCandles";
 import { fetchQuote } from "./callbacks/fetchQuote";
 import { fetchQuoteTimeline } from "./callbacks/fetchQuoteTimeline";
 import { fetchShortlist } from "./callbacks/fetchShortlist";
+import { fetchNiftyQuote } from "./callbacks/fetchNiftyQuote";
 import { placeOrder } from "./callbacks/placeOrder";
 import { ApiClient } from "./utils/apiClient";
 import { logger } from "./utils/logger";
@@ -21,6 +22,7 @@ export { growwQuotePayloadSchema, growwQuoteSchema };
 
 export type FetchQuoteTimelineResponse = Awaited<ReturnType<ReturnType<typeof fetchQuoteTimeline>>>;
 export type FetchQuoteResponse = Awaited<ReturnType<ReturnType<typeof fetchQuote>>>;
+export type FetchNiftyQuoteResponse = Awaited<ReturnType<ReturnType<typeof fetchNiftyQuote>>>;
 export type FetchCandlesResponse = Awaited<ReturnType<ReturnType<typeof fetchCandles>>>;
 export type FetchShortlistResponse = Awaited<ReturnType<ReturnType<typeof fetchShortlist>>>;
 
@@ -28,6 +30,7 @@ export interface RunContext {
   placeOrder: ReturnType<typeof placeOrder>;
   fetchCandles: ReturnType<typeof fetchCandles>;
   fetchQuote: ReturnType<typeof fetchQuote>;
+  fetchNiftyQuote: ReturnType<typeof fetchNiftyQuote>;
   fetchQuoteTimeline: ReturnType<typeof fetchQuoteTimeline>;
   fetchShortlist: ReturnType<typeof fetchShortlist>;
   /**
@@ -130,6 +133,13 @@ export async function ganaka<T>({
             currentTimezone: "Asia/Kolkata",
           }),
           fetchQuote: fetchQuote({
+            developerToken,
+            apiDomain,
+            runId,
+            currentTimestamp,
+            currentTimezone: "Asia/Kolkata",
+          }),
+          fetchNiftyQuote: fetchNiftyQuote({
             developerToken,
             apiDomain,
             runId,

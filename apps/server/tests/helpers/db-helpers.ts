@@ -156,6 +156,33 @@ export async function createQuoteSnapshot(
 }
 
 /**
+ * Creates a NIFTY quote snapshot in DB with specific datetime, quote data, and day change percentage
+ */
+export async function createNiftyQuoteSnapshot(
+  datetime: string,
+  quoteData: z.infer<typeof growwQuoteSchema>,
+  tracker: TestDataTracker,
+  dayChangePerc: number = 0.5,
+  timezone?: string
+) {
+  const timestamp = parseDateTimeInTimezone(datetime, timezone || "Asia/Kolkata");
+
+  const snapshot = await prisma.niftyQuote.create({
+    data: {
+      timestamp,
+      quoteData: quoteData as InputJsonValue,
+      dayChangePerc: new Decimal(dayChangePerc),
+    },
+  });
+
+  if (tracker) {
+    tracker.trackNiftyQuote(snapshot.id);
+  }
+
+  return snapshot;
+}
+
+/**
  * Creates a shortlist snapshot in DB with specific type, datetime, and entries
  */
 export async function createShortlistSnapshot(
