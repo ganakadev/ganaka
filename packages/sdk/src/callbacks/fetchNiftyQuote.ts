@@ -50,6 +50,7 @@ export const fetchNiftyQuote =
         headers["X-Current-Timezone"] = currentTimezone;
       }
 
+      // response
       const response = await axios.get<
         z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuote.response>
       >(`${apiDomain}/v1/developer/groww/nifty`, {
