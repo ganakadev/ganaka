@@ -140,6 +140,20 @@ const StockChart = ({
           2
         )}`,
       });
+
+      // Dynamic Take Profit price line - green dashed color
+      if (order.dynamicTakeProfitPrice !== undefined) {
+        priceLinesList.push({
+          price: order.dynamicTakeProfitPrice,
+          color: "#26a69a", // green color matching chart's up color
+          lineWidth: 1,
+          lineStyle: 2, // dashed line
+          axisLabelVisible: true,
+          title: `DTP${
+            index + 1 > 1 ? ` (Order ${index + 1})` : ""
+          }: ₹${order.dynamicTakeProfitPrice.toFixed(2)}`,
+        });
+      }
     });
 
     return priceLinesList;
@@ -207,26 +221,30 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
   // VARIABLES
   // Parse UTC datetime strings from API responses
   // Date constructor correctly handles UTC strings in YYYY-MM-DDTHH:mm:ss format
-  const orders: Order[] =
-    runOrdersAPI.data?.data.map((order) => ({
-      id: order.id,
-      nseSymbol: order.nseSymbol,
-      entryPrice: order.entryPrice,
-      stopLossPrice: order.stopLossPrice,
-      takeProfitPrice: order.takeProfitPrice,
-      runId: order.runId,
-      targetGainPercentage: order.targetGainPercentage,
-      targetAchieved: order.targetAchieved,
-      targetGainPercentageActual: order.targetGainPercentageActual,
-      dynamicTakeProfitPrice: order.dynamicTakeProfitPrice,
-      stopLossHit: order.stopLossHit,
-      // API returns UTC datetime strings, Date constructor handles them correctly
-      timestamp: new Date(order.timestamp),
-      stopLossTimestamp: order.stopLossTimestamp ? new Date(order.stopLossTimestamp) : undefined,
-      targetTimestamp: order.targetTimestamp ? new Date(order.targetTimestamp) : undefined,
-      timeToStopLossMinutes: order.timeToStopLossMinutes,
-      timeToTargetMinutes: order.timeToTargetMinutes,
-    })) || [];
+  // Memoize orders to ensure it updates when API data changes (e.g., when targetGainPercentage changes)
+  const orders: Order[] = useMemo(
+    () =>
+      runOrdersAPI.data?.data.map((order) => ({
+        id: order.id,
+        nseSymbol: order.nseSymbol,
+        entryPrice: order.entryPrice,
+        stopLossPrice: order.stopLossPrice,
+        takeProfitPrice: order.takeProfitPrice,
+        runId: order.runId,
+        targetGainPercentage: order.targetGainPercentage,
+        targetAchieved: order.targetAchieved,
+        targetGainPercentageActual: order.targetGainPercentageActual,
+        dynamicTakeProfitPrice: order.dynamicTakeProfitPrice,
+        stopLossHit: order.stopLossHit,
+        // API returns UTC datetime strings, Date constructor handles them correctly
+        timestamp: new Date(order.timestamp),
+        stopLossTimestamp: order.stopLossTimestamp ? new Date(order.stopLossTimestamp) : undefined,
+        targetTimestamp: order.targetTimestamp ? new Date(order.targetTimestamp) : undefined,
+        timeToStopLossMinutes: order.timeToStopLossMinutes,
+        timeToTargetMinutes: order.timeToTargetMinutes,
+      })) || [],
+    [runOrdersAPI.data]
+  );
   // Group orders by nseSymbol
   const ordersByStock = orders.reduce((acc, order) => {
     if (!acc[order.nseSymbol]) {
