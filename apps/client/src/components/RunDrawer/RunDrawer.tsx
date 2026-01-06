@@ -103,7 +103,7 @@ const StockChart = ({
         color: color,
         size: 1,
         shape: "circle" as const,
-        text: `Order: ₹${order.entryPrice.toFixed(2)}`,
+        text: `Buy @ ₹${order.entryPrice.toFixed(2)}`,
       };
     });
   }, [orders, candleData]);
@@ -397,9 +397,13 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
                     order.stopLossHit === true ? (
                       <div className="flex flex-col gap-1">
                         <Text size="sm" fw={600} c="red">
-                          {`✗ Stop Loss Hit in ${formatTime(order.timeToStopLossMinutes)} @ ${dayjs
-                            .tz(order.stopLossTimestamp, "Asia/Kolkata")
-                            .format("HH:mm")}`}
+                          {`✗ Stop Loss Hit in ${formatTime(order.timeToStopLossMinutes)} @ ${
+                            order.stopLossTimestamp
+                              ? dayjs
+                                  .tz(convertUTCToIST(order.stopLossTimestamp), "Asia/Kolkata")
+                                  .format("HH:mm")
+                              : "N/A"
+                          }`}
                         </Text>
                         {order.dynamicTakeProfitPrice !== undefined && (
                           <Text size="xs" c="dimmed">
@@ -415,9 +419,13 @@ const RunOrdersPanel = ({ selectedRun }: { selectedRun: Run | null }) => {
                       order.targetAchieved ? (
                         <div className="flex flex-col gap-1">
                           <Text size="sm" fw={600} c="green">
-                            {`✓ Achieved in ${formatTime(order.timeToTargetMinutes)} @ ${dayjs
-                              .tz(order.targetTimestamp, "Asia/Kolkata")
-                              .format("HH:mm")}`}
+                            {`✓ Achieved in ${formatTime(order.timeToTargetMinutes)} @ ${
+                              order.targetTimestamp
+                                ? dayjs
+                                    .tz(convertUTCToIST(order.targetTimestamp), "Asia/Kolkata")
+                                    .format("HH:mm")
+                                : "N/A"
+                            }`}
                           </Text>
                           {order.dynamicTakeProfitPrice !== undefined && (
                             <Text size="xs" c="dimmed">
