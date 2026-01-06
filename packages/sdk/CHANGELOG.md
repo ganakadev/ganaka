@@ -1,3 +1,20 @@
+## [@ganaka/sdk v1.1.0](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Bug Fixes
+
+* **RunDrawer:** update order status messages to include IST conversion and improve clarity ([e2cb8c0](https://github.com/ganakadev/ganaka/commit/e2cb8c075d378d1fbf1a90b8fd6f2b44a4b5ec5b))
+
+
+### Features
+
+* **Groww:** add NIFTY quote endpoint and related tests ([a4551ff](https://github.com/ganakadev/ganaka/commit/a4551ffa180d25afac1aaa36e5056acf1902d541))
+* **RunDrawer:** add dynamic take profit price line and memoize orders ([bf4f19f](https://github.com/ganakadev/ganaka/commit/bf4f19fd083111fe6c6f5b955d73788948aced35))
+* **sdk:** Add NIFTY quote callback for sdk ([431024a](https://github.com/ganakadev/ganaka/commit/431024a60d975b7aa36bd37d228b7dc6d7555382))
+
 ## [@ganaka/sdk v1.0.3](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
