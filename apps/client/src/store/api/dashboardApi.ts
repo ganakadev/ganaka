@@ -228,5 +228,38 @@ export const dashboardAPI = createApi({
       },
       invalidatesTags: ["Runs"],
     }),
+
+    // Update run
+    updateRun: builder.mutation<
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response>,
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.params> &
+        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.body>
+    >({
+      query: (params) => {
+        const validatedParams =
+          v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.params.parse(params);
+        const validatedBody =
+          v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.body.parse(params);
+        return {
+          url: `/runs/${validatedParams.runId}`,
+          method: "PATCH",
+          body: validatedBody,
+        };
+      },
+      invalidatesTags: ["Runs"],
+    }),
+
+    // Get run tags (for autocomplete)
+    getRunTags: builder.query<
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunTags.response>,
+      void
+    >({
+      query: () => ({
+        url: "/runs/tags",
+        method: "GET",
+      }),
+      // Tags don't change frequently, so we can keep this cached longer
+      keepUnusedDataFor: 300, // 5 minutes
+    }),
   }),
 });

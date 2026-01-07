@@ -1,9 +1,18 @@
-import { Accordion, Drawer, NumberInput, Table, Text } from "@mantine/core";
+import {
+  Accordion,
+  Button,
+  Drawer,
+  NumberInput,
+  Table,
+  TagsInput,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import type { Time } from "lightweight-charts";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { dashboardAPI } from "../../store/api/dashboardApi";
 import type { Order, Run } from "../../types";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
@@ -534,18 +543,89 @@ export const RunOrdersDrawer = ({
   onClose: () => void;
   selectedRun: Run | null;
 }) => {
+  // STATE
+  const [name, setName] = useState<string>("");
+  const [tags, setTags] = useState<string[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
+
+  // API
+  const [updateRun, updateRunAPI] = dashboardAPI.useUpdateRunMutation();
+  const getRunTagsAPI = dashboardAPI.useGetRunTagsQuery(undefined, {
+    skip: !opened,
+  });
+  useRTKNotifier({
+    requestName: "Update Run",
+    error: updateRunAPI.error,
+  });
+
+  // Update local state when selectedRun changes
+  useEffect(() => {
+    if (selectedRun) {
+      requestAnimationFrame(() => {
+        setName(selectedRun.name || "");
+        setTags(selectedRun.tags || []);
+        setIsEditing(false);
+      });
+    }
+  }, [selectedRun]);
+
+  // HANDLERS
+  const handleSave = async () => {
+    if (!selectedRun) return;
+
+    try {
+      const result = await updateRun({
+        runId: selectedRun.id,
+        name: name.trim() || null,
+        tags: tags,
+      }).unwrap();
+      // Update local state with the new data
+      if (result.data) {
+        setName(result.data.name || "");
+        setTags(result.data.tags || []);
+      }
+      setIsEditing(false);
+    } catch {
+      // Error is handled by useRTKNotifier
+    }
+  };
+
+  const handleCancel = () => {
+    if (selectedRun) {
+      setName(selectedRun.name || "");
+      setTags(selectedRun.tags || []);
+    }
+    setIsEditing(false);
+  };
+
   // VARIABLES
+  const displayName = isEditing ? name : selectedRun?.name || "";
+  const displayTags = isEditing ? tags : selectedRun?.tags || [];
   const drawerTitle = selectedRun ? (
     <div className="flex flex-col gap-1">
-      <h4 className="text-lg font-semibold">Run Orders</h4>
+      <h4 className="text-lg font-semibold">{displayName || "Run Orders"}</h4>
       <span className="text-sm text-gray-500">
         {dayjs(selectedRun.startTime).format("DD-MM-YYYY HH:mm")} -{" "}
         {dayjs(selectedRun.endTime).format("HH:mm")}
       </span>
+      {displayTags.length > 0 && (
+        <div className="flex flex-wrap gap-1 mt-1">
+          {displayTags.map((tag) => (
+            <span
+              key={tag}
+              className="px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   ) : (
     "Run Orders"
   );
+
+  const availableTags = getRunTagsAPI.data?.data || [];
 
   // DRAW
   return (
@@ -557,7 +637,87 @@ export const RunOrdersDrawer = ({
       title={drawerTitle}
       padding="lg"
     >
-      {selectedRun && <RunOrdersPanel selectedRun={selectedRun} />}
+      {selectedRun && (
+        <div className="space-y-6">
+          {/* Name and Tags Editing Section */}
+          <div className="border-b pb-4 space-y-4">
+            <div>
+              <Text size="sm" fw={500} mb="xs">
+                Name
+              </Text>
+              {isEditing ? (
+                <TextInput
+                  value={name}
+                  onChange={(e) => setName(e.currentTarget.value)}
+                  placeholder="Enter run name"
+                  size="sm"
+                />
+              ) : (
+                <Text size="sm" c={selectedRun.name ? undefined : "dimmed"}>
+                  {selectedRun.name || "No name set"}
+                </Text>
+              )}
+            </div>
+            <div>
+              <Text size="sm" fw={500} mb="xs">
+                Tags
+              </Text>
+              {isEditing ? (
+                <TagsInput
+                  value={tags}
+                  onChange={setTags}
+                  placeholder="Add tags"
+                  data={availableTags}
+                  size="sm"
+                />
+              ) : (
+                <div className="flex flex-wrap gap-1">
+                  {selectedRun.tags && selectedRun.tags.length > 0 ? (
+                    selectedRun.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded"
+                      >
+                        {tag}
+                      </span>
+                    ))
+                  ) : (
+                    <Text size="sm" c="dimmed">
+                      No tags set
+                    </Text>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="flex gap-2">
+              {isEditing ? (
+                <>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      handleSave().catch((error) => {
+                        console.error(error);
+                      });
+                    }}
+                    loading={updateRunAPI.isLoading}
+                  >
+                    Save
+                  </Button>
+                  <Button size="sm" variant="subtle" onClick={handleCancel}>
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <Button size="sm" variant="light" onClick={() => setIsEditing(true)}>
+                  Edit
+                </Button>
+              )}
+            </div>
+          </div>
+
+          <RunOrdersPanel selectedRun={selectedRun} />
+        </div>
+      )}
     </Drawer>
   );
 };

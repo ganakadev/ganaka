@@ -23,6 +23,8 @@ export interface Run {
   endTime: Date;
   completed: boolean;
   orderCount: number;
+  name?: string | null;
+  tags?: string[];
 }
 
 // Type for runs grouped by date
