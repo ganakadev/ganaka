@@ -109,7 +109,7 @@ test.describe("GET /v1/dashboard/runs", () => {
     const testRun = allRuns.find((run) => run.name === "Test Run");
     expect(testRun).toBeDefined();
     expect(testRun?.name).toBe("Test Run");
-    expect(testRun?.tags).toEqual(["test", "v1"]);
+    expect(testRun?.tags).toEqual(["v1", "test"]);
   });
 
   test("should validate runs are grouped correctly by date (YYYY-MM-DD)", async ({ tracker }) => {

@@ -301,7 +301,7 @@ export const RunsSidebar = ({
                           </div>
                         </div>
 
-                        {(run.tags && run.tags.length > 0) && (
+                        {run.tags && run.tags.length > 0 && (
                           <div className="flex flex-wrap gap-1">
                             {run.tags.slice(0, 3).map((tag) => (
                               <Badge key={tag} size="xs" variant="light" color="blue">

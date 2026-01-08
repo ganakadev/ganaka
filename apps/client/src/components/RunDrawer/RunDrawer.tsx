@@ -12,6 +12,7 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import type { Time } from "lightweight-charts";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { useEffect, useMemo, useState } from "react";
 import { dashboardAPI } from "../../store/api/dashboardApi";
 import type { Order, Run } from "../../types";
@@ -543,10 +544,18 @@ export const RunOrdersDrawer = ({
   onClose: () => void;
   selectedRun: Run | null;
 }) => {
-  // STATE
-  const [name, setName] = useState<string>("");
-  const [tags, setTags] = useState<string[]>([]);
-  const [isEditing, setIsEditing] = useState(false);
+  // FORM
+  const formInstance = useForm<{
+    name: string;
+    tags: string[];
+  }>({
+    defaultValues: {
+      name: selectedRun?.name || "",
+      tags: selectedRun?.tags || [],
+    },
+  });
+  const watchedName = useWatch({ control: formInstance.control, name: "name" });
+  const watchedTags = useWatch({ control: formInstance.control, name: "tags" });
 
   // API
   const [updateRun, updateRunAPI] = dashboardAPI.useUpdateRunMutation();
@@ -558,59 +567,58 @@ export const RunOrdersDrawer = ({
     error: updateRunAPI.error,
   });
 
-  // Update local state when selectedRun changes
+  // Update form when selectedRun changes
   useEffect(() => {
     if (selectedRun) {
-      requestAnimationFrame(() => {
-        setName(selectedRun.name || "");
-        setTags(selectedRun.tags || []);
-        setIsEditing(false);
+      formInstance.reset({
+        name: selectedRun.name || "",
+        tags: selectedRun.tags || [],
       });
     }
-  }, [selectedRun]);
+  }, [selectedRun, formInstance.reset, formInstance]);
 
   // HANDLERS
-  const handleSave = async () => {
+  const onSubmit = formInstance.handleSubmit(async (data) => {
     if (!selectedRun) return;
 
     try {
       const result = await updateRun({
         runId: selectedRun.id,
-        name: name.trim() || null,
-        tags: tags,
+        name: data.name.trim() || null,
+        tags: data.tags,
       }).unwrap();
-      // Update local state with the new data
+      // Update form with the new data
       if (result.data) {
-        setName(result.data.name || "");
-        setTags(result.data.tags || []);
+        formInstance.reset({
+          name: result.data.name || "",
+          tags: result.data.tags || [],
+        });
       }
-      setIsEditing(false);
     } catch {
       // Error is handled by useRTKNotifier
     }
-  };
+  });
 
-  const handleCancel = () => {
+  const handleReset = () => {
     if (selectedRun) {
-      setName(selectedRun.name || "");
-      setTags(selectedRun.tags || []);
+      formInstance.reset({
+        name: selectedRun.name || "",
+        tags: selectedRun.tags || [],
+      });
     }
-    setIsEditing(false);
   };
 
   // VARIABLES
-  const displayName = isEditing ? name : selectedRun?.name || "";
-  const displayTags = isEditing ? tags : selectedRun?.tags || [];
   const drawerTitle = selectedRun ? (
     <div className="flex flex-col gap-1">
-      <h4 className="text-lg font-semibold">{displayName || "Run Orders"}</h4>
+      <h4 className="text-lg font-semibold">{watchedName || "Run Orders"}</h4>
       <span className="text-sm text-gray-500">
         {dayjs(selectedRun.startTime).format("DD-MM-YYYY HH:mm")} -{" "}
         {dayjs(selectedRun.endTime).format("HH:mm")}
       </span>
-      {displayTags.length > 0 && (
+      {watchedTags.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-1">
-          {displayTags.map((tag) => (
+          {watchedTags.map((tag) => (
             <span
               key={tag}
               className="px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded"
@@ -645,73 +653,55 @@ export const RunOrdersDrawer = ({
               <Text size="sm" fw={500} mb="xs">
                 Name
               </Text>
-              {isEditing ? (
-                <TextInput
-                  value={name}
-                  onChange={(e) => setName(e.currentTarget.value)}
-                  placeholder="Enter run name"
-                  size="sm"
-                />
-              ) : (
-                <Text size="sm" c={selectedRun.name ? undefined : "dimmed"}>
-                  {selectedRun.name || "No name set"}
-                </Text>
-              )}
+              <TextInput
+                {...formInstance.register("name")}
+                placeholder="Enter run name"
+                size="sm"
+              />
             </div>
             <div>
               <Text size="sm" fw={500} mb="xs">
                 Tags
               </Text>
-              {isEditing ? (
-                <TagsInput
-                  value={tags}
-                  onChange={setTags}
-                  placeholder="Add tags"
-                  data={availableTags}
-                  size="sm"
-                />
-              ) : (
-                <div className="flex flex-wrap gap-1">
-                  {selectedRun.tags && selectedRun.tags.length > 0 ? (
-                    selectedRun.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded"
-                      >
-                        {tag}
-                      </span>
-                    ))
-                  ) : (
-                    <Text size="sm" c="dimmed">
-                      No tags set
-                    </Text>
-                  )}
-                </div>
-              )}
+              <Controller
+                name="tags"
+                control={formInstance.control}
+                render={({ field }) => (
+                  <TagsInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Add tags"
+                    data={availableTags}
+                    size="sm"
+                  />
+                )}
+              />
             </div>
             <div className="flex gap-2">
-              {isEditing ? (
-                <>
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      handleSave().catch((error) => {
-                        console.error(error);
-                      });
-                    }}
-                    loading={updateRunAPI.isLoading}
-                  >
-                    Save
-                  </Button>
-                  <Button size="sm" variant="subtle" onClick={handleCancel}>
-                    Cancel
-                  </Button>
-                </>
-              ) : (
-                <Button size="sm" variant="light" onClick={() => setIsEditing(true)}>
-                  Edit
-                </Button>
-              )}
+              <Button
+                size="sm"
+                disabled={
+                  updateRunAPI.isLoading ||
+                  formInstance.formState.isSubmitting ||
+                  !formInstance.formState.isDirty
+                }
+                onClick={() => {
+                  onSubmit().catch((error) => {
+                    console.error(error);
+                  });
+                }}
+                loading={updateRunAPI.isLoading}
+              >
+                Save
+              </Button>
+              <Button
+                size="sm"
+                variant="subtle"
+                disabled={!formInstance.formState.isDirty}
+                onClick={handleReset}
+              >
+                Reset
+              </Button>
             </div>
           </div>
 
