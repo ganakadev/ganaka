@@ -1,3 +1,14 @@
+## [@ganaka/sdk v1.2.0](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Features
+
+* **RunDrawer, RunsSidebar, dashboardAPI:** add name and tags functionality to runs ([3904579](https://github.com/ganakadev/ganaka/commit/39045797924612c5b780647da8bbca43c9fbcc2c))
+* **sdk:** Add name and tags to run creation flow ([8ac8cee](https://github.com/ganakadev/ganaka/commit/8ac8ceef39adaed8b59e6f22b145c902645e34c1))
+
 ## [@ganaka/sdk v1.1.0](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
