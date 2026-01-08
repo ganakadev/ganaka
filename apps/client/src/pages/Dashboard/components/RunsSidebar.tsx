@@ -226,6 +226,8 @@ export const RunsSidebar = ({
                           // API returns UTC datetime strings, Date constructor handles them correctly
                           startTime: new Date(run.start_datetime),
                           endTime: new Date(run.end_datetime),
+                          name: run.name,
+                          tags: run.tags,
                         })
                       }
                     >
@@ -245,26 +247,27 @@ export const RunsSidebar = ({
                             </div>
                             <div className="h-full min-w-0 flex-1">
                               <Text size="xs" c="dimmed" truncate className="leading-none!">
-                                {/* Parse UTC datetime strings and convert to local time for display */}
-                                {(() => {
-                                  const startDate = dayjs
-                                    .utc(run.start_datetime)
-                                    .tz("Asia/Kolkata");
-                                  const endDate = dayjs.utc(run.end_datetime).tz("Asia/Kolkata");
-                                  const isSameDay = startDate.isSame(endDate, "day");
+                                {run.name ||
+                                  (() => {
+                                    /* Parse UTC datetime strings and convert to local time for display */
+                                    const startDate = dayjs
+                                      .utc(run.start_datetime)
+                                      .tz("Asia/Kolkata");
+                                    const endDate = dayjs.utc(run.end_datetime).tz("Asia/Kolkata");
+                                    const isSameDay = startDate.isSame(endDate, "day");
 
-                                  if (isSameDay) {
-                                    // Same day: "MMM DD, YYYY HH:mm A - HH:mm A"
-                                    return `${startDate.format(
-                                      "MMM DD, YYYY hh:mm A"
-                                    )} - ${endDate.format("hh:mm A")}`;
-                                  } else {
-                                    // Different days: "MMM DD, YYYY HH:mm A - MMM DD, YYYY HH:mm A"
-                                    return `${startDate.format(
-                                      "MMM DD, YYYY hh:mm A"
-                                    )} - ${endDate.format("MMM DD, YYYY hh:mm A")}`;
-                                  }
-                                })()}
+                                    if (isSameDay) {
+                                      // Same day: "MMM DD, YYYY HH:mm A - HH:mm A"
+                                      return `${startDate.format(
+                                        "MMM DD, YYYY hh:mm A"
+                                      )} - ${endDate.format("hh:mm A")}`;
+                                    } else {
+                                      // Different days: "MMM DD, YYYY HH:mm A - MMM DD, YYYY HH:mm A"
+                                      return `${startDate.format(
+                                        "MMM DD, YYYY hh:mm A"
+                                      )} - ${endDate.format("MMM DD, YYYY hh:mm A")}`;
+                                    }
+                                  })()}
                               </Text>
                             </div>
                           </div>
@@ -284,6 +287,8 @@ export const RunsSidebar = ({
                                     // API returns UTC datetime strings, Date constructor handles them correctly
                                     startTime: new Date(run.start_datetime),
                                     endTime: new Date(run.end_datetime),
+                                    name: run.name,
+                                    tags: run.tags,
                                   },
                                   e
                                 )
@@ -296,6 +301,20 @@ export const RunsSidebar = ({
                           </div>
                         </div>
 
+                        {run.tags && run.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {run.tags.slice(0, 3).map((tag) => (
+                              <Badge key={tag} size="xs" variant="light" color="blue">
+                                {tag}
+                              </Badge>
+                            ))}
+                            {run.tags.length > 3 && (
+                              <Badge size="xs" variant="light" color="gray">
+                                +{run.tags.length - 3} more
+                              </Badge>
+                            )}
+                          </div>
+                        )}
                         <div className="flex items-center justify-between gap-2">
                           <Text size="xs" c="dimmed">
                             {run.orderCount} {run.orderCount === 1 ? "order" : "orders"}

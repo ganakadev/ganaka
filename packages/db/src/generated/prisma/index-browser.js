@@ -161,6 +161,8 @@ exports.Prisma.RunScalarFieldEnum = {
   startTime: 'startTime',
   endTime: 'endTime',
   completed: 'completed',
+  name: 'name',
+  tags: 'tags',
   developerId: 'developerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

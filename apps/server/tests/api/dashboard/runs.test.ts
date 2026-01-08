@@ -88,6 +88,30 @@ test.describe("GET /v1/dashboard/runs", () => {
     expect(Object.keys(validatedData.data).length).toBeGreaterThan(0);
   });
 
+  test("should include name and tags in run response", async ({ tracker }) => {
+    await createRun(
+      developerId,
+      "2025-12-26T09:15:00",
+      "2025-12-26T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      "Test Run",
+      ["v1", "test"]
+    );
+
+    const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
+
+    expect(response.status).toBe(200);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
+      response.data
+    );
+    const allRuns = Object.values(validatedData.data).flat();
+    const testRun = allRuns.find((run) => run.name === "Test Run");
+    expect(testRun).toBeDefined();
+    expect(testRun?.name).toBe("Test Run");
+    expect(testRun?.tags).toEqual(["v1", "test"]);
+  });
+
   test("should validate runs are grouped correctly by date (YYYY-MM-DD)", async ({ tracker }) => {
     const startTime = "2025-12-26T09:15:00";
     const endTime = "2025-12-26T15:30:00";
@@ -295,6 +319,128 @@ test.describe("POST /v1/dashboard/runs", () => {
     expect(validatedData.data.start_datetime).toBe("2025-12-26T03:45:00");
     expect(validatedData.data.end_datetime).toBe("2025-12-26T10:00:00");
   });
+
+  test("should create run with name", async () => {
+    const testData = {
+      ...createRunTestData(),
+      name: "Test Run Name",
+    };
+    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+
+    expect(response.status).toBe(201);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+      response.data
+    );
+    expect(validatedData.data.name).toBe("Test Run Name");
+  });
+
+  test("should create run with single tag", async () => {
+    const testData = {
+      ...createRunTestData(),
+      tags: ["v1"],
+    };
+    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+
+    expect(response.status).toBe(201);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+      response.data
+    );
+    expect(validatedData.data.tags).toEqual(["v1"]);
+  });
+
+  test("should create run with multiple tags", async () => {
+    const testData = {
+      ...createRunTestData(),
+      tags: ["v1", "momentum", "experiment"],
+    };
+    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+
+    expect(response.status).toBe(201);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+      response.data
+    );
+    expect(validatedData.data.tags).toEqual(["experiment", "momentum", "v1"]); // Should be sorted
+  });
+
+  test("should create run with empty tags array", async () => {
+    const testData = {
+      ...createRunTestData(),
+      tags: [],
+    };
+    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+
+    expect(response.status).toBe(201);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+      response.data
+    );
+    expect(validatedData.data.tags).toEqual([]);
+  });
+
+  test("should remove duplicate tags", async () => {
+    const testData = {
+      ...createRunTestData(),
+      tags: ["v1", "v1", "momentum"],
+    };
+    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+
+    expect(response.status).toBe(201);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+      response.data
+    );
+    expect(validatedData.data.tags).toEqual(["momentum", "v1"]);
+  });
+
+  test("should return 400 when tag exceeds max length", async () => {
+    const testData = {
+      ...createRunTestData(),
+      tags: ["a".repeat(51)], // 51 characters
+    };
+    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+      validateStatus: () => true,
+    });
+
+    expect(response.status).toBe(400);
+  });
+
+  test("should return 400 when tag contains invalid characters", async () => {
+    const testData = {
+      ...createRunTestData(),
+      tags: ["tag with spaces"],
+    };
+    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+      validateStatus: () => true,
+    });
+
+    expect(response.status).toBe(400);
+  });
+
+  test("should return 400 when more than 10 tags provided", async () => {
+    const testData = {
+      ...createRunTestData(),
+      tags: Array.from({ length: 11 }, (_, i) => `tag${i}`),
+    };
+    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+      validateStatus: () => true,
+    });
+
+    expect(response.status).toBe(400);
+  });
+
+  test("should create run with name and tags together", async () => {
+    const testData = {
+      ...createRunTestData(),
+      name: "Momentum Strategy v1",
+      tags: ["v1", "momentum"],
+    };
+    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+
+    expect(response.status).toBe(201);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+      response.data
+    );
+    expect(validatedData.data.name).toBe("Momentum Strategy v1");
+    expect(validatedData.data.tags).toEqual(["momentum", "v1"]);
+  });
 });
 
 test.describe("PATCH /v1/dashboard/runs/:runId", () => {
@@ -448,6 +594,113 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
 
     expect(validatedData.data.start_datetime).toBe("2025-12-26T03:45:00");
     expect(validatedData.data.end_datetime).toBe("2025-12-26T10:00:00");
+  });
+
+  test("should update run name", async ({ tracker }) => {
+    const run = await createRun(
+      developerId,
+      "2025-12-26T09:15:00",
+      "2025-12-26T15:30:00",
+      tracker,
+      "Asia/Kolkata"
+    );
+
+    const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
+      name: "Updated Run Name",
+    });
+
+    expect(response.status).toBe(200);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
+      response.data
+    );
+    expect(validatedData.data.name).toBe("Updated Run Name");
+    const updatedRun = await getRunById(run.id);
+    expect(updatedRun?.name).toBe("Updated Run Name");
+  });
+
+  test("should update run tags", async ({ tracker }) => {
+    const run = await createRun(
+      developerId,
+      "2025-12-26T09:15:00",
+      "2025-12-26T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      null,
+      ["old-tag"]
+    );
+
+    const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
+      tags: ["new-tag1", "new-tag2"],
+    });
+
+    expect(response.status).toBe(200);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
+      response.data
+    );
+    expect(validatedData.data.tags).toEqual(["new-tag1", "new-tag2"]);
+    const updatedRun = await getRunById(run.id);
+    expect(updatedRun?.tags).toEqual(["new-tag1", "new-tag2"]);
+  });
+
+  test("should update run name and tags together", async ({ tracker }) => {
+    const run = await createRun(
+      developerId,
+      "2025-12-26T09:15:00",
+      "2025-12-26T15:30:00",
+      tracker,
+      "Asia/Kolkata"
+    );
+
+    const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
+      name: "Updated Name",
+      tags: ["tag1", "tag2"],
+    });
+
+    expect(response.status).toBe(200);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
+      response.data
+    );
+    expect(validatedData.data.name).toBe("Updated Name");
+    expect(validatedData.data.tags).toEqual(["tag1", "tag2"]);
+  });
+
+  test("should clear run name when set to null", async ({ tracker }) => {
+    const run = await createRun(
+      developerId,
+      "2025-12-26T09:15:00",
+      "2025-12-26T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      "Original Name"
+    );
+
+    const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
+      name: null,
+    });
+
+    expect(response.status).toBe(200);
+    const updatedRun = await getRunById(run.id);
+    expect(updatedRun?.name).toBeNull();
+  });
+
+  test("should clear run tags when set to empty array", async ({ tracker }) => {
+    const run = await createRun(
+      developerId,
+      "2025-12-26T09:15:00",
+      "2025-12-26T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      null,
+      ["tag1", "tag2"]
+    );
+
+    const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
+      tags: [],
+    });
+
+    expect(response.status).toBe(200);
+    const updatedRun = await getRunById(run.id);
+    expect(updatedRun?.tags).toEqual([]);
   });
 });
 
@@ -1186,5 +1439,154 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     expect(validatedData.data.entryPrice).toBe(orderData.entryPrice);
     expect(validatedData.data.stopLossPrice).toBe(orderData.stopLossPrice);
     expect(validatedData.data.takeProfitPrice).toBe(orderData.takeProfitPrice);
+  });
+});
+
+test.describe("GET /v1/dashboard/runs/tags", () => {
+  test("should return 401 when authorization header is missing", async () => {
+    const response = await unauthenticatedGet("/v1/dashboard/runs/tags");
+
+    expect(response.status).toBe(401);
+  });
+
+  test("should return 401 when invalid token is provided", async () => {
+    const response = await authenticatedGet("/v1/dashboard/runs/tags", "invalid-token-12345", {
+      validateStatus: () => true,
+    });
+
+    expect(response.status).toBe(401);
+  });
+
+  test("should return 200 with empty array when no tags exist", async () => {
+    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+
+    expect(response.status).toBe(200);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunTags.response.parse(
+      response.data
+    );
+    expect(Array.isArray(validatedData.data)).toBe(true);
+    expect(validatedData.data.length).toBe(0);
+  });
+
+  test("should return unique tags from all runs", async ({ tracker }) => {
+    await createRun(
+      developerId,
+      "2025-12-26T09:15:00",
+      "2025-12-26T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      null,
+      ["v1", "momentum"]
+    );
+    await createRun(
+      developerId,
+      "2025-12-27T09:15:00",
+      "2025-12-27T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      null,
+      ["v1", "experiment"]
+    );
+    await createRun(
+      developerId,
+      "2025-12-28T09:15:00",
+      "2025-12-28T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      null,
+      ["v2"]
+    );
+
+    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+
+    expect(response.status).toBe(200);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunTags.response.parse(
+      response.data
+    );
+    expect(validatedData.data).toContain("v1");
+    expect(validatedData.data).toContain("momentum");
+    expect(validatedData.data).toContain("experiment");
+    expect(validatedData.data).toContain("v2");
+    // Should not have duplicates
+    expect(new Set(validatedData.data).size).toBe(validatedData.data.length);
+  });
+
+  test("should return sorted tags", async ({ tracker }) => {
+    await createRun(
+      developerId,
+      "2025-12-26T09:15:00",
+      "2025-12-26T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      null,
+      ["zebra", "apple", "banana"]
+    );
+
+    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+
+    expect(response.status).toBe(200);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunTags.response.parse(
+      response.data
+    );
+    expect(validatedData.data).toEqual(["apple", "banana", "zebra"]);
+  });
+
+  test("should only return tags for authenticated developer", async ({ tracker }) => {
+    await createRun(
+      developerId,
+      "2025-12-26T09:15:00",
+      "2025-12-26T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      null,
+      ["developer1-tag"]
+    );
+    await createRun(
+      otherDeveloperId,
+      "2025-12-26T09:15:00",
+      "2025-12-26T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      null,
+      ["developer2-tag"]
+    );
+
+    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+
+    expect(response.status).toBe(200);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunTags.response.parse(
+      response.data
+    );
+    expect(validatedData.data).toContain("developer1-tag");
+    expect(validatedData.data).not.toContain("developer2-tag");
+  });
+
+  test("should handle runs with no tags", async ({ tracker }) => {
+    await createRun(
+      developerId,
+      "2025-12-26T09:15:00",
+      "2025-12-26T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      null,
+      []
+    );
+    await createRun(
+      developerId,
+      "2025-12-27T09:15:00",
+      "2025-12-27T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      null,
+      ["tag1"]
+    );
+
+    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+
+    expect(response.status).toBe(200);
+    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunTags.response.parse(
+      response.data
+    );
+    expect(validatedData.data).toEqual(["tag1"]);
   });
 });

@@ -331,7 +331,9 @@ export async function createRun(
   startTime: string,
   endTime: string,
   tracker: TestDataTracker,
-  timezone?: string
+  timezone?: string,
+  name?: string | null,
+  tags?: string[]
 ) {
   const tz = timezone || "Asia/Kolkata";
   const start = parseDateTimeInTimezone(startTime, tz);
@@ -343,6 +345,8 @@ export async function createRun(
       endTime: end,
       developerId: developerId,
       completed: false,
+      name: name !== undefined ? name : null,
+      tags: tags || [],
     },
   });
 

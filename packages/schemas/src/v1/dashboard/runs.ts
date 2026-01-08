@@ -9,6 +9,8 @@ const runSchema = z.object({
   end_datetime: z.string(),
   completed: z.boolean(),
   orderCount: z.number(),
+  name: z.string().nullable().optional(),
+  tags: z.array(z.string()).optional(),
 });
 
 const groupedRunsSchema = z.record(
@@ -63,6 +65,8 @@ const createRunBodySchema = z.object({
   start_datetime: datetimeFormatSchema,
   end_datetime: datetimeFormatSchema,
   timezone: timezoneSchema.optional(),
+  name: z.string().optional(),
+  tags: z.array(z.string().min(1).max(50)).optional(),
 });
 
 const createRunResponseSchema = z.object({
@@ -70,6 +74,8 @@ const createRunResponseSchema = z.object({
   start_datetime: datetimeFormatSchema,
   end_datetime: datetimeFormatSchema,
   completed: z.boolean(),
+  name: z.string().nullable().optional(),
+  tags: z.array(z.string()).optional(),
 });
 
 export const createRun = {
@@ -83,6 +89,8 @@ export const createRun = {
 
 const updateRunBodySchema = z.object({
   completed: z.boolean().optional(),
+  name: z.string().nullable().optional(),
+  tags: z.array(z.string().min(1).max(50)).optional(),
 });
 
 const updateRunResponseSchema = z.object({
@@ -90,6 +98,8 @@ const updateRunResponseSchema = z.object({
   start_datetime: z.string(),
   end_datetime: z.string(),
   completed: z.boolean(),
+  name: z.string().nullable().optional(),
+  tags: z.array(z.string()).optional(),
 });
 
 export const updateRun = {
@@ -143,5 +153,13 @@ export const createOrder = {
   body: createOrderBodySchema,
   response: apiResponseSchema.extend({
     data: createOrderResponseSchema,
+  }),
+};
+
+// ==================== GET /runs/tags ====================
+
+export const getRunTags = {
+  response: apiResponseSchema.extend({
+    data: z.array(z.string()),
   }),
 };

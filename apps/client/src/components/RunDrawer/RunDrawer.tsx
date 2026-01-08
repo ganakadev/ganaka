@@ -1,9 +1,19 @@
-import { Accordion, Drawer, NumberInput, Table, Text } from "@mantine/core";
+import {
+  Accordion,
+  Button,
+  Drawer,
+  NumberInput,
+  Table,
+  TagsInput,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import type { Time } from "lightweight-charts";
-import { useMemo, useState } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { useEffect, useMemo, useState } from "react";
 import { dashboardAPI } from "../../store/api/dashboardApi";
 import type { Order, Run } from "../../types";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
@@ -534,18 +544,96 @@ export const RunOrdersDrawer = ({
   onClose: () => void;
   selectedRun: Run | null;
 }) => {
+  // FORM
+  const formInstance = useForm<{
+    name: string;
+    tags: string[];
+  }>({
+    defaultValues: {
+      name: selectedRun?.name || "",
+      tags: selectedRun?.tags || [],
+    },
+  });
+  const watchedName = useWatch({ control: formInstance.control, name: "name" });
+  const watchedTags = useWatch({ control: formInstance.control, name: "tags" });
+
+  // API
+  const [updateRun, updateRunAPI] = dashboardAPI.useUpdateRunMutation();
+  const getRunTagsAPI = dashboardAPI.useGetRunTagsQuery(undefined, {
+    skip: !opened,
+  });
+  useRTKNotifier({
+    requestName: "Update Run",
+    error: updateRunAPI.error,
+  });
+
+  // Update form when selectedRun changes
+  useEffect(() => {
+    if (selectedRun) {
+      formInstance.reset({
+        name: selectedRun.name || "",
+        tags: selectedRun.tags || [],
+      });
+    }
+  }, [selectedRun, formInstance.reset, formInstance]);
+
+  // HANDLERS
+  const onSubmit = formInstance.handleSubmit(async (data) => {
+    if (!selectedRun) return;
+
+    try {
+      const result = await updateRun({
+        runId: selectedRun.id,
+        name: data.name.trim() || null,
+        tags: data.tags,
+      }).unwrap();
+      // Update form with the new data
+      if (result.data) {
+        formInstance.reset({
+          name: result.data.name || "",
+          tags: result.data.tags || [],
+        });
+      }
+    } catch {
+      // Error is handled by useRTKNotifier
+    }
+  });
+
+  const handleReset = () => {
+    if (selectedRun) {
+      formInstance.reset({
+        name: selectedRun.name || "",
+        tags: selectedRun.tags || [],
+      });
+    }
+  };
+
   // VARIABLES
   const drawerTitle = selectedRun ? (
     <div className="flex flex-col gap-1">
-      <h4 className="text-lg font-semibold">Run Orders</h4>
+      <h4 className="text-lg font-semibold">{watchedName || "Run Orders"}</h4>
       <span className="text-sm text-gray-500">
         {dayjs(selectedRun.startTime).format("DD-MM-YYYY HH:mm")} -{" "}
         {dayjs(selectedRun.endTime).format("HH:mm")}
       </span>
+      {watchedTags.length > 0 && (
+        <div className="flex flex-wrap gap-1 mt-1">
+          {watchedTags.map((tag) => (
+            <span
+              key={tag}
+              className="px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   ) : (
     "Run Orders"
   );
+
+  const availableTags = getRunTagsAPI.data?.data || [];
 
   // DRAW
   return (
@@ -557,7 +645,69 @@ export const RunOrdersDrawer = ({
       title={drawerTitle}
       padding="lg"
     >
-      {selectedRun && <RunOrdersPanel selectedRun={selectedRun} />}
+      {selectedRun && (
+        <div className="space-y-6">
+          {/* Name and Tags Editing Section */}
+          <div className="border-b pb-4 space-y-4">
+            <div>
+              <Text size="sm" fw={500} mb="xs">
+                Name
+              </Text>
+              <TextInput
+                {...formInstance.register("name")}
+                placeholder="Enter run name"
+                size="sm"
+              />
+            </div>
+            <div>
+              <Text size="sm" fw={500} mb="xs">
+                Tags
+              </Text>
+              <Controller
+                name="tags"
+                control={formInstance.control}
+                render={({ field }) => (
+                  <TagsInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Add tags"
+                    data={availableTags}
+                    size="sm"
+                  />
+                )}
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                disabled={
+                  updateRunAPI.isLoading ||
+                  formInstance.formState.isSubmitting ||
+                  !formInstance.formState.isDirty
+                }
+                onClick={() => {
+                  onSubmit().catch((error) => {
+                    console.error(error);
+                  });
+                }}
+                loading={updateRunAPI.isLoading}
+              >
+                Save
+              </Button>
+              <Button
+                size="sm"
+                variant="subtle"
+                disabled={!formInstance.formState.isDirty}
+                onClick={handleReset}
+              >
+                Reset
+              </Button>
+            </div>
+          </div>
+
+          <RunOrdersPanel selectedRun={selectedRun} />
+        </div>
+      )}
     </Drawer>
   );
 };

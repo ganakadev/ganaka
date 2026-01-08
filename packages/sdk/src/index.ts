@@ -46,6 +46,8 @@ export async function ganaka<T>({
   endTime,
   intervalMinutes = 1,
   deleteRunAfterCompletion = false,
+  name,
+  tags,
 }: {
   fn: (context: RunContext) => Promise<T>;
   /** Start time in IST string format (YYYY-MM-DDTHH:mm:ss) */
@@ -59,6 +61,14 @@ export async function ganaka<T>({
    * @default false
    */
   deleteRunAfterCompletion?: boolean;
+  /**
+   * Optional name for the run
+   */
+  name?: string;
+  /**
+   * Optional array of tags to classify and group the run
+   */
+  tags?: string[];
 }) {
   // Get developer token and API domain
   const developerToken = process.env.DEVELOPER_KEY;
@@ -90,6 +100,8 @@ export async function ganaka<T>({
     start_datetime: startTime,
     end_datetime: endTime,
     timezone: "Asia/Kolkata",
+    ...(name !== undefined && { name }),
+    ...(tags !== undefined && { tags }),
   };
   try {
     const createRunResponse = await apiClient.post<

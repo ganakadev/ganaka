@@ -5616,6 +5616,7 @@ export namespace Prisma {
     startTime: Date | null
     endTime: Date | null
     completed: boolean | null
+    name: string | null
     developerId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -5626,6 +5627,7 @@ export namespace Prisma {
     startTime: Date | null
     endTime: Date | null
     completed: boolean | null
+    name: string | null
     developerId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -5636,6 +5638,8 @@ export namespace Prisma {
     startTime: number
     endTime: number
     completed: number
+    name: number
+    tags: number
     developerId: number
     createdAt: number
     updatedAt: number
@@ -5648,6 +5652,7 @@ export namespace Prisma {
     startTime?: true
     endTime?: true
     completed?: true
+    name?: true
     developerId?: true
     createdAt?: true
     updatedAt?: true
@@ -5658,6 +5663,7 @@ export namespace Prisma {
     startTime?: true
     endTime?: true
     completed?: true
+    name?: true
     developerId?: true
     createdAt?: true
     updatedAt?: true
@@ -5668,6 +5674,8 @@ export namespace Prisma {
     startTime?: true
     endTime?: true
     completed?: true
+    name?: true
+    tags?: true
     developerId?: true
     createdAt?: true
     updatedAt?: true
@@ -5751,6 +5759,8 @@ export namespace Prisma {
     startTime: Date
     endTime: Date
     completed: boolean
+    name: string | null
+    tags: string[]
     developerId: string | null
     createdAt: Date
     updatedAt: Date
@@ -5778,6 +5788,8 @@ export namespace Prisma {
     startTime?: boolean
     endTime?: boolean
     completed?: boolean
+    name?: boolean
+    tags?: boolean
     developerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5791,6 +5803,8 @@ export namespace Prisma {
     startTime?: boolean
     endTime?: boolean
     completed?: boolean
+    name?: boolean
+    tags?: boolean
     developerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5802,6 +5816,8 @@ export namespace Prisma {
     startTime?: boolean
     endTime?: boolean
     completed?: boolean
+    name?: boolean
+    tags?: boolean
     developerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5813,12 +5829,14 @@ export namespace Prisma {
     startTime?: boolean
     endTime?: boolean
     completed?: boolean
+    name?: boolean
+    tags?: boolean
     developerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type RunOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "startTime" | "endTime" | "completed" | "developerId" | "createdAt" | "updatedAt", ExtArgs["result"]["run"]>
+  export type RunOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "startTime" | "endTime" | "completed" | "name" | "tags" | "developerId" | "createdAt" | "updatedAt", ExtArgs["result"]["run"]>
   export type RunInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orders?: boolean | Run$ordersArgs<ExtArgs>
     developer?: boolean | Run$developerArgs<ExtArgs>
@@ -5842,6 +5860,8 @@ export namespace Prisma {
       startTime: Date
       endTime: Date
       completed: boolean
+      name: string | null
+      tags: string[]
       developerId: string | null
       createdAt: Date
       updatedAt: Date
@@ -6274,6 +6294,8 @@ export namespace Prisma {
     readonly startTime: FieldRef<"Run", 'DateTime'>
     readonly endTime: FieldRef<"Run", 'DateTime'>
     readonly completed: FieldRef<"Run", 'Boolean'>
+    readonly name: FieldRef<"Run", 'String'>
+    readonly tags: FieldRef<"Run", 'String[]'>
     readonly developerId: FieldRef<"Run", 'String'>
     readonly createdAt: FieldRef<"Run", 'DateTime'>
     readonly updatedAt: FieldRef<"Run", 'DateTime'>
@@ -8969,6 +8991,8 @@ export namespace Prisma {
     startTime: 'startTime',
     endTime: 'endTime',
     completed: 'completed',
+    name: 'name',
+    tags: 'tags',
     developerId: 'developerId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -9388,6 +9412,8 @@ export namespace Prisma {
     startTime?: DateTimeFilter<"Run"> | Date | string
     endTime?: DateTimeFilter<"Run"> | Date | string
     completed?: BoolFilter<"Run"> | boolean
+    name?: StringNullableFilter<"Run"> | string | null
+    tags?: StringNullableListFilter<"Run">
     developerId?: StringNullableFilter<"Run"> | string | null
     createdAt?: DateTimeFilter<"Run"> | Date | string
     updatedAt?: DateTimeFilter<"Run"> | Date | string
@@ -9400,6 +9426,8 @@ export namespace Prisma {
     startTime?: SortOrder
     endTime?: SortOrder
     completed?: SortOrder
+    name?: SortOrderInput | SortOrder
+    tags?: SortOrder
     developerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -9415,6 +9443,8 @@ export namespace Prisma {
     startTime?: DateTimeFilter<"Run"> | Date | string
     endTime?: DateTimeFilter<"Run"> | Date | string
     completed?: BoolFilter<"Run"> | boolean
+    name?: StringNullableFilter<"Run"> | string | null
+    tags?: StringNullableListFilter<"Run">
     developerId?: StringNullableFilter<"Run"> | string | null
     createdAt?: DateTimeFilter<"Run"> | Date | string
     updatedAt?: DateTimeFilter<"Run"> | Date | string
@@ -9427,6 +9457,8 @@ export namespace Prisma {
     startTime?: SortOrder
     endTime?: SortOrder
     completed?: SortOrder
+    name?: SortOrderInput | SortOrder
+    tags?: SortOrder
     developerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -9443,6 +9475,8 @@ export namespace Prisma {
     startTime?: DateTimeWithAggregatesFilter<"Run"> | Date | string
     endTime?: DateTimeWithAggregatesFilter<"Run"> | Date | string
     completed?: BoolWithAggregatesFilter<"Run"> | boolean
+    name?: StringNullableWithAggregatesFilter<"Run"> | string | null
+    tags?: StringNullableListFilter<"Run">
     developerId?: StringNullableWithAggregatesFilter<"Run"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Run"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Run"> | Date | string
@@ -9841,6 +9875,8 @@ export namespace Prisma {
     startTime: Date | string
     endTime: Date | string
     completed?: boolean
+    name?: string | null
+    tags?: RunCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutRunInput
@@ -9852,6 +9888,8 @@ export namespace Prisma {
     startTime: Date | string
     endTime: Date | string
     completed?: boolean
+    name?: string | null
+    tags?: RunCreatetagsInput | string[]
     developerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9863,6 +9901,8 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: RunUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutRunNestedInput
@@ -9874,6 +9914,8 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: RunUpdatetagsInput | string[]
     developerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9885,6 +9927,8 @@ export namespace Prisma {
     startTime: Date | string
     endTime: Date | string
     completed?: boolean
+    name?: string | null
+    tags?: RunCreatetagsInput | string[]
     developerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9895,6 +9939,8 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: RunUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9904,6 +9950,8 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: RunUpdatetagsInput | string[]
     developerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10350,6 +10398,14 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
   export type OrderListRelationFilter = {
     every?: OrderWhereInput
     some?: OrderWhereInput
@@ -10375,6 +10431,8 @@ export namespace Prisma {
     startTime?: SortOrder
     endTime?: SortOrder
     completed?: SortOrder
+    name?: SortOrder
+    tags?: SortOrder
     developerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10385,6 +10443,7 @@ export namespace Prisma {
     startTime?: SortOrder
     endTime?: SortOrder
     completed?: SortOrder
+    name?: SortOrder
     developerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10395,6 +10454,7 @@ export namespace Prisma {
     startTime?: SortOrder
     endTime?: SortOrder
     completed?: SortOrder
+    name?: SortOrder
     developerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10618,6 +10678,10 @@ export namespace Prisma {
     deleteMany?: RunScalarWhereInput | RunScalarWhereInput[]
   }
 
+  export type RunCreatetagsInput = {
+    set: string[]
+  }
+
   export type OrderCreateNestedManyWithoutRunInput = {
     create?: XOR<OrderCreateWithoutRunInput, OrderUncheckedCreateWithoutRunInput> | OrderCreateWithoutRunInput[] | OrderUncheckedCreateWithoutRunInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutRunInput | OrderCreateOrConnectWithoutRunInput[]
@@ -10642,6 +10706,15 @@ export namespace Prisma {
     set?: boolean
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type RunUpdatetagsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
   export type OrderUpdateManyWithoutRunNestedInput = {
     create?: XOR<OrderCreateWithoutRunInput, OrderUncheckedCreateWithoutRunInput> | OrderCreateWithoutRunInput[] | OrderUncheckedCreateWithoutRunInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutRunInput | OrderCreateOrConnectWithoutRunInput[]
@@ -10664,10 +10737,6 @@ export namespace Prisma {
     delete?: DeveloperWhereInput | boolean
     connect?: DeveloperWhereUniqueInput
     update?: XOR<XOR<DeveloperUpdateToOneWithWhereWithoutRunsInput, DeveloperUpdateWithoutRunsInput>, DeveloperUncheckedUpdateWithoutRunsInput>
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type OrderUncheckedUpdateManyWithoutRunNestedInput = {
@@ -10915,6 +10984,8 @@ export namespace Prisma {
     startTime: Date | string
     endTime: Date | string
     completed?: boolean
+    name?: string | null
+    tags?: RunCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutRunInput
@@ -10925,6 +10996,8 @@ export namespace Prisma {
     startTime: Date | string
     endTime: Date | string
     completed?: boolean
+    name?: string | null
+    tags?: RunCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutRunInput
@@ -10964,6 +11037,8 @@ export namespace Prisma {
     startTime?: DateTimeFilter<"Run"> | Date | string
     endTime?: DateTimeFilter<"Run"> | Date | string
     completed?: BoolFilter<"Run"> | boolean
+    name?: StringNullableFilter<"Run"> | string | null
+    tags?: StringNullableListFilter<"Run">
     developerId?: StringNullableFilter<"Run"> | string | null
     createdAt?: DateTimeFilter<"Run"> | Date | string
     updatedAt?: DateTimeFilter<"Run"> | Date | string
@@ -11085,6 +11160,8 @@ export namespace Prisma {
     startTime: Date | string
     endTime: Date | string
     completed?: boolean
+    name?: string | null
+    tags?: RunCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     developer?: DeveloperCreateNestedOneWithoutRunsInput
@@ -11095,6 +11172,8 @@ export namespace Prisma {
     startTime: Date | string
     endTime: Date | string
     completed?: boolean
+    name?: string | null
+    tags?: RunCreatetagsInput | string[]
     developerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11121,6 +11200,8 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: RunUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     developer?: DeveloperUpdateOneWithoutRunsNestedInput
@@ -11131,6 +11212,8 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: RunUpdatetagsInput | string[]
     developerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11141,6 +11224,8 @@ export namespace Prisma {
     startTime: Date | string
     endTime: Date | string
     completed?: boolean
+    name?: string | null
+    tags?: RunCreatetagsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -11150,6 +11235,8 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: RunUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutRunNestedInput
@@ -11160,6 +11247,8 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: RunUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutRunNestedInput
@@ -11170,6 +11259,8 @@ export namespace Prisma {
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: RunUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

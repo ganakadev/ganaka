@@ -307,6 +307,8 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
           end_datetime: string;
           completed: boolean;
           orderCount: number;
+          name: string | null;
+          tags: string[];
         }>
       > = {};
 
@@ -321,6 +323,8 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
           end_datetime: formatDateTime(run.endTime),
           completed: run.completed,
           orderCount: run._count.orders,
+          name: run.name,
+          tags: run.tags,
         });
       }
 
@@ -338,6 +342,8 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
           end_datetime: string;
           completed: boolean;
           orderCount: number;
+          name: string | null;
+          tags: string[];
         }>
       > = {};
       for (const date of sortedDates) {
@@ -355,6 +361,50 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
       fastify.log.error("Error fetching runs: %s", JSON.stringify(error));
       return reply.internalServerError(
         "Failed to fetch runs. Please check server logs for more details."
+      );
+    }
+  });
+
+  // ==================== GET /runs/tags ====================
+
+  fastify.get("/tags", async (request, reply) => {
+    try {
+      if (!request.developer) {
+        return reply.unauthorized("Developer not found or invalid token");
+      }
+
+      // Fetch all runs for the authenticated developer
+      const runs = await prisma.run.findMany({
+        where: {
+          developerId: request.developer.id,
+        },
+        select: {
+          tags: true,
+        },
+      });
+
+      // Extract all tags from all runs and flatten
+      const allTags: string[] = [];
+      for (const run of runs) {
+        if (run.tags && run.tags.length > 0) {
+          allTags.push(...run.tags);
+        }
+      }
+
+      // Remove duplicates and sort
+      const uniqueTags = Array.from(new Set(allTags)).sort();
+
+      return sendResponse<
+        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunTags.response>
+      >(reply, {
+        statusCode: 200,
+        message: "Tags fetched successfully",
+        data: uniqueTags,
+      });
+    } catch (error) {
+      fastify.log.error("Error fetching tags: %s", JSON.stringify(error));
+      return reply.internalServerError(
+        "Failed to fetch tags. Please check server logs for more details."
       );
     }
   });
@@ -387,11 +437,41 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         return reply.unauthorized("Developer not found or invalid token");
       }
 
+      // Validate and process tags
+      let processedTags: string[] = [];
+      if (validationResult.tags && validationResult.tags.length > 0) {
+        // Remove duplicates and validate each tag
+        const tagSet = new Set<string>();
+        for (const tag of validationResult.tags) {
+          const trimmedTag = tag.trim();
+          if (trimmedTag.length === 0) {
+            continue; // Skip empty tags
+          }
+          if (trimmedTag.length > 50) {
+            return reply.badRequest(`Tag "${trimmedTag}" exceeds maximum length of 50 characters`);
+          }
+          // Validate allowed characters: alphanumeric, hyphens, underscores
+          if (!/^[a-zA-Z0-9_-]+$/.test(trimmedTag)) {
+            return reply.badRequest(
+              `Tag "${trimmedTag}" contains invalid characters. Only alphanumeric characters, hyphens, and underscores are allowed.`
+            );
+          }
+          tagSet.add(trimmedTag);
+        }
+        processedTags = Array.from(tagSet).sort();
+        // Limit total number of tags per run
+        if (processedTags.length > 10) {
+          return reply.badRequest("Maximum of 10 tags allowed per run");
+        }
+      }
+
       // Create a new run
       const run = await prisma.run.create({
         data: {
           startTime: startTimeUTC,
           endTime: endTimeUTC,
+          name: validationResult.name || null,
+          tags: processedTags,
           developer: {
             connect: {
               id: request.developer.id,
@@ -410,6 +490,8 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
           start_datetime: formatDateTime(run.startTime),
           end_datetime: formatDateTime(run.endTime),
           completed: run.completed,
+          name: run.name,
+          tags: run.tags,
         },
       });
     } catch (error) {
@@ -456,12 +538,58 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         return reply.notFound("Run not found or access denied");
       }
 
+      // Validate and process tags if provided
+      let processedTags: string[] | undefined = undefined;
+      if (bodyValidationResult.tags !== undefined) {
+        processedTags = [];
+        if (bodyValidationResult.tags.length > 0) {
+          // Remove duplicates and validate each tag
+          const tagSet = new Set<string>();
+          for (const tag of bodyValidationResult.tags) {
+            const trimmedTag = tag.trim();
+            if (trimmedTag.length === 0) {
+              continue; // Skip empty tags
+            }
+            if (trimmedTag.length > 50) {
+              return reply.badRequest(
+                `Tag "${trimmedTag}" exceeds maximum length of 50 characters`
+              );
+            }
+            // Validate allowed characters: alphanumeric, hyphens, underscores
+            if (!/^[a-zA-Z0-9_-]+$/.test(trimmedTag)) {
+              return reply.badRequest(
+                `Tag "${trimmedTag}" contains invalid characters. Only alphanumeric characters, hyphens, and underscores are allowed.`
+              );
+            }
+            tagSet.add(trimmedTag);
+          }
+          processedTags = Array.from(tagSet).sort();
+          // Limit total number of tags per run
+          if (processedTags.length > 10) {
+            return reply.badRequest("Maximum of 10 tags allowed per run");
+          }
+        }
+      }
+
       // Update the run
+      const updateData: {
+        completed?: boolean;
+        name?: string | null;
+        tags?: string[];
+      } = {};
+      if (bodyValidationResult.completed !== undefined) {
+        updateData.completed = bodyValidationResult.completed;
+      }
+      if (bodyValidationResult.name !== undefined) {
+        updateData.name = bodyValidationResult.name || null;
+      }
+      if (processedTags !== undefined) {
+        updateData.tags = processedTags;
+      }
+
       const updatedRun = await prisma.run.update({
         where: { id: paramsValidationResult.runId },
-        data: {
-          ...(bodyValidationResult.completed !== undefined && { completed: bodyValidationResult.completed }),
-        },
+        data: updateData,
       });
 
       return sendResponse<
@@ -474,6 +602,8 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
           start_datetime: formatDateTime(updatedRun.startTime),
           end_datetime: formatDateTime(updatedRun.endTime),
           completed: updatedRun.completed,
+          name: updatedRun.name,
+          tags: updatedRun.tags,
         },
       });
     } catch (error) {
