@@ -320,12 +320,13 @@ export function createHistoricalCandlesQuery(
  */
 export function createQuoteTimelineQuery(
   symbol?: string,
-  date?: string,
+  end_datetime?: string,
   timezone?: string
 ): z.infer<typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.query> {
   return {
     symbol: symbol || TEST_SYMBOL,
-    date: date || TEST_DATE,
+    end_datetime: end_datetime || `${TEST_DATE}T15:30:00`,
+    ...(timezone && { timezone }),
   };
 }
 

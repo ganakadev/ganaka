@@ -783,7 +783,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
   test("should return 400 when symbol is missing", async () => {
     const query = createQuoteTimelineQuery();
     const queryWithoutSymbol = {
-      date: query.date,
+      end_datetime: query.end_datetime,
     };
     const queryString = buildQueryString(queryWithoutSymbol);
     const response = await authenticatedGet(
@@ -797,12 +797,12 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     expect(response.status).toBe(400);
   });
 
-  test("should return 400 when date is missing", async () => {
+  test("should return 400 when end_datetime is missing", async () => {
     const query = createQuoteTimelineQuery();
-    const queryWithoutDate = {
+    const queryWithoutEndDatetime = {
       symbol: query.symbol,
     };
-    const queryString = buildQueryString(queryWithoutDate);
+    const queryString = buildQueryString(queryWithoutEndDatetime);
     const response = await authenticatedGet(
       `/v1/developer/groww/quote-timeline?${queryString}`,
       developerToken,
@@ -815,8 +815,8 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
   });
 
   test("should return empty array when no snapshots exist", async () => {
-    const futureDate = "2099-01-01";
-    const query = createQuoteTimelineQuery(TEST_SYMBOL, futureDate);
+    const futureDatetime = "2099-01-01T15:30:00";
+    const query = createQuoteTimelineQuery(TEST_SYMBOL, futureDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
       `/v1/developer/groww/quote-timeline?${queryString}`,
@@ -834,12 +834,13 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
   test("should return timeline array for valid date with known symbol", async ({ tracker }) => {
     const testSymbol = TEST_SYMBOL;
     const testDate = generateUniqueTestDate();
+    const testEndDatetime = `${testDate}T15:30:00`;
     const snapshotCount = 5;
 
     // Create multiple snapshots for the date
     await createMultipleQuoteSnapshots(testSymbol, testDate, snapshotCount, tracker);
 
-    const query = createQuoteTimelineQuery(testSymbol, testDate);
+    const query = createQuoteTimelineQuery(testSymbol, testEndDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
       `/v1/developer/groww/quote-timeline?${queryString}`,
@@ -900,11 +901,12 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     }
   });
 
-  test("should allow request with date < currentTimestamp when headers are present", async ({
+  test("should allow request with end_datetime < currentTimestamp when headers are present", async ({
     tracker,
   }) => {
     const testDate = generateUniqueTestDate();
     const testSymbol = TEST_SYMBOL;
+    const testEndDatetime = `${testDate}T15:30:00`;
     await createMultipleQuoteSnapshots(testSymbol, testDate, 3, tracker);
 
     // Set currentTimestamp to next day
@@ -919,7 +921,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
       tracker
     );
 
-    const query = createQuoteTimelineQuery(testSymbol, testDate);
+    const query = createQuoteTimelineQuery(testSymbol, testEndDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
       `/v1/developer/groww/quote-timeline?${queryString}`,
@@ -933,13 +935,60 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     expect(body.statusCode).toBe(200);
   });
 
-  test("should return only snapshots before currentTimestamp", async ({ tracker }) => {
+  test("should return only snapshots before end_datetime", async ({ tracker }) => {
     const testDate = generateUniqueTestDate();
     const testSymbol = TEST_SYMBOL;
+    const testEndDatetime = `${testDate}T11:30:00`;
     await createMultipleQuoteSnapshots(testSymbol, testDate, 10, tracker);
 
-    // Set currentTimestamp to previous day
-    const currentTimestamp = dayjs.tz(`${testDate} 11:30:00`, "Asia/Kolkata").toDate();
+    const query = createQuoteTimelineQuery(testSymbol, testEndDatetime);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(
+      `/v1/developer/groww/quote-timeline?${queryString}`,
+      developerToken
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
+    expect(body.message).toBe("Quote timeline fetched successfully");
+    expect(body.data.quoteTimeline).toBeInstanceOf(Array);
+    // Should return snapshots before 11:30:00
+    expect(body.data.quoteTimeline.length).toBeLessThanOrEqual(3);
+    // Verify all returned snapshots are before end_datetime
+    body.data.quoteTimeline.forEach((entry) => {
+      const entryTimestamp = dayjs.utc(entry.timestamp);
+      const endTimestamp = dayjs.tz(testEndDatetime, "Asia/Kolkata").utc();
+      expect(entryTimestamp.isBefore(endTimestamp)).toBe(true);
+    });
+  });
+
+  test("should allow request without headers", async ({ tracker }) => {
+    const testDate = generateUniqueTestDate();
+    const testSymbol = TEST_SYMBOL;
+    const testEndDatetime = `${testDate}T15:30:00`;
+    await createMultipleQuoteSnapshots(testSymbol, testDate, 3, tracker);
+
+    const query = createQuoteTimelineQuery(testSymbol, testEndDatetime);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(
+      `/v1/developer/groww/quote-timeline?${queryString}`,
+      developerToken
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
+  });
+
+  test("should return 403 when end_datetime >= currentTimestamp", async ({ tracker }) => {
+    const testDate = generateUniqueTestDate();
+    const testSymbol = TEST_SYMBOL;
+    const testEndDatetime = `${testDate}T15:30:00`;
+    await createMultipleQuoteSnapshots(testSymbol, testDate, 3, tracker);
+
+    // Set currentTimestamp before end_datetime
+    const currentTimestamp = dayjs.tz(`${testDate} 14:00:00`, "Asia/Kolkata").toDate();
     const run = await createRun(
       developerId,
       `${testDate} 09:15:00`,
@@ -947,7 +996,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
       tracker
     );
 
-    const query = createQuoteTimelineQuery(testSymbol, testDate);
+    const query = createQuoteTimelineQuery(testSymbol, testEndDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
       `/v1/developer/groww/quote-timeline?${queryString}`,
@@ -958,20 +1007,18 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
       { validateStatus: () => true }
     );
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(403);
     const body = response.data;
-    expect(body.statusCode).toBe(200);
-    expect(body.message).toBe("Quote timeline fetched successfully");
-    expect(body.data.quoteTimeline).toBeInstanceOf(Array);
-    expect(body.data.quoteTimeline.length).toEqual(3);
+    expect(body.message).toContain("before current execution timestamp");
   });
 
-  test("should allow request without headers (backward compatibility)", async ({ tracker }) => {
+  test("should work with timezone parameter", async ({ tracker }) => {
     const testDate = generateUniqueTestDate();
     const testSymbol = TEST_SYMBOL;
+    const testEndDatetime = `${testDate}T15:30:00`;
     await createMultipleQuoteSnapshots(testSymbol, testDate, 3, tracker);
 
-    const query = createQuoteTimelineQuery(testSymbol, testDate);
+    const query = createQuoteTimelineQuery(testSymbol, testEndDatetime, "Asia/Kolkata");
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
       `/v1/developer/groww/quote-timeline?${queryString}`,
@@ -981,5 +1028,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     expect(response.status).toBe(200);
     const body = response.data;
     expect(body.statusCode).toBe(200);
+    expect(body.message).toBe("Quote timeline fetched successfully");
+    expect(body.data.quoteTimeline).toBeInstanceOf(Array);
   });
 });

@@ -1,7 +1,6 @@
 import { z } from "zod";
 import {
   apiResponseSchema,
-  dateFormatSchema,
   datetimeFormatSchema,
   growwQuoteSchema,
   timezoneSchema,
@@ -67,7 +66,8 @@ export const getGrowwToken = {
 export const getGrowwQuoteTimeline = {
   query: z.object({
     symbol: z.string(),
-    date: dateFormatSchema,
+    end_datetime: datetimeFormatSchema,
+    timezone: timezoneSchema.optional(),
   }),
   response: apiResponseSchema.extend({
     data: z.object({
