@@ -230,29 +230,40 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
 
   // Quote timeline endpoint
   fastify.get("/quote-timeline", async (request, reply) => {
-    const validationResult = validateRequest(
-      request.query,
-      reply,
-      v1_developer_groww_schemas.getGrowwQuoteTimeline.query,
-      "query"
-    ) as z.infer<typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.query> | false;
+    const validationResult = validateRequest<
+      z.infer<typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.query>
+    >(request.query, reply, v1_developer_groww_schemas.getGrowwQuoteTimeline.query, "query");
     if (!validationResult) {
       return;
     }
 
     try {
-      // using validationResult.date directly as it is in UTC
-      const marketStart = dayjs.tz(`${validationResult.date} 09:14:00`, "Asia/Kolkata");
-      const marketEnd = dayjs.tz(`${validationResult.date} 15:31:00`, "Asia/Kolkata");
-      const marketStartUtc = marketStart.utc();
-      const marketEndUtc = marketEnd.utc();
+      const timezone = validationResult.timezone || "Asia/Kolkata";
 
-      // Fetch quote snapshots from database for the symbol and date range
+      // Parse end_datetime in the specified timezone
+      const endDateTimeUTC = parseDateTimeInTimezone(validationResult.end_datetime, timezone);
+
+      // Validate against currentTimestamp if present (prevents future data access in backtesting)
+      if (request.currentTimestamp) {
+        try {
+          validateCurrentTimestamp(request.currentTimestamp, [endDateTimeUTC], reply);
+        } catch (error) {
+          // Error already sent via reply in validator
+          return;
+        }
+      }
+
+      // Extract date from end_datetime to calculate market start
+      const dateStr = dayjs.utc(endDateTimeUTC).tz(timezone).format("YYYY-MM-DD");
+      const marketStart = dayjs.tz(`${dateStr} 09:14:00`, timezone);
+      const marketStartUtc = marketStart.utc();
+
+      // Fetch quote snapshots from market start to end_datetime
       const quoteSnapshots = await prisma.quoteSnapshot.findMany({
         where: {
           timestamp: {
             gte: marketStartUtc.toDate(),
-            lte: marketEndUtc.toDate(),
+            lt: endDateTimeUTC,
           },
           nseSymbol: validationResult.symbol,
         },
@@ -261,22 +272,13 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
 
-      // Filter snapshots to only include those before currentTimestamp
-      // This allows users to request data from mid-day and get all data from start of day till currentTimestamp
-      const currentTimestamp = request.currentTimestamp;
-      const filteredSnapshots = currentTimestamp
-        ? quoteSnapshots.filter((snapshot) => {
-            return dayjs.utc(snapshot.timestamp).isBefore(dayjs.utc(currentTimestamp));
-          })
-        : quoteSnapshots;
-
       return sendResponse<
         z.infer<typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.response>
       >(reply, {
         statusCode: 200,
         message: "Quote timeline fetched successfully",
         data: {
-          quoteTimeline: filteredSnapshots.map((snapshot) => ({
+          quoteTimeline: quoteSnapshots.map((snapshot) => ({
             id: snapshot.id,
             timestamp: formatDateTime(snapshot.timestamp),
             nseSymbol: snapshot.nseSymbol,
@@ -343,28 +345,26 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
         });
 
         if (niftyQuotes.length === 0) {
-          return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuote.response>>(
-            reply,
-            {
-              statusCode: 200,
-              message: "NIFTY quote snapshot not found",
-              data: null as any,
-            }
-          );
+          return sendResponse<
+            z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuote.response>
+          >(reply, {
+            statusCode: 200,
+            message: "NIFTY quote snapshot not found",
+            data: null as any,
+          });
         }
 
         const niftyQuote = niftyQuotes[0];
         const quoteData = niftyQuote.quoteData as z.infer<typeof growwQuoteSchema> | null;
 
         if (!quoteData) {
-          return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuote.response>>(
-            reply,
-            {
-              statusCode: 200,
-              message: "NIFTY quote snapshot not found",
-              data: null as any,
-            }
-          );
+          return sendResponse<
+            z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuote.response>
+          >(reply, {
+            statusCode: 200,
+            message: "NIFTY quote snapshot not found",
+            data: null as any,
+          });
         }
 
         return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuote.response>>(
