@@ -32,6 +32,9 @@ export interface RunContext {
   fetchCandles: ReturnType<typeof fetchCandles>;
   fetchQuote: ReturnType<typeof fetchQuote>;
   fetchNiftyQuote: ReturnType<typeof fetchNiftyQuote>;
+  /**
+   * Given a symbol and a end_datetime, returns the quote timeline for the given date
+   */
   fetchQuoteTimeline: ReturnType<typeof fetchQuoteTimeline>;
   fetchShortlist: ReturnType<typeof fetchShortlist>;
   /**
