@@ -1,3 +1,13 @@
+## [@ganaka/sdk v1.3.0](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Features
+
+* **sdk:** Enhance shortlist functionality with persistence tracking ([0d3d806](https://github.com/ganakadev/ganaka/commit/0d3d8068e3602fa4104ae5e23bd4c68af50c22b5))
+
 ## [@ganaka/sdk v1.2.0](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
