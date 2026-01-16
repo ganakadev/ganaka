@@ -8,6 +8,7 @@ import { fetchCandles } from "./callbacks/fetchCandles";
 import { fetchQuote } from "./callbacks/fetchQuote";
 import { fetchQuoteTimeline } from "./callbacks/fetchQuoteTimeline";
 import { fetchShortlist } from "./callbacks/fetchShortlist";
+import { fetchShortlistPersistence } from "./callbacks/fetchShortlistPersistence";
 import { fetchNiftyQuote } from "./callbacks/fetchNiftyQuote";
 import { placeOrder } from "./callbacks/placeOrder";
 import { ApiClient } from "./utils/apiClient";
@@ -33,6 +34,15 @@ export interface RunContext {
   fetchNiftyQuote: ReturnType<typeof fetchNiftyQuote>;
   fetchQuoteTimeline: ReturnType<typeof fetchQuoteTimeline>;
   fetchShortlist: ReturnType<typeof fetchShortlist>;
+  /**
+   * Given a shortlist type and a start and end datetime,
+   * returns the list of instruments that appeared in the shortlist during the time range
+   * in descending order of appearance count
+   *
+   * This helps identify the stocks that have been consistently appearing in the shortlist
+   * over a given period of time.
+   */
+  fetchShortlistPersistence: ReturnType<typeof fetchShortlistPersistence>;
   /**
    * Current timestamp in IST string format (YYYY-MM-DDTHH:mm:ss)
    * for every loop iteration
@@ -166,6 +176,13 @@ export async function ganaka<T>({
             currentTimezone: "Asia/Kolkata",
           }),
           fetchShortlist: fetchShortlist({
+            developerToken,
+            apiDomain,
+            runId,
+            currentTimestamp,
+            currentTimezone: "Asia/Kolkata",
+          }),
+          fetchShortlistPersistence: fetchShortlistPersistence({
             developerToken,
             apiDomain,
             runId,

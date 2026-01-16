@@ -117,9 +117,11 @@ export function generateUniqueTestDatetime(baseDate = "2025-12-26"): string {
  */
 export function generateUniqueTestDate(baseDate = "2025-12-26"): string {
   const counter = ++testDateCounter;
+  const now = Date.now();
+  // Use both counter and timestamp-derived offset for cross-worker uniqueness
+  const dayOffset = counter + (now % 1000);
   const base = dayjs.utc(baseDate);
-  // Add counter days to ensure uniqueness
-  return base.add(counter, "day").format("YYYY-MM-DD");
+  return base.add(dayOffset, "day").format("YYYY-MM-DD");
 }
 
 /**
