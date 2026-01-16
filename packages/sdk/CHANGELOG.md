@@ -1,3 +1,14 @@
+## [@ganaka/sdk v1.4.0](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Features
+
+* **groww:** Update quote timeline endpoint to use end_datetime and timezone ([0c27af1](https://github.com/ganakadev/ganaka/commit/0c27af1c030bdf01ae2be111f5bd188f52ad6ef1))
+* **sdk:** Add fetchQuoteTimeline to RunContext interface ([3a883fa](https://github.com/ganakadev/ganaka/commit/3a883fab8f571a4d3fe60c61008fd2413c62612a))
+
 ## [@ganaka/sdk v1.3.0](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
