@@ -26,9 +26,9 @@ export const fetchQuoteTimeline =
   async (
     symbol: string,
     /**
-     * Date in IST string format (YYYY-MM-DD)
+     * End datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
      */
-    date: string
+    end_datetime: string,
   ): Promise<
     z.infer<
       typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.response
@@ -41,7 +41,7 @@ export const fetchQuoteTimeline =
     try {
       const validatedParams = v1_developer_groww_schemas.getGrowwQuoteTimeline.query.parse({
         symbol,
-        date,
+        end_datetime,
       });
 
       const headers: Record<string, string> = {
