@@ -1,3 +1,13 @@
+## [@ganaka/sdk v1.4.1](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Bug Fixes
+
+* **sdk:** Update fetchQuoteTimeline to use end_datetime parameter ([f3ffc12](https://github.com/ganakadev/ganaka/commit/f3ffc12019900f539b9f7a8b483f58dffeeff209))
+
 ## [@ganaka/sdk v1.4.0](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
