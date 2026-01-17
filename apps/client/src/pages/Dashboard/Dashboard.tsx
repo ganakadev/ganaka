@@ -20,6 +20,8 @@ export const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<"TOP_GAINERS" | "VOLUME_SHOCKERS" | null>(
     "TOP_GAINERS"
   );
+  const [takeProfitPercentage, setTakeProfitPercentage] = useState<number>(2);
+  const [stopLossPercentage, setStopLossPercentage] = useState<number>(1.5);
   // Drawer state
   const [drawerOpened, setDrawerOpened] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<ShortlistEntryWithQuote | null>(null);
@@ -33,6 +35,8 @@ export const Dashboard = () => {
       datetime: formatDateTimeForAPI(selectedDate),
       timezone: "Asia/Kolkata",
       type: activeTab || "TOP_GAINERS",
+      takeProfitPercentage,
+      stopLossPercentage,
     },
     {
       skip: !selectedDate || !activeTab,
@@ -110,6 +114,10 @@ export const Dashboard = () => {
             setSelectedDate={setSelectedDate}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
+            takeProfitPercentage={takeProfitPercentage}
+            setTakeProfitPercentage={setTakeProfitPercentage}
+            stopLossPercentage={stopLossPercentage}
+            setStopLossPercentage={setStopLossPercentage}
           />
           <div className="w-full">
             {activeTab === "TOP_GAINERS" && (

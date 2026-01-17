@@ -414,13 +414,25 @@ export function createOrderTestData(
 export function createShortlistsQuery(
   datetime?: string,
   type?: "TOP_GAINERS" | "VOLUME_SHOCKERS",
-  timezone?: string
+  timezone?: string,
+  takeProfitPercentage?: number,
+  stopLossPercentage?: number
 ): z.infer<typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query> {
-  return {
+  const result: any = {
     datetime: datetime || TEST_DATETIME,
     timezone: timezone || "Asia/Kolkata",
     type: type || "TOP_GAINERS",
   };
+
+  if (takeProfitPercentage !== undefined) {
+    result.takeProfitPercentage = takeProfitPercentage;
+  }
+
+  if (stopLossPercentage !== undefined) {
+    result.stopLossPercentage = stopLossPercentage;
+  }
+
+  return result;
 }
 
 /**
@@ -489,13 +501,13 @@ export function createDailyUniqueCompaniesQuery(
 
 /**
  * Helper function to convert query object to URLSearchParams-compatible format
- * Filters out undefined values to avoid adding them to the query string
+ * Converts all primitive values to strings and filters out undefined values
  */
-export function buildQueryString(query: Record<string, string | undefined>): string {
+export function buildQueryString(query: Record<string, string | number | boolean | undefined>): string {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(query)) {
     if (value !== undefined) {
-      params.append(key, value);
+      params.append(key, String(value));
     }
   }
   return params.toString();

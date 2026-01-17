@@ -1,5 +1,5 @@
-import type { shortlistEntrySchema } from "@ganaka/schemas";
-import { Skeleton, Table } from "@mantine/core";
+import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { Skeleton, Table, Text } from "@mantine/core";
 import { z } from "zod";
 import type { ShortlistEntryWithQuote } from "../../../types";
 import { times } from "lodash";
@@ -10,11 +10,22 @@ export const ShortlistTable = ({
   loading,
   selectedDate,
 }: {
-  shortlist: z.infer<typeof shortlistEntrySchema>[] | null;
+  shortlist: z.infer<typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.shortlistEntryWithMetricsSchema>[] | null;
   onRowClick: (entry: ShortlistEntryWithQuote) => void;
   loading: boolean;
   selectedDate: Date | null;
 }) => {
+  // Helper function to format time
+  const formatTime = (minutes?: number): string => {
+    if (minutes === undefined || minutes === null) return "N/A";
+    if (minutes < 60) {
+      return `${minutes} min`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return mins > 0 ? `${hours} hr ${mins} min` : `${hours} hr`;
+  };
+
   // DRAW
   return (
     <div className="mb-8">
@@ -28,33 +39,40 @@ export const ShortlistTable = ({
       >
         <Table.Thead>
           <Table.Tr>
-            <Table.Th className="w-[55%]">Company Name</Table.Th>
-            <Table.Th className="w-[20%]">Symbol</Table.Th>
-            <Table.Th ta="right" className="text-right w-[15%]">
+            <Table.Th className="w-[35%]">Company Name</Table.Th>
+            <Table.Th className="w-[15%]">Symbol</Table.Th>
+            <Table.Th ta="right" className="text-right w-[12%]">
               Price per share
             </Table.Th>
+            <Table.Th ta="right" className="text-right w-[12%]">
+              Target Price
+            </Table.Th>
+            <Table.Th className="w-[26%]">Trade Result</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
           {!selectedDate ? (
             <Table.Tr>
-              <Table.Td colSpan={4} className="text-center py-8">
+              <Table.Td colSpan={5} className="text-center py-8">
                 <p className="text-sm text-gray-500">No date selected</p>
               </Table.Td>
             </Table.Tr>
           ) : loading || !shortlist ? (
             times(10, (index) => (
               <Table.Tr key={index}>
-                <Table.Td className="w-[55%]">
+                <Table.Td className="w-[35%]">
                   <Skeleton height={20} width="100%" />
                 </Table.Td>
-                <Table.Td className="w-[20%]">
+                <Table.Td className="w-[15%]">
                   <Skeleton height={20} width="100%" />
                 </Table.Td>
-                <Table.Td className="w-[20%]">
+                <Table.Td className="w-[12%]">
                   <Skeleton height={20} width="100%" />
                 </Table.Td>
-                <Table.Td className="w-[25%]">
+                <Table.Td className="w-[12%]">
+                  <Skeleton height={20} width="100%" />
+                </Table.Td>
+                <Table.Td className="w-[26%]">
                   <Skeleton height={20} width="100%" />
                 </Table.Td>
               </Table.Tr>
@@ -75,13 +93,13 @@ export const ShortlistTable = ({
                   }
                 }}
               >
-                <Table.Td className="w-[55%]">
+                <Table.Td className="w-[35%]">
                   <span className="font-medium">{entry.name}</span>
                 </Table.Td>
-                <Table.Td className="w-[20%]">
+                <Table.Td className="w-[15%]">
                   <span className="text-sm">{entry.nseSymbol}</span>
                 </Table.Td>
-                <Table.Td className="text-right w-[25%]">
+                <Table.Td className="text-right w-[12%]">
                   <span className="font-bold">
                     ₹
                     {entry.price.toLocaleString("en-IN", {
@@ -89,6 +107,44 @@ export const ShortlistTable = ({
                       maximumFractionDigits: 2,
                     })}
                   </span>
+                </Table.Td>
+                <Table.Td className="text-right w-[12%]">
+                  {entry.targetPrice !== undefined ? (
+                    <span className="text-sm">
+                      ₹
+                      {entry.targetPrice.toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                  ) : (
+                    <span className="text-sm text-gray-500">-</span>
+                  )}
+                </Table.Td>
+                <Table.Td className="w-[26%]">
+                  {entry.stopLossHit === true ? (
+                    <div className="flex flex-col gap-1">
+                      <Text size="sm" fw={600} c="red">
+                        ✗ Stop Loss Hit in {formatTime(entry.timeToStopLossMinutes)}
+                      </Text>
+                    </div>
+                  ) : entry.targetAchieved === true ? (
+                    <div className="flex flex-col gap-1">
+                      <Text size="sm" fw={600} c="green">
+                        ✓ Achieved in {formatTime(entry.timeToTargetMinutes)}
+                      </Text>
+                    </div>
+                  ) : entry.targetAchieved === false ? (
+                    <div className="flex flex-col gap-1">
+                      <Text size="sm" fw={600} c="red">
+                        ✗ Target not achieved
+                      </Text>
+                    </div>
+                  ) : (
+                    <Text size="sm" c="dimmed">
+                      N/A
+                    </Text>
+                  )}
                 </Table.Td>
               </Table.Tr>
             ))

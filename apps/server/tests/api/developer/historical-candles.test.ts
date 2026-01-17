@@ -167,7 +167,7 @@ test.describe("GET /v1/developer/historical-candles", () => {
 
   test("should return candles data with correct structure", async () => {
     const query = createHistoricalCandlesQuery();
-    const queryString = new URLSearchParams(query).toString();
+    const queryString = buildQueryString(query);
     const response = await authenticatedGet(
       `/v1/developer/historical-candles?${queryString}`,
       developerToken

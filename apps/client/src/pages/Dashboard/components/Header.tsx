@@ -1,4 +1,4 @@
-import { Avatar, Menu, SegmentedControl } from "@mantine/core";
+import { Avatar, Menu, NumberInput, SegmentedControl } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -19,11 +19,19 @@ export const Header = ({
   setActiveTab,
   selectedDate,
   setSelectedDate,
+  takeProfitPercentage,
+  setTakeProfitPercentage,
+  stopLossPercentage,
+  setStopLossPercentage,
 }: {
   activeTab: "TOP_GAINERS" | "VOLUME_SHOCKERS" | null;
   setActiveTab: (value: "TOP_GAINERS" | "VOLUME_SHOCKERS") => void;
   selectedDate: Date | null;
   setSelectedDate: (date: Date | null) => void;
+  takeProfitPercentage: number;
+  setTakeProfitPercentage: (value: number) => void;
+  stopLossPercentage: number;
+  setStopLossPercentage: (value: number) => void;
 }) => {
   // HOOKS
   const [searchParams, setSearchParams] = useSearchParams();
@@ -222,6 +230,32 @@ export const Header = ({
             { value: "VOLUME_SHOCKERS", label: "Volume Shockers" },
           ]}
         />
+        <div className="flex gap-2">
+          <NumberInput
+            label="Take Profit %"
+            placeholder="2"
+            value={takeProfitPercentage}
+            onChange={(value) => setTakeProfitPercentage(Number(value) || 0)}
+            min={0}
+            max={100}
+            step={0.1}
+            decimalScale={2}
+            className="w-24"
+            size="sm"
+          />
+          <NumberInput
+            label="Stop Loss %"
+            placeholder="1.5"
+            value={stopLossPercentage}
+            onChange={(value) => setStopLossPercentage(Number(value) || 0)}
+            min={0}
+            max={100}
+            step={0.1}
+            decimalScale={2}
+            className="w-24"
+            size="sm"
+          />
+        </div>
       </div>
       <Menu shadow="md" width={200}>
         <Menu.Target>
