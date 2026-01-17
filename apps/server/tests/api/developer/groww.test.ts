@@ -1059,7 +1059,6 @@ test.describe("GET /v1/developer/groww/nifty-timeline", () => {
   });
 
   test("should return 400 when end_datetime is missing", async () => {
-    const query = createNiftyQuoteTimelineQuery();
     const queryWithoutEndDatetime = {};
     const queryString = buildQueryString(queryWithoutEndDatetime);
     const response = await authenticatedGet(
