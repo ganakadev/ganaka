@@ -1,3 +1,21 @@
+## [@ganaka/sdk v1.5.0](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Bug Fixes
+
+* **sdk) refactor(groww:** Update API endpoints and remove deprecated routes ([1c6c729](https://github.com/ganakadev/ganaka/commit/1c6c7296e64a381c19d5220b0e56aed7aef92115))
+* **tests:** Remove unused query variable in groww test ([c9cd2b6](https://github.com/ganakadev/ganaka/commit/c9cd2b6252147cba262d7c6853de0cd42012c794))
+
+
+### Features
+
+* **sdk) feat(groww:** Add NIFTY timeline endpoint and corresponding tests ([ff9e172](https://github.com/ganakadev/ganaka/commit/ff9e172fcec22d8d7e2a256cab4b10f086cc1bdd))
+* **sdk:** Update RunContext interface documentation for fetchNiftyQuoteTimeline ([afd9032](https://github.com/ganakadev/ganaka/commit/afd90329b3f79b9ccc6bf38d871b7229774fc3ec))
+* **tests:** Add comprehensive tests for new developer endpoints ([3107e51](https://github.com/ganakadev/ganaka/commit/3107e517a4d28e888aab510bad236378acf582dc))
+
 ## [@ganaka/sdk v1.4.1](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
