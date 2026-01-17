@@ -246,9 +246,14 @@ export const RunsSidebar = ({
                               />
                             </div>
                             <div className="h-full min-w-0 flex-1">
-                              <Text size="xs" c="dimmed" truncate className="leading-none!">
-                                {run.name ||
-                                  (() => {
+                              <div className="flex flex-col gap-1">
+                                {run.name && (
+                                  <Text size="xs" truncate className="leading-none!">
+                                    {run.name}
+                                  </Text>
+                                )}
+                                <Text size="xs" c="dimmed" truncate className="leading-none!">
+                                  {(() => {
                                     /* Parse UTC datetime strings and convert to local time for display */
                                     const startDate = dayjs
                                       .utc(run.start_datetime)
@@ -268,7 +273,8 @@ export const RunsSidebar = ({
                                       )} - ${endDate.format("MMM DD, YYYY hh:mm A")}`;
                                     }
                                   })()}
-                              </Text>
+                                </Text>
+                              </div>
                             </div>
                           </div>
 
