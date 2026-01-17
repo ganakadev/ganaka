@@ -173,7 +173,7 @@ test.describe("GET /v1/developer/quote", () => {
   test("should return null data when snapshot is not found", async () => {
     const futureDatetime = "2099-01-01T10:30:00";
     const query = createGrowwQuoteQuery(TEST_SYMBOL, futureDatetime);
-    const queryString = new URLSearchParams(query).toString();
+    const queryString = buildQueryString(query);
     const response = await authenticatedGet(
       `/v1/developer/quote?${queryString}`,
       developerToken
