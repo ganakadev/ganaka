@@ -187,27 +187,25 @@ test.describe("GET /v1/developer/groww/nifty", () => {
   test("should handle multiple snapshots in same minute window (return most recent)", async ({
     tracker,
   }) => {
-    const testDatetime = generateUniqueTestDatetime();
+    // Use a fixed datetime for this test to ensure snapshots are within the same minute window
+    const baseDatetime = "2025-12-26T12:00:00"; // Fixed datetime for this specific test
     const testQuoteData1 = createValidGrowwQuotePayload();
     const testQuoteData2 = createValidGrowwQuotePayload();
     testQuoteData2.payload.last_price = 2600.0; // Different price to distinguish
 
     // Create two snapshots within the same minute window
-    const timestamp1 = parseDateTimeInTimezone(testDatetime, "Asia/Kolkata");
-    const timestamp2 = new Date(timestamp1.getTime() + 30 * 1000); // 30 seconds later
-
     await createNiftyQuoteSnapshot(
-      dayjs.utc(timestamp1).tz("Asia/Kolkata").format("YYYY-MM-DDTHH:mm:ss"),
+      baseDatetime, // First snapshot at exact minute
       testQuoteData1,
       tracker
     );
     await createNiftyQuoteSnapshot(
-      dayjs.utc(timestamp2).tz("Asia/Kolkata").format("YYYY-MM-DDTHH:mm:ss"),
+      dayjs.tz(baseDatetime, "Asia/Kolkata").add(30, "seconds").format("YYYY-MM-DDTHH:mm:ss"), // 30 seconds later, same minute
       testQuoteData2,
       tracker
     );
 
-    const query = createGrowwNiftyQuoteQuery(testDatetime);
+    const query = createGrowwNiftyQuoteQuery(baseDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
       `/v1/developer/groww/nifty?${queryString}`,

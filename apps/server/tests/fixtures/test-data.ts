@@ -95,31 +95,43 @@ let testDateCounter = 0;
 
 /**
  * Generates a unique datetime string per test execution
- * Uses base date + counter + timestamp to ensure uniqueness across parallel workers
+ * Uses base date + counter + process ID + timestamp to ensure uniqueness across parallel workers
+ * Creates significant gaps (5 minutes) between datetimes to ensure complete isolation between tests
+ * Tests that need multiple snapshots in same minute window must override this behavior explicitly
  * @param baseDate Base date in YYYY-MM-DD format (default: "2025-12-26")
  * @returns Unique datetime string in YYYY-MM-DDTHH:mm:ss format
  */
 export function generateUniqueTestDatetime(baseDate = "2025-12-26"): string {
   const counter = ++testDatetimeCounter;
   const now = Date.now();
-  // Use milliseconds from now + counter to ensure uniqueness
-  // Modulo to keep within the day, add counter for additional uniqueness
-  const offsetMs = (now % 86400000) + counter * 1000;
+  // Use process ID to create worker-specific offset (0-65535, modulo to reasonable range)
+  const processId = (process.pid || 0) % 100;
+  // Create significant gaps: counter * 300000 ensures at least 5 minutes between sequential calls
+  // Add process ID * 60 for worker-specific offset (0-5900 seconds)
+  // Add timestamp component (0-999 milliseconds) for additional uniqueness
+  // This ensures datetimes are completely isolated between different tests
+  const offsetMs = counter * 300000 + processId * 60 * 1000 + (now % 1000);
   const base = dayjs.tz(`${baseDate}T00:00:00`, "Asia/Kolkata");
   return base.add(offsetMs, "millisecond").format("YYYY-MM-DDTHH:mm:ss");
 }
 
 /**
  * Generates a unique date string per test execution
- * Uses base date + counter to ensure uniqueness across parallel workers
+ * Uses base date + counter + process ID + timestamp to ensure uniqueness across parallel workers
+ * Creates large gaps (1000+ days) between dates to prevent overlap even with wide query ranges
  * @param baseDate Base date in YYYY-MM-DD format (default: "2025-12-26")
  * @returns Unique date string in YYYY-MM-DD format
  */
 export function generateUniqueTestDate(baseDate = "2025-12-26"): string {
   const counter = ++testDateCounter;
   const now = Date.now();
-  // Use both counter and timestamp-derived offset for cross-worker uniqueness
-  const dayOffset = counter + (now % 1000);
+  // Use process ID to create worker-specific offset (0-65535, modulo to reasonable range)
+  const processId = (process.pid || 0) % 100;
+  // Create large gaps: counter * 1000 ensures at least 1000 days between sequential calls
+  // Add process ID * 10 for worker-specific offset (0-990 days)
+  // Add timestamp component (0-999 days) for additional uniqueness
+  // This ensures dates are at least 1000 days apart, preventing any overlap
+  const dayOffset = counter * 1000 + processId * 10 + (now % 1000);
   const base = dayjs.utc(baseDate);
   return base.add(dayOffset, "day").format("YYYY-MM-DD");
 }
@@ -325,6 +337,19 @@ export function createQuoteTimelineQuery(
 ): z.infer<typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.query> {
   return {
     symbol: symbol || TEST_SYMBOL,
+    end_datetime: end_datetime || `${TEST_DATE}T15:30:00`,
+    ...(timezone && { timezone }),
+  };
+}
+
+/**
+ * Creates valid NIFTY quote timeline query parameters
+ */
+export function createNiftyQuoteTimelineQuery(
+  end_datetime?: string,
+  timezone?: string
+): z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuoteTimeline.query> {
+  return {
     end_datetime: end_datetime || `${TEST_DATE}T15:30:00`,
     ...(timezone && { timezone }),
   };

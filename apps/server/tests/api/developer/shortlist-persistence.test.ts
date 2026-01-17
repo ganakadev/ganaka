@@ -391,11 +391,11 @@ test.describe("GET /v1/developer/shortlists/persistence", () => {
     const baseDatetime = `${uniqueDate}T10:00:00`;
     const startDatetime = dayjs
       .tz(baseDatetime, "Asia/Kolkata")
-      .subtract(5, "minute")
+      .subtract(2, "minute")  // Reduced from 5 to 2 minutes for tighter isolation
       .format("YYYY-MM-DDTHH:mm:ss");
     const endDatetime = dayjs
       .tz(baseDatetime, "Asia/Kolkata")
-      .add(5, "minute")
+      .add(2, "minute")  // Reduced from 5 to 2 minutes for tighter isolation
       .format("YYYY-MM-DDTHH:mm:ss");
 
     // Create one snapshot with entries and one empty snapshot
@@ -475,11 +475,11 @@ test.describe("GET /v1/developer/shortlists/persistence", () => {
     const baseDatetime = `${uniqueDate}T10:00:00`;
     const startDatetime = dayjs
       .tz(baseDatetime, "Asia/Kolkata")
-      .subtract(5, "minute")
+      .subtract(2, "minute")  // Reduced from 5 to 2 minutes for tighter isolation
       .format("YYYY-MM-DDTHH:mm:ss");
     const endDatetime = dayjs
       .tz(baseDatetime, "Asia/Kolkata")
-      .add(5, "minute")
+      .add(2, "minute")  // Reduced from 5 to 2 minutes for tighter isolation
       .format("YYYY-MM-DDTHH:mm:ss");
 
     // Create 2 snapshots with partial overlap
@@ -565,9 +565,7 @@ test.describe("GET /v1/developer/shortlists/persistence", () => {
 
   test("should work with volume-shockers type", async ({ tracker }) => {
     const uniqueDate = generateUniqueTestDate();
-    console.log("uniqueDate", uniqueDate);
     const baseDatetime = `${uniqueDate}T10:00:00`;
-    console.log("baseDatetime", baseDatetime);
     const startDatetime = dayjs
       .tz(baseDatetime, "Asia/Kolkata")
       .subtract(5, "minute")
