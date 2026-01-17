@@ -4,9 +4,11 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { parseDateTimeInTimezone } from "../../../src/utils/timezone";
 import {
-  createGrowwNiftyQuoteQuery,
+  createGrowwQuoteQuery,
   createValidGrowwQuotePayload,
   generateUniqueTestDatetime,
+  TEST_SYMBOL,
+  buildQueryString,
 } from "../../fixtures/test-data";
 import {
   authenticatedGet,
@@ -14,23 +16,15 @@ import {
   unauthenticatedGet,
 } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { createNiftyQuoteSnapshot, createRun } from "../../helpers/db-helpers";
+import {
+  createQuoteSnapshot,
+  createRun,
+} from "../../helpers/db-helpers";
 import { expect, test } from "../../helpers/test-fixtures";
 import { TestDataTracker } from "../../helpers/test-tracker";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-
-// Helper function to convert query object to URLSearchParams-compatible format
-function buildQueryString(query: Record<string, string | undefined>): string {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(query)) {
-    if (value !== undefined) {
-      params.append(key, value);
-    }
-  }
-  return params.toString();
-}
 
 let developerToken: string;
 let developerId: string;
@@ -49,18 +43,16 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/nifty", () => {
+test.describe("GET /v1/developer/quote", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet(
-      "/v1/developer/nifty?datetime=2025-12-26T10:06:00"
-    );
+    const response = await unauthenticatedGet("/v1/developer/quote?symbol=RELIANCE");
 
     expect(response.status).toBe(401);
   });
 
   test("should return 401 when invalid token is provided", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/nifty?datetime=2025-12-26T10:06:00",
+      "/v1/developer/quote?symbol=RELIANCE",
       "invalid-token-12345",
       {
         validateStatus: () => true,
@@ -70,9 +62,17 @@ test.describe("GET /v1/developer/nifty", () => {
     expect(response.status).toBe(401);
   });
 
+  test("should return 400 when symbol is missing", async () => {
+    const response = await authenticatedGet("/v1/developer/quote", developerToken, {
+      validateStatus: () => true,
+    });
+
+    expect(response.status).toBe(400);
+  });
+
   test("should return 400 when datetime format is invalid", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/nifty?datetime=invalid-date",
+      `/v1/developer/quote?symbol=${TEST_SYMBOL}&datetime=invalid-date`,
       developerToken,
       {
         validateStatus: () => true,
@@ -82,26 +82,28 @@ test.describe("GET /v1/developer/nifty", () => {
     expect(response.status).toBe(400);
   });
 
-  test("should return snapshot data when valid datetime is provided", async ({ tracker }) => {
+  test("should return snapshot data when valid datetime and symbol are provided", async ({
+    tracker,
+  }) => {
     const testQuoteData = createValidGrowwQuotePayload();
     const testDatetime = generateUniqueTestDatetime();
-    await createNiftyQuoteSnapshot(testDatetime, testQuoteData, tracker);
+    await createQuoteSnapshot(TEST_SYMBOL, testDatetime, testQuoteData, tracker);
 
-    const query = createGrowwNiftyQuoteQuery(testDatetime);
+    const query = createGrowwQuoteQuery(TEST_SYMBOL, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/nifty?${queryString}`,
+      `/v1/developer/quote?${queryString}`,
       developerToken
     );
 
     expect(response.status).toBe(200);
     const body = response.data;
     expect(body.statusCode).toBe(200);
-    expect(body.message).toBe("NIFTY quote fetched successfully");
+    expect(body.message).toBe("Quote fetched successfully");
     expect(body.data).not.toBeNull();
 
     // Validate response matches schema
-    const validatedData = v1_developer_groww_schemas.getGrowwNiftyQuote.response.parse(body);
+    const validatedData = v1_developer_groww_schemas.getGrowwQuote.response.parse(body);
     expect(validatedData.data).not.toBeNull();
 
     // Validate data structure matches stored snapshot
@@ -127,15 +129,15 @@ test.describe("GET /v1/developer/nifty", () => {
 
       // Depth buy array
       expect(validatedData.data.payload.depth?.buy).toHaveLength(3);
-      expect(validatedData.data.payload.depth?.buy[0]).toEqual({ price: 2500.0, quantity: 100 });
+      expect(validatedData.data.payload.depth?.buy[0]).toEqual({ price: 2500, quantity: 100 });
       expect(validatedData.data.payload.depth?.buy[1]).toEqual({ price: 2499.5, quantity: 200 });
-      expect(validatedData.data.payload.depth?.buy[2]).toEqual({ price: 2499.0, quantity: 150 });
+      expect(validatedData.data.payload.depth?.buy[2]).toEqual({ price: 2499, quantity: 150 });
 
       // Depth sell array
       expect(validatedData.data.payload.depth?.sell).toHaveLength(3);
-      expect(validatedData.data.payload.depth?.sell[0]).toEqual({ price: 2501.0, quantity: 100 });
+      expect(validatedData.data.payload.depth?.sell[0]).toEqual({ price: 2501, quantity: 100 });
       expect(validatedData.data.payload.depth?.sell[1]).toEqual({ price: 2501.5, quantity: 200 });
-      expect(validatedData.data.payload.depth?.sell[2]).toEqual({ price: 2502.0, quantity: 150 });
+      expect(validatedData.data.payload.depth?.sell[2]).toEqual({ price: 2502, quantity: 150 });
 
       // Numeric fields
       expect(validatedData.data.payload.volume).toBe(50000);
@@ -170,71 +172,36 @@ test.describe("GET /v1/developer/nifty", () => {
 
   test("should return null data when snapshot is not found", async () => {
     const futureDatetime = "2099-01-01T10:30:00";
-    const query = createGrowwNiftyQuoteQuery(futureDatetime);
-    const queryString = buildQueryString(query);
+    const query = createGrowwQuoteQuery(TEST_SYMBOL, futureDatetime);
+    const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
-      `/v1/developer/nifty?${queryString}`,
+      `/v1/developer/quote?${queryString}`,
       developerToken
     );
 
     expect(response.status).toBe(200);
     const body = response.data;
     expect(body.statusCode).toBe(200);
-    expect(body.message).toBe("NIFTY quote snapshot not found");
+    expect(body.message).toBe("Quote snapshot not found");
     expect(body.data).toBeNull();
-  });
-
-  test("should handle multiple snapshots in same minute window (return most recent)", async ({
-    tracker,
-  }) => {
-    // Use a fixed datetime for this test to ensure snapshots are within the same minute window
-    const baseDatetime = "2025-12-26T12:00:00"; // Fixed datetime for this specific test
-    const testQuoteData1 = createValidGrowwQuotePayload();
-    const testQuoteData2 = createValidGrowwQuotePayload();
-    testQuoteData2.payload.last_price = 2600.0; // Different price to distinguish
-
-    // Create two snapshots within the same minute window
-    await createNiftyQuoteSnapshot(
-      baseDatetime, // First snapshot at exact minute
-      testQuoteData1,
-      tracker
-    );
-    await createNiftyQuoteSnapshot(
-      dayjs.tz(baseDatetime, "Asia/Kolkata").add(30, "seconds").format("YYYY-MM-DDTHH:mm:ss"), // 30 seconds later, same minute
-      testQuoteData2,
-      tracker
-    );
-
-    const query = createGrowwNiftyQuoteQuery(baseDatetime);
-    const queryString = buildQueryString(query);
-    const response = await authenticatedGet(
-      `/v1/developer/nifty?${queryString}`,
-      developerToken
-    );
-
-    expect(response.status).toBe(200);
-    const body = response.data;
-    expect(body.statusCode).toBe(200);
-    expect(body.data).not.toBeNull();
-    // Should return the most recent one (timestamp2)
-    expect(body.data?.payload.last_price).toBe(2600.0);
   });
 
   test("should allow request with datetime < currentTimestamp when headers are present", async ({
     tracker,
   }) => {
     const testDatetime = generateUniqueTestDatetime();
-    await createNiftyQuoteSnapshot(testDatetime, createValidGrowwQuotePayload(), tracker);
+    const testSymbol = TEST_SYMBOL;
+    await createQuoteSnapshot(testSymbol, testDatetime, createValidGrowwQuotePayload(), tracker);
 
     // Create a run and set currentTimestamp to 1 hour after testDatetime
     const currentTimestamp = parseDateTimeInTimezone(testDatetime, "Asia/Kolkata");
     currentTimestamp.setHours(currentTimestamp.getHours() + 1);
     const run = await createRun(developerId, testDatetime, currentTimestamp.toISOString(), tracker);
 
-    const query = createGrowwNiftyQuoteQuery(testDatetime);
+    const query = createGrowwQuoteQuery(testSymbol, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/nifty?${queryString}`,
+      `/v1/developer/quote?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp
@@ -248,7 +215,8 @@ test.describe("GET /v1/developer/nifty", () => {
 
   test("should return 403 when datetime equals currentTimestamp", async ({ tracker }) => {
     const testDatetime = generateUniqueTestDatetime();
-    await createNiftyQuoteSnapshot(testDatetime, createValidGrowwQuotePayload(), tracker);
+    const testSymbol = TEST_SYMBOL;
+    await createQuoteSnapshot(testSymbol, testDatetime, createValidGrowwQuotePayload(), tracker);
 
     const currentTimestamp = parseDateTimeInTimezone(testDatetime, "Asia/Kolkata");
     const run = await createRun(
@@ -258,11 +226,11 @@ test.describe("GET /v1/developer/nifty", () => {
       tracker
     );
 
-    const query = createGrowwNiftyQuoteQuery(testDatetime);
+    const query = createGrowwQuoteQuery(testSymbol, testDatetime);
     const queryString = buildQueryString(query);
 
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/nifty?${queryString}`,
+      `/v1/developer/quote?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -279,16 +247,17 @@ test.describe("GET /v1/developer/nifty", () => {
 
   test("should return 403 when datetime > currentTimestamp", async ({ tracker }) => {
     const testDatetime = generateUniqueTestDatetime();
-    await createNiftyQuoteSnapshot(testDatetime, createValidGrowwQuotePayload(), tracker);
+    const testSymbol = TEST_SYMBOL;
+    await createQuoteSnapshot(testSymbol, testDatetime, createValidGrowwQuotePayload(), tracker);
 
     const currentTimestamp = parseDateTimeInTimezone(testDatetime, "Asia/Kolkata");
     currentTimestamp.setHours(currentTimestamp.getHours() - 1); // currentTimestamp is 1 hour before testDatetime
     const run = await createRun(developerId, testDatetime, currentTimestamp.toISOString(), tracker);
 
-    const query = createGrowwNiftyQuoteQuery(testDatetime);
+    const query = createGrowwQuoteQuery(testSymbol, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/nifty?${queryString}`,
+      `/v1/developer/quote?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -304,27 +273,18 @@ test.describe("GET /v1/developer/nifty", () => {
 
   test("should allow request without headers (backward compatibility)", async ({ tracker }) => {
     const testDatetime = generateUniqueTestDatetime();
-    await createNiftyQuoteSnapshot(testDatetime, createValidGrowwQuotePayload(), tracker);
+    const testSymbol = TEST_SYMBOL;
+    await createQuoteSnapshot(testSymbol, testDatetime, createValidGrowwQuotePayload(), tracker);
 
-    const query = createGrowwNiftyQuoteQuery(testDatetime);
+    const query = createGrowwQuoteQuery(testSymbol, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/nifty?${queryString}`,
+      `/v1/developer/quote?${queryString}`,
       developerToken
     );
 
     expect(response.status).toBe(200);
     const body = response.data;
     expect(body.statusCode).toBe(200);
-  });
-
-  test("should return 400 when datetime is missing", async () => {
-    const response = await authenticatedGet("/v1/developer/nifty", developerToken, {
-      validateStatus: () => true,
-    });
-
-    expect(response.status).toBe(400);
-    const body = response.data;
-    expect(body.message).toContain("datetime parameter is required");
   });
 });

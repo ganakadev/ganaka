@@ -58,7 +58,7 @@ export const fetchNiftyQuoteTimeline =
 
       const response = await axios.get<
         z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuoteTimeline.response>
-      >(`${apiDomain}/v1/developer/groww/nifty-timeline`, {
+      >(`${apiDomain}/v1/developer/nifty-timeline`, {
         params: validatedParams,
         headers,
       });

@@ -60,7 +60,7 @@ export const fetchQuoteTimeline =
 
       const response = await axios.get<
         z.infer<typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.response>
-      >(`${apiDomain}/v1/developer/groww/quote-timeline`, {
+      >(`${apiDomain}/v1/developer/quote-timeline`, {
         params: validatedParams,
         headers,
       });

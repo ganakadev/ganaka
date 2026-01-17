@@ -1375,161 +1375,161 @@
     "name": "should return 401 when authorization header is missing",
     "file": "developer/groww",
     "testType": "Authorization & Authentication Tests",
-    "endpoint": "/v1/developer/groww/token",
+    "endpoint": "/v1/developer/token",
     "httpMethod": "GET"
   },
   {
     "name": "should return 401 when invalid token is provided",
     "file": "developer/groww",
     "testType": "Authorization & Authentication Tests",
-    "endpoint": "/v1/developer/groww/token",
+    "endpoint": "/v1/developer/token",
     "httpMethod": "GET"
   },
   {
     "name": "should return token successfully with valid developer token",
     "file": "developer/groww",
     "testType": "Success Path Tests",
-    "endpoint": "/v1/developer/groww/token",
+    "endpoint": "/v1/developer/token",
     "httpMethod": "GET"
   },
   {
     "name": "should return 401 when authorization header is missing",
     "file": "developer/groww",
     "testType": "Authorization & Authentication Tests",
-    "endpoint": "/v1/developer/groww/quote",
+    "endpoint": "/v1/developer/quote",
     "httpMethod": "GET"
   },
   {
     "name": "should return 401 when invalid token is provided",
     "file": "developer/groww",
     "testType": "Authorization & Authentication Tests",
-    "endpoint": "/v1/developer/groww/quote",
+    "endpoint": "/v1/developer/quote",
     "httpMethod": "GET"
   },
   {
     "name": "should return 400 when symbol is missing",
     "file": "developer/groww",
     "testType": "Input Validation Tests",
-    "endpoint": "/v1/developer/groww/quote",
+    "endpoint": "/v1/developer/quote",
     "httpMethod": "GET"
   },
   {
     "name": "should return 400 when datetime format is invalid",
     "file": "developer/groww",
     "testType": "Input Validation Tests",
-    "endpoint": "/v1/developer/groww/quote",
+    "endpoint": "/v1/developer/quote",
     "httpMethod": "GET"
   },
   {
     "name": "should return snapshot data when valid datetime and symbol are provided",
     "file": "developer/groww",
     "testType": "Success Path Tests",
-    "endpoint": "/v1/developer/groww/quote",
+    "endpoint": "/v1/developer/quote",
     "httpMethod": "GET"
   },
   {
     "name": "should return null data when snapshot is not found",
     "file": "developer/groww",
     "testType": "Edge Case Tests",
-    "endpoint": "/v1/developer/groww/quote",
+    "endpoint": "/v1/developer/quote",
     "httpMethod": "GET"
   },
   {
     "name": "should return 401 when authorization header is missing",
     "file": "developer/groww",
     "testType": "Authorization & Authentication Tests",
-    "endpoint": "/v1/developer/groww/historical-candles",
+    "endpoint": "/v1/developer/historical-candles",
     "httpMethod": "GET"
   },
   {
     "name": "should return 401 when invalid token is provided",
     "file": "developer/groww",
     "testType": "Authorization & Authentication Tests",
-    "endpoint": "/v1/developer/groww/historical-candles",
+    "endpoint": "/v1/developer/historical-candles",
     "httpMethod": "GET"
   },
   {
     "name": "should return 400 when symbol is missing",
     "file": "developer/groww",
     "testType": "Input Validation Tests",
-    "endpoint": "/v1/developer/groww/historical-candles",
+    "endpoint": "/v1/developer/historical-candles",
     "httpMethod": "GET"
   },
   {
     "name": "should return 400 when interval is missing",
     "file": "developer/groww",
     "testType": "Input Validation Tests",
-    "endpoint": "/v1/developer/groww/historical-candles",
+    "endpoint": "/v1/developer/historical-candles",
     "httpMethod": "GET"
   },
   {
     "name": "should return 400 when start_time is missing",
     "file": "developer/groww",
     "testType": "Input Validation Tests",
-    "endpoint": "/v1/developer/groww/historical-candles",
+    "endpoint": "/v1/developer/historical-candles",
     "httpMethod": "GET"
   },
   {
     "name": "should return 400 when end_time is missing",
     "file": "developer/groww",
     "testType": "Input Validation Tests",
-    "endpoint": "/v1/developer/groww/historical-candles",
+    "endpoint": "/v1/developer/historical-candles",
     "httpMethod": "GET"
   },
   {
     "name": "should return 400 when interval is invalid",
     "file": "developer/groww",
     "testType": "Input Validation Tests",
-    "endpoint": "/v1/developer/groww/historical-candles",
+    "endpoint": "/v1/developer/historical-candles",
     "httpMethod": "GET"
   },
   {
     "name": "should return candles data with correct structure",
     "file": "developer/groww",
     "testType": "Structure Validation Tests",
-    "endpoint": "/v1/developer/groww/historical-candles",
+    "endpoint": "/v1/developer/historical-candles",
     "httpMethod": "GET"
   },
   {
     "name": "should return 401 when authorization header is missing",
     "file": "developer/groww",
     "testType": "Authorization & Authentication Tests",
-    "endpoint": "/v1/developer/groww/quote-timeline",
+    "endpoint": "/v1/developer/quote-timeline",
     "httpMethod": "GET"
   },
   {
     "name": "should return 401 when invalid token is provided",
     "file": "developer/groww",
     "testType": "Authorization & Authentication Tests",
-    "endpoint": "/v1/developer/groww/quote-timeline",
+    "endpoint": "/v1/developer/quote-timeline",
     "httpMethod": "GET"
   },
   {
     "name": "should return 400 when symbol is missing",
     "file": "developer/groww",
     "testType": "Input Validation Tests",
-    "endpoint": "/v1/developer/groww/quote-timeline",
+    "endpoint": "/v1/developer/quote-timeline",
     "httpMethod": "GET"
   },
   {
     "name": "should return 400 when date is missing",
     "file": "developer/groww",
     "testType": "Input Validation Tests",
-    "endpoint": "/v1/developer/groww/quote-timeline",
+    "endpoint": "/v1/developer/quote-timeline",
     "httpMethod": "GET"
   },
   {
     "name": "should return empty array when no snapshots exist",
     "file": "developer/groww",
     "testType": "Edge Case Tests",
-    "endpoint": "/v1/developer/groww/quote-timeline",
+    "endpoint": "/v1/developer/quote-timeline",
     "httpMethod": "GET"
   },
   {
     "name": "should return timeline array for valid date with known symbol",
     "file": "developer/groww",
     "testType": "Success Path Tests",
-    "endpoint": "/v1/developer/groww/quote-timeline",
+    "endpoint": "/v1/developer/quote-timeline",
     "httpMethod": "GET"
   },
   {
