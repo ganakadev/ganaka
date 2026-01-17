@@ -49,10 +49,10 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/groww/nifty", () => {
+test.describe("GET /v1/developer/nifty", () => {
   test("should return 401 when authorization header is missing", async () => {
     const response = await unauthenticatedGet(
-      "/v1/developer/groww/nifty?datetime=2025-12-26T10:06:00"
+      "/v1/developer/nifty?datetime=2025-12-26T10:06:00"
     );
 
     expect(response.status).toBe(401);
@@ -60,7 +60,7 @@ test.describe("GET /v1/developer/groww/nifty", () => {
 
   test("should return 401 when invalid token is provided", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/groww/nifty?datetime=2025-12-26T10:06:00",
+      "/v1/developer/nifty?datetime=2025-12-26T10:06:00",
       "invalid-token-12345",
       {
         validateStatus: () => true,
@@ -72,7 +72,7 @@ test.describe("GET /v1/developer/groww/nifty", () => {
 
   test("should return 400 when datetime format is invalid", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/groww/nifty?datetime=invalid-date",
+      "/v1/developer/nifty?datetime=invalid-date",
       developerToken,
       {
         validateStatus: () => true,
@@ -90,7 +90,7 @@ test.describe("GET /v1/developer/groww/nifty", () => {
     const query = createGrowwNiftyQuoteQuery(testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/nifty?${queryString}`,
+      `/v1/developer/nifty?${queryString}`,
       developerToken
     );
 
@@ -173,7 +173,7 @@ test.describe("GET /v1/developer/groww/nifty", () => {
     const query = createGrowwNiftyQuoteQuery(futureDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/nifty?${queryString}`,
+      `/v1/developer/nifty?${queryString}`,
       developerToken
     );
 
@@ -208,7 +208,7 @@ test.describe("GET /v1/developer/groww/nifty", () => {
     const query = createGrowwNiftyQuoteQuery(baseDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/nifty?${queryString}`,
+      `/v1/developer/nifty?${queryString}`,
       developerToken
     );
 
@@ -234,7 +234,7 @@ test.describe("GET /v1/developer/groww/nifty", () => {
     const query = createGrowwNiftyQuoteQuery(testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/groww/nifty?${queryString}`,
+      `/v1/developer/nifty?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp
@@ -262,7 +262,7 @@ test.describe("GET /v1/developer/groww/nifty", () => {
     const queryString = buildQueryString(query);
 
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/groww/nifty?${queryString}`,
+      `/v1/developer/nifty?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -288,7 +288,7 @@ test.describe("GET /v1/developer/groww/nifty", () => {
     const query = createGrowwNiftyQuoteQuery(testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/groww/nifty?${queryString}`,
+      `/v1/developer/nifty?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -309,7 +309,7 @@ test.describe("GET /v1/developer/groww/nifty", () => {
     const query = createGrowwNiftyQuoteQuery(testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/nifty?${queryString}`,
+      `/v1/developer/nifty?${queryString}`,
       developerToken
     );
 
@@ -319,7 +319,7 @@ test.describe("GET /v1/developer/groww/nifty", () => {
   });
 
   test("should return 400 when datetime is missing", async () => {
-    const response = await authenticatedGet("/v1/developer/groww/nifty", developerToken, {
+    const response = await authenticatedGet("/v1/developer/nifty", developerToken, {
       validateStatus: () => true,
     });
 

@@ -55,7 +55,7 @@ export const fetchCandles =
 
       const response = await axios.get<
         z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response>
-      >(`${apiDomain}/v1/developer/groww/historical-candles`, {
+      >(`${apiDomain}/v1/developer/historical-candles`, {
         params: validatedParams,
         headers,
       });

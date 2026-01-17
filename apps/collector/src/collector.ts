@@ -43,7 +43,7 @@ export const getGrowwQuote = (developerKey: string) => async (symbol: string) =>
   };
 
   return axios.get<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(
-    `${API_DOMAIN}/v1/developer/groww/quote`,
+    `${API_DOMAIN}/v1/developer/quote`,
     {
       params,
       headers: {

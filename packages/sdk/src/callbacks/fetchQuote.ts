@@ -52,7 +52,7 @@ export const fetchQuote =
 
       const response = await axios.get<
         z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>
-      >(`${apiDomain}/v1/developer/groww/quote`, {
+      >(`${apiDomain}/v1/developer/quote`, {
         params: validatedParams,
         headers,
       });

@@ -59,9 +59,9 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/groww/token", () => {
+test.describe("GET /v1/developer/token", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/developer/groww/token");
+    const response = await unauthenticatedGet("/v1/developer/token");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -69,7 +69,7 @@ test.describe("GET /v1/developer/groww/token", () => {
   });
 
   test("should return 401 when invalid token is provided", async () => {
-    const response = await authenticatedGet("/v1/developer/groww/token", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/developer/token", "invalid-token-12345", {
       validateStatus: () => true,
     });
 
@@ -79,7 +79,7 @@ test.describe("GET /v1/developer/groww/token", () => {
   });
 
   test("should return token successfully with valid developer token", async () => {
-    const response = await authenticatedGet("/v1/developer/groww/token", developerToken);
+    const response = await authenticatedGet("/v1/developer/token", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -94,16 +94,16 @@ test.describe("GET /v1/developer/groww/token", () => {
   });
 });
 
-test.describe("GET /v1/developer/groww/quote", () => {
+test.describe("GET /v1/developer/quote", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/developer/groww/quote?symbol=RELIANCE");
+    const response = await unauthenticatedGet("/v1/developer/quote?symbol=RELIANCE");
 
     expect(response.status).toBe(401);
   });
 
   test("should return 401 when invalid token is provided", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/groww/quote?symbol=RELIANCE",
+      "/v1/developer/quote?symbol=RELIANCE",
       "invalid-token-12345",
       {
         validateStatus: () => true,
@@ -114,7 +114,7 @@ test.describe("GET /v1/developer/groww/quote", () => {
   });
 
   test("should return 400 when symbol is missing", async () => {
-    const response = await authenticatedGet("/v1/developer/groww/quote", developerToken, {
+    const response = await authenticatedGet("/v1/developer/quote", developerToken, {
       validateStatus: () => true,
     });
 
@@ -123,7 +123,7 @@ test.describe("GET /v1/developer/groww/quote", () => {
 
   test("should return 400 when datetime format is invalid", async () => {
     const response = await authenticatedGet(
-      `/v1/developer/groww/quote?symbol=${TEST_SYMBOL}&datetime=invalid-date`,
+      `/v1/developer/quote?symbol=${TEST_SYMBOL}&datetime=invalid-date`,
       developerToken,
       {
         validateStatus: () => true,
@@ -143,7 +143,7 @@ test.describe("GET /v1/developer/groww/quote", () => {
     const query = createGrowwQuoteQuery(TEST_SYMBOL, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/quote?${queryString}`,
+      `/v1/developer/quote?${queryString}`,
       developerToken
     );
 
@@ -226,7 +226,7 @@ test.describe("GET /v1/developer/groww/quote", () => {
     const query = createGrowwQuoteQuery(TEST_SYMBOL, futureDatetime);
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
-      `/v1/developer/groww/quote?${queryString}`,
+      `/v1/developer/quote?${queryString}`,
       developerToken
     );
 
@@ -252,7 +252,7 @@ test.describe("GET /v1/developer/groww/quote", () => {
     const query = createGrowwQuoteQuery(testSymbol, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/groww/quote?${queryString}`,
+      `/v1/developer/quote?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp
@@ -281,7 +281,7 @@ test.describe("GET /v1/developer/groww/quote", () => {
     const queryString = buildQueryString(query);
 
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/groww/quote?${queryString}`,
+      `/v1/developer/quote?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -308,7 +308,7 @@ test.describe("GET /v1/developer/groww/quote", () => {
     const query = createGrowwQuoteQuery(testSymbol, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/groww/quote?${queryString}`,
+      `/v1/developer/quote?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -330,7 +330,7 @@ test.describe("GET /v1/developer/groww/quote", () => {
     const query = createGrowwQuoteQuery(testSymbol, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/quote?${queryString}`,
+      `/v1/developer/quote?${queryString}`,
       developerToken
     );
 
@@ -340,12 +340,12 @@ test.describe("GET /v1/developer/groww/quote", () => {
   });
 });
 
-test.describe("GET /v1/developer/groww/historical-candles", () => {
+test.describe("GET /v1/developer/historical-candles", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createHistoricalCandlesQuery();
     const queryString = buildQueryString(query);
     const response = await unauthenticatedGet(
-      `/v1/developer/groww/historical-candles?${queryString}`
+      `/v1/developer/historical-candles?${queryString}`
     );
 
     expect(response.status).toBe(401);
@@ -355,7 +355,7 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
     const query = createHistoricalCandlesQuery();
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/historical-candles?${queryString}`,
+      `/v1/developer/historical-candles?${queryString}`,
       "invalid-token-12345",
       {
         validateStatus: () => true,
@@ -375,7 +375,7 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
     };
     const queryString = buildQueryString(queryWithoutSymbol);
     const response = await authenticatedGet(
-      `/v1/developer/groww/historical-candles?${queryString}`,
+      `/v1/developer/historical-candles?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -395,7 +395,7 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
     };
     const queryString = buildQueryString(queryWithoutInterval);
     const response = await authenticatedGet(
-      `/v1/developer/groww/historical-candles?${queryString}`,
+      `/v1/developer/historical-candles?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -415,7 +415,7 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
     };
     const queryString = buildQueryString(queryWithoutStartTime);
     const response = await authenticatedGet(
-      `/v1/developer/groww/historical-candles?${queryString}`,
+      `/v1/developer/historical-candles?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -435,7 +435,7 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
     };
     const queryString = buildQueryString(queryWithoutEndTime);
     const response = await authenticatedGet(
-      `/v1/developer/groww/historical-candles?${queryString}`,
+      `/v1/developer/historical-candles?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -456,7 +456,7 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
     };
     const queryString = buildQueryString(queryWithInvalidInterval);
     const response = await authenticatedGet(
-      `/v1/developer/groww/historical-candles?${queryString}`,
+      `/v1/developer/historical-candles?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -470,7 +470,7 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
     const query = createHistoricalCandlesQuery();
     const queryString = new URLSearchParams(query).toString();
     const response = await authenticatedGet(
-      `/v1/developer/groww/historical-candles?${queryString}`,
+      `/v1/developer/historical-candles?${queryString}`,
       developerToken
     );
 
@@ -670,7 +670,7 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
     const query = createHistoricalCandlesQuery(TEST_SYMBOL, "5minute", startDatetime, endDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/groww/historical-candles?${queryString}`,
+      `/v1/developer/historical-candles?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -699,7 +699,7 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
     const query = createHistoricalCandlesQuery(TEST_SYMBOL, "5minute", startDatetime, endDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/groww/historical-candles?${queryString}`,
+      `/v1/developer/historical-candles?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -731,7 +731,7 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
     const query = createHistoricalCandlesQuery(TEST_SYMBOL, "5minute", startDatetime, endDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/groww/historical-candles?${queryString}`,
+      `/v1/developer/historical-candles?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -749,7 +749,7 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
     const query = createHistoricalCandlesQuery();
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/historical-candles?${queryString}`,
+      `/v1/developer/historical-candles?${queryString}`,
       developerToken,
       { validateStatus: () => true }
     );
@@ -759,11 +759,11 @@ test.describe("GET /v1/developer/groww/historical-candles", () => {
   });
 });
 
-test.describe("GET /v1/developer/groww/quote-timeline", () => {
+test.describe("GET /v1/developer/quote-timeline", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createQuoteTimelineQuery();
     const queryString = buildQueryString(query);
-    const response = await unauthenticatedGet(`/v1/developer/groww/quote-timeline?${queryString}`);
+    const response = await unauthenticatedGet(`/v1/developer/quote-timeline?${queryString}`);
 
     expect(response.status).toBe(401);
   });
@@ -772,7 +772,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     const query = createQuoteTimelineQuery();
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/quote-timeline?${queryString}`,
+      `/v1/developer/quote-timeline?${queryString}`,
       "invalid-token-12345",
       {
         validateStatus: () => true,
@@ -789,7 +789,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     };
     const queryString = buildQueryString(queryWithoutSymbol);
     const response = await authenticatedGet(
-      `/v1/developer/groww/quote-timeline?${queryString}`,
+      `/v1/developer/quote-timeline?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -806,7 +806,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     };
     const queryString = buildQueryString(queryWithoutEndDatetime);
     const response = await authenticatedGet(
-      `/v1/developer/groww/quote-timeline?${queryString}`,
+      `/v1/developer/quote-timeline?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -821,7 +821,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     const query = createQuoteTimelineQuery(TEST_SYMBOL, futureDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/quote-timeline?${queryString}`,
+      `/v1/developer/quote-timeline?${queryString}`,
       developerToken
     );
 
@@ -845,7 +845,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     const query = createQuoteTimelineQuery(testSymbol, testEndDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/quote-timeline?${queryString}`,
+      `/v1/developer/quote-timeline?${queryString}`,
       developerToken
     );
 
@@ -926,7 +926,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     const query = createQuoteTimelineQuery(testSymbol, testEndDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/groww/quote-timeline?${queryString}`,
+      `/v1/developer/quote-timeline?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp
@@ -946,7 +946,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     const query = createQuoteTimelineQuery(testSymbol, testEndDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/quote-timeline?${queryString}`,
+      `/v1/developer/quote-timeline?${queryString}`,
       developerToken
     );
 
@@ -974,7 +974,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     const query = createQuoteTimelineQuery(testSymbol, testEndDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/quote-timeline?${queryString}`,
+      `/v1/developer/quote-timeline?${queryString}`,
       developerToken
     );
 
@@ -1001,7 +1001,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     const query = createQuoteTimelineQuery(testSymbol, testEndDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/groww/quote-timeline?${queryString}`,
+      `/v1/developer/quote-timeline?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -1023,7 +1023,7 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
     const query = createQuoteTimelineQuery(testSymbol, testEndDatetime, "Asia/Kolkata");
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/quote-timeline?${queryString}`,
+      `/v1/developer/quote-timeline?${queryString}`,
       developerToken
     );
 
@@ -1035,11 +1035,11 @@ test.describe("GET /v1/developer/groww/quote-timeline", () => {
   });
 });
 
-test.describe("GET /v1/developer/groww/nifty-timeline", () => {
+test.describe("GET /v1/developer/nifty-timeline", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createNiftyQuoteTimelineQuery();
     const queryString = buildQueryString(query);
-    const response = await unauthenticatedGet(`/v1/developer/groww/nifty-timeline?${queryString}`);
+    const response = await unauthenticatedGet(`/v1/developer/nifty-timeline?${queryString}`);
 
     expect(response.status).toBe(401);
   });
@@ -1048,7 +1048,7 @@ test.describe("GET /v1/developer/groww/nifty-timeline", () => {
     const query = createNiftyQuoteTimelineQuery();
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/nifty-timeline?${queryString}`,
+      `/v1/developer/nifty-timeline?${queryString}`,
       "invalid-token-12345",
       {
         validateStatus: () => true,
@@ -1062,7 +1062,7 @@ test.describe("GET /v1/developer/groww/nifty-timeline", () => {
     const queryWithoutEndDatetime = {};
     const queryString = buildQueryString(queryWithoutEndDatetime);
     const response = await authenticatedGet(
-      `/v1/developer/groww/nifty-timeline?${queryString}`,
+      `/v1/developer/nifty-timeline?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -1077,7 +1077,7 @@ test.describe("GET /v1/developer/groww/nifty-timeline", () => {
     const query = createNiftyQuoteTimelineQuery(futureDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/nifty-timeline?${queryString}`,
+      `/v1/developer/nifty-timeline?${queryString}`,
       developerToken
     );
 
@@ -1100,7 +1100,7 @@ test.describe("GET /v1/developer/groww/nifty-timeline", () => {
     const query = createNiftyQuoteTimelineQuery(testEndDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/nifty-timeline?${queryString}`,
+      `/v1/developer/nifty-timeline?${queryString}`,
       developerToken
     );
 
@@ -1175,7 +1175,7 @@ test.describe("GET /v1/developer/groww/nifty-timeline", () => {
     const query = createNiftyQuoteTimelineQuery(testEndDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/groww/nifty-timeline?${queryString}`,
+      `/v1/developer/nifty-timeline?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp
@@ -1194,7 +1194,7 @@ test.describe("GET /v1/developer/groww/nifty-timeline", () => {
     const query = createNiftyQuoteTimelineQuery(testEndDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/nifty-timeline?${queryString}`,
+      `/v1/developer/nifty-timeline?${queryString}`,
       developerToken
     );
 
@@ -1221,7 +1221,7 @@ test.describe("GET /v1/developer/groww/nifty-timeline", () => {
     const query = createNiftyQuoteTimelineQuery(testEndDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/nifty-timeline?${queryString}`,
+      `/v1/developer/nifty-timeline?${queryString}`,
       developerToken
     );
 
@@ -1247,7 +1247,7 @@ test.describe("GET /v1/developer/groww/nifty-timeline", () => {
     const query = createNiftyQuoteTimelineQuery(testEndDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/groww/nifty-timeline?${queryString}`,
+      `/v1/developer/nifty-timeline?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -1268,7 +1268,7 @@ test.describe("GET /v1/developer/groww/nifty-timeline", () => {
     const query = createNiftyQuoteTimelineQuery(testEndDatetime, "Asia/Kolkata");
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/groww/nifty-timeline?${queryString}`,
+      `/v1/developer/nifty-timeline?${queryString}`,
       developerToken
     );
 
