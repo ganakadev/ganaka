@@ -5,20 +5,15 @@ import utc from "dayjs/plugin/utc";
 import { FastifyPluginAsync } from "fastify";
 import z from "zod";
 import { validateCurrentTimestamp } from "../../../../utils/current-timestamp-validator";
+import { prisma } from "../../../../utils/prisma";
 import { sendResponse } from "../../../../utils/sendResponse";
 import { parseDateTimeInTimezone } from "../../../../utils/timezone";
-import { TokenManager } from "../../../../utils/token-manager";
 import { validateRequest } from "../../../../utils/validator";
-import { prisma } from "../../../../utils/prisma";
-import { RedisManager } from "../../../../utils/redis";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const niftyRoutes: FastifyPluginAsync = async (fastify) => {
-  const redisManager = RedisManager.getInstance(fastify);
-  const tokenManager = new TokenManager(redisManager.redis, fastify);
-
+const niftyRoutes: FastifyPluginAsync = async (fastify) => {  
   // NIFTY quote endpoint
   fastify.get("/", async (request, reply) => {
     const validationResult = validateRequest(
