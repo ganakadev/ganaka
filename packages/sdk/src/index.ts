@@ -36,6 +36,9 @@ export interface RunContext {
   fetchNiftyQuote: ReturnType<typeof fetchNiftyQuote>;
   /**
    * Given an end_datetime, returns the NIFTY quote timeline for the given date
+   * 
+   * @param end_datetime - The end datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
+   * @returns The NIFTY quote timeline for the given date
    */
   fetchNiftyQuoteTimeline: ReturnType<typeof fetchNiftyQuoteTimeline>;
   /**
