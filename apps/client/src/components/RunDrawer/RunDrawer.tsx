@@ -613,8 +613,8 @@ export const RunOrdersDrawer = ({
     <div className="flex flex-col gap-1">
       <h4 className="text-lg font-semibold">{watchedName || "Run Orders"}</h4>
       <span className="text-sm text-gray-500">
-        {dayjs(selectedRun.startTime).format("DD-MM-YYYY HH:mm")} -{" "}
-        {dayjs(selectedRun.endTime).format("HH:mm")}
+        {convertUTCToIST(selectedRun.startTime).format("DD-MM-YYYY HH:mm")} -{" "}
+        {convertUTCToIST(selectedRun.endTime).format("HH:mm")}
       </span>
       {watchedTags.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-1">
