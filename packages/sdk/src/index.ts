@@ -10,6 +10,7 @@ import { fetchQuoteTimeline } from "./callbacks/fetchQuoteTimeline";
 import { fetchShortlist } from "./callbacks/fetchShortlist";
 import { fetchShortlistPersistence } from "./callbacks/fetchShortlistPersistence";
 import { fetchNiftyQuote } from "./callbacks/fetchNiftyQuote";
+import { fetchNiftyQuoteTimeline } from "./callbacks/fetchNiftyQuoteTimeline";
 import { placeOrder } from "./callbacks/placeOrder";
 import { ApiClient } from "./utils/apiClient";
 import { logger } from "./utils/logger";
@@ -24,6 +25,7 @@ export { growwQuotePayloadSchema, growwQuoteSchema };
 export type FetchQuoteTimelineResponse = Awaited<ReturnType<ReturnType<typeof fetchQuoteTimeline>>>;
 export type FetchQuoteResponse = Awaited<ReturnType<ReturnType<typeof fetchQuote>>>;
 export type FetchNiftyQuoteResponse = Awaited<ReturnType<ReturnType<typeof fetchNiftyQuote>>>;
+export type FetchNiftyQuoteTimelineResponse = Awaited<ReturnType<ReturnType<typeof fetchNiftyQuoteTimeline>>>;
 export type FetchCandlesResponse = Awaited<ReturnType<ReturnType<typeof fetchCandles>>>;
 export type FetchShortlistResponse = Awaited<ReturnType<ReturnType<typeof fetchShortlist>>>;
 
@@ -32,6 +34,10 @@ export interface RunContext {
   fetchCandles: ReturnType<typeof fetchCandles>;
   fetchQuote: ReturnType<typeof fetchQuote>;
   fetchNiftyQuote: ReturnType<typeof fetchNiftyQuote>;
+  /**
+   * Given an end_datetime, returns the NIFTY quote timeline for the given date
+   */
+  fetchNiftyQuoteTimeline: ReturnType<typeof fetchNiftyQuoteTimeline>;
   /**
    * Given a symbol and a end_datetime, returns the quote timeline for the given date
    */
@@ -165,6 +171,13 @@ export async function ganaka<T>({
             currentTimezone: "Asia/Kolkata",
           }),
           fetchNiftyQuote: fetchNiftyQuote({
+            developerToken,
+            apiDomain,
+            runId,
+            currentTimestamp,
+            currentTimezone: "Asia/Kolkata",
+          }),
+          fetchNiftyQuoteTimeline: fetchNiftyQuoteTimeline({
             developerToken,
             apiDomain,
             runId,

@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { prisma } from "../../src/utils/prisma";
 import { randomUUID } from "crypto";
-import type { ShortlistType, QuoteSnapshot, ShortlistSnapshot, InputJsonValue } from "@ganaka/db";
+import type { ShortlistType, QuoteSnapshot, ShortlistSnapshot, InputJsonValue, NiftyQuote } from "@ganaka/db";
 import type { z } from "zod";
 import {
   growwQuoteSchema,
@@ -297,6 +297,99 @@ export async function createMultipleQuoteSnapshots(
 
     if (tracker) {
       tracker.trackQuoteSnapshot(snapshot.id);
+    }
+  }
+
+  return snapshots;
+}
+
+/**
+ * Creates multiple NIFTY quote snapshots for testing
+ */
+export async function createMultipleNiftyQuoteSnapshots(
+  date: string,
+  count: number,
+  tracker: TestDataTracker
+): Promise<Array<Pick<NiftyQuote, "id" | "timestamp">>> {
+  // Parse the date string (YYYY-MM-DD format)
+  const dateStr = dayjs.utc(date).format("YYYY-MM-DD");
+  const snapshots: Array<Pick<NiftyQuote, "id" | "timestamp">> = [];
+
+  // Create snapshots at different times during market hours (9:15 AM - 3:30 PM IST)
+  const startHour = 9;
+  const startMinute = 15;
+  const intervalMinutes = Math.floor((15 * 60 - 15) / count); // Distribute across market hours
+
+  for (let i = 0; i < count; i++) {
+    const minutes = startMinute + i * intervalMinutes;
+    const hours = startHour + i;
+    const finalMinutes = minutes % 60;
+
+    // Create IST time using timezone plugin, then convert to UTC
+    const istTime = dayjs.tz(
+      `${dateStr} ${String(hours).padStart(2, "0")}:${String(finalMinutes).padStart(2, "0")}:00`,
+      "Asia/Kolkata"
+    );
+    const utcTime = istTime.utc();
+
+    const quoteData = {
+      status: "SUCCESS" as const,
+      payload: {
+        average_price: 24000.0 + i * 100,
+        bid_quantity: 1000 + i * 100,
+        bid_price: 24001.0 + i * 100,
+        day_change: 255.5 + i,
+        day_change_perc: 1.08 + i * 0.1,
+        upper_circuit_limit: 27500.0,
+        lower_circuit_limit: 20500.0,
+        ohlc: {
+          open: 23750.0 + i * 100,
+          high: 24100.0 + i * 100,
+          low: 23700.0 + i * 100,
+          close: 24000.0 + i * 100,
+        },
+        depth: {
+          buy: [{ price: 24000.0 + i * 100, quantity: 1000 }],
+          sell: [{ price: 24001.0 + i * 100, quantity: 1000 }],
+        },
+        high_trade_range: null,
+        implied_volatility: null,
+        last_trade_quantity: 500,
+        last_trade_time: utcTime.valueOf(),
+        low_trade_range: null,
+        last_price: 24000.0 + i * 100,
+        last_trade_volume: null,
+        lower_circuit_limit_hit: false,
+        market_cap: null,
+        offer_price: null,
+        offer_quantity: null,
+        oi_day_change: 0,
+        oi_day_change_percentage: 0,
+        open_interest: null,
+        previous_open_interest: null,
+        total_buy_quantity: 10000,
+        total_sell_quantity: 12000,
+        volume: 500000 + i * 10000,
+        week_52_high: 28000.0,
+        week_52_low: 20000.0,
+      },
+    };
+
+    const snapshot = await prisma.niftyQuote.create({
+      data: {
+        timestamp: utcTime.toDate(),
+        quoteData: quoteData as InputJsonValue,
+        dayChangePerc: 1.08 + i * 0.1,
+      },
+    });
+
+    snapshots.push({
+      id: snapshot.id,
+      timestamp: snapshot.timestamp,
+    });
+
+    if (tracker) {
+      tracker.trackNiftyQuote(snapshot.id);
     }
   }
 

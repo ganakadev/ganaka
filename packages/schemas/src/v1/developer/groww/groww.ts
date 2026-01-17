@@ -85,6 +85,28 @@ export const getGrowwQuoteTimeline = {
   }),
 };
 
+// ==================== GET /nifty-timeline ====================
+
+export const getGrowwNiftyQuoteTimeline = {
+  query: z.object({
+    end_datetime: datetimeFormatSchema,
+    timezone: timezoneSchema.optional(),
+  }),
+  response: apiResponseSchema.extend({
+    data: z.object({
+      niftyTimeline: z.array(
+        z.object({
+          id: z.string(),
+          timestamp: z.string(), // Format: YYYY-MM-DDTHH:mm:ss (UTC)
+          quoteData: growwQuoteSchema,
+          createdAt: z.string(), // Format: YYYY-MM-DDTHH:mm:ss (UTC)
+          updatedAt: z.string(), // Format: YYYY-MM-DDTHH:mm:ss (UTC)
+        })
+      ),
+    }),
+  }),
+};
+
 // ==================== GET /nifty ====================
 
 export const getGrowwNiftyQuote = {
