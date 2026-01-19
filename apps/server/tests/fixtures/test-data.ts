@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { faker } from "@faker-js/faker";
 import {
   v1_developer_groww_schemas,
