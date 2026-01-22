@@ -60,11 +60,23 @@ export namespace $Enums {
 
 export type ShortlistType = (typeof ShortlistType)[keyof typeof ShortlistType]
 
+
+export const ShortlistScope: {
+  FULL: 'FULL',
+  TOP_5: 'TOP_5'
+};
+
+export type ShortlistScope = (typeof ShortlistScope)[keyof typeof ShortlistScope]
+
 }
 
 export type ShortlistType = $Enums.ShortlistType
 
 export const ShortlistType: typeof $Enums.ShortlistType
+
+export type ShortlistScope = $Enums.ShortlistScope
+
+export const ShortlistScope: typeof $Enums.ShortlistScope
 
 /**
  * ##  Prisma Client ʲˢ
@@ -1499,6 +1511,7 @@ export namespace Prisma {
     id: string | null
     timestamp: Date | null
     shortlistType: $Enums.ShortlistType | null
+    scope: $Enums.ShortlistScope | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1507,6 +1520,7 @@ export namespace Prisma {
     id: string | null
     timestamp: Date | null
     shortlistType: $Enums.ShortlistType | null
+    scope: $Enums.ShortlistScope | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1516,6 +1530,7 @@ export namespace Prisma {
     timestamp: number
     shortlistType: number
     entries: number
+    scope: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1526,6 +1541,7 @@ export namespace Prisma {
     id?: true
     timestamp?: true
     shortlistType?: true
+    scope?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1534,6 +1550,7 @@ export namespace Prisma {
     id?: true
     timestamp?: true
     shortlistType?: true
+    scope?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1543,6 +1560,7 @@ export namespace Prisma {
     timestamp?: true
     shortlistType?: true
     entries?: true
+    scope?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1625,6 +1643,7 @@ export namespace Prisma {
     timestamp: Date
     shortlistType: $Enums.ShortlistType
     entries: JsonValue
+    scope: $Enums.ShortlistScope
     createdAt: Date
     updatedAt: Date
     _count: ShortlistSnapshotCountAggregateOutputType | null
@@ -1651,6 +1670,7 @@ export namespace Prisma {
     timestamp?: boolean
     shortlistType?: boolean
     entries?: boolean
+    scope?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["shortlistSnapshot"]>
@@ -1660,6 +1680,7 @@ export namespace Prisma {
     timestamp?: boolean
     shortlistType?: boolean
     entries?: boolean
+    scope?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["shortlistSnapshot"]>
@@ -1669,6 +1690,7 @@ export namespace Prisma {
     timestamp?: boolean
     shortlistType?: boolean
     entries?: boolean
+    scope?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["shortlistSnapshot"]>
@@ -1678,11 +1700,12 @@ export namespace Prisma {
     timestamp?: boolean
     shortlistType?: boolean
     entries?: boolean
+    scope?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ShortlistSnapshotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "shortlistType" | "entries" | "createdAt" | "updatedAt", ExtArgs["result"]["shortlistSnapshot"]>
+  export type ShortlistSnapshotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "shortlistType" | "entries" | "scope" | "createdAt" | "updatedAt", ExtArgs["result"]["shortlistSnapshot"]>
 
   export type $ShortlistSnapshotPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ShortlistSnapshot"
@@ -1692,6 +1715,7 @@ export namespace Prisma {
       timestamp: Date
       shortlistType: $Enums.ShortlistType
       entries: Prisma.JsonValue
+      scope: $Enums.ShortlistScope
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["shortlistSnapshot"]>
@@ -2121,6 +2145,7 @@ export namespace Prisma {
     readonly timestamp: FieldRef<"ShortlistSnapshot", 'DateTime'>
     readonly shortlistType: FieldRef<"ShortlistSnapshot", 'ShortlistType'>
     readonly entries: FieldRef<"ShortlistSnapshot", 'Json'>
+    readonly scope: FieldRef<"ShortlistSnapshot", 'ShortlistScope'>
     readonly createdAt: FieldRef<"ShortlistSnapshot", 'DateTime'>
     readonly updatedAt: FieldRef<"ShortlistSnapshot", 'DateTime'>
   }
@@ -8944,6 +8969,7 @@ export namespace Prisma {
     timestamp: 'timestamp',
     shortlistType: 'shortlistType',
     entries: 'entries',
+    scope: 'scope',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -9139,6 +9165,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'ShortlistScope'
+   */
+  export type EnumShortlistScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShortlistScope'>
+    
+
+
+  /**
+   * Reference to a field of type 'ShortlistScope[]'
+   */
+  export type ListEnumShortlistScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShortlistScope[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Decimal'
    */
   export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
@@ -9184,6 +9224,7 @@ export namespace Prisma {
     timestamp?: DateTimeFilter<"ShortlistSnapshot"> | Date | string
     shortlistType?: EnumShortlistTypeFilter<"ShortlistSnapshot"> | $Enums.ShortlistType
     entries?: JsonFilter<"ShortlistSnapshot">
+    scope?: EnumShortlistScopeFilter<"ShortlistSnapshot"> | $Enums.ShortlistScope
     createdAt?: DateTimeFilter<"ShortlistSnapshot"> | Date | string
     updatedAt?: DateTimeFilter<"ShortlistSnapshot"> | Date | string
   }
@@ -9193,6 +9234,7 @@ export namespace Prisma {
     timestamp?: SortOrder
     shortlistType?: SortOrder
     entries?: SortOrder
+    scope?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -9205,6 +9247,7 @@ export namespace Prisma {
     timestamp?: DateTimeFilter<"ShortlistSnapshot"> | Date | string
     shortlistType?: EnumShortlistTypeFilter<"ShortlistSnapshot"> | $Enums.ShortlistType
     entries?: JsonFilter<"ShortlistSnapshot">
+    scope?: EnumShortlistScopeFilter<"ShortlistSnapshot"> | $Enums.ShortlistScope
     createdAt?: DateTimeFilter<"ShortlistSnapshot"> | Date | string
     updatedAt?: DateTimeFilter<"ShortlistSnapshot"> | Date | string
   }, "id">
@@ -9214,6 +9257,7 @@ export namespace Prisma {
     timestamp?: SortOrder
     shortlistType?: SortOrder
     entries?: SortOrder
+    scope?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ShortlistSnapshotCountOrderByAggregateInput
@@ -9229,6 +9273,7 @@ export namespace Prisma {
     timestamp?: DateTimeWithAggregatesFilter<"ShortlistSnapshot"> | Date | string
     shortlistType?: EnumShortlistTypeWithAggregatesFilter<"ShortlistSnapshot"> | $Enums.ShortlistType
     entries?: JsonWithAggregatesFilter<"ShortlistSnapshot">
+    scope?: EnumShortlistScopeWithAggregatesFilter<"ShortlistSnapshot"> | $Enums.ShortlistScope
     createdAt?: DateTimeWithAggregatesFilter<"ShortlistSnapshot"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ShortlistSnapshot"> | Date | string
   }
@@ -9626,6 +9671,7 @@ export namespace Prisma {
     timestamp: Date | string
     shortlistType: $Enums.ShortlistType
     entries: JsonNullValueInput | InputJsonValue
+    scope?: $Enums.ShortlistScope
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9635,6 +9681,7 @@ export namespace Prisma {
     timestamp: Date | string
     shortlistType: $Enums.ShortlistType
     entries: JsonNullValueInput | InputJsonValue
+    scope?: $Enums.ShortlistScope
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9644,6 +9691,7 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     shortlistType?: EnumShortlistTypeFieldUpdateOperationsInput | $Enums.ShortlistType
     entries?: JsonNullValueInput | InputJsonValue
+    scope?: EnumShortlistScopeFieldUpdateOperationsInput | $Enums.ShortlistScope
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9653,6 +9701,7 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     shortlistType?: EnumShortlistTypeFieldUpdateOperationsInput | $Enums.ShortlistType
     entries?: JsonNullValueInput | InputJsonValue
+    scope?: EnumShortlistScopeFieldUpdateOperationsInput | $Enums.ShortlistScope
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9662,6 +9711,7 @@ export namespace Prisma {
     timestamp: Date | string
     shortlistType: $Enums.ShortlistType
     entries: JsonNullValueInput | InputJsonValue
+    scope?: $Enums.ShortlistScope
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9671,6 +9721,7 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     shortlistType?: EnumShortlistTypeFieldUpdateOperationsInput | $Enums.ShortlistType
     entries?: JsonNullValueInput | InputJsonValue
+    scope?: EnumShortlistScopeFieldUpdateOperationsInput | $Enums.ShortlistScope
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9680,6 +9731,7 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     shortlistType?: EnumShortlistTypeFieldUpdateOperationsInput | $Enums.ShortlistType
     entries?: JsonNullValueInput | InputJsonValue
+    scope?: EnumShortlistScopeFieldUpdateOperationsInput | $Enums.ShortlistScope
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -10166,11 +10218,19 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type EnumShortlistScopeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ShortlistScope | EnumShortlistScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.ShortlistScope[] | ListEnumShortlistScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ShortlistScope[] | ListEnumShortlistScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumShortlistScopeFilter<$PrismaModel> | $Enums.ShortlistScope
+  }
+
   export type ShortlistSnapshotCountOrderByAggregateInput = {
     id?: SortOrder
     timestamp?: SortOrder
     shortlistType?: SortOrder
     entries?: SortOrder
+    scope?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -10179,6 +10239,7 @@ export namespace Prisma {
     id?: SortOrder
     timestamp?: SortOrder
     shortlistType?: SortOrder
+    scope?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -10187,6 +10248,7 @@ export namespace Prisma {
     id?: SortOrder
     timestamp?: SortOrder
     shortlistType?: SortOrder
+    scope?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -10257,6 +10319,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedJsonFilter<$PrismaModel>
     _max?: NestedJsonFilter<$PrismaModel>
+  }
+
+  export type EnumShortlistScopeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ShortlistScope | EnumShortlistScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.ShortlistScope[] | ListEnumShortlistScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ShortlistScope[] | ListEnumShortlistScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumShortlistScopeWithAggregatesFilter<$PrismaModel> | $Enums.ShortlistScope
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumShortlistScopeFilter<$PrismaModel>
+    _max?: NestedEnumShortlistScopeFilter<$PrismaModel>
   }
 
   export type QuoteSnapshotCountOrderByAggregateInput = {
@@ -10628,6 +10700,10 @@ export namespace Prisma {
     set?: $Enums.ShortlistType
   }
 
+  export type EnumShortlistScopeFieldUpdateOperationsInput = {
+    set?: $Enums.ShortlistScope
+  }
+
   export type DecimalFieldUpdateOperationsInput = {
     set?: Decimal | DecimalJsLike | number | string
     increment?: Decimal | DecimalJsLike | number | string
@@ -10799,6 +10875,13 @@ export namespace Prisma {
     not?: NestedEnumShortlistTypeFilter<$PrismaModel> | $Enums.ShortlistType
   }
 
+  export type NestedEnumShortlistScopeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ShortlistScope | EnumShortlistScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.ShortlistScope[] | ListEnumShortlistScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ShortlistScope[] | ListEnumShortlistScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumShortlistScopeFilter<$PrismaModel> | $Enums.ShortlistScope
+  }
+
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -10872,6 +10955,16 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedEnumShortlistScopeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ShortlistScope | EnumShortlistScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.ShortlistScope[] | ListEnumShortlistScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ShortlistScope[] | ListEnumShortlistScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumShortlistScopeWithAggregatesFilter<$PrismaModel> | $Enums.ShortlistScope
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumShortlistScopeFilter<$PrismaModel>
+    _max?: NestedEnumShortlistScopeFilter<$PrismaModel>
   }
 
   export type NestedDecimalFilter<$PrismaModel = never> = {

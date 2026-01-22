@@ -126,6 +126,7 @@ exports.Prisma.ShortlistSnapshotScalarFieldEnum = {
   timestamp: 'timestamp',
   shortlistType: 'shortlistType',
   entries: 'entries',
+  scope: 'scope',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -222,6 +223,11 @@ exports.Prisma.NullsOrder = {
 exports.ShortlistType = exports.$Enums.ShortlistType = {
   TOP_GAINERS: 'TOP_GAINERS',
   VOLUME_SHOCKERS: 'VOLUME_SHOCKERS'
+};
+
+exports.ShortlistScope = exports.$Enums.ShortlistScope = {
+  FULL: 'FULL',
+  TOP_5: 'TOP_5'
 };
 
 exports.Prisma.ModelName = {
