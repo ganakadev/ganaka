@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 import { chunk } from "lodash";
 import z from "zod";
 import { RedisManager } from "./utils/redis";
-import { ShortlistType } from "@ganaka/db";
+import { ShortlistType, ShortlistScope } from "@ganaka/db";
 import utc from "dayjs/plugin/utc";
 dayjs.extend(utc);
 
@@ -60,7 +60,8 @@ export const createShortlistSnapshot =
   async (
     timestamp: Date,
     shortlistType: ShortlistType,
-    entries: z.infer<typeof v1_developer_collector_schemas.shortlistEntrySchema>[]
+    entries: z.infer<typeof v1_developer_collector_schemas.shortlistEntrySchema>[],
+    scope?: ShortlistScope
   ) => {
     const body: z.infer<typeof v1_developer_collector_schemas.createShortlistSnapshot.body> = {
       data: {
@@ -68,6 +69,7 @@ export const createShortlistSnapshot =
         timezone: "Etc/UTC",
         shortlistType,
         entries,
+        scope,
       },
     };
 
@@ -215,21 +217,51 @@ async function updateDailyBucket(): Promise<Set<string>> {
     console.log("Storing shortlists via API...");
     const topGainersShortlistType: ShortlistType = "TOP_GAINERS";
     const volumeShockersShortlistType: ShortlistType = "VOLUME_SHOCKERS";
+    const topGainersFull = topGainers.data?.data ?? [];
+    const volumeShockersFull = volumeShockers.data?.data ?? [];
+    
+    // Store FULL shortlist for top-gainers
+    if (topGainersFull.length > 0) {
+      await createShortlistSnapshot(process.env.DEVELOPER_KEY!)(
+        timestamp,
+        topGainersShortlistType,
+        topGainersFull,
+        "FULL"
+      );
+      console.log(`Stored TOP_GAINERS shortlist (FULL, ${topGainersFull.length} entries)`);
+    }
+    
+    // Store TOP_5 shortlist for top-gainers
     if (topGainersLimited.length > 0) {
       await createShortlistSnapshot(process.env.DEVELOPER_KEY!)(
         timestamp,
         topGainersShortlistType,
-        topGainersLimited
+        topGainersLimited,
+        "TOP_5"
       );
-      console.log("Stored TOP_GAINERS shortlist");
+      console.log(`Stored TOP_GAINERS shortlist (TOP_5, ${topGainersLimited.length} entries)`);
     }
+    
+    // Store FULL shortlist for volume-shockers
+    if (volumeShockersFull.length > 0) {
+      await createShortlistSnapshot(process.env.DEVELOPER_KEY!)(
+        timestamp,
+        volumeShockersShortlistType,
+        volumeShockersFull,
+        "FULL"
+      );
+      console.log(`Stored VOLUME_SHOCKERS shortlist (FULL, ${volumeShockersFull.length} entries)`);
+    }
+    
+    // Store TOP_5 shortlist for volume-shockers
     if (volumeShockersLimited.length > 0) {
       await createShortlistSnapshot(process.env.DEVELOPER_KEY!)(
         timestamp,
         volumeShockersShortlistType,
-        volumeShockersLimited
+        volumeShockersLimited,
+        "TOP_5"
       );
-      console.log("Stored VOLUME_SHOCKERS shortlist");
+      console.log(`Stored VOLUME_SHOCKERS shortlist (TOP_5, ${volumeShockersLimited.length} entries)`);
     }
 
     // 4. Collect unique symbols from top 5 (de-duplicate across both lists)
