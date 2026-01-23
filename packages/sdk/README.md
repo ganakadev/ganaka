@@ -16,172 +16,218 @@ pnpm add @ganaka/sdk
 
 ## Quick Start
 
+### Using GanakaClient for Standalone API Calls
+
+The `GanakaClient` allows you to fetch data without setting up a full ganaka run:
+
 ```typescript
 import { GanakaClient } from "@ganaka/sdk";
+import dotenv from "dotenv";
 
-// Initialize the client
+dotenv.config();
+
+// Initialize the client (reads DEVELOPER_KEY from environment)
+const client = new GanakaClient();
+
+// Or with explicit configuration
 const client = new GanakaClient({
-  apiKey: "your-api-key",
-  baseUrl: "https://api.ganaka.com",
-  debug: true,
+  developerToken: "your-developer-token",
+  apiDomain: "https://api.ganaka.live", // optional, defaults to this
 });
 
-// Check API health
-const health = await client.health();
-console.log(health);
+// Fetch historical candles
+const candles = await client.fetchCandles({
+  symbol: "RELIANCE",
+  interval: "1minute",
+  start_datetime: "2026-01-20T09:15:00",
+  end_datetime: "2026-01-20T15:30:00",
+});
 
-// Get shortlists
-const shortlists = await client.getShortlists();
-if (shortlists.success) {
-  console.log("Shortlists:", shortlists.data);
-}
+// Fetch quote for a symbol
+const quote = await client.fetchQuote({
+  symbol: "RELIANCE",
+  datetime: "2026-01-20T10:30:00",
+});
+
+// Fetch shortlist
+const shortlist = await client.fetchShortlist({
+  type: "top-gainers",
+  datetime: "2026-01-20T10:30:00",
+});
+```
+
+### Using ganaka() for Iterative Strategies
+
+The `ganaka()` function is used for running iterative strategies with time loops:
+
+```typescript
+import { ganaka } from "@ganaka/sdk";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+await ganaka({
+  fn: async ({ fetchCandles, fetchQuote, placeOrder, currentTimestamp }) => {
+    // Your strategy logic here
+    const candles = await fetchCandles({
+      symbol: "RELIANCE",
+      interval: "1minute",
+      start_datetime: "2026-01-20T09:15:00",
+      end_datetime: currentTimestamp,
+    });
+
+    const quote = await fetchQuote({
+      symbol: "RELIANCE",
+      datetime: currentTimestamp,
+    });
+
+    // Place order if conditions are met
+    if (quote && quote.price > 100) {
+      await placeOrder({
+        nseSymbol: "RELIANCE",
+        entryPrice: quote.price,
+        stopLossPrice: quote.price * 0.95,
+        takeProfitPrice: quote.price * 1.05,
+        datetime: currentTimestamp,
+      });
+    }
+  },
+  startTime: "2026-01-20T09:15:00",
+  endTime: "2026-01-20T15:30:00",
+  intervalMinutes: 1,
+  name: "My Strategy",
+  tags: ["momentum", "scalping"],
+});
 ```
 
 ## Configuration
 
+### Environment Variables
+
+The SDK reads configuration from environment variables:
+
+- `DEVELOPER_KEY` - Your developer token (required)
+- `API_DOMAIN` - API base URL (optional, defaults to `https://api.ganaka.live`)
+
+### GanakaClient Configuration
+
 ```typescript
+import { GanakaClient } from "@ganaka/sdk";
+
 const client = new GanakaClient({
-  apiKey: "your-api-key", // API key for authentication
-  baseUrl: "http://localhost:3000", // API base URL
-  wsUrl: "ws://localhost:3000", // WebSocket URL for real-time data
-  timeout: 30000, // Request timeout in milliseconds
-  debug: false, // Enable debug logging
+  developerToken: "your-developer-token", // optional if DEVELOPER_KEY env var is set
+  apiDomain: "https://api.ganaka.live", // optional, defaults to this
 });
 ```
 
 ## API Methods
 
-### Shortlists
+### GanakaClient Methods
+
+All methods return promises that resolve to the API response data.
+
+#### `fetchCandles(params)`
+
+Fetch historical candles for a symbol.
 
 ```typescript
-// Get all shortlists
-const shortlists = await client.getShortlists();
-
-// Get a specific shortlist
-const shortlist = await client.getShortlist("shortlist-id");
-
-// Create a new shortlist
-const newShortlist = await client.createShortlist({
-  name: "My Watchlist",
-  symbols: ["AAPL", "GOOGL", "MSFT"],
+const candles = await client.fetchCandles({
+  symbol: "RELIANCE",
+  interval: "1minute", // or "5minute", "1day", etc.
+  start_datetime: "2026-01-20T09:15:00", // IST format (YYYY-MM-DDTHH:mm:ss)
+  end_datetime: "2026-01-20T15:30:00",
 });
-
-// Update a shortlist
-const updated = await client.updateShortlist("shortlist-id", {
-  name: "Updated Watchlist",
-});
-
-// Delete a shortlist
-await client.deleteShortlist("shortlist-id");
 ```
 
-### Instruments
+#### `fetchQuote(params)`
+
+Fetch quote for a symbol at a specific datetime.
 
 ```typescript
-// Search instruments
-const results = await client.searchInstruments("apple");
-
-// Get instrument details
-const instrument = await client.getInstrument("AAPL");
-
-// Get multiple instruments
-const instruments = await client.getInstruments(["AAPL", "GOOGL"]);
+const quote = await client.fetchQuote({
+  symbol: "RELIANCE",
+  datetime: "2026-01-20T10:30:00", // IST format
+});
 ```
 
-### Strategies
+#### `fetchQuoteTimeline(symbol, end_datetime)`
+
+Fetch quote timeline for a symbol.
 
 ```typescript
-// Get all strategies
-const strategies = await client.getStrategies();
-
-// Create a strategy
-const strategy = await client.createStrategy({
-  name: "My Strategy",
-  type: "momentum",
-  parameters: {
-    period: 20,
-    threshold: 0.02,
-  },
-  status: "inactive",
-});
-
-// Start/stop a strategy
-await client.startStrategy("strategy-id");
-await client.stopStrategy("strategy-id");
+const timeline = await client.fetchQuoteTimeline(
+  "RELIANCE",
+  "2026-01-20T15:30:00" // IST format
+);
 ```
 
-### Orders
+#### `fetchNiftyQuote(params)`
+
+Fetch NIFTY quote at a specific datetime.
 
 ```typescript
-// Place an order
-const order = await client.placeOrder({
-  symbol: "AAPL",
-  quantity: 100,
-  orderType: "market",
-  side: "buy",
+const niftyQuote = await client.fetchNiftyQuote({
+  datetime: "2026-01-20T10:30:00", // IST format
 });
-
-// Get orders
-const orders = await client.getOrders();
-
-// Cancel an order
-await client.cancelOrder("order-id");
 ```
 
-## WebSocket - Real-time Data
+#### `fetchNiftyQuoteTimeline(end_datetime)`
+
+Fetch NIFTY quote timeline.
 
 ```typescript
-// Get WebSocket client
-const ws = client.getWebSocket();
-
-// Connect to WebSocket
-await client.connectWebSocket();
-
-// Subscribe to events
-ws.on("connected", () => {
-  console.log("Connected to real-time data");
-});
-
-ws.on("tick", (data) => {
-  console.log("Tick data:", data);
-});
-
-ws.on("error", (error) => {
-  console.error("WebSocket error:", error);
-});
-
-// Subscribe to tick data for symbols
-ws.subscribeTicks(["AAPL", "GOOGL"]);
-
-// Unsubscribe
-ws.unsubscribeTicks(["AAPL"]);
-
-// Disconnect
-client.disconnectWebSocket();
+const niftyTimeline = await client.fetchNiftyQuoteTimeline(
+  "2026-01-20T15:30:00" // IST format
+);
 ```
+
+#### `fetchShortlist(queryParams)`
+
+Fetch shortlist for a specific type and datetime.
+
+```typescript
+const shortlist = await client.fetchShortlist({
+  type: "top-gainers", // or "top-losers", etc.
+  datetime: "2026-01-20T10:30:00", // IST format
+});
+```
+
+#### `fetchShortlistPersistence(queryParams)`
+
+Fetch shortlist persistence - stocks that consistently appeared in a shortlist over a time range.
+
+```typescript
+const persistence = await client.fetchShortlistPersistence({
+  type: "top-gainers",
+  start_datetime: "2026-01-20T09:15:00", // IST format
+  end_datetime: "2026-01-20T15:30:00", // IST format
+});
+```
+
+### ganaka() Function
+
+The `ganaka()` function provides a `RunContext` with all the above methods plus:
+
+- `placeOrder(data)` - Place an order (only available within a run context)
+- `currentTimestamp` - Current timestamp in IST format for the current loop iteration
 
 ## Error Handling
 
-All API methods return an `ApiResponse` object with the following structure:
+All methods throw errors if the API request fails. Handle them with try-catch:
 
 ```typescript
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-}
-```
-
-Example error handling:
-
-```typescript
-const response = await client.getShortlists();
-
-if (response.success) {
-  console.log("Data:", response.data);
-} else {
-  console.error("Error:", response.error);
+try {
+  const candles = await client.fetchCandles({
+    symbol: "RELIANCE",
+    interval: "1minute",
+    start_datetime: "2026-01-20T09:15:00",
+    end_datetime: "2026-01-20T15:30:00",
+  });
+  console.log("Candles:", candles);
+} catch (error) {
+  if (error instanceof Error) {
+    console.error("Failed to fetch candles:", error.message);
+  }
 }
 ```
 
@@ -190,7 +236,14 @@ if (response.success) {
 This SDK is written in TypeScript and provides full type definitions:
 
 ```typescript
-import type { Shortlist, Instrument, Order, Strategy, User } from "@ganaka/sdk";
+import type {
+  GanakaClient,
+  GanakaClientConfig,
+  FetchCandlesResponse,
+  FetchQuoteResponse,
+  FetchShortlistResponse,
+  RunContext,
+} from "@ganaka/sdk";
 ```
 
 ## Development
@@ -238,23 +291,3 @@ MIT
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
