@@ -1,3 +1,23 @@
+## [@ganaka/sdk v1.6.0](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Bug Fixes
+
+* **RunDrawer:** Convert run times to IST format for accurate display ([eaeb9ce](https://github.com/ganakadev/ganaka/commit/eaeb9ce2aad4a0ffe14311af442e487120f013e1))
+* **tests:** Add Node.js type reference to test data fixture ([a351015](https://github.com/ganakadev/ganaka/commit/a351015b529f5fe51f953483051e3a2d718e12fb))
+
+
+### Features
+
+* **collector:** Enhance createShortlistSnapshot to include scope parameter ([5cc0371](https://github.com/ganakadev/ganaka/commit/5cc0371a9468ee17c0a496402c6d7ae21bd99625))
+* **Dashboard:** Add take profit and stop loss functionality ([a0d60e7](https://github.com/ganakadev/ganaka/commit/a0d60e7237fbf7f168d0d92363ae14151b69f1cd))
+* **database:** Add scope to ShortlistSnapshot model and corresponding enum ([893fd52](https://github.com/ganakadev/ganaka/commit/893fd5272b3be9497b60687b3c1b0ea63198691c))
+* **routes:** Add ShortlistScope support to dashboard and developer routes ([0dc523f](https://github.com/ganakadev/ganaka/commit/0dc523f7f6fe319794097a0fe2413e45c8936023))
+* **sdk:** Add ShortlistScope export and update schemas for scope support ([121e5e5](https://github.com/ganakadev/ganaka/commit/121e5e5eb57e04ed4db7898724bb6a143bce6c14))
+
 ## [@ganaka/sdk v1.5.0](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
