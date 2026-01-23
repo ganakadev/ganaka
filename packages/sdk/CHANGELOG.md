@@ -1,3 +1,13 @@
+## [@ganaka/sdk v1.7.0](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Features
+
+* **sdk:** Introduce GanakaClient for standalone API access ([ee02ddc](https://github.com/ganakadev/ganaka/commit/ee02ddccff71a6ecba80e814bb7bced9688b2144))
+
 ## [@ganaka/sdk v1.6.0](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
