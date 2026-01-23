@@ -1,4 +1,4 @@
-import { ShortlistType } from "@ganaka/db";
+import { ShortlistType, ShortlistScope } from "@ganaka/db";
 import { v1_developer_collector_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -40,6 +40,7 @@ const collectorRoutes: FastifyPluginAsync = async (fastify) => {
           timestamp,
           shortlistType: validationResult.data.shortlistType as ShortlistType,
           entries: validationResult.data.entries as any, // JSON data
+          scope: (validationResult.data.scope ?? "TOP_5") as ShortlistScope,
         },
       });
 

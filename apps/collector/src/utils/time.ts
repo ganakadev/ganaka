@@ -25,7 +25,7 @@ export function isWithinCollectionWindow(): boolean {
   const collectionWindowStartInMinutes = 8 * 60 + 45; // 8:45 AM
 
   // Collection window end: 3:30 PM IST = 15*60 + 30 = 930 minutes
-  const collectionWindowEndInMinutes = 15 * 60 + 30; // 3:30 PM
+  const collectionWindowEndInMinutes = 15 * 60 + 45; // 3:45 PM
 
   return (
     currentTimeInMinutes >= collectionWindowStartInMinutes &&

@@ -362,12 +362,14 @@ export function createNiftyQuoteTimelineQuery(
 export function createListsQuery(
   type?: "top-gainers" | "volume-shockers",
   datetime?: string,
-  timezone?: string
+  timezone?: string,
+  scope?: "FULL" | "TOP_5"
 ): z.infer<typeof v1_developer_lists_schemas.getLists.query> {
   return {
     type: type || "top-gainers",
     timezone: timezone || "Asia/Kolkata",
     ...(datetime && { datetime }),
+    ...(scope && { scope }),
   };
 }
 
@@ -417,7 +419,8 @@ export function createShortlistsQuery(
   type?: "TOP_GAINERS" | "VOLUME_SHOCKERS",
   timezone?: string,
   takeProfitPercentage?: number,
-  stopLossPercentage?: number
+  stopLossPercentage?: number,
+  scope?: "FULL" | "TOP_5"
 ): z.infer<typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query> {
   const result: any = {
     datetime: datetime || TEST_DATETIME,
@@ -431,6 +434,10 @@ export function createShortlistsQuery(
 
   if (stopLossPercentage !== undefined) {
     result.stopLossPercentage = stopLossPercentage;
+  }
+
+  if (scope !== undefined) {
+    result.scope = scope;
   }
 
   return result;

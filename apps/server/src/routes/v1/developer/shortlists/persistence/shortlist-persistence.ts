@@ -1,5 +1,5 @@
 import { ShortlistSnapshot } from "@ganaka/db";
-import { ShortlistType } from "@ganaka/db/prisma";
+import { ShortlistType, ShortlistScope } from "@ganaka/db/prisma";
 import { v1_developer_shortlist_persistence_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -127,6 +127,7 @@ const shortlistPersistenceRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const shortlistType = mapTypeToShortlistType(validationResult.type);
       const timezone = validationResult.timezone || "Asia/Kolkata";
+      const scope = (validationResult.scope ?? "TOP_5") as ShortlistScope;
 
       // Parse datetime strings to UTC Date objects
       const startDateTime = parseDateTimeInTimezone(validationResult.start_datetime, timezone);
@@ -155,6 +156,7 @@ const shortlistPersistenceRoutes: FastifyPluginAsync = async (fastify) => {
             lte: endDateTime,
           },
           shortlistType: shortlistType,
+          scope: scope,
         },
         orderBy: {
           timestamp: "asc",

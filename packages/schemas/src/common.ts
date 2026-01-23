@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { shortlistScopeEnum } from "@ganaka/db";
 
 export const growwQuotePayloadSchema = z.object({
   average_price: z.number().nullable(),
@@ -63,6 +64,8 @@ export const shortlistEntrySchema = z.object({
   price: z.number(),
   quoteData: growwQuoteSchema.nullable().optional(),
 });
+
+export const shortlistScopeSchema = z.enum(shortlistScopeEnum);
 
 /**
  * Standard API response wrapper

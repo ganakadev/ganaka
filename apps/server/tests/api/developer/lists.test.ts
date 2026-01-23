@@ -352,4 +352,99 @@ test.describe("GET /v1/developer/lists", () => {
     const body = response.data;
     expect(body.statusCode).toBe(200);
   });
+
+  test("should return 400 when scope is invalid enum value", async () => {
+    const query = createListsQuery("top-gainers");
+    const queryString = new URLSearchParams({
+      ...query,
+      scope: "INVALID_SCOPE",
+    }).toString();
+    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken, {
+      validateStatus: () => true,
+    });
+
+    expect(response.status).toBe(400);
+  });
+
+  test("should return TOP_5 scoped data when scope=TOP_5", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
+    const testEntries = createValidShortlistEntries();
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker, undefined, "TOP_5");
+
+    const query = createListsQuery("top-gainers", testDatetime, undefined, "TOP_5");
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
+    expect(body.data).not.toBeNull();
+    if (body.data) {
+      expect(Array.isArray(body.data)).toBe(true);
+      expect(body.data.length).toBe(testEntries.length);
+    }
+  });
+
+  test("should return FULL scoped data when scope=FULL", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
+    const testEntries = createValidShortlistEntries();
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker, undefined, "FULL");
+
+    const query = createListsQuery("top-gainers", testDatetime, undefined, "FULL");
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
+    expect(body.data).not.toBeNull();
+    if (body.data) {
+      expect(Array.isArray(body.data)).toBe(true);
+      expect(body.data.length).toBe(testEntries.length);
+    }
+  });
+
+  test("should default to TOP_5 when scope not provided (backward compatibility)", async ({
+    tracker,
+  }) => {
+    const testDatetime = generateUniqueTestDatetime();
+    const testEntries = createValidShortlistEntries();
+    // Create both TOP_5 and FULL snapshots
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker, undefined, "TOP_5");
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker, undefined, "FULL");
+
+    // Query without scope parameter
+    const query = createListsQuery("top-gainers", testDatetime);
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
+    expect(body.data).not.toBeNull();
+    // Should return TOP_5 by default
+    if (body.data) {
+      expect(Array.isArray(body.data)).toBe(true);
+    }
+  });
+
+  test("should filter by scope correctly - return null when scope doesn't match", async ({
+    tracker,
+  }) => {
+    const testDatetime = generateUniqueTestDatetime();
+    const testEntries = createValidShortlistEntries();
+    // Create only FULL snapshot
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker, undefined, "FULL");
+
+    // Query for TOP_5 scope
+    const query = createListsQuery("top-gainers", testDatetime, undefined, "TOP_5");
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
+    expect(body.message).toBe("Shortlist snapshot not found");
+    expect(body.data).toBeNull();
+  });
 });

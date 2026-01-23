@@ -5,7 +5,7 @@ import {
   growwQuoteSchema,
   timezoneSchema,
 } from "../../../common";
-import { ShortlistType } from "@ganaka/db";
+import { ShortlistType, shortlistScopeEnum } from "@ganaka/db";
 
 // ==================== Schemas ====================
 
@@ -17,6 +17,8 @@ export const shortlistEntrySchema = z.object({
 });
 
 export const shortlistTypeSchema = z.enum<ShortlistType[]>(["TOP_GAINERS", "VOLUME_SHOCKERS"]);
+
+export const shortlistScopeSchema = z.enum(shortlistScopeEnum);
 
 export const quoteSnapshotDataSchema = z.object({
   nseSymbol: z.string(),
@@ -32,6 +34,7 @@ export const createShortlistSnapshot = {
       timezone: timezoneSchema.optional(),
       shortlistType: shortlistTypeSchema,
       entries: z.array(shortlistEntrySchema),
+      scope: shortlistScopeSchema.optional(),
     }),
   }),
   response: apiResponseSchema.extend({

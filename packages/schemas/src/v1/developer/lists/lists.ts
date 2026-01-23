@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { apiResponseSchema, datetimeFormatSchema, timezoneSchema } from "../../../common";
+import {
+  apiResponseSchema,
+  datetimeFormatSchema,
+  timezoneSchema,
+  shortlistScopeSchema,
+} from "../../../common";
 
 // ==================== Schemas ====================
 
@@ -16,6 +21,7 @@ export const getLists = {
     type: z.enum(["top-gainers", "volume-shockers"]),
     datetime: datetimeFormatSchema.optional(),
     timezone: timezoneSchema.optional(),
+    scope: shortlistScopeSchema.optional(),
   }),
   response: apiResponseSchema.extend({
     data: z.array(listSchema).nullable(),

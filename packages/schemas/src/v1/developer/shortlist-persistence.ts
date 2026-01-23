@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { apiResponseSchema, datetimeFormatSchema, timezoneSchema } from "../../common";
+import {
+  apiResponseSchema,
+  datetimeFormatSchema,
+  timezoneSchema,
+  shortlistScopeSchema,
+} from "../../common";
 
 // ==================== GET /shortlists/persistence ====================
 
@@ -9,6 +14,7 @@ export const getShortlistPersistence = {
     start_datetime: datetimeFormatSchema,
     end_datetime: datetimeFormatSchema,
     timezone: timezoneSchema.optional(),
+    scope: shortlistScopeSchema.optional(),
   }),
   response: apiResponseSchema.extend({
     data: z.object({

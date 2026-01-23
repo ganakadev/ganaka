@@ -5,6 +5,7 @@ import {
   datetimeFormatSchema,
   shortlistEntrySchema,
   timezoneSchema,
+  shortlistScopeSchema,
 } from "../../common";
 
 // Extended shortlist entry with trade recommendation fields
@@ -29,6 +30,7 @@ export const getShortlists = {
     datetime: datetimeFormatSchema,
     timezone: timezoneSchema.optional(),
     type: z.enum(shortlistTypeEnum),
+    scope: shortlistScopeSchema.optional(),
     takeProfitPercentage: z.coerce.number().min(0).optional().default(2),
     stopLossPercentage: z.coerce.number().min(0).max(100).optional().default(1.5),
   }),
