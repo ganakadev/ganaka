@@ -15,12 +15,14 @@ import { placeOrder } from "./callbacks/placeOrder";
 import { ApiClient } from "./utils/apiClient";
 import { logger } from "./utils/logger";
 import { runMinuteLoop } from "./utils/minute-loop";
+import { GanakaClient, GanakaClientConfig } from "./client";
 
 dotenv.config();
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export { growwQuotePayloadSchema, growwQuoteSchema };
+export { GanakaClient, type GanakaClientConfig };
 
 export type FetchQuoteTimelineResponse = Awaited<ReturnType<ReturnType<typeof fetchQuoteTimeline>>>;
 export type FetchQuoteResponse = Awaited<ReturnType<ReturnType<typeof fetchQuote>>>;

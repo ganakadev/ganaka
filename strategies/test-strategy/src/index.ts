@@ -1,4 +1,4 @@
-import { ganaka } from "@ganaka/sdk";
+import { ganaka, GanakaClient } from "@ganaka/sdk";
 import dayjs from "dayjs";
 import dotenv from "dotenv";
 import utc from "dayjs/plugin/utc";
@@ -22,6 +22,8 @@ async function main() {
       currentTimestamp,
       fetchQuoteTimeline,
     }) => {
+      const client = new GanakaClient();
+
       const currentTimestampForRequest = dayjs
         .tz(currentTimestamp, "Asia/Kolkata")
         .subtract(1, "minute")

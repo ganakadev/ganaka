@@ -1,0 +1,235 @@
+import {
+  v1_developer_groww_schemas,
+  v1_developer_lists_schemas,
+  v1_developer_shortlist_persistence_schemas,
+} from "@ganaka/schemas";
+import { z } from "zod";
+import { fetchCandles } from "./callbacks/fetchCandles";
+import { fetchQuote } from "./callbacks/fetchQuote";
+import { fetchQuoteTimeline } from "./callbacks/fetchQuoteTimeline";
+import { fetchNiftyQuote } from "./callbacks/fetchNiftyQuote";
+import { fetchNiftyQuoteTimeline } from "./callbacks/fetchNiftyQuoteTimeline";
+import { fetchShortlist } from "./callbacks/fetchShortlist";
+import { fetchShortlistPersistence } from "./callbacks/fetchShortlistPersistence";
+
+export interface GanakaClientConfig {
+  /**
+   * Developer token for API authentication.
+   * If not provided, will be read from DEVELOPER_KEY environment variable.
+   */
+  developerToken?: string;
+  /**
+   * API domain base URL.
+   * If not provided, defaults to "https://api.ganaka.live".
+   * Can also be set via API_DOMAIN environment variable.
+   */
+  apiDomain?: string;
+}
+
+/**
+ * GanakaClient provides standalone access to Ganaka API methods without requiring a run context.
+ * This allows you to fetch data (candles, quotes, shortlists, etc.) without setting up a full ganaka run.
+ *
+ * @example
+ * ```typescript
+ * import { GanakaClient } from "@ganaka/sdk";
+ *
+ * const client = new GanakaClient();
+ * const candles = await client.fetchCandles({
+ *   symbol: "RELIANCE",
+ *   interval: "1minute",
+ *   start_datetime: "2026-01-20T09:15:00",
+ *   end_datetime: "2026-01-20T15:30:00",
+ * });
+ * ```
+ */
+export class GanakaClient {
+  private developerToken: string;
+  private apiDomain: string;
+
+  constructor(config?: GanakaClientConfig) {
+    this.developerToken =
+      config?.developerToken || process.env.DEVELOPER_KEY || "";
+    this.apiDomain =
+      config?.apiDomain || process.env.API_DOMAIN || "https://api.ganaka.live";
+
+    if (!this.developerToken) {
+      throw new Error(
+        "Developer token not found. Please provide developerToken in constructor or set DEVELOPER_KEY environment variable."
+      );
+    }
+  }
+
+  /**
+   * Fetch historical candles for a symbol.
+   *
+   * @param params - Query parameters for fetching candles
+   * @param params.symbol - The symbol to fetch candles for
+   * @param params.interval - The interval for candles (e.g., "1minute", "5minute", "1day")
+   * @param params.start_datetime - Start datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
+   * @param params.end_datetime - End datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
+   * @returns Promise resolving to candle data
+   */
+  async fetchCandles(
+    params: z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.query>
+  ): Promise<
+    z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response>["data"]
+  > {
+    const callback = fetchCandles({
+      developerToken: this.developerToken,
+      apiDomain: this.apiDomain,
+      runId: null,
+      currentTimestamp: "",
+      currentTimezone: "Asia/Kolkata",
+    });
+    return callback(params);
+  }
+
+  /**
+   * Fetch quote for a symbol at a specific datetime.
+   *
+   * @param params - Query parameters for fetching quote
+   * @param params.symbol - The symbol to fetch quote for
+   * @param params.datetime - Datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
+   * @returns Promise resolving to quote data or null
+   */
+  async fetchQuote(
+    params: z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.query>
+  ): Promise<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"] | null> {
+    const callback = fetchQuote({
+      developerToken: this.developerToken,
+      apiDomain: this.apiDomain,
+      runId: null,
+      currentTimestamp: "",
+      currentTimezone: "Asia/Kolkata",
+    });
+    return callback(params);
+  }
+
+  /**
+   * Fetch quote timeline for a symbol.
+   * Given a symbol and an end_datetime, returns the quote timeline for the given date.
+   *
+   * @param symbol - The symbol to fetch quote timeline for
+   * @param end_datetime - End datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
+   * @returns Promise resolving to quote timeline data
+   */
+  async fetchQuoteTimeline(
+    symbol: string,
+    end_datetime: string
+  ): Promise<
+    z.infer<
+      typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.response
+    >["data"]["quoteTimeline"]
+  > {
+    const callback = fetchQuoteTimeline({
+      developerToken: this.developerToken,
+      apiDomain: this.apiDomain,
+      runId: null,
+      currentTimestamp: "",
+      currentTimezone: "Asia/Kolkata",
+    });
+    return callback(symbol, end_datetime);
+  }
+
+  /**
+   * Fetch NIFTY quote at a specific datetime.
+   *
+   * @param params - Query parameters for fetching NIFTY quote
+   * @param params.datetime - Datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
+   * @returns Promise resolving to NIFTY quote data or null
+   */
+  async fetchNiftyQuote(
+    params: z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuote.query>
+  ): Promise<
+    z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuote.response>["data"] | null
+  > {
+    const callback = fetchNiftyQuote({
+      developerToken: this.developerToken,
+      apiDomain: this.apiDomain,
+      runId: null,
+      currentTimestamp: "",
+      currentTimezone: "Asia/Kolkata",
+    });
+    return callback(params);
+  }
+
+  /**
+   * Fetch NIFTY quote timeline.
+   * Given an end_datetime, returns the NIFTY quote timeline for the given date.
+   *
+   * @param end_datetime - End datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
+   * @returns Promise resolving to NIFTY quote timeline data
+   */
+  async fetchNiftyQuoteTimeline(
+    end_datetime: string
+  ): Promise<
+    z.infer<
+      typeof v1_developer_groww_schemas.getGrowwNiftyQuoteTimeline.response
+    >["data"]["niftyTimeline"]
+  > {
+    const callback = fetchNiftyQuoteTimeline({
+      developerToken: this.developerToken,
+      apiDomain: this.apiDomain,
+      runId: null,
+      currentTimestamp: "",
+      currentTimezone: "Asia/Kolkata",
+    });
+    return callback(end_datetime);
+  }
+
+  /**
+   * Fetch shortlist for a specific type and datetime.
+   *
+   * @param queryParams - Query parameters for fetching shortlist
+   * @param queryParams.type - The type of shortlist (e.g., "top-gainers", "top-losers")
+   * @param queryParams.datetime - Datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
+   * @returns Promise resolving to shortlist data or null
+   */
+  async fetchShortlist(
+    queryParams: z.infer<typeof v1_developer_lists_schemas.getLists.query>
+  ): Promise<z.infer<typeof v1_developer_lists_schemas.getLists.response>["data"] | null> {
+    const callback = fetchShortlist({
+      developerToken: this.developerToken,
+      apiDomain: this.apiDomain,
+      runId: null,
+      currentTimestamp: "",
+      currentTimezone: "Asia/Kolkata",
+    });
+    return callback(queryParams);
+  }
+
+  /**
+   * Fetch shortlist persistence.
+   * Given a shortlist type and a start and end datetime,
+   * returns the list of instruments that appeared in the shortlist during the time range
+   * in descending order of appearance count.
+   *
+   * This helps identify the stocks that have been consistently appearing in the shortlist
+   * over a given period of time.
+   *
+   * @param queryParams - Query parameters for fetching shortlist persistence
+   * @param queryParams.type - The type of shortlist (e.g., "top-gainers", "top-losers")
+   * @param queryParams.start_datetime - Start datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
+   * @param queryParams.end_datetime - End datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
+   * @returns Promise resolving to shortlist persistence data or null
+   */
+  async fetchShortlistPersistence(
+    queryParams: z.infer<
+      typeof v1_developer_shortlist_persistence_schemas.getShortlistPersistence.query
+    >
+  ): Promise<
+    z.infer<
+      typeof v1_developer_shortlist_persistence_schemas.getShortlistPersistence.response
+    >["data"] | null
+  > {
+    const callback = fetchShortlistPersistence({
+      developerToken: this.developerToken,
+      apiDomain: this.apiDomain,
+      runId: null,
+      currentTimestamp: "",
+      currentTimezone: "Asia/Kolkata",
+    });
+    return callback(queryParams);
+  }
+}
