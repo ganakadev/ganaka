@@ -1,4 +1,4 @@
-import { ShortlistType } from "@ganaka/db";
+import { ShortlistType, ShortlistScope } from "@ganaka/db";
 import { growwQuoteSchema, shortlistEntrySchema, v1_dashboard_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -275,10 +275,12 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
         type: typeParam,
         takeProfitPercentage,
         stopLossPercentage,
+        scope: scopeParam,
       } = validationResult;
 
       // Convert datetime string to UTC Date
       const selectedDateTimeUTC = parseDateTimeInTimezone(dateTimeParam, timezoneParam);
+      const scope = (scopeParam ?? "TOP_5") as ShortlistScope;
 
       const shortlists = await prisma.shortlistSnapshot.findMany({
         where: {
@@ -287,6 +289,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
             lte: dayjs.utc(selectedDateTimeUTC).add(1, "second").toDate(), // Add 1 second
           },
           shortlistType: typeParam as ShortlistType,
+          scope: scope,
         },
       });
       const quoteSnapshots = await prisma.quoteSnapshot.findMany({

@@ -647,4 +647,138 @@ test.describe("GET /v1/developer/shortlists/persistence", () => {
     expect(body.data.instruments[0].appearanceCount).toBe(4);
     expect(body.data.instruments[0].percentage).toBe(100);
   });
+
+  test("should filter snapshots by scope", async ({ tracker }) => {
+    const uniqueDate = generateUniqueTestDate();
+    const baseDatetime = `${uniqueDate}T10:00:00`;
+    const startDatetime = dayjs
+      .tz(baseDatetime, "Asia/Kolkata")
+      .subtract(5, "minute")
+      .format("YYYY-MM-DDTHH:mm:ss");
+    const endDatetime = dayjs
+      .tz(baseDatetime, "Asia/Kolkata")
+      .add(5, "minute")
+      .format("YYYY-MM-DDTHH:mm:ss");
+
+    const entries = createValidShortlistEntries();
+    // Create snapshots with different scopes
+    await createShortlistSnapshot("top-gainers", baseDatetime, entries, tracker, undefined, "TOP_5");
+    await createShortlistSnapshot(
+      "top-gainers",
+      dayjs.tz(baseDatetime, "Asia/Kolkata").add(2, "minute").format("YYYY-MM-DDTHH:mm:ss"),
+      entries,
+      tracker,
+      undefined,
+      "FULL"
+    );
+
+    const query = {
+      type: "top-gainers",
+      start_datetime: startDatetime,
+      end_datetime: endDatetime,
+      scope: "TOP_5",
+    };
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(
+      `/v1/developer/shortlists/persistence?${queryString}`,
+      developerToken
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.data.totalSnapshots).toBe(1); // Only TOP_5 snapshot should be counted
+    expect(body.data.instruments.length).toBe(entries.length);
+  });
+
+  test("should return correct instruments from scoped snapshots", async ({ tracker }) => {
+    const uniqueDate = generateUniqueTestDate();
+    const baseDatetime = `${uniqueDate}T10:00:00`;
+    const startDatetime = dayjs
+      .tz(baseDatetime, "Asia/Kolkata")
+      .subtract(5, "minute")
+      .format("YYYY-MM-DDTHH:mm:ss");
+    const endDatetime = dayjs
+      .tz(baseDatetime, "Asia/Kolkata")
+      .add(5, "minute")
+      .format("YYYY-MM-DDTHH:mm:ss");
+
+    const entries1 = createValidShortlistEntries();
+    const entries2 = [
+      { name: "Bharti Airtel Ltd", price: 1200.0, nseSymbol: "BHARTIARTL" },
+      { name: "State Bank of India", price: 600.0, nseSymbol: "SBIN" },
+    ];
+
+    // Create snapshots with FULL scope
+    await createShortlistSnapshot("top-gainers", baseDatetime, entries1, tracker, undefined, "FULL");
+    await createShortlistSnapshot(
+      "top-gainers",
+      dayjs.tz(baseDatetime, "Asia/Kolkata").add(2, "minute").format("YYYY-MM-DDTHH:mm:ss"),
+      entries2,
+      tracker,
+      undefined,
+      "FULL"
+    );
+
+    const query = {
+      type: "top-gainers",
+      start_datetime: startDatetime,
+      end_datetime: endDatetime,
+      scope: "FULL",
+    };
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(
+      `/v1/developer/shortlists/persistence?${queryString}`,
+      developerToken
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.data.totalSnapshots).toBe(2);
+    // Should return all unique instruments from both FULL snapshots
+    const allSymbols = entries1.map((e) => e.nseSymbol).concat(entries2.map((e) => e.nseSymbol));
+    const uniqueSymbols = Array.from(new Set(allSymbols));
+    expect(body.data.instruments.length).toBe(uniqueSymbols.length);
+  });
+
+  test("should default to TOP_5 when scope not provided", async ({ tracker }) => {
+    const uniqueDate = generateUniqueTestDate();
+    const baseDatetime = `${uniqueDate}T10:00:00`;
+    const startDatetime = dayjs
+      .tz(baseDatetime, "Asia/Kolkata")
+      .subtract(5, "minute")
+      .format("YYYY-MM-DDTHH:mm:ss");
+    const endDatetime = dayjs
+      .tz(baseDatetime, "Asia/Kolkata")
+      .add(5, "minute")
+      .format("YYYY-MM-DDTHH:mm:ss");
+
+    const entries = createValidShortlistEntries();
+    // Create both TOP_5 and FULL snapshots
+    await createShortlistSnapshot("top-gainers", baseDatetime, entries, tracker, undefined, "TOP_5");
+    await createShortlistSnapshot(
+      "top-gainers",
+      dayjs.tz(baseDatetime, "Asia/Kolkata").add(2, "minute").format("YYYY-MM-DDTHH:mm:ss"),
+      entries,
+      tracker,
+      undefined,
+      "FULL"
+    );
+
+    // Query without scope parameter
+    const query = {
+      type: "top-gainers",
+      start_datetime: startDatetime,
+      end_datetime: endDatetime,
+    };
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(
+      `/v1/developer/shortlists/persistence?${queryString}`,
+      developerToken
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.data.totalSnapshots).toBe(1); // Only TOP_5 should be counted by default
+    expect(body.data.instruments.length).toBe(entries.length);
+  });
 });

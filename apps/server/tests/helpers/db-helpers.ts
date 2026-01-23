@@ -1,7 +1,14 @@
 /// <reference types="node" />
 import { prisma } from "../../src/utils/prisma";
 import { randomUUID } from "crypto";
-import type { ShortlistType, QuoteSnapshot, ShortlistSnapshot, InputJsonValue, NiftyQuote } from "@ganaka/db";
+import type {
+  ShortlistType,
+  ShortlistScope,
+  QuoteSnapshot,
+  ShortlistSnapshot,
+  InputJsonValue,
+  NiftyQuote,
+} from "@ganaka/db";
 import type { z } from "zod";
 import {
   growwQuoteSchema,
@@ -190,7 +197,8 @@ export async function createShortlistSnapshot(
   datetime: string,
   entries: Array<z.infer<typeof v1_developer_lists_schemas.listSchema>>,
   tracker: TestDataTracker,
-  timezone?: string
+  timezone?: string,
+  scope?: ShortlistScope
 ) {
   const timestamp = parseDateTimeInTimezone(datetime, timezone || "Asia/Kolkata");
   const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
@@ -200,6 +208,7 @@ export async function createShortlistSnapshot(
       timestamp,
       shortlistType,
       entries: entries as InputJsonValue,
+      scope: scope || "TOP_5",
     },
   });
 
@@ -492,7 +501,8 @@ export async function createMultipleShortlistSnapshots(
   date: string,
   count: number,
   tracker: TestDataTracker,
-  timezone?: string
+  timezone?: string,
+  scope?: ShortlistScope
 ): Promise<ShortlistSnapshot[]> {
   const tz = timezone || "Asia/Kolkata";
   const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
@@ -521,6 +531,7 @@ export async function createMultipleShortlistSnapshots(
         timestamp: utcTime,
         shortlistType,
         entries: entries as InputJsonValue,
+        scope: scope || "TOP_5",
       },
     });
 
@@ -542,7 +553,8 @@ export async function createShortlistSnapshotsWithUniqueCompanies(
   type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
   datetime: string,
   uniqueCompanyCount: number = 10,
-  tracker: TestDataTracker
+  tracker: TestDataTracker,
+  scope?: ShortlistScope
 ): Promise<ShortlistSnapshot[]> {
   const baseDate = dayjs.tz(datetime, "Asia/Kolkata").utc();
   const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
@@ -593,6 +605,7 @@ export async function createShortlistSnapshotsWithUniqueCompanies(
         timestamp: baseDate.toDate(),
         shortlistType,
         entries: snapshotEntries as InputJsonValue,
+        scope: scope || "TOP_5",
       },
     });
 

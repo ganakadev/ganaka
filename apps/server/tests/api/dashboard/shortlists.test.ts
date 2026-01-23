@@ -505,4 +505,102 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     // Should work without explicit TP/SL params (defaults are used internally)
     expect(validatedData.data.shortlist).not.toBeNull();
   });
+
+  test("should return 400 when scope is invalid", async () => {
+    const query = createShortlistsQuery();
+    const queryString = new URLSearchParams({
+      ...query,
+      scope: "INVALID_SCOPE",
+    }).toString();
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken,
+      {
+        validateStatus: () => true,
+      }
+    );
+
+    expect(response.status).toBe(400);
+  });
+
+  test("should filter by scope when specified", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
+    const testEntries = createValidShortlistEntries();
+    const testQuoteData = createValidGrowwQuotePayload();
+
+    // Create shortlist snapshots with different scopes
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker, undefined, "TOP_5");
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker, undefined, "FULL");
+
+    // Create quote snapshots for each entry
+    for (const entry of testEntries) {
+      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
+    }
+
+    // Query for TOP_5 scope
+    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS", undefined, undefined, undefined, "TOP_5");
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
+    expect(body.data.shortlist).not.toBeNull();
+    if (body.data.shortlist) {
+      expect(body.data.shortlist.entries.length).toBe(testEntries.length);
+    }
+  });
+
+  test("should default to TOP_5 when not specified", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
+    const testEntries = createValidShortlistEntries();
+    const testQuoteData = createValidGrowwQuotePayload();
+
+    // Create both TOP_5 and FULL snapshots
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker, undefined, "TOP_5");
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker, undefined, "FULL");
+
+    // Create quote snapshots for each entry
+    for (const entry of testEntries) {
+      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
+    }
+
+    // Query without scope parameter
+    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
+    expect(body.data.shortlist).not.toBeNull();
+    // Should return TOP_5 by default
+  });
+
+  test("should return null when scope doesn't match", async ({ tracker }) => {
+    const testDatetime = generateUniqueTestDatetime();
+    const testEntries = createValidShortlistEntries();
+
+    // Create only FULL snapshot
+    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker, undefined, "FULL");
+
+    // Query for TOP_5 scope
+    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS", undefined, undefined, undefined, "TOP_5");
+    const queryString = buildQueryString(query);
+    const response = await authenticatedGet(
+      `/v1/dashboard/shortlists?${queryString}`,
+      developerToken
+    );
+
+    expect(response.status).toBe(200);
+    const body = response.data;
+    expect(body.statusCode).toBe(200);
+    expect(body.data.shortlist).toBeNull();
+  });
 });

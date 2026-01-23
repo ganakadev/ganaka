@@ -3,7 +3,7 @@ import { validateRequest } from "../../../../utils/validator";
 import { v1_developer_lists_schemas } from "@ganaka/schemas";
 import { sendResponse } from "../../../../utils/sendResponse";
 import { prisma } from "../../../../utils/prisma";
-import { ShortlistType } from "@ganaka/db/prisma";
+import { ShortlistType, ShortlistScope } from "@ganaka/db/prisma";
 import z from "zod";
 import * as cheerio from "cheerio";
 import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse } from "axios";
@@ -97,6 +97,7 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
       try {
         const shortlistType = mapTypeToShortlistType(validationResult.type);
         const timezone = validationResult.timezone || "Asia/Kolkata";
+        const scope = (validationResult.scope ?? "TOP_5") as ShortlistScope;
         // Convert datetime string to UTC Date object
         const selectedDateTime = parseDateTimeInTimezone(validationResult.datetime, timezone);
 
@@ -117,6 +118,7 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
               lte: dayjs.utc(selectedDateTime).add(1, "second").toDate(), // Add 1 second
             },
             shortlistType: shortlistType,
+            scope: scope,
           },
         });
 
