@@ -23,7 +23,7 @@
     "postprisma:migrate": "pnpm run build",
     "prisma:reset": "env-cmd -f ../../.env --silent prisma migrate reset",
     "prisma:studio": "env-cmd -f ../../.env --silent prisma studio",
-    "prisma:migrate:deploy": "env-cmd -f ../../.env --silent prisma migrate deploy",
+    "prisma:migrate:deploy": "env-cmd -f ../../.env --silent prisma migrate deploy --migrate-lock-timeout 30000",
     "build": "env-cmd -f ../../.env --silent vite build && copyfiles -u 1 'src/generated/**/*' dist",
     "lint": "tsc --noEmit"
   },
