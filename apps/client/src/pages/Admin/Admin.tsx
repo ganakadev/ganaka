@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { Button, Checkbox, Table, Text, Title, Paper, Stack, Group } from "@mantine/core";
+import { Button, Checkbox, Group, Paper, Table, Text, Title } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { notifications } from "@mantine/notifications";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import { useState } from "react";
 import {
-  useGetAvailableDatesQuery,
-  useDeleteDatesMutation,
-  useGetHolidaysQuery,
   useAddHolidaysMutation,
+  useDeleteDatesMutation,
+  useGetAvailableDatesQuery,
+  useGetHolidaysQuery,
   useRemoveHolidaysMutation,
 } from "../../store/api/adminApi";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
@@ -181,7 +181,7 @@ export const Admin = () => {
         Admin Console
       </Title>
 
-      <Stack gap="xl">
+      <div className="grid grid-cols-2 gap-6">
         {/* Data Management Section */}
         <Paper p="md" withBorder>
           <Title order={2} mb="md">
@@ -362,7 +362,7 @@ export const Admin = () => {
             </>
           )}
         </Paper>
-      </Stack>
+      </div>
     </div>
   );
 };
