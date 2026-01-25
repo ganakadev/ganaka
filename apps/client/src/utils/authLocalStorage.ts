@@ -30,6 +30,11 @@ function logout(): void {
   clearAuth();
 }
 
+function isAdmin(): boolean {
+  const username = getUsername();
+  return username === "admin";
+}
+
 export const authLocalStorage = {
   getToken,
   getUsername,
@@ -38,4 +43,5 @@ export const authLocalStorage = {
   clearAuth,
   isAuthenticated,
   logout,
+  isAdmin,
 };

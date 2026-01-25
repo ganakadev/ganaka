@@ -1,11 +1,22 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Dashboard } from "./pages/Dashboard/Dashboard";
 import { SignIn } from "./pages/SignIn";
+import { Admin } from "./pages/Admin/Admin";
 import { authLocalStorage } from "./utils/authLocalStorage";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (!authLocalStorage.isAuthenticated()) {
     return <Navigate to="/signin" replace />;
+  }
+  return <>{children}</>;
+};
+
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  if (!authLocalStorage.isAuthenticated()) {
+    return <Navigate to="/signin" replace />;
+  }
+  if (!authLocalStorage.isAdmin()) {
+    return <Navigate to="/" replace />;
   }
   return <>{children}</>;
 };
@@ -35,6 +46,14 @@ export const App = () => {
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
           }
         />
       </Routes>

@@ -11,6 +11,7 @@ export class TestDataTracker {
   private shortlistSnapshotIds: string[] = [];
   private niftyQuoteIds: string[] = [];
   private collectorErrorIds: string[] = [];
+  private nseHolidayIds: string[] = [];
 
   /**
    * Track a developer ID (excluding admin user)
@@ -59,6 +60,13 @@ export class TestDataTracker {
    */
   trackCollectorError(id: string): void {
     this.collectorErrorIds.push(id);
+  }
+
+  /**
+   * Track an NSE holiday ID
+   */
+  trackNseHoliday(id: string): void {
+    this.nseHolidayIds.push(id);
   }
 
   /**
@@ -113,6 +121,13 @@ export class TestDataTracker {
       });
     }
 
+    // Delete NSE holidays
+    if (this.nseHolidayIds.length > 0) {
+      await prisma.nseHoliday.deleteMany({
+        where: { id: { in: this.nseHolidayIds } },
+      });
+    }
+
     // Delete developers (excluding admin user)
     if (this.developerIds.length > 0) {
       await prisma.developer.deleteMany({
@@ -136,5 +151,6 @@ export class TestDataTracker {
     this.shortlistSnapshotIds = [];
     this.niftyQuoteIds = [];
     this.collectorErrorIds = [];
+    this.nseHolidayIds = [];
   }
 }

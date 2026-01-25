@@ -269,6 +269,20 @@ export const Header = ({
         </Menu.Target>
         <Menu.Dropdown>
           {username && <Menu.Label>{username.toUpperCase()}</Menu.Label>}
+          {authLocalStorage.isAdmin() && (
+            <Menu.Item
+              onClick={() => {
+                const result = navigate("/admin");
+                if (result instanceof Promise) {
+                  result.catch((error) => {
+                    console.error("Error navigating to admin:", error);
+                  });
+                }
+              }}
+            >
+              Admin
+            </Menu.Item>
+          )}
           <Menu.Item onClick={handleLogout} color="red">
             Logout
           </Menu.Item>

@@ -191,6 +191,13 @@ exports.Prisma.CollectorErrorScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.NseHolidayScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -237,7 +244,8 @@ exports.Prisma.ModelName = {
   Developer: 'Developer',
   Run: 'Run',
   Order: 'Order',
-  CollectorError: 'CollectorError'
+  CollectorError: 'CollectorError',
+  NseHoliday: 'NseHoliday'
 };
 
 /**

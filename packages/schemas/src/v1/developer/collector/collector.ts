@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   apiResponseSchema,
   datetimeFormatSchema,
+  dateFormatSchema,
   growwQuoteSchema,
   timezoneSchema,
 } from "../../../common";
@@ -81,6 +82,20 @@ export const createNiftyQuote = {
       id: z.string(),
       timestamp: z.string(), // Format: YYYY-MM-DDTHH:mm:ss (UTC)
       dayChangePerc: z.number(),
+    }),
+  }),
+};
+
+// ==================== GET /check-holiday ====================
+
+export const checkHoliday = {
+  query: z.object({
+    date: dateFormatSchema,
+  }),
+  response: apiResponseSchema.extend({
+    data: z.object({
+      isHoliday: z.boolean(),
+      date: dateFormatSchema,
     }),
   }),
 };
