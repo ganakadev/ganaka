@@ -11,6 +11,8 @@ import { fetchShortlist } from "./callbacks/fetchShortlist";
 import { fetchShortlistPersistence } from "./callbacks/fetchShortlistPersistence";
 import { fetchNiftyQuote } from "./callbacks/fetchNiftyQuote";
 import { fetchNiftyQuoteTimeline } from "./callbacks/fetchNiftyQuoteTimeline";
+import { fetchAvailableDates } from "./callbacks/fetchAvailableDates";
+import { fetchHolidays } from "./callbacks/fetchHolidays";
 import { placeOrder } from "./callbacks/placeOrder";
 import { ApiClient } from "./utils/apiClient";
 import { logger } from "./utils/logger";
@@ -30,6 +32,8 @@ export type FetchNiftyQuoteResponse = Awaited<ReturnType<ReturnType<typeof fetch
 export type FetchNiftyQuoteTimelineResponse = Awaited<ReturnType<ReturnType<typeof fetchNiftyQuoteTimeline>>>;
 export type FetchCandlesResponse = Awaited<ReturnType<ReturnType<typeof fetchCandles>>>;
 export type FetchShortlistResponse = Awaited<ReturnType<ReturnType<typeof fetchShortlist>>>;
+export type FetchAvailableDatesResponse = Awaited<ReturnType<ReturnType<typeof fetchAvailableDates>>>;
+export type FetchHolidaysResponse = Awaited<ReturnType<ReturnType<typeof fetchHolidays>>>;
 
 export interface RunContext {
   placeOrder: ReturnType<typeof placeOrder>;
@@ -57,6 +61,20 @@ export interface RunContext {
    * over a given period of time.
    */
   fetchShortlistPersistence: ReturnType<typeof fetchShortlistPersistence>;
+  /**
+   * Fetch available dates with timestamps.
+   * Returns which dates have data available, grouped by date with all timestamps for each date.
+   *
+   * @returns Available dates data with dates and timestamps
+   */
+  fetchAvailableDates: ReturnType<typeof fetchAvailableDates>;
+  /**
+   * Fetch market holidays.
+   * Returns all dates marked as market holidays.
+   *
+   * @returns Holidays data
+   */
+  fetchHolidays: ReturnType<typeof fetchHolidays>;
   /**
    * Current timestamp in IST string format (YYYY-MM-DDTHH:mm:ss)
    * for every loop iteration
@@ -204,6 +222,20 @@ export async function ganaka<T>({
             currentTimezone: "Asia/Kolkata",
           }),
           fetchShortlistPersistence: fetchShortlistPersistence({
+            developerToken,
+            apiDomain,
+            runId,
+            currentTimestamp,
+            currentTimezone: "Asia/Kolkata",
+          }),
+          fetchAvailableDates: fetchAvailableDates({
+            developerToken,
+            apiDomain,
+            runId,
+            currentTimestamp,
+            currentTimezone: "Asia/Kolkata",
+          }),
+          fetchHolidays: fetchHolidays({
             developerToken,
             apiDomain,
             runId,

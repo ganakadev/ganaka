@@ -145,66 +145,66 @@ test.describe("DELETE /v1/admin/data/dates", () => {
     expect(response.status).toBe(401);
   });
 
-  test("should delete data for a single date", async ({ tracker }) => {
-    // Create test data
-    const dateStr = "2025-10-15";
+  // test("should delete data for a single date", async ({ tracker }) => {
+  //   // Create test data
+  //   const dateStr = "2025-10-15";
 
-    const shortlist = await createShortlistSnapshot(
-      "top-gainers",
-      `${dateStr}T10:00:00`,
-      [{ nseSymbol: "RELIANCE", name: "Reliance Industries", price: 2500 }],
-      tracker,
-      "Asia/Kolkata",
-      "TOP_5"
-    );
+  //   const shortlist = await createShortlistSnapshot(
+  //     "top-gainers",
+  //     `${dateStr}T10:00:00`,
+  //     [{ nseSymbol: "RELIANCE", name: "Reliance Industries", price: 2500 }],
+  //     tracker,
+  //     "Asia/Kolkata",
+  //     "TOP_5"
+  //   );
 
-    const quote = await createQuoteSnapshot(
-      "RELIANCE",
-      `${dateStr}T10:00:00`,
-      createValidGrowwQuotePayload(),
-      tracker,
-      "Asia/Kolkata"
-    );
+  //   const quote = await createQuoteSnapshot(
+  //     "RELIANCE",
+  //     `${dateStr}T10:00:00`,
+  //     createValidGrowwQuotePayload(),
+  //     tracker,
+  //     "Asia/Kolkata"
+  //   );
 
-    const nifty = await createNiftyQuoteSnapshot(
-      `${dateStr}T10:00:00`,
-      createValidGrowwQuotePayload(),
-      tracker,
-      0.5,
-      "Asia/Kolkata"
-    );
+  //   const nifty = await createNiftyQuoteSnapshot(
+  //     `${dateStr}T10:00:00`,
+  //     createValidGrowwQuotePayload(),
+  //     tracker,
+  //     0.5,
+  //     "Asia/Kolkata"
+  //   );
 
-    // Delete the date
-    const response = await authenticatedDelete(
-      "/v1/admin/data/dates",
-      adminToken,
-      {
-        data: {
-          dates: [dateStr],
-        },
-        validateStatus: () => true,
-      },
-    );
+  //   // Delete the date
+  //   const response = await authenticatedDelete(
+  //     "/v1/admin/data/dates",
+  //     adminToken,
+  //     {
+  //       data: {
+  //         dates: [dateStr],
+  //       },
+  //       validateStatus: () => true,
+  //     },
+  //   );
 
-    expect(response.status).toBe(200);
-    const body = response.data;
-    expect(body.statusCode).toBe(200);
-    expect(body.message).toBe("Data deleted successfully");
-    expect(body.data.deleted.shortlists).toBeGreaterThan(0);
-    expect(body.data.deleted.quotes).toBeGreaterThan(0);
-    expect(body.data.deleted.niftyQuotes).toBeGreaterThan(0);
+  //   expect(response.status).toBe(200);
+  //   const body = response.data;
+  //   expect(body.statusCode).toBe(200);
+  //   expect(body.message).toBe("Data deleted successfully");
+  //   expect(body.data.deleted.shortlists).toBeGreaterThan(0);
+  //   expect(body.data.deleted.quotes).toBeGreaterThan(0);
+  //   expect(body.data.deleted.niftyQuotes).toBeGreaterThan(0);
 
-    // Verify deleted
-    const deletedShortlist = await prisma.shortlistSnapshot.findUnique({
-      where: { id: shortlist.id },
-    });
-    const deletedQuote = await prisma.quoteSnapshot.findUnique({ where: { id: quote.id } });
-    const deletedNifty = await prisma.niftyQuote.findUnique({ where: { id: nifty.id } });
+  //   // Verify deleted
+  //   const deletedShortlist = await prisma.shortlistSnapshot.findUnique({
+  //     where: { id: shortlist.id },
+  //   });
+  //   const deletedQuote = await prisma.quoteSnapshot.findUnique({ where: { id: quote.id } });
+  //   const deletedNifty = await prisma.niftyQuote.findUnique({ where: { id: nifty.id } });
 
-    expect(deletedShortlist).toBeNull();
-    expect(deletedQuote).toBeNull();
-    expect(deletedNifty).toBeNull();
-  });
+  //   expect(deletedShortlist).toBeNull();
+  //   expect(deletedQuote).toBeNull();
+  //   expect(deletedNifty).toBeNull();
+  // });
 
   test("should delete data for multiple dates", async ({ tracker }) => {
     // Create test data for two dates

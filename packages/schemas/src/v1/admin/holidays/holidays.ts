@@ -10,8 +10,8 @@ export const getHolidays = {
         z.object({
           id: z.string().uuid(),
           date: dateFormatSchema,
-          createdAt: z.date(),
-          updatedAt: z.date(),
+          createdAt: z.coerce.date(),
+          updatedAt: z.coerce.date(),
         })
       ),
     }),
@@ -30,8 +30,8 @@ export const addHolidays = {
         z.object({
           id: z.string().uuid(),
           date: dateFormatSchema,
-          createdAt: z.date(),
-          updatedAt: z.date(),
+          createdAt: z.coerce.date(),
+          updatedAt: z.coerce.date(),
         })
       ),
     }),
