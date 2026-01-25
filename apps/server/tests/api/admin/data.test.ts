@@ -149,7 +149,6 @@ test.describe("DELETE /v1/admin/data/dates", () => {
   test("should delete data for a single date", async ({ tracker }) => {
     // Create test data
     const dateStr = "2025-10-15";
-    const timestamp = dayjs.utc(`${dateStr}T10:00:00`).toDate();
 
     const shortlist = await createShortlistSnapshot(
       "top-gainers",

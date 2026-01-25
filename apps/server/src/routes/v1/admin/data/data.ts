@@ -17,12 +17,11 @@ const dataRoutes: FastifyPluginAsync = async (fastify) => {
 
   fastify.get("/available-dates", async (request, reply) => {
     try {
-      // Get all unique dates from ShortlistSnapshot
+      // Get all shortlist snapshots to count records per date
       const shortlistSnapshots = await prisma.shortlistSnapshot.findMany({
         select: {
           timestamp: true,
         },
-        distinct: ["timestamp"],
         orderBy: {
           timestamp: "asc",
         },
@@ -48,12 +47,11 @@ const dataRoutes: FastifyPluginAsync = async (fastify) => {
         dateData.shortlistCount += 1;
       });
 
-      // Get quote counts for each date
+      // Get quote counts for each date (all records, not just unique timestamps)
       const quoteSnapshots = await prisma.quoteSnapshot.findMany({
         select: {
           timestamp: true,
         },
-        distinct: ["timestamp"],
       });
 
       quoteSnapshots.forEach((snapshot) => {
@@ -69,12 +67,11 @@ const dataRoutes: FastifyPluginAsync = async (fastify) => {
         dateData.quoteCount += 1;
       });
 
-      // Get nifty quote counts for each date
+      // Get nifty quote counts for each date (all records, not just unique timestamps)
       const niftyQuotes = await prisma.niftyQuote.findMany({
         select: {
           timestamp: true,
         },
-        distinct: ["timestamp"],
       });
 
       niftyQuotes.forEach((quote) => {
