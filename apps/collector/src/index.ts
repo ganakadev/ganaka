@@ -3,6 +3,7 @@ import { Cron } from "croner";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import axios from "axios";
 import { isWithinCollectionWindow } from "./utils/time";
 import { collectMarketData } from "./collector";
 import { RedisManager } from "./utils/redis";
@@ -12,7 +13,47 @@ dayjs.extend(timezone);
 
 dotenv.config();
 
+const API_DOMAIN = process.env.API_DOMAIN ?? "https://api.ganaka.live";
+const DEVELOPER_KEY = process.env.DEVELOPER_KEY;
+
+async function checkIfHoliday(): Promise<boolean> {
+  try {
+    // Get current date in IST timezone
+    const nowIST = dayjs().tz("Asia/Kolkata");
+    const dateStr = nowIST.format("YYYY-MM-DD");
+
+    const response = await axios.get(`${API_DOMAIN}/v1/developer/collector/check-holiday`, {
+      params: {
+        date: dateStr,
+      },
+      headers: {
+        Authorization: `Bearer ${DEVELOPER_KEY}`,
+      },
+      timeout: 5000, // 5 second timeout
+    });
+
+    if (response.data && response.data.data) {
+      return response.data.data.isHoliday === true;
+    }
+    return false;
+  } catch (error) {
+    // If API is unavailable or validation fails, log and continue (fail gracefully)
+    console.warn("Failed to check holiday status, continuing with collection:", error);
+    return false;
+  }
+}
+
 async function runCollection(): Promise<void> {
+  // Check if today is a holiday
+  const isHoliday = await checkIfHoliday();
+  if (isHoliday) {
+    const nowIST = dayjs().tz("Asia/Kolkata");
+    console.log(
+      `Today is marked as an NSE holiday. Skipping collection. Current date: ${nowIST.format("YYYY-MM-DD")} IST`
+    );
+    return;
+  }
+
   // Check if we're within the collection window (8:45 AM - 3:30 PM IST, weekdays only)
   if (!isWithinCollectionWindow()) {
     const nowIST = dayjs().tz("Asia/Kolkata");

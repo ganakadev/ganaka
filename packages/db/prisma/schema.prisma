@@ -118,6 +118,17 @@ model CollectorError {
   @@map("collector_errors")
 }
 
+model NseHoliday {
+  id   String   @id @default(uuid())
+  date DateTime @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+  @@map("nse_holidays")
+}
+
 enum ShortlistType {
   TOP_GAINERS
   VOLUME_SHOCKERS
