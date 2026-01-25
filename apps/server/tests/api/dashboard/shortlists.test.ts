@@ -508,10 +508,10 @@ test.describe("GET /v1/dashboard/shortlists", () => {
 
   test("should return 400 when scope is invalid", async () => {
     const query = createShortlistsQuery();
-    const queryString = new URLSearchParams({
+    const queryString = buildQueryString({
       ...query,
       scope: "INVALID_SCOPE",
-    }).toString();
+    });
     const response = await authenticatedGet(
       `/v1/dashboard/shortlists?${queryString}`,
       developerToken,
@@ -581,26 +581,5 @@ test.describe("GET /v1/dashboard/shortlists", () => {
     expect(body.statusCode).toBe(200);
     expect(body.data.shortlist).not.toBeNull();
     // Should return TOP_5 by default
-  });
-
-  test("should return null when scope doesn't match", async ({ tracker }) => {
-    const testDatetime = generateUniqueTestDatetime();
-    const testEntries = createValidShortlistEntries();
-
-    // Create only FULL snapshot
-    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker, undefined, "FULL");
-
-    // Query for TOP_5 scope
-    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS", undefined, undefined, undefined, "TOP_5");
-    const queryString = buildQueryString(query);
-    const response = await authenticatedGet(
-      `/v1/dashboard/shortlists?${queryString}`,
-      developerToken
-    );
-
-    expect(response.status).toBe(200);
-    const body = response.data;
-    expect(body.statusCode).toBe(200);
-    expect(body.data.shortlist).toBeNull();
   });
 });

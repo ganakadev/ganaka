@@ -2,6 +2,8 @@ import {
   v1_developer_groww_schemas,
   v1_developer_lists_schemas,
   v1_developer_shortlist_persistence_schemas,
+  v1_developer_available_dates_schemas,
+  v1_developer_holidays_schemas,
 } from "@ganaka/schemas";
 import { z } from "zod";
 import { fetchCandles } from "./callbacks/fetchCandles";
@@ -11,6 +13,8 @@ import { fetchNiftyQuote } from "./callbacks/fetchNiftyQuote";
 import { fetchNiftyQuoteTimeline } from "./callbacks/fetchNiftyQuoteTimeline";
 import { fetchShortlist } from "./callbacks/fetchShortlist";
 import { fetchShortlistPersistence } from "./callbacks/fetchShortlistPersistence";
+import { fetchAvailableDates } from "./callbacks/fetchAvailableDates";
+import { fetchHolidays } from "./callbacks/fetchHolidays";
 
 export interface GanakaClientConfig {
   /**
@@ -231,5 +235,43 @@ export class GanakaClient {
       currentTimezone: "Asia/Kolkata",
     });
     return callback(queryParams);
+  }
+
+  /**
+   * Fetch available dates with timestamps.
+   * Returns which dates have data available, grouped by date with all timestamps for each date.
+   *
+   * @returns Promise resolving to available dates data with dates and timestamps
+   */
+  async fetchAvailableDates(): Promise<
+    z.infer<typeof v1_developer_available_dates_schemas.getAvailableDates.response>["data"]
+  > {
+    const callback = fetchAvailableDates({
+      developerToken: this.developerToken,
+      apiDomain: this.apiDomain,
+      runId: null,
+      currentTimestamp: "",
+      currentTimezone: "Asia/Kolkata",
+    });
+    return callback();
+  }
+
+  /**
+   * Fetch market holidays.
+   * Returns all dates marked as market holidays.
+   *
+   * @returns Promise resolving to holidays data
+   */
+  async fetchHolidays(): Promise<
+    z.infer<typeof v1_developer_holidays_schemas.getHolidays.response>["data"]
+  > {
+    const callback = fetchHolidays({
+      developerToken: this.developerToken,
+      apiDomain: this.apiDomain,
+      runId: null,
+      currentTimestamp: "",
+      currentTimezone: "Asia/Kolkata",
+    });
+    return callback();
   }
 }
