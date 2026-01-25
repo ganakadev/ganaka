@@ -92,7 +92,6 @@ test.describe("GET /v1/admin/data/available-dates", () => {
   test("should return dates with data counts", async ({ tracker }) => {
     // Create test data for a specific date
     const dateStr = "2025-09-15";
-    const timestamp = dayjs.utc(`${dateStr}T10:00:00`).toDate();
 
     // Create shortlist snapshot
     await createShortlistSnapshot(
