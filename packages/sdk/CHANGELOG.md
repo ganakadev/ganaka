@@ -1,3 +1,14 @@
+## [@ganaka/sdk v1.8.0](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Features
+
+* **admin:** Implement admin panel with holiday management and available dates API ([ef3296c](https://github.com/ganakadev/ganaka/commit/ef3296c80a0e1a1ed24b0abd54ab354d1a1e9500))
+* **sdk:** Add available dates and holidays endpoints with corresponding schemas and tests ([7f7030f](https://github.com/ganakadev/ganaka/commit/7f7030f330c87975addba6cd4ee55f0aa5f01d1a))
+
 ## [@ganaka/sdk v1.7.0](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
