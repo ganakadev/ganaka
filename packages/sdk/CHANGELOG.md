@@ -1,3 +1,13 @@
+## [@ganaka/sdk v1.9.0](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Features
+
+* **sdk:** Add additional fetch types for market data endpoints ([0dc04e6](https://github.com/ganakadev/ganaka/commit/0dc04e601fc1fcfe61d2ef63ef22125012936595))
+
 ## [@ganaka/sdk v1.8.0](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
