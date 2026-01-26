@@ -35,6 +35,16 @@ export type FetchShortlistResponse = Awaited<ReturnType<ReturnType<typeof fetchS
 export type FetchAvailableDatesResponse = Awaited<ReturnType<ReturnType<typeof fetchAvailableDates>>>;
 export type FetchHolidaysResponse = Awaited<ReturnType<ReturnType<typeof fetchHolidays>>>;
 
+export type fetchCandles = ReturnType<typeof fetchCandles>;
+export type fetchQuote = ReturnType<typeof fetchQuote>;
+export type fetchQuoteTimeline = ReturnType<typeof fetchQuoteTimeline>;
+export type fetchNiftyQuote = ReturnType<typeof fetchNiftyQuote>;
+export type fetchNiftyQuoteTimeline = ReturnType<typeof fetchNiftyQuoteTimeline>;
+export type fetchShortlist = ReturnType<typeof fetchShortlist>;
+export type fetchShortlistPersistence = ReturnType<typeof fetchShortlistPersistence>;
+export type fetchAvailableDates = ReturnType<typeof fetchAvailableDates>;
+export type fetchHolidays = ReturnType<typeof fetchHolidays>;
+
 export interface RunContext {
   placeOrder: ReturnType<typeof placeOrder>;
   fetchCandles: ReturnType<typeof fetchCandles>;
