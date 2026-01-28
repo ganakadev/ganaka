@@ -1,3 +1,14 @@
+## [@ganaka/sdk v1.10.0](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Features
+
+* **sdk:** Enhance rate limiter with concurrency and timeout features ([1901632](https://github.com/ganakadev/ganaka/commit/1901632a00b7a609709d462890aa10e479677cbe))
+* **sdk:** Integrate rate limiter for fetchCandles API call ([25df83a](https://github.com/ganakadev/ganaka/commit/25df83a97fa304c00fd75862c37bd7626ded746c))
+
 ## [@ganaka/sdk v1.9.0](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
