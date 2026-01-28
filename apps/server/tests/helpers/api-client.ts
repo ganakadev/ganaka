@@ -66,6 +66,25 @@ export async function authenticatedGetWithRunContext(
 /**
  * Makes an authenticated POST request
  */
+export async function authenticatedPut(
+  url: string,
+  token: string,
+  data?: unknown,
+  config?: AxiosRequestConfig
+) {
+  const client = createApiClient();
+  return client.put(url, data, {
+    ...config,
+    headers: {
+      ...config?.headers,
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+/**
+ * Makes an authenticated POST request
+ */
 export async function authenticatedPost(
   url: string,
   token: string,
@@ -122,6 +141,17 @@ export async function authenticatedDelete(url: string, token: string, config?: A
 export async function unauthenticatedGet(url: string, config?: AxiosRequestConfig) {
   const client = createApiClient();
   return client.get(url, {
+    ...config,
+    validateStatus: () => true,
+  });
+}
+
+/**
+ * Makes an unauthenticated POST request (for testing auth failures)
+ */
+export async function unauthenticatedPut(url: string, data?: unknown, config?: AxiosRequestConfig) {
+  const client = createApiClient();
+  return client.put(url, data, {
     ...config,
     validateStatus: () => true,
   });

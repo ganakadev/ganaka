@@ -9,7 +9,19 @@ const tokenRoutes: FastifyPluginAsync = async (fastify) => {
 
   // Get latest token endpoint
   fastify.get("/", async (request, reply) => {
-    const token = await tokenManager.getToken();
+    const developerCredentials = request.developer
+      ? {
+          developerId: request.developer.id,
+          growwApiKey: request.developer.growwApiKey,
+          growwApiSecret: request.developer.growwApiSecret,
+        }
+      : undefined;
+
+    const token = await tokenManager.getToken(
+      developerCredentials?.developerId,
+      developerCredentials?.growwApiKey,
+      developerCredentials?.growwApiSecret
+    );
     return sendResponse(reply, {
       statusCode: 200,
       message: "Token fetched successfully",

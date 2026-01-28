@@ -1,4 +1,5 @@
 import { prisma } from "../src/utils/prisma";
+import { cleanupAllGrowwTokenKeys, closeSharedRedisClient } from "./helpers/redis-helpers";
 
 async function globalTeardown() {
   console.log("Starting global test teardown...");
@@ -39,6 +40,18 @@ async function globalTeardown() {
       `Total records remaining: ${sum}`,
     ].join("\n");
     throw new Error(errorMessage);
+  }
+
+  // Clean up any remaining Redis keys from tests
+  console.log("Cleaning up Redis Groww token keys...");
+  try {
+    await cleanupAllGrowwTokenKeys();
+  } catch (error) {
+    // Log warning but don't fail teardown if Redis cleanup fails
+    console.warn("Failed to clean up Redis keys during global teardown:", error);
+  } finally {
+    // Close the shared Redis connection
+    await closeSharedRedisClient();
   }
 }
 

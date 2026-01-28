@@ -27,10 +27,16 @@ export const makeGrowwAPIRequest =
     method,
     url,
     params,
+    developerCredentials,
   }: {
     url: string;
     method: string;
     params?: Record<string, any>;
+    developerCredentials?: {
+      developerId?: string;
+      growwApiKey?: string | null;
+      growwApiSecret?: string | null;
+    };
   }): Promise<T> => {
     const maxAttempts = 5;
     let lastError: unknown;
@@ -39,7 +45,11 @@ export const makeGrowwAPIRequest =
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
-        const accessToken = await tokenManager.getToken();
+        const accessToken = await tokenManager.getToken(
+          developerCredentials?.developerId,
+          developerCredentials?.growwApiKey,
+          developerCredentials?.growwApiSecret
+        );
         if (!accessToken) {
           throw new Error("Failed to get access token");
         }
@@ -90,7 +100,7 @@ export const makeGrowwAPIRequest =
 
         if (isUnauthorized && attempt < maxAttempts) {
           // Invalidate token and retry
-          await tokenManager.invalidateToken();
+          await tokenManager.invalidateToken(developerCredentials?.developerId);
           continue;
         }
 

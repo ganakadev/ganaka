@@ -520,3 +520,25 @@ export function buildQueryString(query: Record<string, string | number | boolean
   }
   return params.toString();
 }
+
+// ==================== Groww Credentials Test Data ====================
+
+/**
+ * Creates valid Groww credentials for testing
+ */
+export function createValidGrowwCredentials() {
+  return {
+    growwApiKey: `test-api-key-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+    growwApiSecret: `test-api-secret-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+  };
+}
+
+/**
+ * Creates invalid Groww credentials (empty strings) for testing validation
+ */
+export function createInvalidGrowwCredentials() {
+  return {
+    growwApiKey: "",
+    growwApiSecret: "",
+  };
+}

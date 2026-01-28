@@ -153,6 +153,8 @@ exports.Prisma.DeveloperScalarFieldEnum = {
   id: 'id',
   username: 'username',
   token: 'token',
+  growwApiKey: 'growwApiKey',
+  growwApiSecret: 'growwApiSecret',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

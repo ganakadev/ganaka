@@ -1,3 +1,4 @@
 import { PrismaClient } from "@ganaka/db/prisma";
 
-export const prisma = new PrismaClient();
+const prismaClient = new PrismaClient();
+export const prisma = prismaClient;

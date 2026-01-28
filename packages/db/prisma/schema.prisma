@@ -57,6 +57,9 @@ model Developer {
   runs  Run[]
   token String @unique
 
+  growwApiKey    String? /// @encrypted
+  growwApiSecret String? /// @encrypted 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

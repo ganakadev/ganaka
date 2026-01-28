@@ -5,6 +5,7 @@ import { datetimeFormatSchema } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { decrypt } from "../utils/encryption";
 import "../types/fastify";
 
 dayjs.extend(utc);
@@ -69,11 +70,29 @@ const authPlugin =
               );
             }
 
+            // Decrypt Groww credentials after reading from database
+            let decryptedApiKey: string | null = null;
+            let decryptedApiSecret: string | null = null;
+
+            try {
+              decryptedApiKey = decrypt(developer.growwApiKey);
+              decryptedApiSecret = decrypt(developer.growwApiSecret);
+            } catch (error) {
+              fastify.log.error(
+                `Failed to decrypt Groww credentials for developer ${developer.id}: ${JSON.stringify(error)}`
+              );
+              // Set to null if decryption fails (credentials may be corrupted or use different key)
+              decryptedApiKey = null;
+              decryptedApiSecret = null;
+            }
+
             // Attach developer info to request object
             request.developer = {
               id: developer.id,
               username: developer.username,
               token: token,
+              growwApiKey: decryptedApiKey,
+              growwApiSecret: decryptedApiSecret,
             };
 
             // when algorithms call APIs, tagging their run id for analytics

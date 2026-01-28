@@ -283,6 +283,18 @@ export const Header = ({
               Admin
             </Menu.Item>
           )}
+          <Menu.Item
+            onClick={() => {
+              const result = navigate("/settings");
+              if (result instanceof Promise) {
+                result.catch((error) => {
+                  console.error("Error navigating to settings:", error);
+                });
+              }
+            }}
+          >
+            Settings
+          </Menu.Item>
           <Menu.Item onClick={handleLogout} color="red">
             Logout
           </Menu.Item>

@@ -6,6 +6,8 @@ declare module "fastify" {
       id: string;
       username: string;
       token: string;
+      growwApiKey?: string | null;
+      growwApiSecret?: string | null;
     };
     admin?: {
       id: string;

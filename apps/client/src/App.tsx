@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Dashboard } from "./pages/Dashboard/Dashboard";
 import { SignIn } from "./pages/SignIn";
 import { Admin } from "./pages/Admin/Admin";
+import { Settings } from "./pages/Settings/Settings";
 import { authLocalStorage } from "./utils/authLocalStorage";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -54,6 +55,14 @@ export const App = () => {
             <AdminRoute>
               <Admin />
             </AdminRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
           }
         />
       </Routes>
