@@ -6,12 +6,22 @@ const REDIS_KEY = "groww:token";
 
 export class TokenManager {
   private redis: Redis;
-  private tokenGenerationInProgress: Promise<string> | null = null;
+  private tokenGenerationInProgress: Map<string, Promise<string>> = new Map();
   private fastify: FastifyInstance;
 
   constructor(redis: Redis, fastify: FastifyInstance) {
     this.redis = redis;
     this.fastify = fastify;
+  }
+
+  /**
+   * Get Redis key for a developer-specific token
+   */
+  private getRedisKey(developerId?: string): string {
+    if (developerId) {
+      return `groww:token:${developerId}`;
+    }
+    return REDIS_KEY;
   }
 
   /**
@@ -36,32 +46,44 @@ export class TokenManager {
 
   /**
    * Get the access token from Redis, or generate a new one if missing
+   * @param developerId - Optional developer ID for per-developer tokens
+   * @param apiKey - Optional API key (if provided, uses developer-specific credentials)
+   * @param apiSecret - Optional API secret (if provided, uses developer-specific credentials)
    */
-  async getToken(): Promise<string> {
+  async getToken(
+    developerId?: string,
+    apiKey?: string | null,
+    apiSecret?: string | null
+  ): Promise<string> {
+    const redisKey = this.getRedisKey(developerId);
+    const generationKey = developerId || "global";
+
     try {
       // Check Redis first
-      const cachedToken = await this.redis.get(REDIS_KEY);
+      const cachedToken = await this.redis.get(redisKey);
       if (cachedToken) {
         const isValid = await this.checkIfTokenIsValid(cachedToken);
         if (!isValid) {
-          await this.invalidateToken();
-          return this.getToken();
+          await this.invalidateToken(developerId);
+          return this.getToken(developerId, apiKey, apiSecret);
         }
         return cachedToken;
       }
 
       // If token generation is already in progress, wait for it
-      if (this.tokenGenerationInProgress) {
-        return this.tokenGenerationInProgress;
+      const inProgress = this.tokenGenerationInProgress.get(generationKey);
+      if (inProgress) {
+        return inProgress;
       }
 
       // Generate new token
-      this.tokenGenerationInProgress = this.generateNewToken();
+      const generationPromise = this.generateNewToken(developerId, apiKey, apiSecret);
+      this.tokenGenerationInProgress.set(generationKey, generationPromise);
       try {
-        const token = await this.tokenGenerationInProgress;
+        const token = await generationPromise;
         return token;
       } finally {
-        this.tokenGenerationInProgress = null;
+        this.tokenGenerationInProgress.delete(generationKey);
       }
     } catch (error) {
       console.error("Failed to get access token:", error);
@@ -71,29 +93,46 @@ export class TokenManager {
 
   /**
    * Generate a new access token and store it in Redis
+   * @param developerId - Optional developer ID for per-developer tokens
+   * @param apiKey - Optional API key (if provided, uses developer-specific credentials)
+   * @param apiSecret - Optional API secret (if provided, uses developer-specific credentials)
    */
-  private async generateNewToken(): Promise<string> {
-    this.fastify.log.info(
-      "######################### Generating new token #########################"
-    );
+  private async generateNewToken(
+    developerId?: string,
+    apiKey?: string | null,
+    apiSecret?: string | null
+  ): Promise<string> {
+    const redisKey = this.getRedisKey(developerId);
+    const isDeveloperSpecific = developerId && apiKey && apiSecret;
 
-    const apiKey = process.env.GROWW_API_KEY;
-    const apiSecret = process.env.GROWW_API_SECRET;
+    if (isDeveloperSpecific) {
+      this.fastify.log.info(
+        `######################### Generating new token for developer ${developerId} #########################`
+      );
+    } else {
+      this.fastify.log.info(
+        "######################### Generating new token #########################"
+      );
+    }
 
-    if (!apiKey || !apiSecret) {
+    // Use developer credentials if provided, otherwise fall back to environment variables
+    const finalApiKey = apiKey || process.env.GROWW_API_KEY;
+    const finalApiSecret = apiSecret || process.env.GROWW_API_SECRET;
+
+    if (!finalApiKey || !finalApiSecret) {
       throw new Error("GROWW_API_KEY and GROWW_API_SECRET are required");
     }
 
     try {
       const response = (await axios.post("https://groww-access-token-generator.onrender.com", {
-        api_key: apiKey,
-        api_secret: apiSecret,
+        api_key: finalApiKey,
+        api_secret: finalApiSecret,
       })) as AxiosResponse<{ access_token: string }>;
 
       const token = response.data.access_token;
 
       // Store in Redis (no expiration - we'll handle expiration via 401 errors)
-      await this.redis.set(REDIS_KEY, token);
+      await this.redis.set(redisKey, token);
 
       return token;
     } catch (error) {
@@ -104,8 +143,17 @@ export class TokenManager {
 
   /**
    * Invalidate the current token in Redis
+   * @param developerId - Optional developer ID for per-developer tokens
    */
-  async invalidateToken(): Promise<void> {
-    await this.redis.del(REDIS_KEY);
+  async invalidateToken(developerId?: string): Promise<void> {
+    const redisKey = this.getRedisKey(developerId);
+    await this.redis.del(redisKey);
+  }
+
+  /**
+   * Invalidate token for a specific developer
+   */
+  async invalidateTokenForDeveloper(developerId: string): Promise<void> {
+    await this.invalidateToken(developerId);
   }
 }

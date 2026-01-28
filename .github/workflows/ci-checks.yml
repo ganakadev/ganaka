@@ -69,6 +69,7 @@ jobs:
           VITE_API_DOMAIN="http://localhost:4000"
           DEVELOPER_KEY=${{ secrets.DEVELOPER_KEY }}
           WEBSHARE_API_KEY=${{ secrets.WEBSHARE_API_KEY }}
+          PRISMA_FIELD_ENCRYPTION_KEY=${{ secrets.PRISMA_FIELD_ENCRYPTION_KEY }}
           EOF
 
       - name: Prepare for CI

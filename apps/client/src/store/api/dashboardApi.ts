@@ -44,6 +44,7 @@ export const dashboardAPI = createApi({
     "Candles",
     "QuoteTimeline",
     "Runs",
+    "GrowwCredentials",
   ],
   endpoints: (builder) => ({
     // Get available datetimes
@@ -261,5 +262,74 @@ export const dashboardAPI = createApi({
       // Tags don't change frequently, so we can keep this cached longer
       keepUnusedDataFor: 300, // 5 minutes
     }),
+
+    // Get Groww credentials
+    getGrowwCredentials: builder.query<
+      z.infer<
+        typeof v1_dashboard_schemas.v1_dashboard_settings_schemas.getGrowwCredentials.response
+      >,
+      void
+    >({
+      query: () => ({
+        url: "/settings/groww-credentials",
+        method: "GET",
+      }),
+      providesTags: ["GrowwCredentials"],
+    }),
+
+    // Update Groww credentials
+    updateGrowwCredentials: builder.mutation<
+      z.infer<
+        typeof v1_dashboard_schemas.v1_dashboard_settings_schemas.updateGrowwCredentials.response
+      >,
+      z.infer<
+        typeof v1_dashboard_schemas.v1_dashboard_settings_schemas.updateGrowwCredentials.body
+      >
+    >({
+      query: (body) => {
+        const validatedBody =
+          v1_dashboard_schemas.v1_dashboard_settings_schemas.updateGrowwCredentials.body.parse(
+            body
+          );
+        return {
+          url: "/settings/groww-credentials",
+          method: "PUT",
+          body: validatedBody,
+        };
+      },
+      invalidatesTags: ["GrowwCredentials"],
+    }),
+
+    // Delete Groww credentials
+    deleteGrowwCredentials: builder.mutation<
+      z.infer<
+        typeof v1_dashboard_schemas.v1_dashboard_settings_schemas.deleteGrowwCredentials.response
+      >,
+      void
+    >({
+      query: () => ({
+        url: "/settings/groww-credentials",
+        method: "DELETE",
+      }),
+      invalidatesTags: ["GrowwCredentials"],
+    }),
   }),
 });
+
+export const {
+  useGetAvailableDatetimesQuery,
+  useGetShortlistsQuery,
+  useGetDailyPersistentCompaniesQuery,
+  useGetDailyUniqueCompaniesQuery,
+  useGetCandlesQuery,
+  useGetQuoteTimelineQuery,
+  useSignInQuery,
+  useGetRunsQuery,
+  useGetRunOrdersQuery,
+  useDeleteRunMutation,
+  useUpdateRunMutation,
+  useGetRunTagsQuery,
+  useGetGrowwCredentialsQuery,
+  useUpdateGrowwCredentialsMutation,
+  useDeleteGrowwCredentialsMutation,
+} = dashboardAPI;

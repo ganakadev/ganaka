@@ -111,6 +111,14 @@ const quoteRoutes: FastifyPluginAsync = async (fastify) => {
 
     // If no datetime, fetch live data from Groww API
     try {
+      const developerCredentials = request.developer
+        ? {
+            developerId: request.developer.id,
+            growwApiKey: request.developer.growwApiKey,
+            growwApiSecret: request.developer.growwApiSecret,
+          }
+        : undefined;
+
       const response = await growwAPIRequest<z.infer<typeof growwQuoteSchema>>({
         method: "get",
         url: `https://api.groww.in/v1/live-data/quote`,
@@ -119,6 +127,7 @@ const quoteRoutes: FastifyPluginAsync = async (fastify) => {
           segment: "CASH",
           trading_symbol: validationResult.symbol,
         },
+        developerCredentials,
       });
 
       return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(

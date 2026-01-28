@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { prisma } from "../../src/utils/prisma";
 import { randomUUID } from "crypto";
+import { encrypt, decrypt } from "../../src/utils/encryption";
 import type {
   ShortlistType,
   ShortlistScope,
@@ -635,4 +636,111 @@ export async function getOrderById(orderId: string) {
   return prisma.order.findUnique({
     where: { id: orderId },
   });
+}
+
+// ==================== Developer Groww Credentials Helpers ====================
+
+/**
+ * Creates a test developer with Groww credentials
+ * Credentials are encrypted before saving to database
+ */
+export async function createTestDeveloperWithGrowwCredentials(
+  tracker: TestDataTracker,
+  username?: string,
+  growwApiKey?: string,
+  growwApiSecret?: string
+): Promise<{
+  id: string;
+  username: string;
+  token: string;
+  growwApiKey: string | null;
+  growwApiSecret: string | null;
+}> {
+  // Encrypt credentials before saving
+  const encryptedApiKey = encrypt(growwApiKey);
+  const encryptedApiSecret = encrypt(growwApiSecret);
+
+  const developer = await prisma.developer.create({
+    data: {
+      username: username || `test-dev-${Date.now()}-${randomUUID()}`,
+      token: randomUUID(),
+      growwApiKey: encryptedApiKey,
+      growwApiSecret: encryptedApiSecret,
+    },
+  });
+
+  if (tracker) {
+    tracker.trackDeveloper(developer.id);
+  }
+
+  // Return decrypted values for test convenience
+  return {
+    id: developer.id,
+    username: developer.username,
+    token: developer.token,
+    growwApiKey: growwApiKey || null,
+    growwApiSecret: growwApiSecret || null,
+  };
+}
+
+/**
+ * Gets developer Groww credentials by ID (for verification)
+ * Returns decrypted values
+ */
+export async function getDeveloperGrowwCredentials(developerId: string) {
+  const developer = await prisma.developer.findUnique({
+    where: { id: developerId },
+    select: {
+      growwApiKey: true,
+      growwApiSecret: true,
+    },
+  });
+
+  if (!developer) {
+    return null;
+  }
+
+  // Decrypt values after reading from database
+  const decryptedApiKey = decrypt(developer.growwApiKey);
+  const decryptedApiSecret = decrypt(developer.growwApiSecret);
+
+  return {
+    growwApiKey: decryptedApiKey,
+    growwApiSecret: decryptedApiSecret,
+  };
+}
+
+/**
+ * Gets raw encrypted developer Groww credentials from database (for testing encryption)
+ * Returns encrypted values as stored in database
+ */
+export async function getDeveloperGrowwCredentialsRaw(developerId: string) {
+  const developer = await prisma.developer.findUnique({
+    where: { id: developerId },
+    select: {
+      growwApiKey: true,
+      growwApiSecret: true,
+    },
+  });
+
+  if (!developer) {
+    return null;
+  }
+
+  return {
+    growwApiKey: developer.growwApiKey,
+    growwApiSecret: developer.growwApiSecret,
+  };
+}
+
+/**
+ * Checks if a value appears to be encrypted (format: iv:authTag:encryptedData)
+ */
+export function isEncrypted(value: string | null): boolean {
+  if (!value) {
+    return false;
+  }
+  // Encrypted format: {iv}:{authTag}:{encryptedData} (all base64)
+  const parts = value.split(":");
+  return parts.length === 3;
 }

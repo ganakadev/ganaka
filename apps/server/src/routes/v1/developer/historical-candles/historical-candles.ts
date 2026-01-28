@@ -64,6 +64,14 @@ const historicalCandlesRoutes: FastifyPluginAsync = async (fastify) => {
         .format("YYYY-MM-DDTHH:mm:ss");
       const endTimeIST = dayjs.utc(endDateTimeUTC).tz("Asia/Kolkata").format("YYYY-MM-DDTHH:mm:ss");
 
+      const developerCredentials = request.developer
+        ? {
+            developerId: request.developer.id,
+            growwApiKey: request.developer.growwApiKey,
+            growwApiSecret: request.developer.growwApiSecret,
+          }
+        : undefined;
+
       const response = await growwAPIRequest<
         z.infer<typeof v1_developer_groww_schemas.growwHistoricalCandlesSchema>
       >({
@@ -77,6 +85,7 @@ const historicalCandlesRoutes: FastifyPluginAsync = async (fastify) => {
           segment: "CASH",
           groww_symbol: `NSE-${validationResult.symbol}`,
         },
+        developerCredentials,
       });
 
       return sendResponse<

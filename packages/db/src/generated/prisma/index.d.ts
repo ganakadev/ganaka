@@ -4661,6 +4661,8 @@ export namespace Prisma {
     id: string | null
     username: string | null
     token: string | null
+    growwApiKey: string | null
+    growwApiSecret: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -4669,6 +4671,8 @@ export namespace Prisma {
     id: string | null
     username: string | null
     token: string | null
+    growwApiKey: string | null
+    growwApiSecret: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -4677,6 +4681,8 @@ export namespace Prisma {
     id: number
     username: number
     token: number
+    growwApiKey: number
+    growwApiSecret: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -4687,6 +4693,8 @@ export namespace Prisma {
     id?: true
     username?: true
     token?: true
+    growwApiKey?: true
+    growwApiSecret?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -4695,6 +4703,8 @@ export namespace Prisma {
     id?: true
     username?: true
     token?: true
+    growwApiKey?: true
+    growwApiSecret?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -4703,6 +4713,8 @@ export namespace Prisma {
     id?: true
     username?: true
     token?: true
+    growwApiKey?: true
+    growwApiSecret?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -4784,6 +4796,8 @@ export namespace Prisma {
     id: string
     username: string
     token: string
+    growwApiKey: string | null
+    growwApiSecret: string | null
     createdAt: Date
     updatedAt: Date
     _count: DeveloperCountAggregateOutputType | null
@@ -4809,6 +4823,8 @@ export namespace Prisma {
     id?: boolean
     username?: boolean
     token?: boolean
+    growwApiKey?: boolean
+    growwApiSecret?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     runs?: boolean | Developer$runsArgs<ExtArgs>
@@ -4819,6 +4835,8 @@ export namespace Prisma {
     id?: boolean
     username?: boolean
     token?: boolean
+    growwApiKey?: boolean
+    growwApiSecret?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["developer"]>
@@ -4827,6 +4845,8 @@ export namespace Prisma {
     id?: boolean
     username?: boolean
     token?: boolean
+    growwApiKey?: boolean
+    growwApiSecret?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["developer"]>
@@ -4835,11 +4855,13 @@ export namespace Prisma {
     id?: boolean
     username?: boolean
     token?: boolean
+    growwApiKey?: boolean
+    growwApiSecret?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type DeveloperOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "token" | "createdAt" | "updatedAt", ExtArgs["result"]["developer"]>
+  export type DeveloperOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "token" | "growwApiKey" | "growwApiSecret" | "createdAt" | "updatedAt", ExtArgs["result"]["developer"]>
   export type DeveloperInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     runs?: boolean | Developer$runsArgs<ExtArgs>
     _count?: boolean | DeveloperCountOutputTypeDefaultArgs<ExtArgs>
@@ -4856,6 +4878,14 @@ export namespace Prisma {
       id: string
       username: string
       token: string
+      /**
+       * @encrypted
+       */
+      growwApiKey: string | null
+      /**
+       * @encrypted 
+       */
+      growwApiSecret: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["developer"]>
@@ -5285,6 +5315,8 @@ export namespace Prisma {
     readonly id: FieldRef<"Developer", 'String'>
     readonly username: FieldRef<"Developer", 'String'>
     readonly token: FieldRef<"Developer", 'String'>
+    readonly growwApiKey: FieldRef<"Developer", 'String'>
+    readonly growwApiSecret: FieldRef<"Developer", 'String'>
     readonly createdAt: FieldRef<"Developer", 'DateTime'>
     readonly updatedAt: FieldRef<"Developer", 'DateTime'>
   }
@@ -10078,6 +10110,8 @@ export namespace Prisma {
     id: 'id',
     username: 'username',
     token: 'token',
+    growwApiKey: 'growwApiKey',
+    growwApiSecret: 'growwApiSecret',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -10484,6 +10518,8 @@ export namespace Prisma {
     id?: StringFilter<"Developer"> | string
     username?: StringFilter<"Developer"> | string
     token?: StringFilter<"Developer"> | string
+    growwApiKey?: StringNullableFilter<"Developer"> | string | null
+    growwApiSecret?: StringNullableFilter<"Developer"> | string | null
     createdAt?: DateTimeFilter<"Developer"> | Date | string
     updatedAt?: DateTimeFilter<"Developer"> | Date | string
     runs?: RunListRelationFilter
@@ -10493,6 +10529,8 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     token?: SortOrder
+    growwApiKey?: SortOrderInput | SortOrder
+    growwApiSecret?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     runs?: RunOrderByRelationAggregateInput
@@ -10505,6 +10543,8 @@ export namespace Prisma {
     AND?: DeveloperWhereInput | DeveloperWhereInput[]
     OR?: DeveloperWhereInput[]
     NOT?: DeveloperWhereInput | DeveloperWhereInput[]
+    growwApiKey?: StringNullableFilter<"Developer"> | string | null
+    growwApiSecret?: StringNullableFilter<"Developer"> | string | null
     createdAt?: DateTimeFilter<"Developer"> | Date | string
     updatedAt?: DateTimeFilter<"Developer"> | Date | string
     runs?: RunListRelationFilter
@@ -10514,6 +10554,8 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     token?: SortOrder
+    growwApiKey?: SortOrderInput | SortOrder
+    growwApiSecret?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: DeveloperCountOrderByAggregateInput
@@ -10528,6 +10570,8 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Developer"> | string
     username?: StringWithAggregatesFilter<"Developer"> | string
     token?: StringWithAggregatesFilter<"Developer"> | string
+    growwApiKey?: StringNullableWithAggregatesFilter<"Developer"> | string | null
+    growwApiSecret?: StringNullableWithAggregatesFilter<"Developer"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Developer"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Developer"> | Date | string
   }
@@ -10996,6 +11040,8 @@ export namespace Prisma {
     id?: string
     username: string
     token: string
+    growwApiKey?: string | null
+    growwApiSecret?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     runs?: RunCreateNestedManyWithoutDeveloperInput
@@ -11005,6 +11051,8 @@ export namespace Prisma {
     id?: string
     username: string
     token: string
+    growwApiKey?: string | null
+    growwApiSecret?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     runs?: RunUncheckedCreateNestedManyWithoutDeveloperInput
@@ -11014,6 +11062,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
+    growwApiKey?: NullableStringFieldUpdateOperationsInput | string | null
+    growwApiSecret?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     runs?: RunUpdateManyWithoutDeveloperNestedInput
@@ -11023,6 +11073,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
+    growwApiKey?: NullableStringFieldUpdateOperationsInput | string | null
+    growwApiSecret?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     runs?: RunUncheckedUpdateManyWithoutDeveloperNestedInput
@@ -11032,6 +11084,8 @@ export namespace Prisma {
     id?: string
     username: string
     token: string
+    growwApiKey?: string | null
+    growwApiSecret?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -11040,6 +11094,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
+    growwApiKey?: NullableStringFieldUpdateOperationsInput | string | null
+    growwApiSecret?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11048,6 +11104,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
+    growwApiKey?: NullableStringFieldUpdateOperationsInput | string | null
+    growwApiSecret?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11595,45 +11653,6 @@ export namespace Prisma {
     _max?: NestedDecimalFilter<$PrismaModel>
   }
 
-  export type RunListRelationFilter = {
-    every?: RunWhereInput
-    some?: RunWhereInput
-    none?: RunWhereInput
-  }
-
-  export type RunOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type DeveloperCountOrderByAggregateInput = {
-    id?: SortOrder
-    username?: SortOrder
-    token?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type DeveloperMaxOrderByAggregateInput = {
-    id?: SortOrder
-    username?: SortOrder
-    token?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type DeveloperMinOrderByAggregateInput = {
-    id?: SortOrder
-    username?: SortOrder
-    token?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type StringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -11647,6 +11666,74 @@ export namespace Prisma {
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type RunListRelationFilter = {
+    every?: RunWhereInput
+    some?: RunWhereInput
+    none?: RunWhereInput
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
+  export type RunOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DeveloperCountOrderByAggregateInput = {
+    id?: SortOrder
+    username?: SortOrder
+    token?: SortOrder
+    growwApiKey?: SortOrder
+    growwApiSecret?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DeveloperMaxOrderByAggregateInput = {
+    id?: SortOrder
+    username?: SortOrder
+    token?: SortOrder
+    growwApiKey?: SortOrder
+    growwApiSecret?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DeveloperMinOrderByAggregateInput = {
+    id?: SortOrder
+    username?: SortOrder
+    token?: SortOrder
+    growwApiKey?: SortOrder
+    growwApiSecret?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type StringNullableListFilter<$PrismaModel = never> = {
@@ -11666,11 +11753,6 @@ export namespace Prisma {
   export type DeveloperNullableScalarRelationFilter = {
     is?: DeveloperWhereInput | null
     isNot?: DeveloperWhereInput | null
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
   }
 
   export type OrderOrderByRelationAggregateInput = {
@@ -11717,24 +11799,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type RunScalarRelationFilter = {
@@ -11926,6 +11990,10 @@ export namespace Prisma {
     connect?: RunWhereUniqueInput | RunWhereUniqueInput[]
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
   export type RunUpdateManyWithoutDeveloperNestedInput = {
     create?: XOR<RunCreateWithoutDeveloperInput, RunUncheckedCreateWithoutDeveloperInput> | RunCreateWithoutDeveloperInput[] | RunUncheckedCreateWithoutDeveloperInput[]
     connectOrCreate?: RunCreateOrConnectWithoutDeveloperInput | RunCreateOrConnectWithoutDeveloperInput[]
@@ -11980,10 +12048,6 @@ export namespace Prisma {
 
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type RunUpdatetagsInput = {
@@ -12194,11 +12258,6 @@ export namespace Prisma {
     _max?: NestedDecimalFilter<$PrismaModel>
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -12211,14 +12270,6 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -12247,6 +12298,19 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
   export type NestedJsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -12373,6 +12437,8 @@ export namespace Prisma {
     id?: string
     username: string
     token: string
+    growwApiKey?: string | null
+    growwApiSecret?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12381,6 +12447,8 @@ export namespace Prisma {
     id?: string
     username: string
     token: string
+    growwApiKey?: string | null
+    growwApiSecret?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12436,6 +12504,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
+    growwApiKey?: NullableStringFieldUpdateOperationsInput | string | null
+    growwApiSecret?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12444,6 +12514,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
+    growwApiKey?: NullableStringFieldUpdateOperationsInput | string | null
+    growwApiSecret?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
