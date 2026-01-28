@@ -19,14 +19,11 @@ function getEncryptionKey(): Buffer {
     );
   }
 
-  const version = parts[0];
   const algorithm = parts[1];
   const base64Key = parts.slice(2).join("."); // In case base64 key contains dots
 
   if (algorithm !== "aesgcm256") {
-    throw new Error(
-      `Unsupported encryption algorithm: ${algorithm}. Only aesgcm256 is supported.`
-    );
+    throw new Error(`Unsupported encryption algorithm: ${algorithm}. Only aesgcm256 is supported.`);
   }
 
   try {
@@ -38,7 +35,9 @@ function getEncryptionKey(): Buffer {
     }
     return keyBuffer;
   } catch (error) {
-    throw new Error(`Failed to parse encryption key: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Failed to parse encryption key: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 }
 
@@ -107,8 +106,6 @@ export function decrypt(ciphertext: string | null | undefined): string | null {
 
     return decrypted.toString("utf8");
   } catch (error) {
-    throw new Error(
-      `Decryption failed: ${error instanceof Error ? error.message : String(error)}`
-    );
+    throw new Error(`Decryption failed: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
