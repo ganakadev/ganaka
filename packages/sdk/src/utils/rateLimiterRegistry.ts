@@ -7,6 +7,8 @@ const limiters: Map<string, RateLimiter> = new Map();
 limiters.set("groww", new RateLimiter({
   maxPerSecond: 10,
   maxPerMinute: 300,
+  maxConcurrency: 10,
+  requestTimeoutMs: 30000,
 }));
 
 /**
@@ -25,7 +27,7 @@ export function getRateLimiter(name: string): RateLimiter | undefined {
  */
 export function registerRateLimiter(
   name: string,
-  config: { maxPerSecond: number; maxPerMinute: number }
+  config: { maxPerSecond: number; maxPerMinute: number; maxConcurrency?: number; requestTimeoutMs?: number }
 ): void {
   limiters.set(name, new RateLimiter(config));
 }

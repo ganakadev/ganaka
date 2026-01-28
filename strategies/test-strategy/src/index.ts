@@ -43,16 +43,44 @@ async function main() {
       });
       console.log(fetchQuoteResponse);
 
-      const fetchCandlesResponse = await fetchCandles({
-        symbol: "TARC",
-        interval: "1minute",
-        start_datetime: dayjs
-          .tz(currentTimestampForRequest, "Asia/Kolkata")
-          .subtract(1, "hour")
-          .format("YYYY-MM-DDTHH:mm:ss"),
-        end_datetime: currentTimestampForRequest,
-      });
-      console.log(fetchCandlesResponse);
+      // Collect all promises and await them properly
+      const allPromises = [];
+
+      for (let i = 0; i < 20; i++) {
+        console.log("1 scheduled");
+        allPromises.push(
+          fetchCandles({
+            symbol: "TARC",
+            interval: "1minute",
+            start_datetime: dayjs
+              .tz(currentTimestampForRequest, "Asia/Kolkata")
+              .subtract(1, "hour")
+              .format("YYYY-MM-DDTHH:mm:ss"),
+            end_datetime: currentTimestampForRequest,
+          })
+            .then(() => console.log("1", i))
+            .catch((error) => console.log("1 error", error))
+        );
+      }
+
+      for (let i = 0; i < 30; i++) {
+        console.log("2 scheduled");
+        allPromises.push(
+          fetchCandles({
+            symbol: "TARC",
+            interval: "1minute",
+            start_datetime: dayjs
+              .tz(currentTimestampForRequest, "Asia/Kolkata")
+              .subtract(1, "hour")
+              .format("YYYY-MM-DDTHH:mm:ss"),
+            end_datetime: currentTimestampForRequest,
+          })
+            .then(() => console.log("2", i))
+            .catch((error) => console.log("2 error", error))
+        );
+      }
+
+      await Promise.all(allPromises);
 
       await placeOrder({
         nseSymbol: "TARC",

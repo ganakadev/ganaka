@@ -7,6 +7,8 @@ type QueuedRequest<T> = {
 type RateLimiterConfig = {
   maxPerSecond: number;
   maxPerMinute: number;
+  maxConcurrency?: number; // Default: 10
+  requestTimeoutMs?: number; // Default: 30000 (30 seconds)
 };
 
 /**
@@ -19,13 +21,18 @@ export class RateLimiter {
   private secondTimestamps: number[] = [];
   private minuteTimestamps: number[] = [];
   private processing = false;
+  private inFlight = 0;
 
   private readonly maxPerSecond: number;
   private readonly maxPerMinute: number;
+  private readonly maxConcurrency: number;
+  private readonly requestTimeoutMs: number;
 
   constructor(config: RateLimiterConfig) {
     this.maxPerSecond = config.maxPerSecond;
     this.maxPerMinute = config.maxPerMinute;
+    this.maxConcurrency = config.maxConcurrency ?? 10;
+    this.requestTimeoutMs = config.requestTimeoutMs ?? 30000;
   }
 
   /**
@@ -41,7 +48,7 @@ export class RateLimiter {
 
   /**
    * Process the queue of pending requests.
-   * Continuously processes requests while respecting rate limits.
+   * Dispatches requests concurrently up to maxConcurrency while respecting rate limits.
    */
   private async processQueue(): Promise<void> {
     if (this.processing) {
@@ -53,7 +60,8 @@ export class RateLimiter {
     while (this.queue.length > 0) {
       this.cleanupTimestamps();
 
-      if (this.canMakeRequest()) {
+      // Check if we can dispatch more requests (concurrency + rate limits)
+      if (this.inFlight < this.maxConcurrency && this.canMakeRequest()) {
         const request = this.queue.shift();
         if (!request) {
           break;
@@ -62,19 +70,41 @@ export class RateLimiter {
         const now = Date.now();
         this.secondTimestamps.push(now);
         this.minuteTimestamps.push(now);
+        this.inFlight++;
 
-        try {
-          const result = await request.execute();
-          request.resolve(result);
-        } catch (error) {
-          request.reject(error instanceof Error ? error : new Error(String(error)));
-        }
+        // Dispatch request without awaiting - let it run concurrently
+        this.executeWithTimeout(request.execute, this.requestTimeoutMs)
+          .then((result) => {
+            request.resolve(result);
+          })
+          .catch((error) => {
+            request.reject(error instanceof Error ? error : new Error(String(error)));
+          })
+          .finally(() => {
+            this.inFlight--;
+            // Trigger processing again when a request completes
+            this.processQueue();
+          });
       } else {
-        const waitTime = this.getWaitTime();
-        await this.sleep(waitTime);
+        // Can't dispatch - check why
+        if (this.inFlight >= this.maxConcurrency) {
+          // At concurrency limit - exit loop and let in-flight requests trigger processQueue when they complete
+          break;
+        } else {
+          // At rate limit - wait for the appropriate time
+          const waitTime = this.getWaitTime();
+          if (waitTime > 0) {
+            await this.sleep(waitTime);
+          } else {
+            // Shouldn't happen, but prevent infinite loop
+            await this.sleep(10);
+          }
+        }
       }
     }
 
+    // Always mark as not processing when exiting the loop
+    // If there are still in-flight requests or queued items, they will call processQueue() again when ready
     this.processing = false;
   }
 
@@ -131,6 +161,25 @@ export class RateLimiter {
     }
 
     return Math.max(waitTime, 0);
+  }
+
+  /**
+   * Execute a function with a timeout.
+   * If the function doesn't complete within the timeout, it will be rejected.
+   */
+  private async executeWithTimeout<T>(
+    fn: () => Promise<T>,
+    timeoutMs: number
+  ): Promise<T> {
+    return Promise.race([
+      fn(),
+      new Promise<never>((_, reject) =>
+        setTimeout(
+          () => reject(new Error(`Request timed out after ${timeoutMs}ms`)),
+          timeoutMs
+        )
+      ),
+    ]);
   }
 
   /**

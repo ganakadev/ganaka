@@ -55,12 +55,13 @@ export const fetchCandles =
       }
 
       const response = await growwRateLimiter.execute(() =>
-        axios.get<
-          z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response>
-        >(`${apiDomain}/v1/developer/historical-candles`, {
-          params: validatedParams,
-          headers,
-        })
+        axios.get<z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response>>(
+          `${apiDomain}/v1/developer/historical-candles`,
+          {
+            params: validatedParams,
+            headers,
+          }
+        )
       );
 
       return response.data.data;
