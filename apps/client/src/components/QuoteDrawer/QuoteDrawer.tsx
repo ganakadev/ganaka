@@ -170,12 +170,7 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
     // Convert selectedDate to UTC dayjs object for comparison
     const selectedTime = dayjs.tz(selectedDate, "Asia/Kolkata").format("YYYY-MM-DDTHH:mm");
     let closestCandle = candleData[0];
-    const referenceIndex = Math.min(30, candleData.length - 1);
-    const firstCandleTime = dayjs
-      .unix(candleData[referenceIndex].time as number)
-      .utc()
-      .format("YYYY-MM-DDTHH:mm");
-    let minDiff = Math.abs(dayjs.utc(selectedTime).diff(dayjs.utc(firstCandleTime), "minutes"));
+    let minDiff = Infinity;
 
     for (const candle of candleData) {
       const candleTime = dayjs
@@ -183,6 +178,9 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
         .utc()
         .format("YYYY-MM-DDTHH:mm");
       const diff = dayjs.utc(selectedTime).diff(dayjs.utc(candleTime), "minutes");
+
+      console.log("diff", diff);
+      console.log("minDiff", minDiff);
 
       if (Math.abs(diff) < minDiff) {
         minDiff = Math.abs(diff);
