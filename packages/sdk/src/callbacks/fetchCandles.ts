@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { logger } from "../utils/logger";
+import { growwRateLimiter } from "../utils/rateLimiterRegistry";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -53,12 +54,15 @@ export const fetchCandles =
         headers["X-Current-Timezone"] = currentTimezone;
       }
 
-      const response = await axios.get<
-        z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response>
-      >(`${apiDomain}/v1/developer/historical-candles`, {
-        params: validatedParams,
-        headers,
-      });
+      const response = await growwRateLimiter.execute(() =>
+        axios.get<z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response>>(
+          `${apiDomain}/v1/developer/historical-candles`,
+          {
+            params: validatedParams,
+            headers,
+          }
+        )
+      );
 
       return response.data.data;
     } catch (error) {
