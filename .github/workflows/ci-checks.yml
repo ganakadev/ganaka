@@ -20,6 +20,8 @@ on:
         required: true
       WEBSHARE_API_KEY:
         required: true
+      PRISMA_FIELD_ENCRYPTION_KEY:
+        required: true
   workflow_dispatch:
   pull_request:
     types: [opened, synchronize, reopened]
