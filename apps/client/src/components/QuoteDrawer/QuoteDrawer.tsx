@@ -179,9 +179,6 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
         .format("YYYY-MM-DDTHH:mm");
       const diff = dayjs.utc(selectedTime).diff(dayjs.utc(candleTime), "minutes");
 
-      console.log("diff", diff);
-      console.log("minDiff", minDiff);
-
       if (Math.abs(diff) < minDiff) {
         minDiff = Math.abs(diff);
         closestCandle = candle;
