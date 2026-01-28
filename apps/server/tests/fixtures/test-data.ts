@@ -11,6 +11,7 @@ import type { z } from "zod";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import crypto from "crypto";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -528,8 +529,8 @@ export function buildQueryString(query: Record<string, string | number | boolean
  */
 export function createValidGrowwCredentials() {
   return {
-    growwApiKey: `test-api-key-${Date.now()}-${Math.random().toString(36).substring(7)}`,
-    growwApiSecret: `test-api-secret-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+    growwApiKey: `test-api-key-${Date.now()}-${crypto.randomBytes(8).toString("hex")}`,
+    growwApiSecret: `test-api-secret-${Date.now()}-${crypto.randomBytes(8).toString("hex")}`,
   };
 }
 
