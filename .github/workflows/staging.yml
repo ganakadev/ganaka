@@ -31,6 +31,7 @@ jobs:
       REDIS_URL: ${{ secrets.REDIS_URL }}
       DEVELOPER_KEY: ${{ secrets.DEVELOPER_KEY }}
       WEBSHARE_API_KEY: ${{ secrets.WEBSHARE_API_KEY }}
+      PRISMA_FIELD_ENCRYPTION_KEY: ${{ secrets.PRISMA_FIELD_ENCRYPTION_KEY }}
 
   create-build-tag:
     runs-on: ubuntu-latest
