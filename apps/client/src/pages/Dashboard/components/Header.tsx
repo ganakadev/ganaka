@@ -190,7 +190,6 @@ export const Header = ({
       const date = searchParams.get("date");
       if (date) {
         startTransition(() => {
-          console.log("processSearchParamDate", date);
           processSearchParamDate(date);
         });
       }
