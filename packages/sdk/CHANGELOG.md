@@ -1,3 +1,18 @@
+## [@ganaka/sdk v1.10.1](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Bug Fixes
+
+* **sdk:** adjust Groww API rate limiter configuration ([5aec751](https://github.com/ganakadev/ganaka/commit/5aec751bf1783a59438f88bc7971ee15ec9bff71))
+
+
+### Features
+
+* **settings:** add Groww credentials management ([82806aa](https://github.com/ganakadev/ganaka/commit/82806aae3383fe9c25a90188de0a2a2359c37602))
+
 ## [@ganaka/sdk v1.10.0](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
