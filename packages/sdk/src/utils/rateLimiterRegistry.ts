@@ -4,12 +4,15 @@ import { RateLimiter } from "./rateLimiter";
 const limiters: Map<string, RateLimiter> = new Map();
 
 // Pre-configured Groww API limiter (fetchCandles)
-limiters.set("groww", new RateLimiter({
-  maxPerSecond: 10,
-  maxPerMinute: 300,
-  maxConcurrency: 10,
-  requestTimeoutMs: 30000,
-}));
+limiters.set(
+  "groww",
+  new RateLimiter({
+    maxPerSecond: 10,
+    maxPerMinute: 300,
+    maxConcurrency: 7,
+    requestTimeoutMs: 30000,
+  })
+);
 
 /**
  * Get a rate limiter by name
@@ -27,7 +30,12 @@ export function getRateLimiter(name: string): RateLimiter | undefined {
  */
 export function registerRateLimiter(
   name: string,
-  config: { maxPerSecond: number; maxPerMinute: number; maxConcurrency?: number; requestTimeoutMs?: number }
+  config: {
+    maxPerSecond: number;
+    maxPerMinute: number;
+    maxConcurrency?: number;
+    requestTimeoutMs?: number;
+  }
 ): void {
   limiters.set(name, new RateLimiter(config));
 }
