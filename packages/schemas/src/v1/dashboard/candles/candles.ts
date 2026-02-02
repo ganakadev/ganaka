@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { apiResponseSchema, dateFormatSchema, validCandleIntervals } from "../../common";
+import { apiResponseSchema, dateFormatSchema, validCandleIntervals } from "../../../common";
 
 // ==================== GET /candles ====================
 

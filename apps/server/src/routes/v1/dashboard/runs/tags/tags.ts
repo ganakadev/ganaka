@@ -40,7 +40,7 @@ const tagsRoutes: FastifyPluginAsync = async (fastify) => {
       const uniqueTags = Array.from(new Set(allTags)).sort();
 
       return sendResponse<
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunTags.response>
+        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_tags_schemas.getRunTags.response>
       >(reply, {
         statusCode: 200,
         message: "Tags fetched successfully",

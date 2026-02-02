@@ -59,7 +59,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<
-          typeof v1_dashboard_schemas.v1_dashboard_settings_schemas.getGrowwCredentials.response
+          typeof v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.getGrowwCredentials.response
         >
       >(reply, {
         statusCode: 200,
@@ -88,7 +88,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
       const validationResult = validateRequest(
         request.body,
         reply,
-        v1_dashboard_schemas.v1_dashboard_settings_schemas.updateGrowwCredentials.body,
+        v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.updateGrowwCredentials.body,
         "body"
       );
       if (!validationResult) {
@@ -115,7 +115,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<
-          typeof v1_dashboard_schemas.v1_dashboard_settings_schemas.updateGrowwCredentials.response
+          typeof v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.updateGrowwCredentials.response
         >
       >(reply, {
         statusCode: 200,
@@ -155,7 +155,7 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<
-          typeof v1_dashboard_schemas.v1_dashboard_settings_schemas.deleteGrowwCredentials.response
+          typeof v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.deleteGrowwCredentials.response
         >
       >(reply, {
         statusCode: 200,

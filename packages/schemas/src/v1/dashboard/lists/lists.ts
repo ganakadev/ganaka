@@ -6,7 +6,7 @@ import {
   shortlistEntrySchema,
   timezoneSchema,
   shortlistScopeSchema,
-} from "../../common";
+} from "../../../common";
 
 // Extended shortlist entry with trade recommendation fields
 export const shortlistEntryWithMetricsSchema = shortlistEntrySchema.extend({

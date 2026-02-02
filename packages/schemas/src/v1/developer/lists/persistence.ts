@@ -4,7 +4,7 @@ import {
   datetimeFormatSchema,
   timezoneSchema,
   shortlistScopeSchema,
-} from "../../common";
+} from "../../../common";
 
 // ==================== GET /shortlists/persistence ====================
 

@@ -1,4 +1,4 @@
-import { v1_developer_collector_schemas } from "@ganaka/schemas";
+import { v1_developer_collector_holidays_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -16,7 +16,7 @@ const holidaysRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.query,
       reply,
-      v1_developer_collector_schemas.checkHoliday.query,
+      v1_developer_collector_holidays_schemas.checkHoliday.query,
       "query"
     );
     if (!validationResult) {

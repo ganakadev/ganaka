@@ -1,4 +1,4 @@
-import { growwQuoteSchema, v1_developer_groww_schemas } from "@ganaka/schemas";
+import { growwQuoteSchema, v1_developer_nifty_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -19,7 +19,7 @@ const niftyRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.query,
       reply,
-      v1_developer_groww_schemas.getGrowwNiftyQuote.query,
+      v1_developer_nifty_schemas.getGrowwNiftyQuote.query,
       "query"
     );
     if (!validationResult) {
@@ -58,7 +58,7 @@ const niftyRoutes: FastifyPluginAsync = async (fastify) => {
 
         if (niftyQuotes.length === 0) {
           return sendResponse<
-            z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuote.response>
+            z.infer<typeof v1_developer_nifty_schemas.getGrowwNiftyQuote.response>
           >(reply, {
             statusCode: 200,
             message: "NIFTY quote snapshot not found",
@@ -71,7 +71,7 @@ const niftyRoutes: FastifyPluginAsync = async (fastify) => {
 
         if (!quoteData) {
           return sendResponse<
-            z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuote.response>
+            z.infer<typeof v1_developer_nifty_schemas.getGrowwNiftyQuote.response>
           >(reply, {
             statusCode: 200,
             message: "NIFTY quote snapshot not found",
@@ -79,7 +79,7 @@ const niftyRoutes: FastifyPluginAsync = async (fastify) => {
           });
         }
 
-        return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuote.response>>(
+        return sendResponse<z.infer<typeof v1_developer_nifty_schemas.getGrowwNiftyQuote.response>>(
           reply,
           {
             statusCode: 200,

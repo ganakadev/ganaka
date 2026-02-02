@@ -1,4 +1,4 @@
-import { growwQuoteSchema, v1_developer_groww_schemas } from "@ganaka/schemas";
+import { growwQuoteSchema, v1_developer_quote_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -26,7 +26,7 @@ const quoteRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.query,
       reply,
-      v1_developer_groww_schemas.getGrowwQuote.query,
+      v1_developer_quote_schemas.getGrowwQuote.query,
       "query"
     );
     if (!validationResult) {
@@ -65,7 +65,7 @@ const quoteRoutes: FastifyPluginAsync = async (fastify) => {
         });
 
         if (quoteSnapshots.length === 0) {
-          return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(
+          return sendResponse<z.infer<typeof v1_developer_quote_schemas.getGrowwQuote.response>>(
             reply,
             {
               statusCode: 200,
@@ -79,7 +79,7 @@ const quoteRoutes: FastifyPluginAsync = async (fastify) => {
         const quoteData = quoteSnapshot.quoteData as z.infer<typeof growwQuoteSchema> | null;
 
         if (!quoteData) {
-          return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(
+          return sendResponse<z.infer<typeof v1_developer_quote_schemas.getGrowwQuote.response>>(
             reply,
             {
               statusCode: 200,
@@ -89,7 +89,7 @@ const quoteRoutes: FastifyPluginAsync = async (fastify) => {
           );
         }
 
-        return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(
+        return sendResponse<z.infer<typeof v1_developer_quote_schemas.getGrowwQuote.response>>(
           reply,
           {
             statusCode: 200,
@@ -130,7 +130,7 @@ const quoteRoutes: FastifyPluginAsync = async (fastify) => {
         developerCredentials,
       });
 
-      return sendResponse<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(
+      return sendResponse<z.infer<typeof v1_developer_quote_schemas.getGrowwQuote.response>>(
         reply,
         {
           statusCode: 200,

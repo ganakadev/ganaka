@@ -97,7 +97,7 @@ const dataRoutes: FastifyPluginAsync = async (fastify) => {
         .sort((a, b) => a.date.localeCompare(b.date));
 
       return sendResponse<
-        z.infer<typeof v1_admin_schemas.v1_admin_data_schemas.getAvailableDates.response>
+        z.infer<typeof v1_admin_schemas.v1_admin_dates_schemas.getAvailableDates.response>
       >(reply, {
         statusCode: 200,
         message: "Available dates fetched successfully",
@@ -118,7 +118,7 @@ const dataRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.body,
       reply,
-      v1_admin_schemas.v1_admin_data_schemas.deleteDates.body,
+      v1_admin_schemas.v1_admin_dates_schemas.deleteDates.body,
       "body"
     );
     if (!validationResult) {
@@ -186,7 +186,7 @@ const dataRoutes: FastifyPluginAsync = async (fastify) => {
       });
 
       return sendResponse<
-        z.infer<typeof v1_admin_schemas.v1_admin_data_schemas.deleteDates.response>
+        z.infer<typeof v1_admin_schemas.v1_admin_dates_schemas.deleteDates.response>
       >(reply, {
         statusCode: 200,
         message: "Data deleted successfully",

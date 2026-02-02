@@ -262,7 +262,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.query,
       reply,
-      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query,
+      v1_dashboard_schemas.v1_dashboard_lists_schemas.getShortlists.query,
       "query"
     );
     if (!validationResult) {
@@ -304,9 +304,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
 
       if (shortlists.length === 0) {
         return sendResponse<
-          z.infer<
-            typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response
-          >
+          z.infer<typeof v1_dashboard_schemas.v1_dashboard_lists_schemas.getShortlists.response>
         >(reply, {
           statusCode: 200,
           message: "Shortlist fetched successfully",
@@ -346,7 +344,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
 
               const data: NonNullable<
                 z.infer<
-                  typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response
+                  typeof v1_dashboard_schemas.v1_dashboard_lists_schemas.getShortlists.response
                 >["data"]["shortlist"]
               >["entries"][number] = {
                 nseSymbol: entry.nseSymbol,
@@ -374,7 +372,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
       }
 
       return sendResponse<
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response>
+        z.infer<typeof v1_dashboard_schemas.v1_dashboard_lists_schemas.getShortlists.response>
       >(reply, {
         statusCode: 200,
         message: "Shortlist fetched successfully",

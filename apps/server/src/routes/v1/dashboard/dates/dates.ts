@@ -42,7 +42,7 @@ const availableDatetimesRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendResponse<
         z.infer<
-          typeof v1_dashboard_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response
+          typeof v1_dashboard_schemas.v1_dashboard_dates_schemas.getAvailableDatetimes.response
         >
       >(reply, {
         statusCode: 200,

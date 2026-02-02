@@ -1,20 +1,16 @@
 import { FastifyPluginAsync } from "fastify";
-import { RedisManager } from "../../../../utils/redis";
-import { sendResponse } from "../../../../utils/sendResponse";
-import { TokenManager } from "../../../../utils/token-manager";
+import { RedisManager } from "../../../../../utils/redis";
+import { sendResponse } from "../../../../../utils/sendResponse";
+import { TokenManager } from "../../../../../utils/token-manager";
 
-const growwRoutes: FastifyPluginAsync = async (fastify) => {
+const tokenRoutes: FastifyPluginAsync = async (fastify) => {
   const redisManager = RedisManager.getInstance(fastify);
   const tokenManager = new TokenManager(redisManager.redis, fastify);
 
   // Get latest token endpoint
   // ==================== GET /v1/developer/groww/token ====================
-  fastify.get("/token", async (request, reply) => {
+  fastify.get("/", async (request, reply) => {
     try {
-      if (!request.developer) {
-        return reply.unauthorized("Developer not authenticated");
-      }
-
       const developerCredentials = request.developer
         ? {
             developerId: request.developer.id,
@@ -43,4 +39,4 @@ const growwRoutes: FastifyPluginAsync = async (fastify) => {
   });
 };
 
-export default growwRoutes;
+export default tokenRoutes;

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { apiResponseSchema, datetimeFormatSchema, timezoneSchema } from "../../common";
+import { apiResponseSchema, datetimeFormatSchema, timezoneSchema } from "../../../common";
 
 // ==================== GET /runs ====================
 
@@ -153,13 +153,5 @@ export const createOrder = {
   body: createOrderBodySchema,
   response: apiResponseSchema.extend({
     data: createOrderResponseSchema,
-  }),
-};
-
-// ==================== GET /runs/tags ====================
-
-export const getRunTags = {
-  response: apiResponseSchema.extend({
-    data: z.array(z.string()),
   }),
 };

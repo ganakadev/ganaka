@@ -1,6 +1,6 @@
 import { ShortlistSnapshot } from "@ganaka/db";
 import { ShortlistType, ShortlistScope } from "@ganaka/db/prisma";
-import { v1_developer_shortlist_persistence_schemas } from "@ganaka/schemas";
+import { v1_developer_lists_persistence_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -21,9 +21,7 @@ dayjs.extend(timezone);
  * Maps API type format to database enum format
  */
 function mapTypeToShortlistType(
-  type: z.infer<
-    typeof v1_developer_shortlist_persistence_schemas.getShortlistPersistence.query
-  >["type"]
+  type: z.infer<typeof v1_developer_lists_persistence_schemas.getShortlistPersistence.query>["type"]
 ): ShortlistType {
   switch (type) {
     case "top-gainers":
@@ -118,7 +116,7 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.query,
       reply,
-      v1_developer_shortlist_persistence_schemas.getShortlistPersistence.query,
+      v1_developer_lists_persistence_schemas.getShortlistPersistence.query,
       "query"
     );
     if (!validationResult) {
@@ -175,7 +173,7 @@ const listsRoutes: FastifyPluginAsync = async (fastify) => {
       const instruments = findPersistentInstruments(snapshots, totalNonEmptySnapshots);
 
       return sendResponse<
-        z.infer<typeof v1_developer_shortlist_persistence_schemas.getShortlistPersistence.response>
+        z.infer<typeof v1_developer_lists_persistence_schemas.getShortlistPersistence.response>
       >(reply, {
         statusCode: 200,
         message: "Shortlist persistence fetched successfully",

@@ -1,4 +1,4 @@
-import { v1_developer_groww_schemas } from "@ganaka/schemas";
+import { v1_developer_candles_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -25,7 +25,7 @@ const historicalCandlesRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.query,
       reply,
-      v1_developer_groww_schemas.getGrowwHistoricalCandles.query,
+      v1_developer_candles_schemas.getGrowwHistoricalCandles.query,
       "query"
     );
     if (!validationResult) {
@@ -73,7 +73,7 @@ const historicalCandlesRoutes: FastifyPluginAsync = async (fastify) => {
         : undefined;
 
       const response = await growwAPIRequest<
-        z.infer<typeof v1_developer_groww_schemas.growwHistoricalCandlesSchema>
+        z.infer<typeof v1_developer_candles_schemas.growwHistoricalCandlesSchema>
       >({
         method: "get",
         url: `https://api.groww.in/v1/historical/candles`,
@@ -89,7 +89,7 @@ const historicalCandlesRoutes: FastifyPluginAsync = async (fastify) => {
       });
 
       return sendResponse<
-        z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response>
+        z.infer<typeof v1_developer_candles_schemas.getGrowwHistoricalCandles.response>
       >(reply, {
         statusCode: 200,
         message: "Historical candles fetched successfully",

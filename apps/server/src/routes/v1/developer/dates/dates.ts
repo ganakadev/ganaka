@@ -1,7 +1,7 @@
 import { FastifyPluginAsync } from "fastify";
 import { prisma } from "../../../../utils/prisma";
 import { sendResponse } from "../../../../utils/sendResponse";
-import { v1_developer_available_dates_schemas } from "@ganaka/schemas";
+import { v1_developer_dates_schemas } from "@ganaka/schemas";
 import z from "zod";
 import { formatDateTime, formatDate } from "../../../../utils/date-formatter";
 
@@ -40,15 +40,16 @@ const availableDatesRoutes: FastifyPluginAsync = async (fastify) => {
         timestamps,
       }));
 
-      return sendResponse<
-        z.infer<typeof v1_developer_available_dates_schemas.getAvailableDates.response>
-      >(reply, {
-        statusCode: 200,
-        message: "Available dates fetched successfully",
-        data: {
-          dates,
-        },
-      });
+      return sendResponse<z.infer<typeof v1_developer_dates_schemas.getAvailableDates.response>>(
+        reply,
+        {
+          statusCode: 200,
+          message: "Available dates fetched successfully",
+          data: {
+            dates,
+          },
+        }
+      );
     } catch (error) {
       fastify.log.error("Error fetching available dates: %s", JSON.stringify(error));
       return reply.internalServerError(

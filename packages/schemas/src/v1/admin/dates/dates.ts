@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { apiResponseSchema, dateFormatSchema } from "../../../common";
 
-// ==================== GET /v1/admin/data/available-dates ====================
+// ==================== GET /v1/admin/dates ====================
 
 export const getAvailableDates = {
   query: z.object({}),
@@ -19,7 +19,7 @@ export const getAvailableDates = {
   }),
 };
 
-// ==================== DELETE /v1/admin/data/dates ====================
+// ==================== DELETE /v1/admin/dates ====================
 
 export const deleteDates = {
   body: z.object({

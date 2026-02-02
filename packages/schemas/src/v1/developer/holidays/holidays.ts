@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { apiResponseSchema, dateFormatSchema } from "../../common";
+import { apiResponseSchema, dateFormatSchema } from "../../../common";
 
 // ==================== GET /v1/developer/holidays ====================
 

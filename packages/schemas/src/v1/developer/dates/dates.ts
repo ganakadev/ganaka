@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { apiResponseSchema } from "../../common";
+import { apiResponseSchema } from "../../../common";
 
-// ==================== GET /v1/developer/available-dates ====================
+// ==================== GET /v1/developer/dates ====================
 
 export const getAvailableDates = {
   query: z.object({}),
