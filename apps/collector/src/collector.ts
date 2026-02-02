@@ -1,5 +1,5 @@
 import {
-  v1_developer_groww_schemas,
+  v1_developer_quote_schemas,
   v1_developer_lists_schemas,
   v1_developer_collector_schemas,
 } from "@ganaka/schemas";
@@ -38,11 +38,11 @@ export const getLists =
   };
 
 export const getGrowwQuote = (developerKey: string) => async (symbol: string) => {
-  const params: z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.query> = {
+  const params: z.infer<typeof v1_developer_quote_schemas.getGrowwQuote.query> = {
     symbol: symbol,
   };
 
-  return axios.get<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>>(
+  return axios.get<z.infer<typeof v1_developer_quote_schemas.getGrowwQuote.response>>(
     `${API_DOMAIN}/v1/developer/quote`,
     {
       params,
@@ -75,7 +75,7 @@ export const createShortlistSnapshot =
 
     return axios.post<
       z.infer<typeof v1_developer_collector_schemas.createShortlistSnapshot.response>
-    >(`${API_DOMAIN}/v1/developer/collector/shortlists`, body, {
+    >(`${API_DOMAIN}/v1/developer/collector/lists`, body, {
       headers: {
         Authorization: `Bearer ${developerKey}`,
         "Content-Type": "application/json",
@@ -142,7 +142,7 @@ export const createNiftyQuote =
 async function fetchQuotesWithRateLimit(symbols: string[]) {
   const results = new Map<
     string,
-    z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"]
+    z.infer<typeof v1_developer_quote_schemas.getGrowwQuote.response>["data"]
   >();
   const batches = chunk(symbols, RATE_LIMIT_BATCH_SIZE);
 
@@ -219,7 +219,7 @@ async function updateDailyBucket(): Promise<Set<string>> {
     const volumeShockersShortlistType: ShortlistType = "VOLUME_SHOCKERS";
     const topGainersFull = topGainers.data?.data ?? [];
     const volumeShockersFull = volumeShockers.data?.data ?? [];
-    
+
     // Store FULL shortlist for top-gainers
     if (topGainersFull.length > 0) {
       await createShortlistSnapshot(process.env.DEVELOPER_KEY!)(
@@ -230,7 +230,7 @@ async function updateDailyBucket(): Promise<Set<string>> {
       );
       console.log(`Stored TOP_GAINERS shortlist (FULL, ${topGainersFull.length} entries)`);
     }
-    
+
     // Store TOP_5 shortlist for top-gainers
     if (topGainersLimited.length > 0) {
       await createShortlistSnapshot(process.env.DEVELOPER_KEY!)(
@@ -241,7 +241,7 @@ async function updateDailyBucket(): Promise<Set<string>> {
       );
       console.log(`Stored TOP_GAINERS shortlist (TOP_5, ${topGainersLimited.length} entries)`);
     }
-    
+
     // Store FULL shortlist for volume-shockers
     if (volumeShockersFull.length > 0) {
       await createShortlistSnapshot(process.env.DEVELOPER_KEY!)(
@@ -252,7 +252,7 @@ async function updateDailyBucket(): Promise<Set<string>> {
       );
       console.log(`Stored VOLUME_SHOCKERS shortlist (FULL, ${volumeShockersFull.length} entries)`);
     }
-    
+
     // Store TOP_5 shortlist for volume-shockers
     if (volumeShockersLimited.length > 0) {
       await createShortlistSnapshot(process.env.DEVELOPER_KEY!)(
@@ -261,7 +261,9 @@ async function updateDailyBucket(): Promise<Set<string>> {
         volumeShockersLimited,
         "TOP_5"
       );
-      console.log(`Stored VOLUME_SHOCKERS shortlist (TOP_5, ${volumeShockersLimited.length} entries)`);
+      console.log(
+        `Stored VOLUME_SHOCKERS shortlist (TOP_5, ${volumeShockersLimited.length} entries)`
+      );
     }
 
     // 4. Collect unique symbols from top 5 (de-duplicate across both lists)

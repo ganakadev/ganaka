@@ -22,7 +22,7 @@ async function checkIfHoliday(): Promise<boolean> {
     const nowIST = dayjs().tz("Asia/Kolkata");
     const dateStr = nowIST.format("YYYY-MM-DD");
 
-    const response = await axios.get(`${API_DOMAIN}/v1/developer/collector/check-holiday`, {
+    const response = await axios.get(`${API_DOMAIN}/v1/developer/collector/holidays/check`, {
       params: {
         date: dateStr,
       },

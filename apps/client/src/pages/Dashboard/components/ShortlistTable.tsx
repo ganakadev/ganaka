@@ -10,7 +10,7 @@ export const ShortlistTable = ({
   loading,
   selectedDate,
 }: {
-  shortlist: z.infer<typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.shortlistEntryWithMetricsSchema>[] | null;
+  shortlist: z.infer<typeof v1_dashboard_schemas.v1_dashboard_lists_schemas.shortlistEntryWithMetricsSchema>[] | null;
   onRowClick: (entry: ShortlistEntryWithQuote) => void;
   loading: boolean;
   selectedDate: Date | null;

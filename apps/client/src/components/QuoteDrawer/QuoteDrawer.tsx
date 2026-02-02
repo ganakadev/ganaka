@@ -6,13 +6,11 @@ import type { Time } from "lightweight-charts";
 import { useMemo } from "react";
 import { dashboardAPI } from "../../store/api/dashboardApi";
 import type { ShortlistEntryWithQuote } from "../../types";
-import { calculateBuyerControlPercentage } from "../../utils/buyerControl";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
 import { convertUTCToIST, formatDateForAPI } from "../../utils/dateFormatting";
 import {
   CandleChart,
   type CandleData,
-  type HistogramSeriesConfig,
   type SeriesMarkerConfig,
 } from "../CandleChart";
 import { QuoteDataTables } from "./QuoteDataTables";
@@ -46,20 +44,6 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
     error: getCandlesAPI.error,
   });
 
-  // Fetch quote snapshots using RTK Query
-  const getQuoteTimelineAPI = dashboardAPI.useGetQuoteTimelineQuery(
-    {
-      symbol: selectedEntry?.nseSymbol || "",
-      date: formatDateForAPI(selectedDate),
-    },
-    {
-      skip: !selectedEntry || !selectedDate,
-    }
-  );
-  useRTKNotifier({
-    requestName: "Get Quote Timeline",
-    error: getQuoteTimelineAPI.error,
-  });
 
   // VARIABLES
   const candleData: CandleData[] | null = getCandlesAPI.data?.data.candles
@@ -74,40 +58,6 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
         };
       })
     : null;
-  // Process quote snapshots to calculate buyerControlPercentage for each
-  const buyerControlData: Array<{ time: Time; value: number }> | null = getQuoteTimelineAPI.data
-    ?.data.quoteTimeline
-    ? getQuoteTimelineAPI.data.data.quoteTimeline
-        .map(
-          (timeline: {
-            id: string;
-            timestamp: string;
-            nseSymbol: string;
-            quoteData: z.infer<typeof growwQuoteSchema>;
-          }) => {
-            const buyerControlPercentage = calculateBuyerControlPercentage(
-              timeline.quoteData,
-              "total"
-            );
-            if (buyerControlPercentage === null) {
-              return null;
-            }
-            // Convert UTC timestamp to Unix timestamp (seconds)
-            // API returns UTC timestamps, so we parse them as UTC directly
-            // Unix timestamps are timezone-agnostic, so no timezone conversion needed
-            // TODO: Find a better way to implement this offset instead of hardcoding it
-            const time = convertUTCToIST(dayjs.utc(timeline.timestamp).toDate());
-            return {
-              time: time.unix() as Time,
-              value: buyerControlPercentage,
-            };
-          }
-        )
-        .filter(
-          (item: { time: Time; value: number } | null): item is { time: Time; value: number } =>
-            item !== null
-        )
-    : null;
   const errorMessage = getCandlesAPI.error
     ? "data" in getCandlesAPI.error &&
       typeof getCandlesAPI.error.data === "object" &&
@@ -117,51 +67,6 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
       : "Failed to fetch candle data"
     : null;
 
-  // Transform buyerControlData into histogram series format with trend-based coloring
-  const histogramSeries: HistogramSeriesConfig[] = useMemo(() => {
-    if (!buyerControlData || buyerControlData.length === 0) return [];
-
-    // eliminate data points that have duplicate times
-    const uniqueData = buyerControlData.filter(
-      (point, index, self) => index === self.findIndex((t) => t.time === point.time)
-    );
-
-    // Transform data to histogram format with color based on trend (up/down movement)
-    const histogramData = uniqueData.map((point, index) => {
-      // First point: use neutral color (no previous point to compare)
-      if (index === 0) {
-        return {
-          time: point.time,
-          value: point.value,
-          color: "#808080", // neutral gray for first point
-        };
-      }
-
-      // Compare to previous point to determine trend
-      const previousValue = uniqueData[index - 1].value;
-      const isTrendingUp = point.value > previousValue;
-
-      return {
-        time: point.time,
-        value: point.value,
-        color: isTrendingUp ? "#13413b" : "#5C2121", // green if trending up, red if trending down
-      };
-    });
-
-    return [
-      {
-        data: histogramData,
-        priceScaleId: "", // set as an overlay by setting a blank priceScaleId
-        scaleMargins: {
-          top: 0.7, // highest point of the series will be 70% away from the top
-          bottom: 0, // lowest point will be at the very bottom
-        },
-        priceFormat: {
-          type: "volume",
-        },
-      },
-    ];
-  }, [buyerControlData]);
 
   // Transform selectedDate into series markers format
   const seriesMarkers: SeriesMarkerConfig[] = useMemo(() => {
@@ -210,7 +115,7 @@ function QuotePanel({ quoteData, selectedEntry, selectedDate }: QuotePanelProps)
           )}
           <CandleChart
             candleData={candleData}
-            histogramSeries={histogramSeries}
+            histogramSeries={[]}
             seriesMarkers={seriesMarkers}
           />
         </>

@@ -36,28 +36,17 @@ const baseQueryWithReauth: typeof baseQueryWithAuth = async (args, api, extraOpt
 export const dashboardAPI = createApi({
   reducerPath: "dashboardApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: [
-    "Shortlists",
-    "AvailableDatetimes",
-    "PersistentCompanies",
-    "UniqueCompanies",
-    "Candles",
-    "QuoteTimeline",
-    "Runs",
-    "GrowwCredentials",
-  ],
+  tagTypes: ["Shortlists", "AvailableDatetimes", "Candles", "Runs", "GrowwCredentials"],
   endpoints: (builder) => ({
     // Get available datetimes
     getAvailableDatetimes: builder.query<
       z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response
+        typeof v1_dashboard_schemas.v1_dashboard_dates_schemas.getAvailableDatetimes.response
       >,
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.query
-      >
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_dates_schemas.getAvailableDatetimes.query>
     >({
       query: () => ({
-        url: "/available-datetimes",
+        url: "/dates",
         method: "GET",
       }),
       providesTags: ["AvailableDatetimes"],
@@ -65,66 +54,20 @@ export const dashboardAPI = createApi({
 
     // Get shortlists
     getShortlists: builder.query<
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response>,
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query>
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_lists_schemas.getShortlists.response>,
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_lists_schemas.getShortlists.query>
     >({
       query: (params) => {
         // Validate query params using Zod schema
         const validatedParams =
-          v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query.parse(params);
+          v1_dashboard_schemas.v1_dashboard_lists_schemas.getShortlists.query.parse(params);
         return {
-          url: "/shortlists",
+          url: "/lists",
           method: "GET",
           params: validatedParams,
         };
       },
       providesTags: ["Shortlists"],
-    }),
-
-    // Get daily persistent companies
-    getDailyPersistentCompanies: builder.query<
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_daily_persistent_companies_schemas.getDailyPersistentCompanies.response
-      >,
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_daily_persistent_companies_schemas.getDailyPersistentCompanies.query
-      >
-    >({
-      query: (params) => {
-        const validatedParams =
-          v1_dashboard_schemas.v1_dashboard_daily_persistent_companies_schemas.getDailyPersistentCompanies.query.parse(
-            params
-          );
-        return {
-          url: "/daily-persistent-companies",
-          method: "GET",
-          params: validatedParams,
-        };
-      },
-      providesTags: ["PersistentCompanies"],
-    }),
-
-    // Get daily unique companies
-    getDailyUniqueCompanies: builder.query<
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_daily_unique_companies_schemas.getDailyUniqueCompanies.response
-      >,
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_daily_unique_companies_schemas.getDailyUniqueCompanies.query
-      >
-    >({
-      query: (params) => {
-        const validatedParams =
-          v1_dashboard_schemas.v1_dashboard_daily_unique_companies_schemas.getDailyUniqueCompanies.query.parse(
-            params
-          );
-        return {
-          url: "/daily-unique-companies",
-          method: "GET",
-          params: validatedParams,
-        };
-      },
-      providesTags: ["UniqueCompanies"],
     }),
 
     // Get candles
@@ -144,36 +87,13 @@ export const dashboardAPI = createApi({
       providesTags: ["Candles"],
     }),
 
-    // Get quote timeline
-    getQuoteTimeline: builder.query<
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.response
-      >,
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.query
-      >
-    >({
-      query: (params) => {
-        const validatedParams =
-          v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.query.parse(
-            params
-          );
-        return {
-          url: "/quote-timelines",
-          method: "GET",
-          params: validatedParams,
-        };
-      },
-      providesTags: ["QuoteTimeline"],
-    }),
-
     // Sign in
     signIn: builder.query<
       z.infer<typeof v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.response>,
       z.infer<typeof v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.body>
     >({
       query: (body) => ({
-        url: "/auth/sign-in",
+        url: "/auth",
         method: "POST",
         headers: {
           authorization: `Bearer ${body.developerToken}`,
@@ -252,7 +172,7 @@ export const dashboardAPI = createApi({
 
     // Get run tags (for autocomplete)
     getRunTags: builder.query<
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunTags.response>,
+      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_tags_schemas.getRunTags.response>,
       void
     >({
       query: () => ({
@@ -266,12 +186,12 @@ export const dashboardAPI = createApi({
     // Get Groww credentials
     getGrowwCredentials: builder.query<
       z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_settings_schemas.getGrowwCredentials.response
+        typeof v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.getGrowwCredentials.response
       >,
       void
     >({
       query: () => ({
-        url: "/settings/groww-credentials",
+        url: "/settings/groww/credentials",
         method: "GET",
       }),
       providesTags: ["GrowwCredentials"],
@@ -280,19 +200,19 @@ export const dashboardAPI = createApi({
     // Update Groww credentials
     updateGrowwCredentials: builder.mutation<
       z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_settings_schemas.updateGrowwCredentials.response
+        typeof v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.updateGrowwCredentials.response
       >,
       z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_settings_schemas.updateGrowwCredentials.body
+        typeof v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.updateGrowwCredentials.body
       >
     >({
       query: (body) => {
         const validatedBody =
-          v1_dashboard_schemas.v1_dashboard_settings_schemas.updateGrowwCredentials.body.parse(
+          v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.updateGrowwCredentials.body.parse(
             body
           );
         return {
-          url: "/settings/groww-credentials",
+          url: "/settings/groww/credentials",
           method: "PUT",
           body: validatedBody,
         };
@@ -303,12 +223,12 @@ export const dashboardAPI = createApi({
     // Delete Groww credentials
     deleteGrowwCredentials: builder.mutation<
       z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_settings_schemas.deleteGrowwCredentials.response
+        typeof v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.deleteGrowwCredentials.response
       >,
       void
     >({
       query: () => ({
-        url: "/settings/groww-credentials",
+        url: "/settings/groww/credentials",
         method: "DELETE",
       }),
       invalidatesTags: ["GrowwCredentials"],
@@ -319,10 +239,7 @@ export const dashboardAPI = createApi({
 export const {
   useGetAvailableDatetimesQuery,
   useGetShortlistsQuery,
-  useGetDailyPersistentCompaniesQuery,
-  useGetDailyUniqueCompaniesQuery,
   useGetCandlesQuery,
-  useGetQuoteTimelineQuery,
   useSignInQuery,
   useGetRunsQuery,
   useGetRunOrdersQuery,

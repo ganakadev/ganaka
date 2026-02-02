@@ -4,15 +4,10 @@ import { RunOrdersDrawer } from "../../components/RunDrawer/RunDrawer";
 import { dashboardAPI } from "../../store/api/dashboardApi";
 import type { Run, ShortlistEntryWithQuote } from "../../types";
 import { useRTKNotifier } from "../../utils/hooks/useRTKNotifier";
-import { formatDateTimeForAPI, formatDateForAPI } from "../../utils/dateFormatting";
+import { formatDateTimeForAPI } from "../../utils/dateFormatting";
 import { Header } from "./components/Header";
-import {
-  PersistentCompaniesTable,
-  type PersistentCompany,
-} from "./components/PersistentCompaniesTable";
 import { RunsSidebar } from "./components/RunsSidebar";
 import { ShortlistTable } from "./components/ShortlistTable";
-import { UniqueCompaniesCard } from "./components/UniqueCompaniesCard";
 
 export const Dashboard = () => {
   // STATE
@@ -46,19 +41,6 @@ export const Dashboard = () => {
     requestName: "Get Shortlists",
     error: getShortlistsAPI.error,
   });
-  const getPersistentCompaniesAPI = dashboardAPI.useGetDailyPersistentCompaniesQuery(
-    {
-      date: formatDateForAPI(selectedDate),
-      type: activeTab || "TOP_GAINERS",
-    },
-    {
-      skip: !selectedDate || !activeTab,
-    }
-  );
-  useRTKNotifier({
-    requestName: "Get Daily Persistent Companies",
-    error: getPersistentCompaniesAPI.error,
-  });
 
   // Transform shortlist data
   const shortlist = getShortlistsAPI.data?.data.shortlist
@@ -70,10 +52,6 @@ export const Dashboard = () => {
       }
     : null;
 
-  // Transform persistent companies data
-  const persistentCompanies: PersistentCompany[] =
-    getPersistentCompaniesAPI.data?.data.companies || [];
-  const totalSnapshots = getPersistentCompaniesAPI.data?.data.totalSnapshots;
 
   const handleRowClick = (entry: ShortlistEntryWithQuote) => {
     setSelectedEntry(entry);
@@ -137,13 +115,6 @@ export const Dashboard = () => {
                 selectedDate={selectedDate}
               />
             )}
-            <UniqueCompaniesCard selectedDate={selectedDate} activeTab={activeTab} />
-            <PersistentCompaniesTable
-              companies={persistentCompanies}
-              loading={getPersistentCompaniesAPI.isLoading}
-              selectedDate={selectedDate}
-              totalSnapshots={totalSnapshots}
-            />
             <QuoteDrawer
               opened={drawerOpened}
               onClose={handleDrawerClose}

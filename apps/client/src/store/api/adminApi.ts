@@ -40,13 +40,11 @@ export const adminAPI = createApi({
   endpoints: (builder) => ({
     // Get available dates
     getAvailableDates: builder.query<
-      z.infer<
-        typeof v1_admin_schemas.v1_admin_data_schemas.getAvailableDates.response
-      >,
+      z.infer<typeof v1_admin_schemas.v1_admin_dates_schemas.getAvailableDates.response>,
       void
     >({
       query: () => ({
-        url: "/data/available-dates",
+        url: "/dates",
         method: "GET",
       }),
       providesTags: ["AvailableDates"],
@@ -54,11 +52,11 @@ export const adminAPI = createApi({
 
     // Delete dates
     deleteDates: builder.mutation<
-      z.infer<typeof v1_admin_schemas.v1_admin_data_schemas.deleteDates.response>,
-      z.infer<typeof v1_admin_schemas.v1_admin_data_schemas.deleteDates.body>
+      z.infer<typeof v1_admin_schemas.v1_admin_dates_schemas.deleteDates.response>,
+      z.infer<typeof v1_admin_schemas.v1_admin_dates_schemas.deleteDates.body>
     >({
       query: (body) => ({
-        url: "/data/dates",
+        url: "/dates",
         method: "DELETE",
         body,
       }),
