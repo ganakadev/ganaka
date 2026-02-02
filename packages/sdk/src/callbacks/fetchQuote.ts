@@ -1,4 +1,4 @@
-import { v1_developer_groww_schemas } from "@ganaka/schemas";
+import { v1_developer_quote_schemas } from "@ganaka/schemas";
 import axios from "axios";
 import z from "zod";
 import dayjs from "dayjs";
@@ -24,8 +24,8 @@ export const fetchQuote =
     currentTimezone?: string;
   }) =>
   async (
-    params: z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.query>
-  ): Promise<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"] | null> => {
+    params: z.infer<typeof v1_developer_quote_schemas.getGrowwQuote.query>
+  ): Promise<z.infer<typeof v1_developer_quote_schemas.getGrowwQuote.response>["data"] | null> => {
     if (!developerToken) {
       throw new Error(
         "Developer token not found. Please set DEVELOPER_TOKEN environment variable."
@@ -34,7 +34,7 @@ export const fetchQuote =
 
     try {
       // Validate input params
-      const validatedParams = v1_developer_groww_schemas.getGrowwQuote.query.parse(params);
+      const validatedParams = v1_developer_quote_schemas.getGrowwQuote.query.parse(params);
 
       const headers: Record<string, string> = {
         Authorization: `Bearer ${developerToken}`,
@@ -51,7 +51,7 @@ export const fetchQuote =
       }
 
       const response = await axios.get<
-        z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>
+        z.infer<typeof v1_developer_quote_schemas.getGrowwQuote.response>
       >(`${apiDomain}/v1/developer/quote`, {
         params: validatedParams,
         headers,

@@ -6,11 +6,9 @@ import dotenv from "dotenv";
 import { z } from "zod";
 import { fetchCandles } from "./callbacks/fetchCandles";
 import { fetchQuote } from "./callbacks/fetchQuote";
-import { fetchQuoteTimeline } from "./callbacks/fetchQuoteTimeline";
 import { fetchShortlist } from "./callbacks/fetchShortlist";
 import { fetchShortlistPersistence } from "./callbacks/fetchShortlistPersistence";
 import { fetchNiftyQuote } from "./callbacks/fetchNiftyQuote";
-import { fetchNiftyQuoteTimeline } from "./callbacks/fetchNiftyQuoteTimeline";
 import { fetchAvailableDates } from "./callbacks/fetchAvailableDates";
 import { fetchHolidays } from "./callbacks/fetchHolidays";
 import { placeOrder } from "./callbacks/placeOrder";
@@ -26,20 +24,18 @@ dayjs.extend(timezone);
 export { growwQuotePayloadSchema, growwQuoteSchema };
 export { GanakaClient, type GanakaClientConfig };
 
-export type FetchQuoteTimelineResponse = Awaited<ReturnType<ReturnType<typeof fetchQuoteTimeline>>>;
 export type FetchQuoteResponse = Awaited<ReturnType<ReturnType<typeof fetchQuote>>>;
 export type FetchNiftyQuoteResponse = Awaited<ReturnType<ReturnType<typeof fetchNiftyQuote>>>;
-export type FetchNiftyQuoteTimelineResponse = Awaited<ReturnType<ReturnType<typeof fetchNiftyQuoteTimeline>>>;
 export type FetchCandlesResponse = Awaited<ReturnType<ReturnType<typeof fetchCandles>>>;
 export type FetchShortlistResponse = Awaited<ReturnType<ReturnType<typeof fetchShortlist>>>;
-export type FetchAvailableDatesResponse = Awaited<ReturnType<ReturnType<typeof fetchAvailableDates>>>;
+export type FetchAvailableDatesResponse = Awaited<
+  ReturnType<ReturnType<typeof fetchAvailableDates>>
+>;
 export type FetchHolidaysResponse = Awaited<ReturnType<ReturnType<typeof fetchHolidays>>>;
 
 export type fetchCandles = ReturnType<typeof fetchCandles>;
 export type fetchQuote = ReturnType<typeof fetchQuote>;
-export type fetchQuoteTimeline = ReturnType<typeof fetchQuoteTimeline>;
 export type fetchNiftyQuote = ReturnType<typeof fetchNiftyQuote>;
-export type fetchNiftyQuoteTimeline = ReturnType<typeof fetchNiftyQuoteTimeline>;
 export type fetchShortlist = ReturnType<typeof fetchShortlist>;
 export type fetchShortlistPersistence = ReturnType<typeof fetchShortlistPersistence>;
 export type fetchAvailableDates = ReturnType<typeof fetchAvailableDates>;
@@ -50,17 +46,6 @@ export interface RunContext {
   fetchCandles: ReturnType<typeof fetchCandles>;
   fetchQuote: ReturnType<typeof fetchQuote>;
   fetchNiftyQuote: ReturnType<typeof fetchNiftyQuote>;
-  /**
-   * Given an end_datetime, returns the NIFTY quote timeline for the given date
-   * 
-   * @param end_datetime - The end datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
-   * @returns The NIFTY quote timeline for the given date
-   */
-  fetchNiftyQuoteTimeline: ReturnType<typeof fetchNiftyQuoteTimeline>;
-  /**
-   * Given a symbol and a end_datetime, returns the quote timeline for the given date
-   */
-  fetchQuoteTimeline: ReturnType<typeof fetchQuoteTimeline>;
   fetchShortlist: ReturnType<typeof fetchShortlist>;
   /**
    * Given a shortlist type and a start and end datetime,
@@ -204,20 +189,6 @@ export async function ganaka<T>({
             currentTimezone: "Asia/Kolkata",
           }),
           fetchNiftyQuote: fetchNiftyQuote({
-            developerToken,
-            apiDomain,
-            runId,
-            currentTimestamp,
-            currentTimezone: "Asia/Kolkata",
-          }),
-          fetchNiftyQuoteTimeline: fetchNiftyQuoteTimeline({
-            developerToken,
-            apiDomain,
-            runId,
-            currentTimestamp,
-            currentTimezone: "Asia/Kolkata",
-          }),
-          fetchQuoteTimeline: fetchQuoteTimeline({
             developerToken,
             apiDomain,
             runId,

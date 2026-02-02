@@ -1,4 +1,4 @@
-import { v1_developer_shortlist_persistence_schemas } from "@ganaka/schemas";
+import { v1_developer_lists_persistence_schemas } from "@ganaka/schemas";
 import axios from "axios";
 import z from "zod";
 import dayjs from "dayjs";
@@ -25,12 +25,13 @@ export const fetchShortlistPersistence =
   }) =>
   async (
     queryParams: z.infer<
-      typeof v1_developer_shortlist_persistence_schemas.getShortlistPersistence.query
+      typeof v1_developer_lists_persistence_schemas.getShortlistPersistence.query
     >
   ): Promise<
-    z.infer<
-      typeof v1_developer_shortlist_persistence_schemas.getShortlistPersistence.response
-    >["data"] | null
+    | z.infer<
+        typeof v1_developer_lists_persistence_schemas.getShortlistPersistence.response
+      >["data"]
+    | null
   > => {
     if (!developerToken) {
       throw new Error(
@@ -40,7 +41,7 @@ export const fetchShortlistPersistence =
 
     try {
       const validatedParams =
-        v1_developer_shortlist_persistence_schemas.getShortlistPersistence.query.parse(queryParams);
+        v1_developer_lists_persistence_schemas.getShortlistPersistence.query.parse(queryParams);
 
       const headers: Record<string, string> = {
         Authorization: `Bearer ${developerToken}`,
@@ -57,10 +58,8 @@ export const fetchShortlistPersistence =
       }
 
       const response = await axios.get<
-        z.infer<
-          typeof v1_developer_shortlist_persistence_schemas.getShortlistPersistence.response
-        >
-      >(`${apiDomain}/v1/developer/shortlists/persistence`, {
+        z.infer<typeof v1_developer_lists_persistence_schemas.getShortlistPersistence.response>
+      >(`${apiDomain}/v1/developer/lists/persistence`, {
         params: validatedParams,
         headers,
       });
