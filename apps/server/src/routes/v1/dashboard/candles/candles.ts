@@ -1,17 +1,16 @@
-import axios, { AxiosError } from "axios";
+import { v1_dashboard_schemas, validCandleIntervals } from "@ganaka/schemas";
+import axios from "axios";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { FastifyPluginAsync } from "fastify";
 import z from "zod";
+import { formatDateTime } from "../../../../utils/date-formatter";
+import { makeGrowwAPIRequest } from "../../../../utils/groww-api-request";
 import { RedisManager } from "../../../../utils/redis";
 import { sendResponse } from "../../../../utils/sendResponse";
 import { TokenManager } from "../../../../utils/token-manager";
 import { validateRequest } from "../../../../utils/validator";
-import { v1_dashboard_schemas, validCandleIntervals } from "@ganaka/schemas";
-import { makeGrowwAPIRequest } from "../../../../utils/groww-api-request";
-import { parseDateInTimezone } from "../../../../utils/timezone";
-import { formatDateTime } from "../../../../utils/date-formatter";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -38,6 +37,7 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
   const tokenManager = new TokenManager(redisManager.redis, fastify);
   const growwAPIRequest = makeGrowwAPIRequest(fastify, tokenManager);
 
+  // ==================== GET /v1/dashboard/candles ====================
   fastify.get("/", async (request, reply) => {
     const validationResult = validateRequest(
       request.query,

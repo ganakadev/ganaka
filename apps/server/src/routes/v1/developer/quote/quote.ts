@@ -21,7 +21,7 @@ const quoteRoutes: FastifyPluginAsync = async (fastify) => {
   const tokenManager = new TokenManager(redisManager.redis, fastify);
   const growwAPIRequest = makeGrowwAPIRequest(fastify, tokenManager);
 
-  // Quote endpoint
+  // ==================== GET /v1/developer/quote ====================
   fastify.get("/", async (request, reply) => {
     const validationResult = validateRequest(
       request.query,

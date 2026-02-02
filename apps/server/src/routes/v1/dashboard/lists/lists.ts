@@ -251,12 +251,13 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
   const redisManager = RedisManager.getInstance(fastify);
   const tokenManager = new TokenManager(redisManager.redis, fastify);
   const growwAPIRequest = makeGrowwAPIRequest(fastify, tokenManager);
+
+  // ==================== GET /v1/dashboard/lists ====================
   fastify.get("/", async (request, reply) => {
     // Check if trade metrics parameters were explicitly provided in the query
     const rawQuery = request.query as Record<string, unknown>;
     const shouldCalculateMetrics =
-      rawQuery.takeProfitPercentage !== undefined &&
-      rawQuery.stopLossPercentage !== undefined;
+      rawQuery.takeProfitPercentage !== undefined && rawQuery.stopLossPercentage !== undefined;
 
     const validationResult = validateRequest(
       request.query,

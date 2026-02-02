@@ -7,8 +7,7 @@ import z from "zod";
 import { randomUUID } from "crypto";
 
 const developersRoutes: FastifyPluginAsync = async (fastify) => {
-  // ==================== GET /developers ====================
-
+  // ==================== GET /v1/admin/developers ====================
   fastify.get("/", async (request, reply) => {
     const validationResult = validateRequest(
       request.query,
@@ -50,10 +49,9 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // ==================== PATCH /developers/:id/refresh-key ====================
+  // ==================== PATCH /v1/admin/developers/:id/refresh-key ====================
   // NOTE: This route must be registered before /:id routes to ensure proper matching
-
-  fastify.patch("/:id/refresh-key", async (request, reply) => {
+  fastify.patch("/:id/refresh", async (request, reply) => {
     const validationResult = validateRequest(
       request.params,
       reply,
@@ -105,8 +103,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // ==================== GET /developers/:id ====================
-
+  // ==================== GET /v1/admin/developers/:id ====================
   fastify.get("/:id", async (request, reply) => {
     const validationResult = validateRequest(
       request.params,
@@ -142,8 +139,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // ==================== POST /developers ====================
-
+  // ==================== POST /v1/admin/developers ====================
   fastify.post("/", async (request, reply) => {
     const validationResult = validateRequest(
       request.body,
@@ -198,8 +194,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // ==================== DELETE /developers/:id ====================
-
+  // ==================== DELETE /v1/admin/developers/:id ====================
   fastify.delete("/:id", async (request, reply) => {
     const validationResult = validateRequest(
       request.params,

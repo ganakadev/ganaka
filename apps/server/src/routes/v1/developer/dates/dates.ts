@@ -1,12 +1,13 @@
 import { FastifyPluginAsync } from "fastify";
 import { prisma } from "../../../../utils/prisma";
 import { sendResponse } from "../../../../utils/sendResponse";
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_developer_available_dates_schemas } from "@ganaka/schemas";
 import z from "zod";
 import { formatDateTime, formatDate } from "../../../../utils/date-formatter";
 
-const availableDatetimesRoutes: FastifyPluginAsync = async (fastify) => {
-  fastify.get("/", async (request, reply) => {
+const availableDatesRoutes: FastifyPluginAsync = async (fastify) => {
+  // ==================== GET /v1/developer/dates ====================
+  fastify.get("/", async (_, reply) => {
     try {
       // Get all unique timestamps from ShortlistSnapshot
       const snapshots = await prisma.shortlistSnapshot.findMany({
@@ -40,23 +41,21 @@ const availableDatetimesRoutes: FastifyPluginAsync = async (fastify) => {
       }));
 
       return sendResponse<
-        z.infer<
-          typeof v1_dashboard_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response
-        >
+        z.infer<typeof v1_developer_available_dates_schemas.getAvailableDates.response>
       >(reply, {
         statusCode: 200,
-        message: "Available datetimes fetched successfully",
+        message: "Available dates fetched successfully",
         data: {
           dates,
         },
       });
     } catch (error) {
-      fastify.log.error("Error fetching available datetimes: %s", JSON.stringify(error));
+      fastify.log.error("Error fetching available dates: %s", JSON.stringify(error));
       return reply.internalServerError(
-        "Failed to fetch available datetimes. Please check server logs for more details."
+        "Failed to fetch available dates. Please check server logs for more details."
       );
     }
   });
 };
 
-export default availableDatetimesRoutes;
+export default availableDatesRoutes;

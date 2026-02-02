@@ -1,26 +1,30 @@
-import { FastifyInstance, FastifyPluginAsync } from "fastify";
-import { validateRequest } from "../../../../utils/validator";
-import { v1_developer_lists_schemas } from "@ganaka/schemas";
-import { sendResponse } from "../../../../utils/sendResponse";
-import { prisma } from "../../../../utils/prisma";
+import { ShortlistSnapshot } from "@ganaka/db";
 import { ShortlistType, ShortlistScope } from "@ganaka/db/prisma";
-import z from "zod";
-import * as cheerio from "cheerio";
-import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse } from "axios";
-import { isEmpty, shuffle } from "lodash";
+import { v1_developer_shortlist_persistence_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
+import { FastifyPluginAsync } from "fastify";
+import z from "zod";
+import { prisma } from "../../../../utils/prisma";
+import { sendResponse } from "../../../../utils/sendResponse";
+import { validateRequest } from "../../../../utils/validator";
 import { parseDateTimeInTimezone } from "../../../../utils/timezone";
+import { formatDateTime } from "../../../../utils/date-formatter";
 import { validateCurrentTimestamp } from "../../../../utils/current-timestamp-validator";
+import { shortlistEntrySchema } from "@ganaka/schemas";
 
 dayjs.extend(utc);
-
-const MAX_LIST_FETCH_RETRIES = 3;
+dayjs.extend(timezone);
 
 /**
  * Maps API type format to database enum format
  */
-function mapTypeToShortlistType(type: "top-gainers" | "volume-shockers"): ShortlistType {
+function mapTypeToShortlistType(
+  type: z.infer<
+    typeof v1_developer_shortlist_persistence_schemas.getShortlistPersistence.query
+  >["type"]
+): ShortlistType {
   switch (type) {
     case "top-gainers":
       return ShortlistType.TOP_GAINERS;
@@ -31,268 +35,164 @@ function mapTypeToShortlistType(type: "top-gainers" | "volume-shockers"): Shortl
   }
 }
 
-const getProxyList = async (fastify: FastifyInstance) => {
-  try {
-    const response = (await axios.get("https://proxy.webshare.io/api/v2/proxy/list", {
-      params: {
-        page: 1,
-        page_size: 5,
-        mode: "direct",
-      },
-      headers: {
-        Authorization: `Token ${process.env.WEBSHARE_API_KEY}`,
-      },
-    })) as AxiosResponse<{
-      count: number;
-      next: string | null;
-      previous: string | null;
-      results: {
-        id: string;
-        username: string;
-        password: string;
-        proxy_address: string;
-        port: number;
-        valid: boolean;
-        last_verification: string;
-        country_code: string;
-        city_name: string;
-        asn_name: string;
-        asn_number: number;
-        high_country_confidence: boolean;
-        created_at: string;
-      }[];
-    }>;
-
-    return response.data?.results?.flatMap((proxy) => {
-      if (proxy.valid) {
-        return {
-          host: proxy.proxy_address,
-          port: proxy.port,
-          username: proxy.username,
-          password: proxy.password,
-        };
-      }
-      return [];
-    });
-  } catch (error) {
-    fastify.log.error("Error getting proxy list: %s", JSON.stringify(error));
+/**
+ * Finds all instruments that appeared in any snapshot between start and end datetime,
+ * ordered by total number of appearances (descending)
+ */
+function findPersistentInstruments(
+  snapshots: Array<ShortlistSnapshot>,
+  totalSnapshots: number
+): Array<{
+  nseSymbol: string;
+  name: string;
+  appearanceCount: number;
+  totalSnapshots: number;
+  percentage: number;
+}> {
+  if (totalSnapshots === 0) {
     return [];
   }
-};
+
+  // Filter to only non-empty snapshots
+  const nonEmptySnapshots = snapshots.filter((snapshot) => {
+    const entries = snapshot.entries as z.infer<typeof shortlistEntrySchema>[] | null;
+    return entries && entries.length > 0;
+  });
+
+  // Track which symbols appear in each snapshot
+  const symbolAppearances = new Map<string, number>();
+  const symbolToNameMap = new Map<string, string>();
+
+  for (let i = 0; i < nonEmptySnapshots.length; i++) {
+    const snapshot = nonEmptySnapshots[i];
+    const entries = snapshot.entries as z.infer<typeof shortlistEntrySchema>[] | null;
+
+    if (!entries || entries.length === 0) {
+      continue;
+    }
+
+    const seenInThisSnapshot = new Set<string>();
+    for (const entry of entries) {
+      // Only count each symbol once per snapshot
+      if (!seenInThisSnapshot.has(entry.nseSymbol)) {
+        symbolAppearances.set(entry.nseSymbol, (symbolAppearances.get(entry.nseSymbol) || 0) + 1);
+        seenInThisSnapshot.add(entry.nseSymbol);
+      }
+      // Store name from first occurrence
+      if (!symbolToNameMap.has(entry.nseSymbol)) {
+        symbolToNameMap.set(entry.nseSymbol, entry.name);
+      }
+    }
+  }
+
+  // Filter to only symbols that appear in ALL non-empty snapshots
+  const persistentInstruments: Array<{
+    nseSymbol: string;
+    name: string;
+    appearanceCount: number;
+    totalSnapshots: number;
+    percentage: number;
+  }> = [];
+
+  for (const [symbol, appearanceCount] of symbolAppearances.entries()) {
+    // Only include if present in all snapshots
+    const percentage = (appearanceCount / totalSnapshots) * 100;
+    persistentInstruments.push({
+      nseSymbol: symbol,
+      name: symbolToNameMap.get(symbol) || symbol,
+      appearanceCount,
+      totalSnapshots,
+      percentage: Math.round(percentage * 10) / 10, // Round to 1 decimal place
+    });
+  }
+
+  // Sort by appearanceCount descending (most appearances first)
+  persistentInstruments.sort((a, b) => b.appearanceCount - a.appearanceCount);
+
+  return persistentInstruments;
+}
 
 const listsRoutes: FastifyPluginAsync = async (fastify) => {
-  fastify.get("/", async (request, reply) => {
+  // ==================== GET /v1/developer/lists/persistence ====================
+  fastify.get("/persistence", async (request, reply) => {
     const validationResult = validateRequest(
       request.query,
       reply,
-      v1_developer_lists_schemas.getLists.query,
+      v1_developer_shortlist_persistence_schemas.getShortlistPersistence.query,
       "query"
     );
     if (!validationResult) {
       return;
     }
 
-    // If datetime is provided, fetch from snapshot
-    if (validationResult.datetime) {
-      try {
-        const shortlistType = mapTypeToShortlistType(validationResult.type);
-        const timezone = validationResult.timezone || "Asia/Kolkata";
-        const scope = (validationResult.scope ?? "TOP_5") as ShortlistScope;
-        // Convert datetime string to UTC Date object
-        const selectedDateTime = parseDateTimeInTimezone(validationResult.datetime, timezone);
+    try {
+      const shortlistType = mapTypeToShortlistType(validationResult.type);
+      const timezone = validationResult.timezone || "Asia/Kolkata";
+      const scope = (validationResult.scope ?? "TOP_5") as ShortlistScope;
 
-        // Validate against currentTimestamp if present
-        if (request.currentTimestamp) {
-          try {
-            validateCurrentTimestamp(request.currentTimestamp, [selectedDateTime], reply);
-          } catch (error) {
-            // Error already sent via reply in validator
-            return;
-          }
-        }
+      // Parse datetime strings to UTC Date objects
+      const startDateTime = parseDateTimeInTimezone(validationResult.start_datetime, timezone);
+      const endDateTime = parseDateTimeInTimezone(validationResult.end_datetime, timezone);
 
-        const shortlists = await prisma.shortlistSnapshot.findMany({
-          where: {
-            timestamp: {
-              gte: selectedDateTime,
-              lte: dayjs.utc(selectedDateTime).add(1, "second").toDate(), // Add 1 second
-            },
-            shortlistType: shortlistType,
-            scope: scope,
-          },
-        });
-
-        if (shortlists.length === 0) {
-          return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(reply, {
-            statusCode: 200,
-            message: "Shortlist snapshot not found",
-            data: null,
-          });
-        }
-
-        const shortlistFromDb = shortlists[0];
-        const entries = shortlistFromDb.entries as Array<{
-          nseSymbol: string;
-          name: string;
-          price: number;
-        }> | null;
-
-        if (!entries) {
-          return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(reply, {
-            statusCode: 200,
-            message: "Shortlist snapshot not found",
-            data: null,
-          });
-        }
-
-        return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(reply, {
-          statusCode: 200,
-          message: "Lists fetched successfully",
-          data: entries,
-        });
-      } catch (error) {
-        fastify.log.error(
-          `Error fetching shortlist snapshot for ${validationResult.type} at ${
-            validationResult.datetime
-          }: ${JSON.stringify(error)}`
-        );
-        return reply.internalServerError(
-          "Failed to fetch shortlist snapshot. Please check server logs for more details."
-        );
+      // Validate that start_datetime <= end_datetime
+      if (startDateTime > endDateTime) {
+        return reply.badRequest("start_datetime must be less than or equal to end_datetime");
       }
-    }
 
-    // If no datetime, fetch live data from Groww
-    const proxyList = await getProxyList(fastify);
-    const shuffledProxyList =
-      proxyList.length > 0
-        ? shuffle(proxyList)
-        : [
-            // setting marker in case proxy list is empty
-            {
-              host: "127.0.0.1",
-              port: 9090,
-              username: "ganaka",
-              password: "ganaka",
-            },
-          ];
-    const url =
-      validationResult.type === "volume-shockers"
-        ? `https://groww.in/markets/volume-shockers`
-        : `https://groww.in/markets/top-gainers?index=GIDXNIFTYTOTALMCAP`;
-
-    for await (const [tryCount, proxy] of shuffledProxyList.entries()) {
-      fastify.log.info(`Trying proxy: ${proxy ? `${proxy.host}:${proxy.port}` : "None"}`);
-
-      try {
-        // block to simulate proxy blocking
-        // if (tryCount === 0) {
-        //   // Fetch the HTML page
-        //   throw new AxiosError("Proxy blocked", "429", undefined, undefined, {
-        //     status: 429,
-        //     config: {
-        //       url: url,
-        //       headers: {} as AxiosRequestHeaders,
-        //       data: undefined,
-        //     },
-        //     data: undefined,
-        //     statusText: "200 OK",
-        //     headers: {},
-        //   });
-        // }
-
-        const response = await axios.get(url, {
-          headers: {
-            "User-Agent":
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            Accept:
-              "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.9",
-            Referer: "https://groww.in/",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Sec-Fetch-Dest": "document",
-            "Sec-Fetch-Mode": "navigate",
-            "Sec-Fetch-Site": "none",
-            "Sec-Fetch-User": "?1",
-            "Upgrade-Insecure-Requests": "1",
-          },
-          ...(proxy.host !== "127.0.0.1"
-            ? {
-                proxy: {
-                  host: proxy.host,
-                  port: proxy.port,
-                  auth: {
-                    username: proxy.username,
-                    password: proxy.password,
-                  },
-                  protocol: "http",
-                },
-              }
-            : {}),
-        });
-
-        // Parse HTML with cheerio to find __NEXT_DATA__ script tag
-        const $ = cheerio.load(response.data);
-        const nextDataScript = $("#__NEXT_DATA__").html();
-
-        if (!nextDataScript) {
-          throw new Error("__NEXT_DATA__ script tag not found");
-        }
-
-        // Parse the JSON data
-        let nextData: { props: { pageProps: { stocks: any[] } } } | null = null;
-
+      // Validate against currentTimestamp if present
+      if (request.currentTimestamp) {
         try {
-          nextData = JSON.parse(nextDataScript);
+          validateCurrentTimestamp(request.currentTimestamp, [startDateTime, endDateTime], reply);
         } catch (error) {
-          fastify.log.error("Error parsing JSON: %s", JSON.stringify(error));
-
-          if (tryCount < MAX_LIST_FETCH_RETRIES) {
-            continue;
-          }
-
-          break;
+          // Error already sent via reply in validator
+          return;
         }
-
-        const stocks = nextData?.props?.pageProps?.stocks ?? [];
-        if (stocks.length === 0) {
-          if (tryCount < MAX_LIST_FETCH_RETRIES) {
-            continue;
-          }
-
-          break;
-        }
-
-        return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(reply, {
-          statusCode: 200,
-          message: "Lists fetched successfully",
-          data: stocks
-            .map((stock: any) => ({
-              name: stock.companyName || stock.companyShortName || "",
-              price: stock.ltp || 0,
-              nseSymbol: stock.nseScriptCode || "",
-            }))
-            .filter(
-              (shortlistItem: { name?: string; nseSymbol?: string; price?: number }) =>
-                !isEmpty(shortlistItem.name) && !isEmpty(shortlistItem.nseSymbol)
-            ),
-        });
-      } catch (error) {
-        fastify.log.error("Error fetching lists: %s", JSON.stringify(error));
-
-        if (tryCount < MAX_LIST_FETCH_RETRIES) {
-          continue;
-        }
-
-        break;
       }
-    }
 
-    return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(reply, {
-      statusCode: 200,
-      message: "Lists unable to be fetched. Please check server logs for more details.",
-      data: [],
-    });
+      // Fetch all snapshots for the requested list type in the time range
+      const snapshots = await prisma.shortlistSnapshot.findMany({
+        where: {
+          timestamp: {
+            gte: startDateTime,
+            lte: endDateTime,
+          },
+          shortlistType: shortlistType,
+          scope: scope,
+        },
+        orderBy: {
+          timestamp: "asc",
+        },
+      });
+
+      // Count non-empty snapshots (empty snapshots don't count towards persistence)
+      const nonEmptySnapshots = snapshots.filter((snapshot) => {
+        const entries = snapshot.entries as z.infer<typeof shortlistEntrySchema>[] | null;
+        return entries && entries.length > 0;
+      });
+      const totalNonEmptySnapshots = nonEmptySnapshots.length;
+
+      // Find all instruments that appeared in any snapshot, ordered by appearance count
+      const instruments = findPersistentInstruments(snapshots, totalNonEmptySnapshots);
+
+      return sendResponse<
+        z.infer<typeof v1_developer_shortlist_persistence_schemas.getShortlistPersistence.response>
+      >(reply, {
+        statusCode: 200,
+        message: "Shortlist persistence fetched successfully",
+        data: {
+          start_datetime: formatDateTime(startDateTime),
+          end_datetime: formatDateTime(endDateTime),
+          type: validationResult.type,
+          totalSnapshots: totalNonEmptySnapshots,
+          instruments,
+        },
+      });
+    } catch (error) {
+      fastify.log.error("Error fetching shortlist persistence: %s", JSON.stringify(error));
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to fetch shortlist persistence";
+      return reply.internalServerError(errorMessage);
+    }
   });
 };
 

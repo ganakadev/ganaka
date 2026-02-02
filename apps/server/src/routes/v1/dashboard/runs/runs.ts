@@ -1,18 +1,18 @@
-import { FastifyInstance, FastifyPluginAsync } from "fastify";
-import { sendResponse } from "../../../../utils/sendResponse";
-import { v1_dashboard_schemas } from "@ganaka/schemas";
-import z from "zod";
-import { prisma } from "../../../../utils/prisma";
 import { Decimal } from "@ganaka/db/prisma";
+import { v1_dashboard_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { validateRequest } from "../../../../utils/validator";
-import { RedisManager } from "../../../../utils/redis";
-import { TokenManager } from "../../../../utils/token-manager";
-import { makeGrowwAPIRequest } from "../../../../utils/groww-api-request";
-import { parseDateTimeInTimezone } from "../../../../utils/timezone";
+import utc from "dayjs/plugin/utc";
+import { FastifyPluginAsync } from "fastify";
+import z from "zod";
 import { formatDateTime } from "../../../../utils/date-formatter";
+import { makeGrowwAPIRequest } from "../../../../utils/groww-api-request";
+import { prisma } from "../../../../utils/prisma";
+import { RedisManager } from "../../../../utils/redis";
+import { sendResponse } from "../../../../utils/sendResponse";
+import { parseDateTimeInTimezone } from "../../../../utils/timezone";
+import { TokenManager } from "../../../../utils/token-manager";
+import { validateRequest } from "../../../../utils/validator";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -282,7 +282,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
   const tokenManager = new TokenManager(redisManager.redis, fastify);
   const growwAPIRequest = makeGrowwAPIRequest(fastify, tokenManager);
 
-  // ==================== GET /runs ====================
+  // ==================== GET /v1/dashboard/runs ====================
   fastify.get("/", async (request, reply) => {
     try {
       // Fetch runs with order count for the authenticated developer
@@ -365,52 +365,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // ==================== GET /runs/tags ====================
-
-  fastify.get("/tags", async (request, reply) => {
-    try {
-      if (!request.developer) {
-        return reply.unauthorized("Developer not found or invalid token");
-      }
-
-      // Fetch all runs for the authenticated developer
-      const runs = await prisma.run.findMany({
-        where: {
-          developerId: request.developer.id,
-        },
-        select: {
-          tags: true,
-        },
-      });
-
-      // Extract all tags from all runs and flatten
-      const allTags: string[] = [];
-      for (const run of runs) {
-        if (run.tags && run.tags.length > 0) {
-          allTags.push(...run.tags);
-        }
-      }
-
-      // Remove duplicates and sort
-      const uniqueTags = Array.from(new Set(allTags)).sort();
-
-      return sendResponse<
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunTags.response>
-      >(reply, {
-        statusCode: 200,
-        message: "Tags fetched successfully",
-        data: uniqueTags,
-      });
-    } catch (error) {
-      fastify.log.error("Error fetching tags: %s", JSON.stringify(error));
-      return reply.internalServerError(
-        "Failed to fetch tags. Please check server logs for more details."
-      );
-    }
-  });
-
-  // ==================== POST /runs ====================
-
+  // ==================== POST /v1/dashboard/runs ====================
   fastify.post("/", async (request, reply) => {
     const validationResult = validateRequest(
       request.body,
@@ -502,8 +457,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // ==================== PATCH /runs/:runId ====================
-
+  // ==================== PATCH /v1/dashboard/runs/:runId ====================
   fastify.patch("/:runId", async (request, reply) => {
     const paramsValidationResult = validateRequest(
       request.params,
@@ -614,8 +568,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // ==================== DELETE /runs/:runId ====================
-
+  // ==================== DELETE /v1/dashboard/runs/:runId ====================
   fastify.delete("/:runId", async (request, reply) => {
     const validationResult = validateRequest(
       request.params,
@@ -662,8 +615,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // ==================== GET /runs/:runId/orders ====================
-
+  // ==================== GET /v1/dashboard/runs/:runId/orders ====================
   fastify.get("/:runId/orders", async (request, reply) => {
     // validation
     const paramsValidationResult = validateRequest(
@@ -763,8 +715,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // ==================== POST /runs/:runId/orders ====================
-
+  // ==================== POST /v1/dashboard/runs/:runId/orders ====================
   fastify.post("/:runId/orders", async (request, reply) => {
     const paramsValidationResult = validateRequest(
       request.params,

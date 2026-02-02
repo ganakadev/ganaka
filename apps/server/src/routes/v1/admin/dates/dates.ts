@@ -13,9 +13,8 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const dataRoutes: FastifyPluginAsync = async (fastify) => {
-  // ==================== GET /data/available-dates ====================
-
-  fastify.get("/available-dates", async (request, reply) => {
+  // ==================== GET /v1/admin/dates ====================
+  fastify.get("/", async (request, reply) => {
     try {
       // Get all shortlist snapshots to count records per date
       const shortlistSnapshots = await prisma.shortlistSnapshot.findMany({
@@ -114,9 +113,8 @@ const dataRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // ==================== DELETE /data/dates ====================
-
-  fastify.delete("/dates", async (request, reply) => {
+  // ==================== DELETE /v1/admin/dates ====================
+  fastify.delete("/", async (request, reply) => {
     const validationResult = validateRequest(
       request.body,
       reply,

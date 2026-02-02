@@ -6,8 +6,7 @@ import z from "zod";
 import { formatDate } from "../../../../utils/date-formatter";
 
 const holidaysRoutes: FastifyPluginAsync = async (fastify) => {
-  // ==================== GET /holidays ====================
-
+  // ==================== GET /v1/developer/holidays ====================
   fastify.get("/", async (_, reply) => {
     try {
       const holidays = await prisma.nseHoliday.findMany({
@@ -24,15 +23,16 @@ const holidaysRoutes: FastifyPluginAsync = async (fastify) => {
         updatedAt: holiday.updatedAt,
       }));
 
-      return sendResponse<
-        z.infer<typeof v1_developer_holidays_schemas.getHolidays.response>
-      >(reply, {
-        statusCode: 200,
-        message: "Holidays fetched successfully",
-        data: {
-          holidays: formattedHolidays,
-        },
-      });
+      return sendResponse<z.infer<typeof v1_developer_holidays_schemas.getHolidays.response>>(
+        reply,
+        {
+          statusCode: 200,
+          message: "Holidays fetched successfully",
+          data: {
+            holidays: formattedHolidays,
+          },
+        }
+      );
     } catch (error) {
       fastify.log.error("Error fetching holidays: %s", JSON.stringify(error));
       return reply.internalServerError(

@@ -13,9 +13,8 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const holidaysRoutes: FastifyPluginAsync = async (fastify) => {
-  // ==================== GET /holidays ====================
-
-  fastify.get("/", async (request, reply) => {
+  // ==================== GET /v1/admin/holidays ====================
+  fastify.get("/", async (_, reply) => {
     try {
       const holidays = await prisma.nseHoliday.findMany({
         orderBy: {
@@ -48,8 +47,7 @@ const holidaysRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // ==================== POST /holidays ====================
-
+  // ==================== POST /v1/admin/holidays ====================
   fastify.post("/", async (request, reply) => {
     const validationResult = validateRequest(
       request.body,
@@ -85,9 +83,7 @@ const holidaysRoutes: FastifyPluginAsync = async (fastify) => {
 
       if (existingHolidays.length > 0) {
         const existingDates = existingHolidays.map((h) => formatDate(h.date));
-        return reply.conflict(
-          `Holidays already exist for dates: ${existingDates.join(", ")}`
-        );
+        return reply.conflict(`Holidays already exist for dates: ${existingDates.join(", ")}`);
       }
 
       // Create holidays
@@ -132,8 +128,7 @@ const holidaysRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // ==================== DELETE /holidays ====================
-
+  // ==================== DELETE /v1/admin/holidays ====================
   fastify.delete("/", async (request, reply) => {
     const validationResult = validateRequest(
       request.body,

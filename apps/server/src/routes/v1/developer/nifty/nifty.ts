@@ -13,8 +13,8 @@ import { validateRequest } from "../../../../utils/validator";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const niftyRoutes: FastifyPluginAsync = async (fastify) => {  
-  // NIFTY quote endpoint
+const niftyRoutes: FastifyPluginAsync = async (fastify) => {
+  // ==================== GET /v1/developer/nifty ====================
   fastify.get("/", async (request, reply) => {
     const validationResult = validateRequest(
       request.query,

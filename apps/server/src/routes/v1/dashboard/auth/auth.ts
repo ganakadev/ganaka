@@ -6,7 +6,8 @@ import z from "zod";
 import { prisma } from "../../../../utils/prisma";
 
 const authRoutes: FastifyPluginAsync = async (fastify) => {
-  fastify.post("/sign-in", async (request, reply) => {
+  // ==================== POST /v1/dashboard/auth ====================
+  fastify.post("/", async (request, reply) => {
     try {
       // Validate request body
       const validationResult = validateRequest(

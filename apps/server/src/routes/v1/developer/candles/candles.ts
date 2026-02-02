@@ -20,7 +20,7 @@ const historicalCandlesRoutes: FastifyPluginAsync = async (fastify) => {
   const tokenManager = new TokenManager(redisManager.redis, fastify);
   const growwAPIRequest = makeGrowwAPIRequest(fastify, tokenManager);
 
-  // Historical candles endpoint
+  // ==================== GET /v1/developer/candles ====================
   fastify.get("/", async (request, reply) => {
     const validationResult = validateRequest(
       request.query,
