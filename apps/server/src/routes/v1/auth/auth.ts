@@ -26,12 +26,12 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
       });
 
       if (!developer) {
-        return reply.unauthorized("Invalid developer token");
+        return reply.unauthorized("Invalid user token");
       }
 
       return sendResponse<z.infer<typeof v1_schemas.v1_auth_schemas.signIn.response>>(reply, {
         statusCode: 200,
-        message: "Developer signed in successfully",
+        message: "User signed in successfully",
         data: {
           id: developer.id,
           username: developer.username,

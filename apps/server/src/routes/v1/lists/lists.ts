@@ -1,10 +1,13 @@
 import { ShortlistSnapshot } from "@ganaka/db";
 import { ShortlistScope, ShortlistType } from "@ganaka/db/prisma";
 import { growwQuoteSchema, shortlistEntrySchema, v1_schemas } from "@ganaka/schemas";
+import axios, { AxiosResponse } from "axios";
+import * as cheerio from "cheerio";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { FastifyInstance, FastifyPluginAsync } from "fastify";
+import { isEmpty, shuffle } from "lodash";
 import z from "zod";
 import { validateCurrentTimestamp } from "../../../utils/current-timestamp-validator";
 import { formatDateTime } from "../../../utils/date-formatter";
@@ -15,9 +18,6 @@ import { sendResponse } from "../../../utils/sendResponse";
 import { parseDateTimeInTimezone } from "../../../utils/timezone";
 import { TokenManager } from "../../../utils/token-manager";
 import { validateRequest } from "../../../utils/validator";
-import axios, { AxiosResponse } from "axios";
-import { shuffle, isEmpty } from "lodash";
-import * as cheerio from "cheerio";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -261,9 +261,9 @@ function mapTypeToShortlistType(
   type: z.infer<typeof v1_schemas.v1_lists_schemas.getShortlistPersistence.query>["type"]
 ): ShortlistType {
   switch (type) {
-    case "top-gainers":
+    case "TOP_GAINERS":
       return ShortlistType.TOP_GAINERS;
-    case "volume-shockers":
+    case "VOLUME_SHOCKERS":
       return ShortlistType.VOLUME_SHOCKERS;
     default:
       throw new Error(`Unknown shortlist type: ${type}`);
@@ -593,87 +593,11 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.query,
       reply,
-      v1_schemas.v1_lists_schemas.getLists.query,
+      v1_schemas.v1_lists_schemas.getListsScrap.query,
       "query"
     );
     if (!validationResult) {
       return;
-    }
-
-    // If datetime is provided, fetch from snapshot
-    if (validationResult.datetime) {
-      try {
-        const shortlistType = mapTypeToShortlistType(validationResult.type);
-        const timezone = validationResult.timezone || "Asia/Kolkata";
-        const scope = (validationResult.scope ?? "TOP_5") as ShortlistScope;
-        // Convert datetime string to UTC Date object
-        const selectedDateTime = parseDateTimeInTimezone(validationResult.datetime, timezone);
-
-        // Validate against currentTimestamp if present
-        if (request.currentTimestamp) {
-          try {
-            validateCurrentTimestamp(request.currentTimestamp, [selectedDateTime], reply);
-          } catch (error) {
-            // Error already sent via reply in validator
-            return;
-          }
-        }
-
-        const shortlists = await prisma.shortlistSnapshot.findMany({
-          where: {
-            timestamp: {
-              gte: selectedDateTime,
-              lte: dayjs.utc(selectedDateTime).add(1, "second").toDate(), // Add 1 second
-            },
-            shortlistType: shortlistType,
-            scope: scope,
-          },
-        });
-
-        if (shortlists.length === 0) {
-          return sendResponse<z.infer<typeof v1_schemas.v1_lists_schemas.getLists.response>>(
-            reply,
-            {
-              statusCode: 200,
-              message: "Shortlist snapshot not found",
-              data: null,
-            }
-          );
-        }
-
-        const shortlistFromDb = shortlists[0];
-        const entries = shortlistFromDb.entries as Array<{
-          nseSymbol: string;
-          name: string;
-          price: number;
-        }> | null;
-
-        if (!entries) {
-          return sendResponse<z.infer<typeof v1_schemas.v1_lists_schemas.getLists.response>>(
-            reply,
-            {
-              statusCode: 200,
-              message: "Shortlist snapshot not found",
-              data: null,
-            }
-          );
-        }
-
-        return sendResponse<z.infer<typeof v1_schemas.v1_lists_schemas.getLists.response>>(reply, {
-          statusCode: 200,
-          message: "Lists fetched successfully",
-          data: entries,
-        });
-      } catch (error) {
-        fastify.log.error(
-          `Error fetching shortlist snapshot for ${validationResult.type} at ${
-            validationResult.datetime
-          }: ${JSON.stringify(error)}`
-        );
-        return reply.internalServerError(
-          "Failed to fetch shortlist snapshot. Please check server logs for more details."
-        );
-      }
     }
 
     // If no datetime, fetch live data from Groww
@@ -691,7 +615,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
             },
           ];
     const url =
-      validationResult.type === "volume-shockers"
+      validationResult.type === "VOLUME_SHOCKERS"
         ? `https://groww.in/markets/volume-shockers`
         : `https://groww.in/markets/top-gainers?index=GIDXNIFTYTOTALMCAP`;
 

@@ -7,7 +7,6 @@ import * as v1_groww_credentials_schemas from "./groww/credentials";
 import * as v1_groww_token_schemas from "./groww/token";
 import * as v1_holidays_schemas from "./holidays/holidays";
 import * as v1_lists_schemas from "./lists/lists";
-import * as v1_nifty_schemas from "./nifty/nifty";
 import * as v1_quote_schemas from "./quote/quote";
 import * as v1_runs_schemas from "./runs/runs";
 
@@ -19,6 +18,5 @@ export { v1_groww_credentials_schemas };
 export { v1_groww_token_schemas };
 export { v1_holidays_schemas };
 export { v1_lists_schemas };
-export { v1_nifty_schemas };
 export { v1_quote_schemas };
 export { v1_runs_schemas };

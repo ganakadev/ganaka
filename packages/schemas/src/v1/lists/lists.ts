@@ -110,10 +110,7 @@ export const createShortlistSnapshot = {
 
 export const getListsScrap = {
   query: z.object({
-    type: z.enum(["top-gainers", "volume-shockers"]),
-    datetime: datetimeFormatSchema.optional(),
-    timezone: timezoneSchema.optional(),
-    scope: shortlistScopeSchema.optional(),
+    type: z.enum(["TOP_GAINERS", "VOLUME_SHOCKERS"]),
   }),
   response: apiResponseSchema.extend({
     data: z.array(listSchema).nullable(),
@@ -124,7 +121,7 @@ export const getListsScrap = {
 
 export const getShortlistPersistence = {
   query: z.object({
-    type: z.enum(["top-gainers", "volume-shockers"]),
+    type: z.enum(["TOP_GAINERS", "VOLUME_SHOCKERS"]),
     start_datetime: datetimeFormatSchema,
     end_datetime: datetimeFormatSchema,
     timezone: timezoneSchema.optional(),
@@ -134,7 +131,7 @@ export const getShortlistPersistence = {
     data: z.object({
       start_datetime: z.string(),
       end_datetime: z.string(),
-      type: z.enum(["top-gainers", "volume-shockers"]),
+      type: z.enum(["TOP_GAINERS", "VOLUME_SHOCKERS"]),
       totalSnapshots: z.number(),
       instruments: z.array(
         z.object({
