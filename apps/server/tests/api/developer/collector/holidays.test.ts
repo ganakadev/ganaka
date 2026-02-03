@@ -27,18 +27,21 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/collector/check-holiday", () => {
+test.describe("GET /v1/developer/collector/holidays/check", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/developer/collector/check-holiday?date=2025-01-15", {
-      validateStatus: () => true,
-    });
+    const response = await unauthenticatedGet(
+      "/v1/developer/collector/holidays/check?date=2025-01-15",
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect(response.status).toBe(401);
   });
 
   test("should return 401 when invalid token is provided", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/collector/check-holiday?date=2025-01-15",
+      "/v1/developer/collector/holidays/check?date=2025-01-15",
       "invalid-token-12345",
       {
         validateStatus: () => true,
@@ -49,9 +52,13 @@ test.describe("GET /v1/developer/collector/check-holiday", () => {
   });
 
   test("should return 400 when date query parameter is missing", async () => {
-    const response = await authenticatedGet("/v1/developer/collector/check-holiday", developerToken, {
-      validateStatus: () => true,
-    });
+    const response = await authenticatedGet(
+      "/v1/developer/collector/holidays/check",
+      developerToken,
+      {
+        validateStatus: () => true,
+      }
+    );
 
     expect(response.status).toBe(400);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -60,7 +67,7 @@ test.describe("GET /v1/developer/collector/check-holiday", () => {
 
   test("should return 400 when date format is invalid", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/collector/check-holiday?date=invalid-date",
+      "/v1/developer/collector/holidays/check?date=invalid-date",
       developerToken,
       {
         validateStatus: () => true,
@@ -74,7 +81,7 @@ test.describe("GET /v1/developer/collector/check-holiday", () => {
 
   test("should return 400 when date is not a valid date", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/collector/check-holiday?date=2025-13-45",
+      "/v1/developer/collector/holidays/check?date=2025-13-45",
       developerToken,
       {
         validateStatus: () => true,
@@ -86,7 +93,7 @@ test.describe("GET /v1/developer/collector/check-holiday", () => {
 
   test("should return 200 with isHoliday=false when date is not a holiday", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/collector/check-holiday?date=2025-06-15",
+      "/v1/developer/collector/holidays/check?date=2025-06-15",
       developerToken
     );
 
@@ -106,7 +113,7 @@ test.describe("GET /v1/developer/collector/check-holiday", () => {
     tracker.trackNseHoliday(holiday.id);
 
     const response = await authenticatedGet(
-      `/v1/developer/collector/check-holiday?date=${dateStr}`,
+      `/v1/developer/collector/holidays/check?date=${dateStr}`,
       developerToken
     );
 
@@ -125,7 +132,7 @@ test.describe("GET /v1/developer/collector/check-holiday", () => {
     tracker.trackNseHoliday(holiday.id);
 
     const response = await authenticatedGet(
-      `/v1/developer/collector/check-holiday?date=${dateStr}`,
+      `/v1/developer/collector/holidays/check?date=${dateStr}`,
       developerToken
     );
 
@@ -137,7 +144,7 @@ test.describe("GET /v1/developer/collector/check-holiday", () => {
   test("should validate date parameter using Zod schema", async () => {
     // Test with empty date
     const response1 = await authenticatedGet(
-      "/v1/developer/collector/check-holiday?date=",
+      "/v1/developer/collector/holidays/check?date=",
       developerToken,
       {
         validateStatus: () => true,
@@ -147,7 +154,7 @@ test.describe("GET /v1/developer/collector/check-holiday", () => {
 
     // Test with date missing year
     const response2 = await authenticatedGet(
-      "/v1/developer/collector/check-holiday?date=01-15",
+      "/v1/developer/collector/holidays/check?date=01-15",
       developerToken,
       {
         validateStatus: () => true,
@@ -157,7 +164,7 @@ test.describe("GET /v1/developer/collector/check-holiday", () => {
 
     // Test with date missing dashes
     const response3 = await authenticatedGet(
-      "/v1/developer/collector/check-holiday?date=20250115",
+      "/v1/developer/collector/holidays/check?date=20250115",
       developerToken,
       {
         validateStatus: () => true,
@@ -169,7 +176,7 @@ test.describe("GET /v1/developer/collector/check-holiday", () => {
   test("should return the same date that was sent in the request", async () => {
     const dateStr = "2025-09-25";
     const response = await authenticatedGet(
-      `/v1/developer/collector/check-holiday?date=${dateStr}`,
+      `/v1/developer/collector/holidays/check?date=${dateStr}`,
       developerToken
     );
 

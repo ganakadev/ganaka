@@ -39,11 +39,11 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/admin/data/available-dates", () => {
+test.describe("GET /v1/admin/dates", () => {
   test.describe.configure({ mode: "serial" });
 
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/admin/data/available-dates");
+    const response = await unauthenticatedGet("/v1/admin/dates");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -51,13 +51,9 @@ test.describe("GET /v1/admin/data/available-dates", () => {
   });
 
   test("should return 401 when invalid admin token is provided", async () => {
-    const response = await authenticatedGet(
-      "/v1/admin/data/available-dates",
-      "invalid-token-12345",
-      {
-        validateStatus: () => true,
-      }
-    );
+    const response = await authenticatedGet("/v1/admin/dates", "invalid-token-12345", {
+      validateStatus: () => true,
+    });
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -69,7 +65,7 @@ test.describe("GET /v1/admin/data/available-dates", () => {
   }) => {
     const dev = await createDeveloperUser(undefined, tracker);
 
-    const response = await authenticatedGet("/v1/admin/data/available-dates", dev.token, {
+    const response = await authenticatedGet("/v1/admin/dates", dev.token, {
       validateStatus: () => true,
     });
 
@@ -84,7 +80,7 @@ test.describe("GET /v1/admin/data/available-dates", () => {
   //   await prisma.quoteSnapshot.deleteMany({});
   //   await prisma.niftyQuote.deleteMany({});
 
-  //   const response = await authenticatedGet("/v1/admin/data/available-dates", adminToken);
+  //   const response = await authenticatedGet("/v1/admin/dates", adminToken);
 
   //   expect(response.status).toBe(200);
   //   const body = response.data;
@@ -125,7 +121,7 @@ test.describe("GET /v1/admin/data/available-dates", () => {
       "Asia/Kolkata"
     );
 
-    const response = await authenticatedGet("/v1/admin/data/available-dates", adminToken);
+    const response = await authenticatedGet("/v1/admin/dates", adminToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -138,9 +134,9 @@ test.describe("GET /v1/admin/data/available-dates", () => {
   });
 });
 
-test.describe("DELETE /v1/admin/data/dates", () => {
+test.describe("DELETE /v1/admin/dates", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedDelete("/v1/admin/data/dates", {
+    const response = await unauthenticatedDelete("/v1/admin/dates", {
       data: {
         dates: ["2025-01-15"],
       },
@@ -180,7 +176,7 @@ test.describe("DELETE /v1/admin/data/dates", () => {
 
   //   // Delete the date
   //   const response = await authenticatedDelete(
-  //     "/v1/admin/data/dates",
+  //     "/v1/admin/dates",
   //     adminToken,
   //     {
   //       data: {
@@ -232,7 +228,7 @@ test.describe("DELETE /v1/admin/data/dates", () => {
       "TOP_5"
     );
 
-    const response = await authenticatedDelete("/v1/admin/data/dates", adminToken, {
+    const response = await authenticatedDelete("/v1/admin/dates", adminToken, {
       data: {
         dates: [date1, date2],
       },
@@ -245,7 +241,7 @@ test.describe("DELETE /v1/admin/data/dates", () => {
   });
 
   test("should return 400 when dates array is empty", async () => {
-    const response = await authenticatedDelete("/v1/admin/data/dates", adminToken, {
+    const response = await authenticatedDelete("/v1/admin/dates", adminToken, {
       data: {
         dates: [],
       },
@@ -256,7 +252,7 @@ test.describe("DELETE /v1/admin/data/dates", () => {
   });
 
   test("should return 400 when date format is invalid", async () => {
-    const response = await authenticatedDelete("/v1/admin/data/dates", adminToken, {
+    const response = await authenticatedDelete("/v1/admin/dates", adminToken, {
       data: {
         dates: ["invalid-date"],
       },
@@ -267,7 +263,7 @@ test.describe("DELETE /v1/admin/data/dates", () => {
   });
 
   test("should handle non-existent dates gracefully", async () => {
-    const response = await authenticatedDelete("/v1/admin/data/dates", adminToken, {
+    const response = await authenticatedDelete("/v1/admin/dates", adminToken, {
       data: {
         dates: ["2099-12-31"],
       },

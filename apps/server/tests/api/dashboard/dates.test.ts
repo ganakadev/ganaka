@@ -25,9 +25,9 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/available-datetimes", () => {
+test.describe("GET /v1/dashboard/dates", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/dashboard/available-datetimes");
+    const response = await unauthenticatedGet("/v1/dashboard/dates");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -35,13 +35,9 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
   });
 
   test("should return 401 when invalid token is provided", async () => {
-    const response = await authenticatedGet(
-      "/v1/dashboard/available-datetimes",
-      "invalid-token-12345",
-      {
-        validateStatus: () => true,
-      }
-    );
+    const response = await authenticatedGet("/v1/dashboard/dates", "invalid-token-12345", {
+      validateStatus: () => true,
+    });
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -49,7 +45,7 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
   });
 
   test("should return 200 with empty dates array when no snapshots exist", async () => {
-    const response = await authenticatedGet("/v1/dashboard/available-datetimes", developerToken);
+    const response = await authenticatedGet("/v1/dashboard/dates", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -82,7 +78,7 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
     const differentDate = generateUniqueTestDatetime("2025-12-27");
     await createShortlistSnapshot("volume-shockers", differentDate, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/dashboard/available-datetimes", developerToken);
+    const response = await authenticatedGet("/v1/dashboard/dates", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -122,7 +118,7 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
     const testEntries = createValidShortlistEntries();
     await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/dashboard/available-datetimes", developerToken);
+    const response = await authenticatedGet("/v1/dashboard/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =
@@ -147,7 +143,7 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
     const testEntries = createValidShortlistEntries();
     await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/dashboard/available-datetimes", developerToken);
+    const response = await authenticatedGet("/v1/dashboard/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =
@@ -179,7 +175,7 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
     const date3 = generateUniqueTestDatetime("2025-12-27");
     await createShortlistSnapshot("top-gainers", date3, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/dashboard/available-datetimes", developerToken);
+    const response = await authenticatedGet("/v1/dashboard/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =
@@ -204,7 +200,7 @@ test.describe("GET /v1/dashboard/available-datetimes", () => {
       await createShortlistSnapshot("top-gainers", `${date}T10:06:00`, testEntries, tracker);
     }
 
-    const response = await authenticatedGet("/v1/dashboard/available-datetimes", developerToken);
+    const response = await authenticatedGet("/v1/dashboard/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =

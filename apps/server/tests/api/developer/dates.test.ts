@@ -34,10 +34,10 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/available-dates", () => {
+test.describe("GET /v1/developer/dates", () => {
   test.describe.configure({ mode: "serial" });
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/developer/available-dates");
+    const response = await unauthenticatedGet("/v1/developer/dates");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -45,22 +45,17 @@ test.describe("GET /v1/developer/available-dates", () => {
   });
 
   test("should return 401 when invalid developer token is provided", async () => {
-    const response = await authenticatedGet(
-      "/v1/developer/available-dates",
-      "invalid-token-12345",
-      {
-        validateStatus: () => true,
-      }
-    );
+    const response = await authenticatedGet("/v1/developer/dates", "invalid-token-12345", {
+      validateStatus: () => true,
+    });
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
     expect(body).toContain("Authorization failed");
   });
 
-
   test("should return 200 with empty dates array when no snapshots exist", async () => {
-    const response = await authenticatedGet("/v1/developer/available-dates", developerToken);
+    const response = await authenticatedGet("/v1/developer/dates", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -91,7 +86,7 @@ test.describe("GET /v1/developer/available-dates", () => {
     const differentDate = generateUniqueTestDatetime("2025-12-27");
     await createShortlistSnapshot("volume-shockers", differentDate, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/developer/available-dates", developerToken);
+    const response = await authenticatedGet("/v1/developer/dates", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -129,11 +124,12 @@ test.describe("GET /v1/developer/available-dates", () => {
     const testEntries = createValidShortlistEntries();
     await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/developer/available-dates", developerToken);
+    const response = await authenticatedGet("/v1/developer/dates", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData =
-      v1_developer_available_dates_schemas.getAvailableDates.response.parse(response.data);
+    const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
+      response.data
+    );
 
     // Validate timestamp format (YYYY-MM-DDTHH:mm:ss - no milliseconds, no timezone)
     validatedData.data.dates.forEach((dateEntry) => {
@@ -152,11 +148,12 @@ test.describe("GET /v1/developer/available-dates", () => {
     const testEntries = createValidShortlistEntries();
     await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/developer/available-dates", developerToken);
+    const response = await authenticatedGet("/v1/developer/dates", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData =
-      v1_developer_available_dates_schemas.getAvailableDates.response.parse(response.data);
+    const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
+      response.data
+    );
 
     expect(validatedData.statusCode).toBe(200);
     expect(validatedData.message).toBe("Available dates fetched successfully");
@@ -182,11 +179,12 @@ test.describe("GET /v1/developer/available-dates", () => {
     const date3 = generateUniqueTestDatetime("2025-12-27");
     await createShortlistSnapshot("top-gainers", date3, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/developer/available-dates", developerToken);
+    const response = await authenticatedGet("/v1/developer/dates", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData =
-      v1_developer_available_dates_schemas.getAvailableDates.response.parse(response.data);
+    const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
+      response.data
+    );
 
     // Validate dates are sorted ascending
     for (let i = 1; i < validatedData.data.dates.length; i++) {
@@ -205,11 +203,12 @@ test.describe("GET /v1/developer/available-dates", () => {
       await createShortlistSnapshot("top-gainers", `${date}T10:06:00`, testEntries, tracker);
     }
 
-    const response = await authenticatedGet("/v1/developer/available-dates", developerToken);
+    const response = await authenticatedGet("/v1/developer/dates", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData =
-      v1_developer_available_dates_schemas.getAvailableDates.response.parse(response.data);
+    const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
+      response.data
+    );
 
     // Should have entries for all dates
     const returnedDates = validatedData.data.dates.map((d) => d.date);
@@ -221,22 +220,19 @@ test.describe("GET /v1/developer/available-dates", () => {
   test("should group timestamps correctly by date", async ({ tracker }) => {
     const testEntries = createValidShortlistEntries();
     const baseDate = "2025-12-28";
-    const timestamps = [
-      `${baseDate}T09:15:00`,
-      `${baseDate}T10:30:00`,
-      `${baseDate}T14:00:00`,
-    ];
+    const timestamps = [`${baseDate}T09:15:00`, `${baseDate}T10:30:00`, `${baseDate}T14:00:00`];
 
     // Create snapshots at different times on the same date
     for (const timestamp of timestamps) {
       await createShortlistSnapshot("top-gainers", timestamp, testEntries, tracker);
     }
 
-    const response = await authenticatedGet("/v1/developer/available-dates", developerToken);
+    const response = await authenticatedGet("/v1/developer/dates", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData =
-      v1_developer_available_dates_schemas.getAvailableDates.response.parse(response.data);
+    const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
+      response.data
+    );
 
     // Find the entry for this date
     const dateEntry = validatedData.data.dates.find((d) => d.date === baseDate);
@@ -249,11 +245,12 @@ test.describe("GET /v1/developer/available-dates", () => {
     const testDatetime = generateUniqueTestDatetime("2025-12-29");
     await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/developer/available-dates", developerToken);
+    const response = await authenticatedGet("/v1/developer/dates", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData =
-      v1_developer_available_dates_schemas.getAvailableDates.response.parse(response.data);
+    const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
+      response.data
+    );
 
     // Extract UTC date from IST datetime string (since it's stored as UTC in DB)
     const baseDate = dayjs.tz(testDatetime, "Asia/Kolkata").utc().format("YYYY-MM-DD");
@@ -264,23 +261,19 @@ test.describe("GET /v1/developer/available-dates", () => {
 
   test("should handle dates spanning different months/years", async ({ tracker }) => {
     const testEntries = createValidShortlistEntries();
-    const dates = [
-      "2024-12-31",
-      "2025-01-01",
-      "2025-12-31",
-      "2026-01-01",
-    ];
+    const dates = ["2024-12-31", "2025-01-01", "2025-12-31", "2026-01-01"];
 
     // Create snapshots on different dates across months/years
     for (const date of dates) {
       await createShortlistSnapshot("top-gainers", `${date}T10:00:00`, testEntries, tracker);
     }
 
-    const response = await authenticatedGet("/v1/developer/available-dates", developerToken);
+    const response = await authenticatedGet("/v1/developer/dates", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData =
-      v1_developer_available_dates_schemas.getAvailableDates.response.parse(response.data);
+    const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
+      response.data
+    );
 
     // Should have entries for all dates
     const returnedDates = validatedData.data.dates.map((d) => d.date);
@@ -296,11 +289,12 @@ test.describe("GET /v1/developer/available-dates", () => {
     const timestamp = `${dateStr}T23:45:00`; // Late IST time that might cross UTC boundary
     await createShortlistSnapshot("top-gainers", timestamp, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/developer/available-dates", developerToken);
+    const response = await authenticatedGet("/v1/developer/dates", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData =
-      v1_developer_available_dates_schemas.getAvailableDates.response.parse(response.data);
+    const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
+      response.data
+    );
 
     // Should find the date entry
     const dateEntry = validatedData.data.dates.find((d) => d.date === dateStr);
@@ -313,16 +307,18 @@ test.describe("GET /v1/developer/available-dates", () => {
     await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
     // Make multiple requests
-    const response1 = await authenticatedGet("/v1/developer/available-dates", developerToken);
-    const response2 = await authenticatedGet("/v1/developer/available-dates", developerToken);
+    const response1 = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response2 = await authenticatedGet("/v1/developer/dates", developerToken);
 
     expect(response1.status).toBe(200);
     expect(response2.status).toBe(200);
 
-    const validatedData1 =
-      v1_developer_available_dates_schemas.getAvailableDates.response.parse(response1.data);
-    const validatedData2 =
-      v1_developer_available_dates_schemas.getAvailableDates.response.parse(response2.data);
+    const validatedData1 = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
+      response1.data
+    );
+    const validatedData2 = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
+      response2.data
+    );
 
     // Results should be consistent
     expect(validatedData1.data.dates.length).toBe(validatedData2.data.dates.length);

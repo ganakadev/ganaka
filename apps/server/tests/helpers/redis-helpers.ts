@@ -4,6 +4,10 @@ import Redis from "ioredis";
 // Singleton Redis client for test cleanup operations
 let sharedRedisClient: Redis | null = null;
 
+// Queue for serializing Redis cleanup operations to prevent rate limit hits
+// Each operation waits for the previous one to complete before executing
+let cleanupQueue: Promise<any> = Promise.resolve();
+
 /**
  * Checks if an error is a Redis rate limit error
  */
@@ -131,6 +135,20 @@ export async function closeSharedRedisClient(): Promise<void> {
 }
 
 /**
+ * Enqueues a Redis operation to be executed sequentially
+ * This prevents concurrent operations from hitting Redis rate limits
+ */
+async function enqueueRedisOperation<T>(operation: () => Promise<T>): Promise<T> {
+  // Chain the new operation to wait for the previous one to complete
+  // Whether the previous operation succeeds or fails, we wait for it before executing the next
+  cleanupQueue = cleanupQueue.then(
+    () => operation(),
+    () => operation()
+  );
+  return cleanupQueue;
+}
+
+/**
  * Deletes Redis keys for Groww tokens associated with specific developer IDs
  * @param developerIds - Array of developer IDs whose token keys should be deleted
  * @returns Number of keys deleted, or null if Redis is unavailable
@@ -154,16 +172,19 @@ export async function cleanupGrowwTokenKeys(developerIds: string[]): Promise<num
     return 0;
   }
 
-  // Use retry logic with exponential backoff
-  const result = await withRetry(
-    async () => {
-      return await redis.del(...keysToDelete);
-    },
-    3,
-    `cleanupGrowwTokenKeys for ${developerIds.length} developers`
-  );
+  // Enqueue the operation to serialize Redis cleanup operations
+  return await enqueueRedisOperation(async () => {
+    // Use retry logic with exponential backoff
+    const result = await withRetry(
+      async () => {
+        return await redis.del(...keysToDelete);
+      },
+      3,
+      `cleanupGrowwTokenKeys for ${developerIds.length} developers`
+    );
 
-  return result;
+    return result;
+  });
 }
 
 /**
@@ -177,64 +198,67 @@ export async function cleanupAllGrowwTokenKeys(): Promise<number | null> {
     return null;
   }
 
-  // Use retry logic for SCAN operation
-  const scanResult = await withRetry(
-    async () => {
-      const keysToDelete: string[] = [];
-      let cursor = "0";
-
-      do {
-        const [nextCursor, keys] = await redis.scan(
-          cursor,
-          "MATCH",
-          "groww:token:*",
-          "COUNT",
-          100
-        );
-        cursor = nextCursor;
-
-        // Filter out the global key (groww:token without developer ID)
-        for (const key of keys) {
-          if (key !== "groww:token" && key.startsWith("groww:token:")) {
-            keysToDelete.push(key);
-          }
-        }
-      } while (cursor !== "0");
-
-      return keysToDelete;
-    },
-    3,
-    "cleanupAllGrowwTokenKeys SCAN"
-  );
-
-  if (scanResult === null) {
-    return null;
-  }
-
-  if (scanResult.length === 0) {
-    return 0;
-  }
-
-  // Delete keys in batches to avoid overwhelming Redis
-  // Use retry logic for each batch deletion
-  const batchSize = 100;
-  let totalDeleted = 0;
-
-  for (let i = 0; i < scanResult.length; i += batchSize) {
-    const batch = scanResult.slice(i, i + batchSize);
-
-    const batchResult = await withRetry(
+  // Enqueue the entire operation to serialize Redis cleanup operations
+  return await enqueueRedisOperation(async () => {
+    // Use retry logic for SCAN operation
+    const scanResult = await withRetry(
       async () => {
-        return await redis.del(...batch);
+        const keysToDelete: string[] = [];
+        let cursor = "0";
+
+        do {
+          const [nextCursor, keys] = await redis.scan(
+            cursor,
+            "MATCH",
+            "groww:token:*",
+            "COUNT",
+            100
+          );
+          cursor = nextCursor;
+
+          // Filter out the global key (groww:token without developer ID)
+          for (const key of keys) {
+            if (key !== "groww:token" && key.startsWith("groww:token:")) {
+              keysToDelete.push(key);
+            }
+          }
+        } while (cursor !== "0");
+
+        return keysToDelete;
       },
       3,
-      `cleanupAllGrowwTokenKeys DEL batch ${Math.floor(i / batchSize) + 1}`
+      "cleanupAllGrowwTokenKeys SCAN"
     );
 
-    if (batchResult !== null) {
-      totalDeleted += batchResult;
+    if (scanResult === null) {
+      return null;
     }
-  }
 
-  return totalDeleted;
+    if (scanResult.length === 0) {
+      return 0;
+    }
+
+    // Delete keys in batches to avoid overwhelming Redis
+    // Use retry logic for each batch deletion
+    const batchSize = 100;
+    let totalDeleted = 0;
+
+    for (let i = 0; i < scanResult.length; i += batchSize) {
+      const batch = scanResult.slice(i, i + batchSize);
+
+      const batchResult = await withRetry(
+        async () => {
+          return await redis.del(...batch);
+        },
+        3,
+        `cleanupAllGrowwTokenKeys DEL batch ${Math.floor(i / batchSize) + 1}`
+      );
+
+      if (batchResult !== null) {
+        totalDeleted += batchResult;
+      }
+    }
+
+    return totalDeleted;
+  });
 }

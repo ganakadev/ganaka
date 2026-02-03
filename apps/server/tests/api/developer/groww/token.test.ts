@@ -1,11 +1,8 @@
 import { v1_developer_groww_schemas } from "@ganaka/schemas";
-import {
-  authenticatedGet,
-  unauthenticatedGet,
-} from "../../helpers/api-client";
-import { createDeveloperUser } from "../../helpers/auth-helpers";
-import { expect, test } from "../../helpers/test-fixtures";
-import { TestDataTracker } from "../../helpers/test-tracker";
+import { authenticatedGet, unauthenticatedGet } from "../../../helpers/api-client";
+import { createDeveloperUser } from "../../../helpers/auth-helpers";
+import { expect, test } from "../../../helpers/test-fixtures";
+import { TestDataTracker } from "../../../helpers/test-tracker";
 
 let developerToken: string;
 let developerId: string;
@@ -24,9 +21,9 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/token", () => {
+test.describe("GET /v1/developer/groww/token", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/developer/token");
+    const response = await unauthenticatedGet("/v1/developer/groww/token");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -34,7 +31,7 @@ test.describe("GET /v1/developer/token", () => {
   });
 
   test("should return 401 when invalid token is provided", async () => {
-    const response = await authenticatedGet("/v1/developer/token", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/developer/groww/token", "invalid-token-12345", {
       validateStatus: () => true,
     });
 
@@ -44,7 +41,7 @@ test.describe("GET /v1/developer/token", () => {
   });
 
   test("should return token successfully with valid developer token", async () => {
-    const response = await authenticatedGet("/v1/developer/token", developerToken);
+    const response = await authenticatedGet("/v1/developer/groww/token", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
