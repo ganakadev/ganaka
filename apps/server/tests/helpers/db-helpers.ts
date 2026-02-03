@@ -11,11 +11,7 @@ import type {
   NiftyQuote,
 } from "@ganaka/db";
 import type { z } from "zod";
-import {
-  growwQuoteSchema,
-  v1_developer_groww_schemas,
-  v1_developer_lists_schemas,
-} from "@ganaka/schemas";
+import { growwQuoteSchema, v1_lists_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -194,9 +190,9 @@ export async function createNiftyQuoteSnapshot(
  * Creates a shortlist snapshot in DB with specific type, datetime, and entries
  */
 export async function createShortlistSnapshot(
-  type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
+  type: z.infer<typeof v1_lists_schemas.getLists.query>["type"],
   datetime: string,
-  entries: Array<z.infer<typeof v1_developer_lists_schemas.listSchema>>,
+  entries: Array<z.infer<typeof v1_lists_schemas.listSchema>>,
   tracker: TestDataTracker,
   timezone?: string,
   scope?: ShortlistScope
@@ -498,7 +494,7 @@ export async function createOrder(
  * Creates multiple shortlist snapshots for a date (for testing daily persistent/unique companies)
  */
 export async function createMultipleShortlistSnapshots(
-  type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
+  type: z.infer<typeof v1_lists_schemas.getLists.query>["type"],
   date: string,
   count: number,
   tracker: TestDataTracker,
@@ -551,7 +547,7 @@ export async function createMultipleShortlistSnapshots(
  * This is useful for testing unique company counts
  */
 export async function createShortlistSnapshotsWithUniqueCompanies(
-  type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
+  type: z.infer<typeof v1_lists_schemas.getLists.query>["type"],
   datetime: string,
   uniqueCompanyCount: number = 10,
   tracker: TestDataTracker,

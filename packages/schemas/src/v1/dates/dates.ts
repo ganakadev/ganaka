@@ -28,8 +28,6 @@ export const getAvailableDatesAdmin = {
         z.object({
           date: dateFormatSchema,
           shortlistCount: z.number(),
-          quoteCount: z.number(),
-          niftyCount: z.number(),
         })
       ),
     }),
@@ -62,8 +60,6 @@ export const deleteDates = {
     data: z.object({
       deleted: z.object({
         shortlists: z.number(),
-        quotes: z.number(),
-        niftyQuotes: z.number(),
       }),
     }),
   }),

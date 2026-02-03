@@ -1,16 +1,13 @@
 import {
-  v1_developer_candles_schemas,
-  v1_developer_quote_schemas,
-  v1_developer_nifty_schemas,
-  v1_developer_lists_schemas,
-  v1_developer_lists_persistence_schemas,
-  v1_developer_dates_schemas,
-  v1_developer_holidays_schemas,
+  v1_candles_schemas,
+  v1_quote_schemas,
+  v1_lists_schemas,
+  v1_dates_schemas,
+  v1_holidays_schemas,
 } from "@ganaka/schemas";
 import { z } from "zod";
 import { fetchCandles } from "./callbacks/fetchCandles";
 import { fetchQuote } from "./callbacks/fetchQuote";
-import { fetchNiftyQuote } from "./callbacks/fetchNiftyQuote";
 import { fetchShortlist } from "./callbacks/fetchShortlist";
 import { fetchShortlistPersistence } from "./callbacks/fetchShortlistPersistence";
 import { fetchAvailableDates } from "./callbacks/fetchAvailableDates";
@@ -73,10 +70,8 @@ export class GanakaClient {
    * @returns Promise resolving to candle data
    */
   async fetchCandles(
-    params: z.infer<typeof v1_developer_candles_schemas.getGrowwHistoricalCandles.query>
-  ): Promise<
-    z.infer<typeof v1_developer_candles_schemas.getGrowwHistoricalCandles.response>["data"]
-  > {
+    params: z.infer<typeof v1_candles_schemas.getGrowwHistoricalCandles.query>
+  ): Promise<z.infer<typeof v1_candles_schemas.getGrowwHistoricalCandles.response>["data"]> {
     const callback = fetchCandles({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
@@ -96,31 +91,9 @@ export class GanakaClient {
    * @returns Promise resolving to quote data or null
    */
   async fetchQuote(
-    params: z.infer<typeof v1_developer_quote_schemas.getGrowwQuote.query>
-  ): Promise<z.infer<typeof v1_developer_quote_schemas.getGrowwQuote.response>["data"] | null> {
+    params: z.infer<typeof v1_quote_schemas.getGrowwQuote.query>
+  ): Promise<z.infer<typeof v1_quote_schemas.getGrowwQuote.response>["data"] | null> {
     const callback = fetchQuote({
-      developerToken: this.developerToken,
-      apiDomain: this.apiDomain,
-      runId: null,
-      currentTimestamp: "",
-      currentTimezone: "Asia/Kolkata",
-    });
-    return callback(params);
-  }
-
-  /**
-   * Fetch NIFTY quote at a specific datetime.
-   *
-   * @param params - Query parameters for fetching NIFTY quote
-   * @param params.datetime - Datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
-   * @returns Promise resolving to NIFTY quote data or null
-   */
-  async fetchNiftyQuote(
-    params: z.infer<typeof v1_developer_nifty_schemas.getGrowwNiftyQuote.query>
-  ): Promise<
-    z.infer<typeof v1_developer_nifty_schemas.getGrowwNiftyQuote.response>["data"] | null
-  > {
-    const callback = fetchNiftyQuote({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
       runId: null,
@@ -139,8 +112,8 @@ export class GanakaClient {
    * @returns Promise resolving to shortlist data or null
    */
   async fetchShortlist(
-    queryParams: z.infer<typeof v1_developer_lists_schemas.getLists.query>
-  ): Promise<z.infer<typeof v1_developer_lists_schemas.getLists.response>["data"] | null> {
+    queryParams: z.infer<typeof v1_lists_schemas.getLists.query>
+  ): Promise<z.infer<typeof v1_lists_schemas.getLists.response>["data"] | null> {
     const callback = fetchShortlist({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
@@ -167,15 +140,8 @@ export class GanakaClient {
    * @returns Promise resolving to shortlist persistence data or null
    */
   async fetchShortlistPersistence(
-    queryParams: z.infer<
-      typeof v1_developer_lists_persistence_schemas.getShortlistPersistence.query
-    >
-  ): Promise<
-    | z.infer<
-        typeof v1_developer_lists_persistence_schemas.getShortlistPersistence.response
-      >["data"]
-    | null
-  > {
+    queryParams: z.infer<typeof v1_lists_schemas.getShortlistPersistence.query>
+  ): Promise<z.infer<typeof v1_lists_schemas.getShortlistPersistence.response>["data"] | null> {
     const callback = fetchShortlistPersistence({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
@@ -193,7 +159,7 @@ export class GanakaClient {
    * @returns Promise resolving to available dates data with dates and timestamps
    */
   async fetchAvailableDates(): Promise<
-    z.infer<typeof v1_developer_dates_schemas.getAvailableDates.response>["data"]
+    z.infer<typeof v1_dates_schemas.getAvailableDates.response>["data"]
   > {
     const callback = fetchAvailableDates({
       developerToken: this.developerToken,
@@ -211,9 +177,7 @@ export class GanakaClient {
    *
    * @returns Promise resolving to holidays data
    */
-  async fetchHolidays(): Promise<
-    z.infer<typeof v1_developer_holidays_schemas.getHolidays.response>["data"]
-  > {
+  async fetchHolidays(): Promise<z.infer<typeof v1_holidays_schemas.getHolidays.response>["data"]> {
     const callback = fetchHolidays({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,

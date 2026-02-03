@@ -9,7 +9,6 @@ import { createDeveloperUser } from "../../../helpers/auth-helpers";
 import {
   createCollectorQuotesRequest,
   createCollectorShortlistRequest,
-  createCollectorNiftyRequest,
   buildQueryString,
 } from "../../../fixtures/test-data";
 import { TestDataTracker } from "../../../helpers/test-tracker";
@@ -43,14 +42,9 @@ test.describe("POST /v1/lists", () => {
 
   test("should return 401 when invalid token is provided", async () => {
     const requestBody = createCollectorShortlistRequest();
-    const response = await authenticatedPost(
-      "/v1/lists",
-      "invalid-token-12345",
-      requestBody,
-      {
-        validateStatus: () => true,
-      }
-    );
+    const response = await authenticatedPost("/v1/lists", "invalid-token-12345", requestBody, {
+      validateStatus: () => true,
+    });
 
     expect(response.status).toBe(401);
   });
@@ -81,31 +75,6 @@ test.describe("POST /v1/developer/collector/quotes", () => {
   });
 });
 
-test.describe("POST /v1/nifty", () => {
-  test("should return 401 when authorization header is missing", async () => {
-    const requestBody = createCollectorNiftyRequest();
-    const response = await unauthenticatedPost("/v1/nifty", requestBody, {
-      validateStatus: () => true,
-    });
-
-    expect(response.status).toBe(401);
-  });
-
-  test("should return 401 when invalid token is provided", async () => {
-    const requestBody = createCollectorNiftyRequest();
-    const response = await authenticatedPost(
-      "/v1/nifty",
-      "invalid-token-12345",
-      requestBody,
-      {
-        validateStatus: () => true,
-      }
-    );
-
-    expect(response.status).toBe(401);
-  });
-});
-
 test.describe("GET /v1/lists", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = { type: "top-gainers" };
@@ -118,13 +87,9 @@ test.describe("GET /v1/lists", () => {
   test("should return 401 when invalid token is provided", async () => {
     const query = { type: "top-gainers" };
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(
-      `/v1/lists?${queryString}`,
-      "invalid-token-12345",
-      {
-        validateStatus: () => true,
-      }
-    );
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, "invalid-token-12345", {
+      validateStatus: () => true,
+    });
 
     expect(response.status).toBe(401);
   });

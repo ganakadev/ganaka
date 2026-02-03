@@ -8,11 +8,7 @@ import { createDeveloperUser } from "../../helpers/auth-helpers";
 import { expect, test } from "../../helpers/test-fixtures";
 import { TestDataTracker } from "../../helpers/test-tracker";
 import { prisma } from "../../../src/utils/prisma";
-import {
-  createShortlistSnapshot,
-  createQuoteSnapshot,
-  createNiftyQuoteSnapshot,
-} from "../../helpers/db-helpers";
+import { createShortlistSnapshot, createQuoteSnapshot } from "../../helpers/db-helpers";
 import { createValidGrowwQuotePayload } from "../../fixtures/test-data";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -112,15 +108,6 @@ test.describe("GET /v1/dates", () => {
       "Asia/Kolkata"
     );
 
-    // Create nifty quote
-    await createNiftyQuoteSnapshot(
-      `${dateStr}T10:00:00`,
-      createValidGrowwQuotePayload(),
-      tracker,
-      0.5,
-      "Asia/Kolkata"
-    );
-
     const response = await authenticatedGet("/v1/dates", adminToken);
 
     expect(response.status).toBe(200);
@@ -129,8 +116,6 @@ test.describe("GET /v1/dates", () => {
     const dateInfo = body.data.dates.find((d: { date: string }) => d.date === dateStr);
     expect(dateInfo).toBeDefined();
     expect(dateInfo.shortlistCount).toBeGreaterThan(0);
-    expect(dateInfo.quoteCount).toBeGreaterThan(0);
-    expect(dateInfo.niftyCount).toBeGreaterThan(0);
   });
 });
 
@@ -274,7 +259,5 @@ test.describe("DELETE /v1/dates", () => {
     expect(response.status).toBe(200);
     const body = response.data;
     expect(body.data.deleted.shortlists).toBe(0);
-    expect(body.data.deleted.quotes).toBe(0);
-    expect(body.data.deleted.niftyQuotes).toBe(0);
   });
 });

@@ -8,7 +8,6 @@ import { fetchCandles } from "./callbacks/fetchCandles";
 import { fetchQuote } from "./callbacks/fetchQuote";
 import { fetchShortlist } from "./callbacks/fetchShortlist";
 import { fetchShortlistPersistence } from "./callbacks/fetchShortlistPersistence";
-import { fetchNiftyQuote } from "./callbacks/fetchNiftyQuote";
 import { fetchAvailableDates } from "./callbacks/fetchAvailableDates";
 import { fetchHolidays } from "./callbacks/fetchHolidays";
 import { placeOrder } from "./callbacks/placeOrder";
@@ -25,7 +24,6 @@ export { growwQuotePayloadSchema, growwQuoteSchema };
 export { GanakaClient, type GanakaClientConfig };
 
 export type FetchQuoteResponse = Awaited<ReturnType<ReturnType<typeof fetchQuote>>>;
-export type FetchNiftyQuoteResponse = Awaited<ReturnType<ReturnType<typeof fetchNiftyQuote>>>;
 export type FetchCandlesResponse = Awaited<ReturnType<ReturnType<typeof fetchCandles>>>;
 export type FetchShortlistResponse = Awaited<ReturnType<ReturnType<typeof fetchShortlist>>>;
 export type FetchAvailableDatesResponse = Awaited<
@@ -35,7 +33,6 @@ export type FetchHolidaysResponse = Awaited<ReturnType<ReturnType<typeof fetchHo
 
 export type fetchCandles = ReturnType<typeof fetchCandles>;
 export type fetchQuote = ReturnType<typeof fetchQuote>;
-export type fetchNiftyQuote = ReturnType<typeof fetchNiftyQuote>;
 export type fetchShortlist = ReturnType<typeof fetchShortlist>;
 export type fetchShortlistPersistence = ReturnType<typeof fetchShortlistPersistence>;
 export type fetchAvailableDates = ReturnType<typeof fetchAvailableDates>;
@@ -45,7 +42,6 @@ export interface RunContext {
   placeOrder: ReturnType<typeof placeOrder>;
   fetchCandles: ReturnType<typeof fetchCandles>;
   fetchQuote: ReturnType<typeof fetchQuote>;
-  fetchNiftyQuote: ReturnType<typeof fetchNiftyQuote>;
   fetchShortlist: ReturnType<typeof fetchShortlist>;
   /**
    * Given a shortlist type and a start and end datetime,
@@ -180,13 +176,6 @@ export async function ganaka<T>({
             currentTimezone: "Asia/Kolkata",
           }),
           fetchQuote: fetchQuote({
-            developerToken,
-            apiDomain,
-            runId,
-            currentTimestamp,
-            currentTimezone: "Asia/Kolkata",
-          }),
-          fetchNiftyQuote: fetchNiftyQuote({
             developerToken,
             apiDomain,
             runId,

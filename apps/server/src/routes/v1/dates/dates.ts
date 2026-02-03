@@ -33,10 +33,7 @@ const datesRoutes: FastifyPluginAsync = async (fastify) => {
             });
 
             // Group by date and count records
-            const dateMap = new Map<
-              string,
-              { shortlistCount: number; quoteCount: number; niftyCount: number }
-            >();
+            const dateMap = new Map<string, { shortlistCount: number }>();
 
             // Process shortlists
             shortlistSnapshots.forEach((snapshot) => {
@@ -44,52 +41,10 @@ const datesRoutes: FastifyPluginAsync = async (fastify) => {
               if (!dateMap.has(dateKey)) {
                 dateMap.set(dateKey, {
                   shortlistCount: 0,
-                  quoteCount: 0,
-                  niftyCount: 0,
                 });
               }
               const dateData = dateMap.get(dateKey)!;
               dateData.shortlistCount += 1;
-            });
-
-            // Get quote counts for each date (all records, not just unique timestamps)
-            const quoteSnapshots = await prisma.quoteSnapshot.findMany({
-              select: {
-                timestamp: true,
-              },
-            });
-
-            quoteSnapshots.forEach((snapshot) => {
-              const dateKey = formatDate(snapshot.timestamp);
-              if (!dateMap.has(dateKey)) {
-                dateMap.set(dateKey, {
-                  shortlistCount: 0,
-                  quoteCount: 0,
-                  niftyCount: 0,
-                });
-              }
-              const dateData = dateMap.get(dateKey)!;
-              dateData.quoteCount += 1;
-            });
-
-            // Get nifty quote counts for each date (all records, not just unique timestamps)
-            const niftyQuotes = await prisma.niftyQuote.findMany({
-              select: {
-                timestamp: true,
-              },
-            });
-
-            niftyQuotes.forEach((quote) => {
-              const dateKey = formatDate(quote.timestamp);
-              if (!dateMap.has(dateKey)) {
-                dateMap.set(dateKey, {
-                  shortlistCount: 0,
-                  quoteCount: 0,
-                  niftyCount: 0,
-                });
-              }
-              const dateData = dateMap.get(dateKey)!;
-              dateData.niftyCount += 1;
             });
 
             // Convert to response format
@@ -97,8 +52,6 @@ const datesRoutes: FastifyPluginAsync = async (fastify) => {
               .map(([date, counts]) => ({
                 date,
                 shortlistCount: counts.shortlistCount,
-                quoteCount: counts.quoteCount,
-                niftyCount: counts.niftyCount,
               }))
               .sort((a, b) => a.date.localeCompare(b.date));
 
@@ -192,8 +145,6 @@ const datesRoutes: FastifyPluginAsync = async (fastify) => {
             // Use transaction to ensure atomicity
             const result = await prisma.$transaction(async (tx) => {
               let shortlistCount = 0;
-              let quoteCount = 0;
-              let niftyCount = 0;
 
               // Delete shortlists
               for (const range of dateRanges) {
@@ -208,36 +159,8 @@ const datesRoutes: FastifyPluginAsync = async (fastify) => {
                 shortlistCount += deleted.count;
               }
 
-              // Delete quotes
-              for (const range of dateRanges) {
-                const deleted = await tx.quoteSnapshot.deleteMany({
-                  where: {
-                    timestamp: {
-                      gte: range.startOfDay,
-                      lte: range.endOfDay,
-                    },
-                  },
-                });
-                quoteCount += deleted.count;
-              }
-
-              // Delete nifty quotes
-              for (const range of dateRanges) {
-                const deleted = await tx.niftyQuote.deleteMany({
-                  where: {
-                    timestamp: {
-                      gte: range.startOfDay,
-                      lte: range.endOfDay,
-                    },
-                  },
-                });
-                niftyCount += deleted.count;
-              }
-
               return {
                 shortlists: shortlistCount,
-                quotes: quoteCount,
-                niftyQuotes: niftyCount,
               };
             });
 
