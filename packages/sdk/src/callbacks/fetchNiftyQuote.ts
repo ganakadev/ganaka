@@ -1,4 +1,4 @@
-import { v1_developer_nifty_schemas } from "@ganaka/schemas";
+import { v1_nifty_schemas } from "@ganaka/schemas";
 import axios from "axios";
 import z from "zod";
 import dayjs from "dayjs";
@@ -24,17 +24,15 @@ export const fetchNiftyQuote =
     currentTimezone?: string;
   }) =>
   async (
-    params: z.infer<typeof v1_developer_nifty_schemas.getGrowwNiftyQuote.query>
-  ): Promise<
-    z.infer<typeof v1_developer_nifty_schemas.getGrowwNiftyQuote.response>["data"] | null
-  > => {
+    params: z.infer<typeof v1_nifty_schemas.getGrowwNiftyQuote.query>
+  ): Promise<z.infer<typeof v1_nifty_schemas.getGrowwNiftyQuote.response>["data"] | null> => {
     if (!developerToken) {
       throw new Error("Developer token not found. Please set DEVELOPER_KEY environment variable.");
     }
 
     try {
       // Validate input params
-      const validatedParams = v1_developer_nifty_schemas.getGrowwNiftyQuote.query.parse(params);
+      const validatedParams = v1_nifty_schemas.getGrowwNiftyQuote.query.parse(params);
 
       const headers: Record<string, string> = {
         Authorization: `Bearer ${developerToken}`,
@@ -52,8 +50,8 @@ export const fetchNiftyQuote =
 
       // response
       const response = await axios.get<
-        z.infer<typeof v1_developer_nifty_schemas.getGrowwNiftyQuote.response>
-      >(`${apiDomain}/v1/developer/nifty`, {
+        z.infer<typeof v1_nifty_schemas.getGrowwNiftyQuote.response>
+      >(`${apiDomain}/v1/nifty`, {
         params: validatedParams,
         headers,
       });

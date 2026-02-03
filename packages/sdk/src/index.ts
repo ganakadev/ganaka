@@ -1,4 +1,4 @@
-import { growwQuotePayloadSchema, growwQuoteSchema, v1_dashboard_schemas } from "@ganaka/schemas";
+import { growwQuotePayloadSchema, growwQuoteSchema, v1_runs_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -131,9 +131,7 @@ export async function ganaka<T>({
 
   // Create a new run via API
   let runId: string | null = null;
-  const createRunBody: z.infer<
-    typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.body
-  > = {
+  const createRunBody: z.infer<typeof v1_runs_schemas.createRun.body> = {
     start_datetime: startTime,
     end_datetime: endTime,
     timezone: "Asia/Kolkata",
@@ -142,8 +140,8 @@ export async function ganaka<T>({
   };
   try {
     const createRunResponse = await apiClient.post<
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response>
-    >("/v1/dashboard/runs", createRunBody);
+      z.infer<typeof v1_runs_schemas.createRun.response>
+    >("/v1/runs", createRunBody);
 
     if (createRunResponse.data) {
       runId = createRunResponse.data.id;
@@ -231,11 +229,12 @@ export async function ganaka<T>({
     // Mark the run as completed
     logger.info(`Marking run as completed: ${runId}`);
     try {
-      await apiClient.patch<
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response>
-      >(`/v1/dashboard/runs/${runId}`, {
-        completed: true,
-      });
+      await apiClient.patch<z.infer<typeof v1_runs_schemas.updateRun.response>>(
+        `/v1/runs/${runId}`,
+        {
+          completed: true,
+        }
+      );
     } catch (error) {
       logger.error(`Failed to mark run as completed: ${error}`);
       // Don't throw - we still want to continue with cleanup if needed
@@ -247,9 +246,9 @@ export async function ganaka<T>({
     if (deleteRunAfterCompletion && runId) {
       logger.info(`Deleting run after completion: ${runId}`);
       try {
-        await apiClient.delete<
-          z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.response>
-        >(`/v1/dashboard/runs/${runId}`);
+        await apiClient.delete<z.infer<typeof v1_runs_schemas.deleteRun.response>>(
+          `/v1/runs/${runId}`
+        );
       } catch (error) {
         logger.error(`Failed to delete run: ${error}`);
         // Don't throw - cleanup failure shouldn't break the flow

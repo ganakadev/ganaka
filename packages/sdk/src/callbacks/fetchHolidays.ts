@@ -1,4 +1,4 @@
-import { v1_developer_holidays_schemas } from "@ganaka/schemas";
+import { v1_holidays_schemas } from "@ganaka/schemas";
 import axios from "axios";
 import z from "zod";
 import { logger } from "../utils/logger";
@@ -17,9 +17,7 @@ export const fetchHolidays =
     currentTimestamp: string;
     currentTimezone?: string;
   }) =>
-  async (): Promise<
-    z.infer<typeof v1_developer_holidays_schemas.getHolidays.response>["data"]
-  > => {
+  async (): Promise<z.infer<typeof v1_holidays_schemas.getHolidays.response>["data"]> => {
     if (!developerToken) {
       throw new Error(
         "Developer token not found. Please set DEVELOPER_TOKEN environment variable."
@@ -41,11 +39,12 @@ export const fetchHolidays =
         headers["X-Current-Timezone"] = currentTimezone;
       }
 
-      const response = await axios.get<
-        z.infer<typeof v1_developer_holidays_schemas.getHolidays.response>
-      >(`${apiDomain}/v1/developer/holidays`, {
-        headers,
-      });
+      const response = await axios.get<z.infer<typeof v1_holidays_schemas.getHolidays.response>>(
+        `${apiDomain}/v1/holidays`,
+        {
+          headers,
+        }
+      );
 
       return response.data.data;
     } catch (error) {

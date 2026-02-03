@@ -1,4 +1,4 @@
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_runs_schemas } from "@ganaka/schemas";
 import { logger } from "../utils/logger";
 import { ApiClient } from "../utils/apiClient";
 import { z } from "zod";
@@ -119,9 +119,7 @@ async function retryWithBackoff<T>(
 
 export const placeOrder =
   ({ runId, apiClient }: { runId: string | null; apiClient: ApiClient }) =>
-  async (
-    data: z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.body>
-  ): Promise<void> => {
+  async (data: z.infer<typeof v1_runs_schemas.createOrder.body>): Promise<void> => {
     // Keep existing console.log for backward compatibility
     logger.debug(`data: ${JSON.stringify(data)}`);
 
@@ -130,11 +128,11 @@ export const placeOrder =
       try {
         await retryWithBackoff(
           async () => {
-            const validatedData =
-              v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.body.parse(data);
-            await apiClient.post<
-              z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.response>
-            >(`/v1/dashboard/runs/${runId}/orders`, validatedData);
+            const validatedData = v1_runs_schemas.createOrder.body.parse(data);
+            await apiClient.post<z.infer<typeof v1_runs_schemas.createOrder.response>>(
+              `/v1/runs/${runId}/orders`,
+              validatedData
+            );
             logger.debug(`Order persisted for ${data.nseSymbol} in runId: ${runId}`);
           },
           3,

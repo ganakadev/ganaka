@@ -1,4 +1,4 @@
-import { v1_developer_dates_schemas } from "@ganaka/schemas";
+import { v1_dates_schemas } from "@ganaka/schemas";
 import axios from "axios";
 import z from "zod";
 import { logger } from "../utils/logger";
@@ -17,9 +17,7 @@ export const fetchAvailableDates =
     currentTimestamp: string;
     currentTimezone?: string;
   }) =>
-  async (): Promise<
-    z.infer<typeof v1_developer_dates_schemas.getAvailableDates.response>["data"]
-  > => {
+  async (): Promise<z.infer<typeof v1_dates_schemas.getAvailableDates.response>["data"]> => {
     if (!developerToken) {
       throw new Error(
         "Developer token not found. Please set DEVELOPER_TOKEN environment variable."
@@ -41,11 +39,12 @@ export const fetchAvailableDates =
         headers["X-Current-Timezone"] = currentTimezone;
       }
 
-      const response = await axios.get<
-        z.infer<typeof v1_developer_dates_schemas.getAvailableDates.response>
-      >(`${apiDomain}/v1/developer/dates`, {
-        headers,
-      });
+      const response = await axios.get<z.infer<typeof v1_dates_schemas.getAvailableDates.response>>(
+        `${apiDomain}/v1/dates`,
+        {
+          headers,
+        }
+      );
 
       return response.data.data;
     } catch (error) {
