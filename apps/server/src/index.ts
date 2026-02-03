@@ -37,31 +37,11 @@ async function main() {
   // ROUTES CONFIGURATION
   // Register routes with authentication plugins
   // Developer routes (/v1/developer) - protected with developer token
-  fastify.register(async function (fastify, opts) {
-    await authPlugin("developer")(fastify, opts);
+  fastify.register(async function (fastify) {
+    await authPlugin(fastify);
     fastify.register(autoLoad, {
-      dir: path.join(__dirname, "routes/v1/developer"),
-      options: { prefix: "/v1/developer/" },
-      maxDepth: 5,
-    });
-  });
-
-  // Dashboard routes (/v1/dashboard) - protected with developer token
-  fastify.register(async function (fastify, opts) {
-    await authPlugin("developer")(fastify, opts);
-    fastify.register(autoLoad, {
-      dir: path.join(__dirname, "routes/v1/dashboard"),
-      options: { prefix: "/v1/dashboard/" },
-      maxDepth: 5,
-    });
-  });
-
-  // Admin routes (/v1/admin) - protected with admin token
-  fastify.register(async function (fastify, opts) {
-    await authPlugin("admin")(fastify, opts);
-    fastify.register(autoLoad, {
-      dir: path.join(__dirname, "routes/v1/admin"),
-      options: { prefix: "/v1/admin/" },
+      dir: path.join(__dirname, "routes/v1"),
+      options: { prefix: "/v1/" },
       maxDepth: 5,
     });
   });

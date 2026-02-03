@@ -1,10 +1,5 @@
 import { z } from "zod";
-import {
-  apiResponseSchema,
-  datetimeFormatSchema,
-  growwQuoteSchema,
-  timezoneSchema,
-} from "../../../common";
+import { apiResponseSchema, growwQuoteSchema } from "../../../common";
 
 // ==================== GET /quote ====================
 
@@ -13,8 +8,6 @@ export const getGrowwQuote = {
     symbol: z.string(),
     exchange: z.enum(["NSE", "BSE"]).optional(),
     segment: z.enum(["CASH"]).optional(),
-    datetime: datetimeFormatSchema.optional(),
-    timezone: timezoneSchema.optional(),
   }),
   response: apiResponseSchema.extend({
     data: growwQuoteSchema.nullable(),
