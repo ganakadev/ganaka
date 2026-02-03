@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { apiResponseSchema, growwQuoteSchema } from "../../../common";
+import { apiResponseSchema, growwQuoteSchema } from "../../common";
 
 // ==================== GET /quote ====================
 

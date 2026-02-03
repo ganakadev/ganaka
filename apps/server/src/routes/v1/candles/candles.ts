@@ -1,8 +1,4 @@
-import {
-  v1_dashboard_schemas,
-  v1_developer_candles_schemas,
-  validCandleIntervals,
-} from "@ganaka/schemas";
+import { v1_schemas, validCandleIntervals } from "@ganaka/schemas";
 import axios from "axios";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -43,7 +39,7 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
                   const validationResult = validateRequest(
                     request.query,
                     reply,
-                    v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.query,
+                    v1_schemas.v1_candles_schemas.getCandles.query,
                     "query"
                   );
                   if (!validationResult) {
@@ -125,9 +121,7 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
                   });
 
                   return sendResponse<
-                    z.infer<
-                      typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.response
-                    >
+                    z.infer<typeof v1_schemas.v1_candles_schemas.getCandles.response>
                   >(reply, {
                     statusCode: 200,
                     message: "Candles fetched successfully",
@@ -155,7 +149,7 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
             const validationResult = validateRequest(
               request.query,
               reply,
-              v1_developer_candles_schemas.getGrowwHistoricalCandles.query,
+              v1_schemas.v1_candles_schemas.getGrowwHistoricalCandles.query,
               "query"
             );
             if (!validationResult) {
@@ -205,7 +199,7 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
               : undefined;
 
             const response = await growwAPIRequest<
-              z.infer<typeof v1_developer_candles_schemas.growwHistoricalCandlesSchema>
+              z.infer<typeof v1_schemas.v1_candles_schemas.growwHistoricalCandlesSchema>
             >({
               method: "get",
               url: `https://api.groww.in/v1/historical/candles`,
@@ -221,7 +215,7 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
             });
 
             return sendResponse<
-              z.infer<typeof v1_developer_candles_schemas.getGrowwHistoricalCandles.response>
+              z.infer<typeof v1_schemas.v1_candles_schemas.getGrowwHistoricalCandles.response>
             >(reply, {
               statusCode: 200,
               message: "Historical candles fetched successfully",

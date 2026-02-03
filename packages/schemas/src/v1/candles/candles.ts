@@ -5,7 +5,7 @@ import {
   datetimeFormatSchema,
   timezoneSchema,
   validCandleIntervals,
-} from "../../../common";
+} from "../../common";
 
 // ==================== Schemas ====================
 

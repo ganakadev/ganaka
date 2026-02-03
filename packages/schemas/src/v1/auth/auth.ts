@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { apiResponseSchema } from "../../../common";
+import { apiResponseSchema } from "../../common";
 
 // ==================== POST /auth ====================
 

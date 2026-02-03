@@ -1,19 +1,19 @@
+import { v1_schemas } from "@ganaka/schemas";
 import { FastifyPluginAsync } from "fastify";
-import { sendResponse } from "../../../utils/sendResponse";
-import { v1_dashboard_schemas } from "@ganaka/schemas";
-import { validateRequest } from "../../../utils/validator";
 import z from "zod";
 import { prisma } from "../../../utils/prisma";
+import { sendResponse } from "../../../utils/sendResponse";
+import { validateRequest } from "../../../utils/validator";
 
 const authRoutes: FastifyPluginAsync = async (fastify) => {
-  // ==================== POST /v1/dashboard/auth ====================
+  // ==================== POST /v1/auth ====================
   fastify.post("/", async (request, reply) => {
     try {
       // Validate request body
       const validationResult = validateRequest(
         request.body,
         reply,
-        v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.body,
+        v1_schemas.v1_auth_schemas.signIn.body,
         "body"
       );
       if (!validationResult) {
@@ -29,9 +29,7 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
         return reply.unauthorized("Invalid developer token");
       }
 
-      return sendResponse<
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.response>
-      >(reply, {
+      return sendResponse<z.infer<typeof v1_schemas.v1_auth_schemas.signIn.response>>(reply, {
         statusCode: 200,
         message: "Developer signed in successfully",
         data: {

@@ -1,14 +1,14 @@
-import { FastifyPluginAsync } from "fastify";
-import { validateRequest } from "../../../utils/validator";
-import { v1_admin_schemas, v1_dashboard_schemas } from "@ganaka/schemas";
-import { sendResponse } from "../../../utils/sendResponse";
-import { prisma } from "../../../utils/prisma";
-import z from "zod";
+import { v1_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import { FastifyPluginAsync } from "fastify";
+import z from "zod";
 import { formatDate, formatDateTime } from "../../../utils/date-formatter";
+import { prisma } from "../../../utils/prisma";
 import { roleBasedExecute } from "../../../utils/roleBasedExecute";
+import { sendResponse } from "../../../utils/sendResponse";
+import { validateRequest } from "../../../utils/validator";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -103,7 +103,7 @@ const datesRoutes: FastifyPluginAsync = async (fastify) => {
               .sort((a, b) => a.date.localeCompare(b.date));
 
             return sendResponse<
-              z.infer<typeof v1_admin_schemas.v1_admin_dates_schemas.getAvailableDates.response>
+              z.infer<typeof v1_schemas.v1_dates_schemas.getAvailableDatesAdmin.response>
             >(reply, {
               statusCode: 200,
               message: "Available dates fetched successfully",
@@ -145,9 +145,7 @@ const datesRoutes: FastifyPluginAsync = async (fastify) => {
             }));
 
             return sendResponse<
-              z.infer<
-                typeof v1_dashboard_schemas.v1_dashboard_dates_schemas.getAvailableDatetimes.response
-              >
+              z.infer<typeof v1_schemas.v1_dates_schemas.getAvailableDatetimes.response>
             >(reply, {
               statusCode: 200,
               message: "Available datetimes fetched successfully",
@@ -171,7 +169,7 @@ const datesRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.body,
       reply,
-      v1_admin_schemas.v1_admin_dates_schemas.deleteDates.body,
+      v1_schemas.v1_dates_schemas.deleteDates.body,
       "body"
     );
     if (!validationResult) {
@@ -243,15 +241,16 @@ const datesRoutes: FastifyPluginAsync = async (fastify) => {
               };
             });
 
-            return sendResponse<
-              z.infer<typeof v1_admin_schemas.v1_admin_dates_schemas.deleteDates.response>
-            >(reply, {
-              statusCode: 200,
-              message: "Data deleted successfully",
-              data: {
-                deleted: result,
-              },
-            });
+            return sendResponse<z.infer<typeof v1_schemas.v1_dates_schemas.deleteDates.response>>(
+              reply,
+              {
+                statusCode: 200,
+                message: "Data deleted successfully",
+                data: {
+                  deleted: result,
+                },
+              }
+            );
           },
         },
       });

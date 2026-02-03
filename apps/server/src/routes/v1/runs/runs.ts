@@ -1,5 +1,5 @@
 import { Decimal } from "@ganaka/db/prisma";
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -19,7 +19,7 @@ dayjs.extend(timezone);
 
 // Type for order with gain metrics, extracted from the Zod schema
 type OrderWithMetrics = z.infer<
-  typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response
+  typeof v1_schemas.v1_runs_schemas.getRunOrders.response
 >["data"][number];
 
 /**
@@ -350,9 +350,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         sortedGroupedRuns[date] = groupedRuns[date];
       }
 
-      return sendResponse<
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response>
-      >(reply, {
+      return sendResponse<z.infer<typeof v1_schemas.v1_runs_schemas.getRuns.response>>(reply, {
         statusCode: 200,
         message: "Runs fetched successfully",
         data: sortedGroupedRuns,
@@ -370,7 +368,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.body,
       reply,
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.body,
+      v1_schemas.v1_runs_schemas.createRun.body,
       "body"
     );
     if (!validationResult) {
@@ -435,9 +433,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
 
-      return sendResponse<
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response>
-      >(reply, {
+      return sendResponse<z.infer<typeof v1_schemas.v1_runs_schemas.createRun.response>>(reply, {
         statusCode: 201,
         message: "Run created successfully",
         data: {
@@ -462,7 +458,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     const paramsValidationResult = validateRequest(
       request.params,
       reply,
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.params,
+      v1_schemas.v1_runs_schemas.updateRun.params,
       "params"
     );
     if (!paramsValidationResult) {
@@ -472,7 +468,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     const bodyValidationResult = validateRequest(
       request.body,
       reply,
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.body,
+      v1_schemas.v1_runs_schemas.updateRun.body,
       "body"
     );
     if (!bodyValidationResult) {
@@ -546,9 +542,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         data: updateData,
       });
 
-      return sendResponse<
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response>
-      >(reply, {
+      return sendResponse<z.infer<typeof v1_schemas.v1_runs_schemas.updateRun.response>>(reply, {
         statusCode: 200,
         message: "Run updated successfully",
         data: {
@@ -573,7 +567,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.params,
       reply,
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.params,
+      v1_schemas.v1_runs_schemas.deleteRun.params,
       "params"
     );
     if (!validationResult) {
@@ -598,9 +592,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         where: { id: validationResult.runId },
       });
 
-      return sendResponse<
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.response>
-      >(reply, {
+      return sendResponse<z.infer<typeof v1_schemas.v1_runs_schemas.deleteRun.response>>(reply, {
         statusCode: 200,
         message: "Run deleted successfully",
         data: {
@@ -621,7 +613,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     const paramsValidationResult = validateRequest(
       request.params,
       reply,
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params,
+      v1_schemas.v1_runs_schemas.getRunOrders.params,
       "params"
     );
     if (!paramsValidationResult) {
@@ -631,7 +623,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     const queryValidationResult = validateRequest(
       request.query,
       reply,
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.query,
+      v1_schemas.v1_runs_schemas.getRunOrders.query,
       "query"
     );
     if (!queryValidationResult) {
@@ -700,9 +692,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         })
       );
 
-      return sendResponse<
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response>
-      >(reply, {
+      return sendResponse<z.infer<typeof v1_schemas.v1_runs_schemas.getRunOrders.response>>(reply, {
         statusCode: 200,
         message: "Orders fetched successfully",
         data: ordersWithMetrics,
@@ -720,7 +710,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     const paramsValidationResult = validateRequest(
       request.params,
       reply,
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.params,
+      v1_schemas.v1_runs_schemas.createOrder.params,
       "params"
     );
     if (!paramsValidationResult) {
@@ -730,7 +720,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
     const bodyValidationResult = validateRequest(
       request.body,
       reply,
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.body,
+      v1_schemas.v1_runs_schemas.createOrder.body,
       "body"
     );
     if (!bodyValidationResult) {
@@ -772,9 +762,7 @@ const runsRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
 
-      return sendResponse<
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.response>
-      >(reply, {
+      return sendResponse<z.infer<typeof v1_schemas.v1_runs_schemas.createOrder.response>>(reply, {
         statusCode: 201,
         message: "Order created successfully",
         data: {

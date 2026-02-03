@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from "fastify";
 import { validateRequest } from "../../../utils/validator";
-import { v1_admin_schemas, v1_developer_collector_holidays_schemas } from "@ganaka/schemas";
+import { v1_schemas } from "@ganaka/schemas";
 import { sendResponse } from "../../../utils/sendResponse";
 import { prisma } from "../../../utils/prisma";
 import z from "zod";
@@ -31,15 +31,16 @@ const holidaysRoutes: FastifyPluginAsync = async (fastify) => {
         updatedAt: holiday.updatedAt,
       }));
 
-      return sendResponse<
-        z.infer<typeof v1_admin_schemas.v1_admin_holidays_schemas.getHolidays.response>
-      >(reply, {
-        statusCode: 200,
-        message: "Holidays fetched successfully",
-        data: {
-          holidays: formattedHolidays,
-        },
-      });
+      return sendResponse<z.infer<typeof v1_schemas.v1_holidays_schemas.getHolidays.response>>(
+        reply,
+        {
+          statusCode: 200,
+          message: "Holidays fetched successfully",
+          data: {
+            holidays: formattedHolidays,
+          },
+        }
+      );
     } catch (error) {
       fastify.log.error("Error fetching holidays: %s", JSON.stringify(error));
       return reply.internalServerError(
@@ -59,7 +60,7 @@ const holidaysRoutes: FastifyPluginAsync = async (fastify) => {
             const validationResult = validateRequest(
               request.body,
               reply,
-              v1_admin_schemas.v1_admin_holidays_schemas.addHolidays.body,
+              v1_schemas.v1_holidays_schemas.addHolidays.body,
               "body"
             );
             if (!validationResult) {
@@ -114,7 +115,7 @@ const holidaysRoutes: FastifyPluginAsync = async (fastify) => {
             }));
 
             return sendResponse<
-              z.infer<typeof v1_admin_schemas.v1_admin_holidays_schemas.addHolidays.response>
+              z.infer<typeof v1_schemas.v1_holidays_schemas.addHolidays.response>
             >(reply, {
               statusCode: 201,
               message: "Holidays added successfully",
@@ -150,7 +151,7 @@ const holidaysRoutes: FastifyPluginAsync = async (fastify) => {
             const validationResult = validateRequest(
               request.body,
               reply,
-              v1_admin_schemas.v1_admin_holidays_schemas.removeHolidays.body,
+              v1_schemas.v1_holidays_schemas.removeHolidays.body,
               "body"
             );
             if (!validationResult) {
@@ -188,7 +189,7 @@ const holidaysRoutes: FastifyPluginAsync = async (fastify) => {
             const deletedDates = existingHolidays.map((h) => formatDate(h.date));
 
             return sendResponse<
-              z.infer<typeof v1_admin_schemas.v1_admin_holidays_schemas.removeHolidays.response>
+              z.infer<typeof v1_schemas.v1_holidays_schemas.removeHolidays.response>
             >(reply, {
               statusCode: 200,
               message: "Holidays removed successfully",
@@ -215,7 +216,7 @@ const holidaysRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.query,
       reply,
-      v1_developer_collector_holidays_schemas.checkHoliday.query,
+      v1_schemas.v1_holidays_schemas.checkHoliday.query,
       "query"
     );
     if (!validationResult) {

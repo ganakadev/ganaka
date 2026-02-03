@@ -1,13 +1,6 @@
 import { ShortlistSnapshot } from "@ganaka/db";
 import { ShortlistScope, ShortlistType } from "@ganaka/db/prisma";
-import {
-  growwQuoteSchema,
-  shortlistEntrySchema,
-  v1_dashboard_schemas,
-  v1_developer_collector_schemas,
-  v1_developer_lists_persistence_schemas,
-  v1_developer_lists_schemas,
-} from "@ganaka/schemas";
+import { growwQuoteSchema, shortlistEntrySchema, v1_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -265,7 +258,7 @@ async function calculateTradeMetrics({
  * Maps API type format to database enum format
  */
 function mapTypeToShortlistType(
-  type: z.infer<typeof v1_developer_lists_persistence_schemas.getShortlistPersistence.query>["type"]
+  type: z.infer<typeof v1_schemas.v1_lists_schemas.getShortlistPersistence.query>["type"]
 ): ShortlistType {
   switch (type) {
     case "top-gainers":
@@ -419,7 +412,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
       const validationResult = validateRequest(
         request.query,
         reply,
-        v1_dashboard_schemas.v1_dashboard_lists_schemas.getShortlists.query,
+        v1_schemas.v1_lists_schemas.getShortlists.query,
         "query"
       );
       if (!validationResult) {
@@ -459,15 +452,16 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
       });
 
       if (shortlists.length === 0) {
-        return sendResponse<
-          z.infer<typeof v1_dashboard_schemas.v1_dashboard_lists_schemas.getShortlists.response>
-        >(reply, {
-          statusCode: 200,
-          message: "Shortlist fetched successfully",
-          data: {
-            shortlist: null,
-          },
-        });
+        return sendResponse<z.infer<typeof v1_schemas.v1_lists_schemas.getShortlists.response>>(
+          reply,
+          {
+            statusCode: 200,
+            message: "Shortlist fetched successfully",
+            data: {
+              shortlist: null,
+            },
+          }
+        );
       }
 
       const shortlistFromDb = shortlists[0];
@@ -500,7 +494,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
 
               const data: NonNullable<
                 z.infer<
-                  typeof v1_dashboard_schemas.v1_dashboard_lists_schemas.getShortlists.response
+                  typeof v1_schemas.v1_lists_schemas.getShortlists.response
                 >["data"]["shortlist"]
               >["entries"][number] = {
                 nseSymbol: entry.nseSymbol,
@@ -527,20 +521,21 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
         entries = entriesWithMetrics.flat();
       }
 
-      return sendResponse<
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_lists_schemas.getShortlists.response>
-      >(reply, {
-        statusCode: 200,
-        message: "Shortlist fetched successfully",
-        data: {
-          shortlist: {
-            id: shortlistFromDb.id,
-            timestamp: formatDateTime(shortlistFromDb.timestamp),
-            shortlistType: shortlistFromDb.shortlistType,
-            entries,
+      return sendResponse<z.infer<typeof v1_schemas.v1_lists_schemas.getShortlists.response>>(
+        reply,
+        {
+          statusCode: 200,
+          message: "Shortlist fetched successfully",
+          data: {
+            shortlist: {
+              id: shortlistFromDb.id,
+              timestamp: formatDateTime(shortlistFromDb.timestamp),
+              shortlistType: shortlistFromDb.shortlistType,
+              entries,
+            },
           },
-        },
-      });
+        }
+      );
     } catch (error) {
       fastify.log.error("Error fetching shortlists: %s", JSON.stringify(error));
       const errorMessage = error instanceof Error ? error.message : "Failed to fetch shortlists";
@@ -552,7 +547,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.body,
       reply,
-      v1_developer_collector_schemas.createShortlistSnapshot.body,
+      v1_schemas.v1_lists_schemas.createShortlistSnapshot.body,
       "body"
     );
     if (!validationResult) {
@@ -598,7 +593,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.query,
       reply,
-      v1_developer_lists_schemas.getLists.query,
+      v1_schemas.v1_lists_schemas.getLists.query,
       "query"
     );
     if (!validationResult) {
@@ -636,11 +631,14 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
         });
 
         if (shortlists.length === 0) {
-          return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(reply, {
-            statusCode: 200,
-            message: "Shortlist snapshot not found",
-            data: null,
-          });
+          return sendResponse<z.infer<typeof v1_schemas.v1_lists_schemas.getLists.response>>(
+            reply,
+            {
+              statusCode: 200,
+              message: "Shortlist snapshot not found",
+              data: null,
+            }
+          );
         }
 
         const shortlistFromDb = shortlists[0];
@@ -651,14 +649,17 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
         }> | null;
 
         if (!entries) {
-          return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(reply, {
-            statusCode: 200,
-            message: "Shortlist snapshot not found",
-            data: null,
-          });
+          return sendResponse<z.infer<typeof v1_schemas.v1_lists_schemas.getLists.response>>(
+            reply,
+            {
+              statusCode: 200,
+              message: "Shortlist snapshot not found",
+              data: null,
+            }
+          );
         }
 
-        return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(reply, {
+        return sendResponse<z.infer<typeof v1_schemas.v1_lists_schemas.getLists.response>>(reply, {
           statusCode: 200,
           message: "Lists fetched successfully",
           data: entries,
@@ -776,7 +777,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
           break;
         }
 
-        return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(reply, {
+        return sendResponse<z.infer<typeof v1_schemas.v1_lists_schemas.getLists.response>>(reply, {
           statusCode: 200,
           message: "Lists fetched successfully",
           data: stocks
@@ -801,7 +802,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
       }
     }
 
-    return sendResponse<z.infer<typeof v1_developer_lists_schemas.getLists.response>>(reply, {
+    return sendResponse<z.infer<typeof v1_schemas.v1_lists_schemas.getLists.response>>(reply, {
       statusCode: 200,
       message: "Lists unable to be fetched. Please check server logs for more details.",
       data: [],
@@ -812,7 +813,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.query,
       reply,
-      v1_developer_lists_persistence_schemas.getShortlistPersistence.query,
+      v1_schemas.v1_lists_schemas.getShortlistPersistence.query,
       "query"
     );
     if (!validationResult) {
@@ -869,7 +870,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
       const instruments = findPersistentInstruments(snapshots, totalNonEmptySnapshots);
 
       return sendResponse<
-        z.infer<typeof v1_developer_lists_persistence_schemas.getShortlistPersistence.response>
+        z.infer<typeof v1_schemas.v1_lists_schemas.getShortlistPersistence.response>
       >(reply, {
         statusCode: 200,
         message: "Shortlist persistence fetched successfully",

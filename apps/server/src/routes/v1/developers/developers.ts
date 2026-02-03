@@ -1,11 +1,11 @@
-import { FastifyPluginAsync } from "fastify";
-import { validateRequest } from "../../../utils/validator";
-import { v1_admin_schemas } from "@ganaka/schemas";
-import { sendResponse } from "../../../utils/sendResponse";
-import { prisma } from "../../../utils/prisma";
-import z from "zod";
+import { v1_schemas } from "@ganaka/schemas";
 import { randomUUID } from "crypto";
+import { FastifyPluginAsync } from "fastify";
+import z from "zod";
+import { prisma } from "../../../utils/prisma";
 import { roleBasedExecute } from "../../../utils/roleBasedExecute";
+import { sendResponse } from "../../../utils/sendResponse";
+import { validateRequest } from "../../../utils/validator";
 
 const developersRoutes: FastifyPluginAsync = async (fastify) => {
   // ==================== GET /v1/developers ====================
@@ -19,7 +19,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
             const validationResult = validateRequest(
               request.query,
               reply,
-              v1_admin_schemas.v1_admin_developers_schemas.getDevelopers.query,
+              v1_schemas.v1_developers_schemas.getDevelopers.query,
               "query"
             );
             if (!validationResult) {
@@ -38,7 +38,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
             ]);
 
             return sendResponse<
-              z.infer<typeof v1_admin_schemas.v1_admin_developers_schemas.getDevelopers.response>
+              z.infer<typeof v1_schemas.v1_developers_schemas.getDevelopers.response>
             >(reply, {
               statusCode: 200,
               message: "Developers fetched successfully",
@@ -70,7 +70,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
             const validationResult = validateRequest(
               request.params,
               reply,
-              v1_admin_schemas.v1_admin_developers_schemas.refreshDeveloperKey.params,
+              v1_schemas.v1_developers_schemas.refreshDeveloperKey.params,
               "params"
             );
             if (!validationResult) {
@@ -97,9 +97,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
             });
 
             return sendResponse<
-              z.infer<
-                typeof v1_admin_schemas.v1_admin_developers_schemas.refreshDeveloperKey.response
-              >
+              z.infer<typeof v1_schemas.v1_developers_schemas.refreshDeveloperKey.response>
             >(reply, {
               statusCode: 200,
               message: "Developer key refreshed successfully",
@@ -133,7 +131,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
             const validationResult = validateRequest(
               request.params,
               reply,
-              v1_admin_schemas.v1_admin_developers_schemas.getDeveloper.params,
+              v1_schemas.v1_developers_schemas.getDeveloper.params,
               "params"
             );
             if (!validationResult) {
@@ -149,7 +147,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
             }
 
             return sendResponse<
-              z.infer<typeof v1_admin_schemas.v1_admin_developers_schemas.getDeveloper.response>
+              z.infer<typeof v1_schemas.v1_developers_schemas.getDeveloper.response>
             >(reply, {
               statusCode: 200,
               message: "Developer fetched successfully",
@@ -177,7 +175,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
             const validationResult = validateRequest(
               request.body,
               reply,
-              v1_admin_schemas.v1_admin_developers_schemas.createDeveloper.body,
+              v1_schemas.v1_developers_schemas.createDeveloper.body,
               "body"
             );
             if (!validationResult) {
@@ -206,7 +204,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
             });
 
             return sendResponse<
-              z.infer<typeof v1_admin_schemas.v1_admin_developers_schemas.createDeveloper.response>
+              z.infer<typeof v1_schemas.v1_developers_schemas.createDeveloper.response>
             >(reply, {
               statusCode: 201,
               message: "Developer created successfully",
@@ -240,7 +238,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
             const validationResult = validateRequest(
               request.params,
               reply,
-              v1_admin_schemas.v1_admin_developers_schemas.deleteDeveloper.params,
+              v1_schemas.v1_developers_schemas.deleteDeveloper.params,
               "params"
             );
             if (!validationResult) {
@@ -262,7 +260,7 @@ const developersRoutes: FastifyPluginAsync = async (fastify) => {
             });
 
             return sendResponse<
-              z.infer<typeof v1_admin_schemas.v1_admin_developers_schemas.deleteDeveloper.response>
+              z.infer<typeof v1_schemas.v1_developers_schemas.deleteDeveloper.response>
             >(reply, {
               statusCode: 200,
               message: "Developer deleted successfully",

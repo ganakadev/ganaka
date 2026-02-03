@@ -4,7 +4,7 @@ import {
   datetimeFormatSchema,
   growwQuoteSchema,
   timezoneSchema,
-} from "../../../common";
+} from "../../common";
 
 // ==================== GET /nifty ====================
 

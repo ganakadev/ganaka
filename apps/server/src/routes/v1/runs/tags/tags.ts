@@ -1,4 +1,4 @@
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -39,9 +39,7 @@ const tagsRoutes: FastifyPluginAsync = async (fastify) => {
       // Remove duplicates and sort
       const uniqueTags = Array.from(new Set(allTags)).sort();
 
-      return sendResponse<
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_tags_schemas.getRunTags.response>
-      >(reply, {
+      return sendResponse<z.infer<typeof v1_schemas.v1_runs_schemas.getRunTags.response>>(reply, {
         statusCode: 200,
         message: "Tags fetched successfully",
         data: uniqueTags,

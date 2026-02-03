@@ -1,4 +1,4 @@
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_schemas } from "@ganaka/schemas";
 import { FastifyPluginAsync } from "fastify";
 import z from "zod";
 import { decrypt, encrypt } from "../../../../utils/encryption";
@@ -58,9 +58,7 @@ const credentialsRoutes: FastifyPluginAsync = async (fastify) => {
       }
 
       return sendResponse<
-        z.infer<
-          typeof v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.getGrowwCredentials.response
-        >
+        z.infer<typeof v1_schemas.v1_groww_credentials_schemas.getGrowwCredentials.response>
       >(reply, {
         statusCode: 200,
         message: "Groww credentials status fetched successfully",
@@ -87,7 +85,7 @@ const credentialsRoutes: FastifyPluginAsync = async (fastify) => {
       const validationResult = validateRequest(
         request.body,
         reply,
-        v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.updateGrowwCredentials.body,
+        v1_schemas.v1_groww_credentials_schemas.updateGrowwCredentials.body,
         "body"
       );
       if (!validationResult) {
@@ -113,9 +111,7 @@ const credentialsRoutes: FastifyPluginAsync = async (fastify) => {
       await tokenManager.invalidateTokenForDeveloper(request.developer.id);
 
       return sendResponse<
-        z.infer<
-          typeof v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.updateGrowwCredentials.response
-        >
+        z.infer<typeof v1_schemas.v1_groww_credentials_schemas.updateGrowwCredentials.response>
       >(reply, {
         statusCode: 200,
         message: "Groww credentials updated successfully",
@@ -152,9 +148,7 @@ const credentialsRoutes: FastifyPluginAsync = async (fastify) => {
       await tokenManager.invalidateTokenForDeveloper(request.developer.id);
 
       return sendResponse<
-        z.infer<
-          typeof v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.deleteGrowwCredentials.response
-        >
+        z.infer<typeof v1_schemas.v1_groww_credentials_schemas.deleteGrowwCredentials.response>
       >(reply, {
         statusCode: 200,
         message: "Groww credentials deleted successfully",

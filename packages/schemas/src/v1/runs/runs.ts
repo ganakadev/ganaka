@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { apiResponseSchema, datetimeFormatSchema, timezoneSchema } from "../../../common";
+import { apiResponseSchema, datetimeFormatSchema, timezoneSchema } from "../../common";
 
 // ==================== GET /runs ====================
 

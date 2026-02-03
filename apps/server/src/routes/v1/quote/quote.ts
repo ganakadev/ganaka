@@ -1,4 +1,4 @@
-import { growwQuoteSchema, v1_developer_quote_schemas } from "@ganaka/schemas";
+import { growwQuoteSchema, v1_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -23,7 +23,7 @@ const quoteRoutes: FastifyPluginAsync = async (fastify) => {
     const validationResult = validateRequest(
       request.query,
       reply,
-      v1_developer_quote_schemas.getGrowwQuote.query,
+      v1_schemas.v1_quote_schemas.getGrowwQuote.query,
       "query"
     );
     if (!validationResult) {
@@ -50,7 +50,7 @@ const quoteRoutes: FastifyPluginAsync = async (fastify) => {
         developerCredentials,
       });
 
-      return sendResponse<z.infer<typeof v1_developer_quote_schemas.getGrowwQuote.response>>(
+      return sendResponse<z.infer<typeof v1_schemas.v1_quote_schemas.getGrowwQuote.response>>(
         reply,
         {
           statusCode: 200,

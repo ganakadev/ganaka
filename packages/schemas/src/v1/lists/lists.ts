@@ -7,7 +7,7 @@ import {
   timezoneSchema,
   shortlistScopeSchema,
   growwQuoteSchema,
-} from "../../../common";
+} from "../../common";
 
 // ==================== Schemas ====================
 
