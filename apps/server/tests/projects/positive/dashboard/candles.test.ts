@@ -1,4 +1,4 @@
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -32,13 +32,13 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/candles", () => {
+test.describe("GET /v1/candles", () => {
   test.describe.configure({ mode: "default" });
 
   test("should return 200 with candles data when valid params provided", async () => {
     const query = createCandlesQuery(TEST_SYMBOL, CANDLES_TEST_DATE);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken);
 
     // Note: This test may fail if external API is unavailable, but structure validation should still work
     if (response.status === 200) {
@@ -58,11 +58,11 @@ test.describe("GET /v1/dashboard/candles", () => {
   test("should validate candle structure (time, open, high, low, close)", async () => {
     const query = createCandlesQuery(TEST_SYMBOL, CANDLES_TEST_DATE);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken);
 
     if (response.status === 200) {
       const validatedData =
-        v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.response.parse(response.data);
+        v1_schemas.v1_dashboard_candles_schemas.getCandles.response.parse(response.data);
 
       expect(validatedData.data.candles).toBeInstanceOf(Array);
 
@@ -85,11 +85,11 @@ test.describe("GET /v1/dashboard/candles", () => {
   test("should validate start_time and end_time match market hours (9:15 AM - 3:30 PM IST)", async () => {
     const query = createCandlesQuery(TEST_SYMBOL, CANDLES_TEST_DATE);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken);
 
     if (response.status === 200) {
       const validatedData =
-        v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.response.parse(response.data);
+        v1_schemas.v1_dashboard_candles_schemas.getCandles.response.parse(response.data);
 
       // Market hours: 9:15 AM - 3:30 PM IST
       const expectedStart = dayjs
@@ -109,7 +109,7 @@ test.describe("GET /v1/dashboard/candles", () => {
   test("should validate interval_in_minutes matches requested interval", async () => {
     const intervals: {
       interval: z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.query
+        typeof v1_schemas.v1_dashboard_candles_schemas.getCandles.query
       >["interval"];
       expectedMinutes: number;
     }[] = [
@@ -128,13 +128,13 @@ test.describe("GET /v1/dashboard/candles", () => {
       const query = createCandlesQuery(TEST_SYMBOL, CANDLES_TEST_DATE, interval);
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(
-        `/v1/dashboard/candles?${queryString}`,
+        `/v1/candles?${queryString}`,
         developerToken
       );
 
       if (response.status === 200) {
         const validatedData =
-          v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.response.parse(
+          v1_schemas.v1_dashboard_candles_schemas.getCandles.response.parse(
             response.data
           );
         expect(validatedData.data.interval_in_minutes).toBe(expectedMinutes);
@@ -145,11 +145,11 @@ test.describe("GET /v1/dashboard/candles", () => {
   test("should validate candles are ordered chronologically", async () => {
     const query = createCandlesQuery(TEST_SYMBOL, CANDLES_TEST_DATE);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken);
 
     if (response.status === 200) {
       const validatedData =
-        v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.response.parse(response.data);
+        v1_schemas.v1_dashboard_candles_schemas.getCandles.response.parse(response.data);
 
       // Validate candles are ordered chronologically (time should be ascending)
       for (let i = 1; i < validatedData.data.candles.length; i++) {
@@ -163,11 +163,11 @@ test.describe("GET /v1/dashboard/candles", () => {
   test("should validate exact candle values ", async () => {
     const query = createCandlesQuery(TEST_SYMBOL, CANDLES_TEST_DATE);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/candles?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken);
 
     if (response.status === 200) {
       const validatedData =
-        v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.response.parse(response.data);
+        v1_schemas.v1_dashboard_candles_schemas.getCandles.response.parse(response.data);
 
       if (validatedData.data.candles.length > 0) {
         const firstCandle = validatedData.data.candles[0];

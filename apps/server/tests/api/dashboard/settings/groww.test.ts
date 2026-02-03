@@ -18,12 +18,12 @@ import {
   createTestDeveloperWithGrowwCredentials,
   isEncrypted,
 } from "../../../helpers/db-helpers";
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_schemas } from "@ganaka/schemas";
 
-test.describe("GET /v1/dashboard/settings/groww/credentials", () => {
+test.describe("GET /v1/groww/credentials", () => {
   // AUTHORIZATION TESTS
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/dashboard/settings/groww/credentials");
+    const response = await unauthenticatedGet("/v1/groww/credentials");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -32,7 +32,7 @@ test.describe("GET /v1/dashboard/settings/groww/credentials", () => {
 
   test("should return 401 when invalid developer token is provided", async ({ tracker }) => {
     const response = await authenticatedGet(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       "invalid-token-12345",
       { validateStatus: () => true }
     );
@@ -46,7 +46,7 @@ test.describe("GET /v1/dashboard/settings/groww/credentials", () => {
     tracker,
   }) => {
     const dev = await createDeveloperUser(undefined, tracker);
-    const response = await unauthenticatedGet("/v1/dashboard/settings/groww/credentials", {
+    const response = await unauthenticatedGet("/v1/groww/credentials", {
       validateStatus: () => true,
       headers: {
         authorization: dev.token, // Missing "Bearer " prefix
@@ -60,7 +60,7 @@ test.describe("GET /v1/dashboard/settings/groww/credentials", () => {
   test("should return hasGrowwApiKey: false when no credentials set", async ({ tracker }) => {
     const dev = await createDeveloperUser(undefined, tracker);
 
-    const response = await authenticatedGet("/v1/dashboard/settings/groww/credentials", dev.token);
+    const response = await authenticatedGet("/v1/groww/credentials", dev.token);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -72,7 +72,7 @@ test.describe("GET /v1/dashboard/settings/groww/credentials", () => {
 
     // Validate response matches schema
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_settings_schemas.getGrowwCredentials.response.parse(body);
+      v1_schemas.v1_dashboard_settings_schemas.getGrowwCredentials.response.parse(body);
     expect(validatedData.data.hasGrowwApiKey).toBe(false);
     expect(validatedData.data.hasGrowwApiSecret).toBe(false);
   });
@@ -88,7 +88,7 @@ test.describe("GET /v1/dashboard/settings/groww/credentials", () => {
       creds.growwApiSecret
     );
 
-    const response = await authenticatedGet("/v1/dashboard/settings/groww/credentials", dev.token);
+    const response = await authenticatedGet("/v1/groww/credentials", dev.token);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -109,7 +109,7 @@ test.describe("GET /v1/dashboard/settings/groww/credentials", () => {
       creds.growwApiSecret
     );
 
-    const response = await authenticatedGet("/v1/dashboard/settings/groww/credentials", dev.token);
+    const response = await authenticatedGet("/v1/groww/credentials", dev.token);
 
     expect(response.status).toBe(200);
     const maskedKey = response.data.data.growwApiKeyMasked;
@@ -137,7 +137,7 @@ test.describe("GET /v1/dashboard/settings/groww/credentials", () => {
 
     // Dev1 should have no credentials
     const response1 = await authenticatedGet(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev1.token
     );
     expect(response1.status).toBe(200);
@@ -145,7 +145,7 @@ test.describe("GET /v1/dashboard/settings/groww/credentials", () => {
 
     // Dev2 should have credentials
     const response2 = await authenticatedGet(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev2.token
     );
     expect(response2.status).toBe(200);
@@ -153,11 +153,11 @@ test.describe("GET /v1/dashboard/settings/groww/credentials", () => {
   });
 });
 
-test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
+test.describe("PUT /v1/groww/credentials", () => {
   // AUTHORIZATION TESTS
   test("should return 401 when authorization header is missing", async () => {
     const creds = createValidGrowwCredentials();
-    const response = await unauthenticatedPut("/v1/dashboard/settings/groww/credentials", creds);
+    const response = await unauthenticatedPut("/v1/groww/credentials", creds);
 
     expect(response.status).toBe(401);
   });
@@ -165,7 +165,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
   test("should return 401 when invalid developer token is provided", async ({ tracker }) => {
     const creds = createValidGrowwCredentials();
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       "invalid-token-12345",
       creds,
       { validateStatus: () => true }
@@ -180,7 +180,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const creds = createValidGrowwCredentials();
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       { growwApiSecret: creds.growwApiSecret },
       { validateStatus: () => true }
@@ -194,7 +194,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const creds = createValidGrowwCredentials();
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       { growwApiKey: creds.growwApiKey },
       { validateStatus: () => true }
@@ -208,7 +208,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const invalidCreds = createInvalidGrowwCredentials();
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       invalidCreds,
       { validateStatus: () => true }
@@ -222,7 +222,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const invalidCreds = createInvalidGrowwCredentials();
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       invalidCreds,
       { validateStatus: () => true }
@@ -235,7 +235,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const dev = await createDeveloperUser(undefined, tracker);
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       {},
       { validateStatus: () => true }
@@ -250,7 +250,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const creds = createValidGrowwCredentials();
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       creds
     );
@@ -263,7 +263,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
 
     // Validate response matches schema
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_settings_schemas.updateGrowwCredentials.response.parse(
+      v1_schemas.v1_dashboard_settings_schemas.updateGrowwCredentials.response.parse(
         body
       );
     expect(validatedData.data.success).toBe(true);
@@ -295,7 +295,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const creds2 = createValidGrowwCredentials();
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       creds2
     );
@@ -317,7 +317,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const creds = createValidGrowwCredentials();
 
     // Save credentials
-    await authenticatedPut("/v1/dashboard/settings/groww/credentials", dev.token, creds);
+    await authenticatedPut("/v1/groww/credentials", dev.token, creds);
 
     // Verify credentials are encrypted in database
     const rawCreds = await getDeveloperGrowwCredentialsRaw(dev.id);
@@ -326,7 +326,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
 
     // Fetch and verify masked key
     const getResponse = await authenticatedGet(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token
     );
 
@@ -349,7 +349,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const longKey = "a".repeat(500);
     const longSecret = "b".repeat(500);
 
-    const response = await authenticatedPut("/v1/dashboard/settings/groww/credentials", dev.token, {
+    const response = await authenticatedPut("/v1/groww/credentials", dev.token, {
       growwApiKey: longKey,
       growwApiSecret: longSecret,
     });
@@ -371,7 +371,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     };
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       specialCreds
     );
@@ -394,10 +394,10 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const creds2 = createValidGrowwCredentials();
 
     // Set credentials for dev1
-    await authenticatedPut("/v1/dashboard/settings/groww/credentials", dev1.token, creds1);
+    await authenticatedPut("/v1/groww/credentials", dev1.token, creds1);
 
     // Set credentials for dev2
-    await authenticatedPut("/v1/dashboard/settings/groww/credentials", dev2.token, creds2);
+    await authenticatedPut("/v1/groww/credentials", dev2.token, creds2);
 
     // Verify isolation
     const savedCreds1 = await getDeveloperGrowwCredentials(dev1.id);
@@ -409,17 +409,17 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
   });
 });
 
-test.describe("DELETE /v1/dashboard/settings/groww/credentials", () => {
+test.describe("DELETE /v1/groww/credentials", () => {
   // AUTHORIZATION TESTS
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedDelete("/v1/dashboard/settings/groww/credentials");
+    const response = await unauthenticatedDelete("/v1/groww/credentials");
 
     expect(response.status).toBe(401);
   });
 
   test("should return 401 when invalid developer token is provided", async ({ tracker }) => {
     const response = await authenticatedDelete(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       "invalid-token-12345",
       { validateStatus: () => true }
     );
@@ -442,7 +442,7 @@ test.describe("DELETE /v1/dashboard/settings/groww/credentials", () => {
     expect(beforeDelete?.growwApiKey).toBe(creds.growwApiKey);
 
     const response = await authenticatedDelete(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token
     );
 
@@ -454,7 +454,7 @@ test.describe("DELETE /v1/dashboard/settings/groww/credentials", () => {
 
     // Validate response matches schema
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_settings_schemas.deleteGrowwCredentials.response.parse(
+      v1_schemas.v1_dashboard_settings_schemas.deleteGrowwCredentials.response.parse(
         body
       );
     expect(validatedData.data.success).toBe(true);
@@ -472,7 +472,7 @@ test.describe("DELETE /v1/dashboard/settings/groww/credentials", () => {
 
     // First delete (no credentials exist)
     const response1 = await authenticatedDelete(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token
     );
 
@@ -481,7 +481,7 @@ test.describe("DELETE /v1/dashboard/settings/groww/credentials", () => {
 
     // Second delete (still no credentials)
     const response2 = await authenticatedDelete(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token
     );
 
@@ -498,7 +498,7 @@ test.describe("DELETE /v1/dashboard/settings/groww/credentials", () => {
       creds.growwApiSecret
     );
 
-    await authenticatedDelete("/v1/dashboard/settings/groww/credentials", dev.token);
+    await authenticatedDelete("/v1/groww/credentials", dev.token);
 
     const savedCreds = await getDeveloperGrowwCredentials(dev.id);
     expect(savedCreds?.growwApiKey).toBeNull();
@@ -524,7 +524,7 @@ test.describe("DELETE /v1/dashboard/settings/groww/credentials", () => {
     );
 
     // Delete dev1's credentials
-    await authenticatedDelete("/v1/dashboard/settings/groww/credentials", dev1.token);
+    await authenticatedDelete("/v1/groww/credentials", dev1.token);
 
     // Verify dev1's credentials are deleted
     const savedCreds1 = await getDeveloperGrowwCredentials(dev1.id);
@@ -547,7 +547,7 @@ test.describe("DELETE /v1/dashboard/settings/groww/credentials", () => {
 
     // First delete
     const response1 = await authenticatedDelete(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token
     );
     expect(response1.status).toBe(200);
@@ -555,7 +555,7 @@ test.describe("DELETE /v1/dashboard/settings/groww/credentials", () => {
 
     // Second delete (should still succeed)
     const response2 = await authenticatedDelete(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token
     );
     expect(response2.status).toBe(200);
@@ -563,7 +563,7 @@ test.describe("DELETE /v1/dashboard/settings/groww/credentials", () => {
 
     // Third delete (should still succeed)
     const response3 = await authenticatedDelete(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token
     );
     expect(response3.status).toBe(200);

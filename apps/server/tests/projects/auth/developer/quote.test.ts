@@ -20,16 +20,16 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/quote", () => {
+test.describe("GET /v1/quote", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/developer/quote?symbol=RELIANCE");
+    const response = await unauthenticatedGet("/v1/quote?symbol=RELIANCE");
 
     expect(response.status).toBe(401);
   });
 
   test("should return 401 when invalid token is provided", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/quote?symbol=RELIANCE",
+      "/v1/quote?symbol=RELIANCE",
       "invalid-token-12345",
       {
         validateStatus: () => true,

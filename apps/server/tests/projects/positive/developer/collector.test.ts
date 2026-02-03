@@ -8,7 +8,7 @@ import {
   createValidGrowwQuotePayload,
   buildQueryString,
 } from "../../../fixtures/test-data";
-import { v1_developer_collector_schemas, v1_developer_lists_schemas } from "@ganaka/schemas";
+import { v1_schemas, v1_lists_schemas } from "@ganaka/schemas";
 import { TestDataTracker } from "../../../helpers/test-tracker";
 import { prisma } from "../../../../src/utils/prisma";
 
@@ -54,11 +54,11 @@ async function trackQuoteSnapshotsByTimestamp(
   });
 }
 
-test.describe("POST /v1/developer/collector/lists", () => {
+test.describe("POST /v1/lists", () => {
   test("should return 201 and create shortlist snapshot for TOP_GAINERS", async () => {
     const requestBody = createCollectorShortlistRequest("TOP_GAINERS");
     const response = await authenticatedPost(
-      "/v1/developer/collector/lists",
+      "/v1/lists",
       developerToken,
       requestBody
     );
@@ -79,7 +79,7 @@ test.describe("POST /v1/developer/collector/lists", () => {
   test("should return 201 and create shortlist snapshot for VOLUME_SHOCKERS", async () => {
     const requestBody = createCollectorShortlistRequest("VOLUME_SHOCKERS");
     const response = await authenticatedPost(
-      "/v1/developer/collector/lists",
+      "/v1/lists",
       developerToken,
       requestBody
     );
@@ -99,7 +99,7 @@ test.describe("POST /v1/developer/collector/lists", () => {
     requestBody.data.timezone = "Asia/Kolkata";
 
     const response = await authenticatedPost(
-      "/v1/developer/collector/lists",
+      "/v1/lists",
       developerToken,
       requestBody
     );
@@ -124,7 +124,7 @@ test.describe("POST /v1/developer/collector/lists", () => {
     requestBody.data.timezone = "Etc/UTC";
 
     const response = await authenticatedPost(
-      "/v1/developer/collector/lists",
+      "/v1/lists",
       developerToken,
       requestBody
     );
@@ -182,7 +182,7 @@ test.describe("POST /v1/developer/collector/quotes", () => {
     expect(body.data.timestamp).toBe("2025-12-26T10:06:00");
 
     // Validate response matches schema
-    const validatedData = v1_developer_collector_schemas.createQuoteSnapshots.response.parse(body);
+    const validatedData = v1_schemas.createQuoteSnapshots.response.parse(body);
     expect(validatedData.data.count).toBe(2);
 
     // Track quote snapshots for cleanup
@@ -221,11 +221,11 @@ test.describe("POST /v1/developer/collector/quotes", () => {
   });
 });
 
-test.describe("POST /v1/developer/collector/nifty", () => {
+test.describe("POST /v1/nifty", () => {
   test("should return 201 and create NIFTY quote", async () => {
     const requestBody = createCollectorNiftyRequest();
     const response = await authenticatedPost(
-      "/v1/developer/collector/nifty",
+      "/v1/nifty",
       developerToken,
       requestBody
     );
@@ -246,7 +246,7 @@ test.describe("POST /v1/developer/collector/nifty", () => {
   test("should return 201 with negative dayChangePerc", async () => {
     const requestBody = createCollectorNiftyRequest(-1.5);
     const response = await authenticatedPost(
-      "/v1/developer/collector/nifty",
+      "/v1/nifty",
       developerToken,
       requestBody
     );
@@ -263,7 +263,7 @@ test.describe("POST /v1/developer/collector/nifty", () => {
   test("should return 201 with zero dayChangePerc", async () => {
     const requestBody = createCollectorNiftyRequest(0);
     const response = await authenticatedPost(
-      "/v1/developer/collector/nifty",
+      "/v1/nifty",
       developerToken,
       requestBody
     );
@@ -283,7 +283,7 @@ test.describe("POST /v1/developer/collector/nifty", () => {
     requestBody.data.timezone = "Asia/Kolkata";
 
     const response = await authenticatedPost(
-      "/v1/developer/collector/nifty",
+      "/v1/nifty",
       developerToken,
       requestBody
     );
@@ -308,7 +308,7 @@ test.describe("POST /v1/developer/collector/nifty", () => {
     requestBody.data.timezone = "Etc/UTC";
 
     const response = await authenticatedPost(
-      "/v1/developer/collector/nifty",
+      "/v1/nifty",
       developerToken,
       requestBody
     );
@@ -327,12 +327,12 @@ test.describe("POST /v1/developer/collector/nifty", () => {
   });
 });
 
-test.describe("GET /v1/developer/collector/lists", () => {
+test.describe("GET /v1/lists", () => {
   test("should return 200 with shortlist data when snapshot exists", async ({ tracker }) => {
     // Create a shortlist snapshot first
     const shortlistRequest = createCollectorShortlistRequest("TOP_GAINERS");
     const createResponse = await authenticatedPost(
-      "/v1/developer/collector/lists",
+      "/v1/lists",
       developerToken,
       shortlistRequest
     );
@@ -347,7 +347,7 @@ test.describe("GET /v1/developer/collector/lists", () => {
     };
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/collector/lists?${queryString}`,
+      `/v1/lists?${queryString}`,
       developerToken
     );
 
@@ -359,7 +359,7 @@ test.describe("GET /v1/developer/collector/lists", () => {
     expect(body.data.length).toBeGreaterThan(0);
 
     // Validate response matches schema
-    const validatedData = v1_developer_lists_schemas.getLists.response.parse(body);
+    const validatedData = v1_lists_schemas.getLists.response.parse(body);
     expect(validatedData.data).toBeInstanceOf(Array);
   });
 
@@ -368,7 +368,7 @@ test.describe("GET /v1/developer/collector/lists", () => {
     const query = { type: "top-gainers" };
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/collector/lists?${queryString}`,
+      `/v1/lists?${queryString}`,
       developerToken
     );
 

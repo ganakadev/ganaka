@@ -9,9 +9,9 @@ import {
 } from "../../../../helpers/api-client";
 import { createValidGrowwCredentials } from "../../../../fixtures/test-data";
 
-test.describe("GET /v1/dashboard/settings/groww/credentials", () => {
+test.describe("GET /v1/groww/credentials", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/dashboard/settings/groww/credentials");
+    const response = await unauthenticatedGet("/v1/groww/credentials");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -20,7 +20,7 @@ test.describe("GET /v1/dashboard/settings/groww/credentials", () => {
 
   test("should return 401 when invalid developer token is provided", async ({ tracker }) => {
     const response = await authenticatedGet(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       "invalid-token-12345",
       { validateStatus: () => true }
     );
@@ -35,7 +35,7 @@ test.describe("GET /v1/dashboard/settings/groww/credentials", () => {
   }) => {
     const { createDeveloperUser } = await import("../../../../helpers/auth-helpers");
     const dev = await createDeveloperUser(undefined, tracker);
-    const response = await unauthenticatedGet("/v1/dashboard/settings/groww/credentials", {
+    const response = await unauthenticatedGet("/v1/groww/credentials", {
       validateStatus: () => true,
       headers: {
         authorization: dev.token, // Missing "Bearer " prefix
@@ -46,10 +46,10 @@ test.describe("GET /v1/dashboard/settings/groww/credentials", () => {
   });
 });
 
-test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
+test.describe("PUT /v1/groww/credentials", () => {
   test("should return 401 when authorization header is missing", async () => {
     const creds = createValidGrowwCredentials();
-    const response = await unauthenticatedPut("/v1/dashboard/settings/groww/credentials", creds);
+    const response = await unauthenticatedPut("/v1/groww/credentials", creds);
 
     expect(response.status).toBe(401);
   });
@@ -57,7 +57,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
   test("should return 401 when invalid developer token is provided", async ({ tracker }) => {
     const creds = createValidGrowwCredentials();
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       "invalid-token-12345",
       creds,
       { validateStatus: () => true }
@@ -67,16 +67,16 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
   });
 });
 
-test.describe("DELETE /v1/dashboard/settings/groww/credentials", () => {
+test.describe("DELETE /v1/groww/credentials", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedDelete("/v1/dashboard/settings/groww/credentials");
+    const response = await unauthenticatedDelete("/v1/groww/credentials");
 
     expect(response.status).toBe(401);
   });
 
   test("should return 401 when invalid developer token is provided", async ({ tracker }) => {
     const response = await authenticatedDelete(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       "invalid-token-12345",
       { validateStatus: () => true }
     );

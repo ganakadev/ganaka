@@ -28,11 +28,11 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/admin/developers/:id", () => {
+test.describe("GET /v1/developers/:id", () => {
   test("should return developer by valid ID", async ({ tracker }) => {
     const dev = await createTestDeveloper(tracker, "test-get-dev");
 
-    const response = await authenticatedGet(`/v1/admin/developers/${dev.id}`, adminToken);
+    const response = await authenticatedGet(`/v1/developers/${dev.id}`, adminToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -44,11 +44,11 @@ test.describe("GET /v1/admin/developers/:id", () => {
   });
 });
 
-test.describe("POST /v1/admin/developers", () => {
+test.describe("POST /v1/developers", () => {
   test("should create a new developer successfully", async ({ tracker }) => {
     const testData = createDeveloperTestData();
 
-    const response = await authenticatedPost("/v1/admin/developers", adminToken, testData);
+    const response = await authenticatedPost("/v1/developers", adminToken, testData);
 
     expect(response.status).toBe(201);
     const body = response.data;
@@ -64,13 +64,13 @@ test.describe("POST /v1/admin/developers", () => {
   });
 });
 
-test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
+test.describe("PATCH /v1/developers/:id/refresh-key", () => {
   test("should refresh developer key successfully", async ({ tracker }) => {
     const dev = await createTestDeveloper(tracker, "test-refresh-dev");
     const oldToken = dev.token;
 
     const response = await authenticatedPatch(
-      `/v1/admin/developers/${dev.id}/refresh-key`,
+      `/v1/developers/${dev.id}/refresh-key`,
       adminToken,
       {}
     );
@@ -91,10 +91,10 @@ test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
   });
 });
 
-test.describe("DELETE /v1/admin/developers/:id", () => {
+test.describe("DELETE /v1/developers/:id", () => {
   test("should delete developer successfully", async ({ tracker }) => {
     const dev = await createTestDeveloper(tracker, "test-delete-dev");
-    const response = await authenticatedDelete(`/v1/admin/developers/${dev.id}`, adminToken);
+    const response = await authenticatedDelete(`/v1/developers/${dev.id}`, adminToken);
 
     expect(response.status).toBe(200);
     const body = response.data;

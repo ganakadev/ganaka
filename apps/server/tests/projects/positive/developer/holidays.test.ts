@@ -31,7 +31,7 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/holidays", () => {
+test.describe("GET /v1/holidays", () => {
   test.describe.configure({ mode: "serial" });
 
   test("should validate response schema matches expected structure with data", async ({
@@ -43,7 +43,7 @@ test.describe("GET /v1/developer/holidays", () => {
     const holiday = await prisma.nseHoliday.create({ data: { date } });
     tracker.trackNseHoliday(holiday.id);
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
@@ -61,7 +61,7 @@ test.describe("GET /v1/developer/holidays", () => {
     const holiday = await prisma.nseHoliday.create({ data: { date } });
     tracker.trackNseHoliday(holiday.id);
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
@@ -79,7 +79,7 @@ test.describe("GET /v1/developer/holidays", () => {
     const holiday = await prisma.nseHoliday.create({ data: { date } });
     tracker.trackNseHoliday(holiday.id);
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);

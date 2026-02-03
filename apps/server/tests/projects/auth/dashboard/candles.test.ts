@@ -19,11 +19,11 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/candles", () => {
+test.describe("GET /v1/candles", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createCandlesQuery();
     const queryString = buildQueryString(query);
-    const response = await unauthenticatedGet(`/v1/dashboard/candles?${queryString}`);
+    const response = await unauthenticatedGet(`/v1/candles?${queryString}`);
 
     expect(response.status).toBe(401);
   });
@@ -32,7 +32,7 @@ test.describe("GET /v1/dashboard/candles", () => {
     const query = createCandlesQuery();
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/dashboard/candles?${queryString}`,
+      `/v1/candles?${queryString}`,
       "invalid-token-12345",
       {
         validateStatus: () => true,

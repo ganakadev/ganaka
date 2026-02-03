@@ -27,7 +27,7 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/holidays", () => {
+test.describe("GET /v1/holidays", () => {
   test.describe.configure({ mode: "serial" });
 
   test("should return 200 with empty holidays array when no holidays exist", async ({
@@ -36,7 +36,7 @@ test.describe("GET /v1/developer/holidays", () => {
     // Clean up any existing holidays from previous tests to ensure isolation
     await prisma.nseHoliday.deleteMany({});
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;

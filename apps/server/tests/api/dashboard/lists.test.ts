@@ -10,7 +10,7 @@ import {
   generateUniqueTestDatetime,
   buildQueryString,
 } from "../../fixtures/test-data";
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_schemas } from "@ganaka/schemas";
 import { TestDataTracker } from "../../helpers/test-tracker";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -36,11 +36,11 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/lists", () => {
+test.describe("GET /v1/lists", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createShortlistsQuery();
     const queryString = buildQueryString(query);
-    const response = await unauthenticatedGet(`/v1/dashboard/lists?${queryString}`);
+    const response = await unauthenticatedGet(`/v1/lists?${queryString}`);
 
     expect(response.status).toBe(401);
   });
@@ -49,7 +49,7 @@ test.describe("GET /v1/dashboard/lists", () => {
     const query = createShortlistsQuery();
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/dashboard/lists?${queryString}`,
+      `/v1/lists?${queryString}`,
       "invalid-token-12345",
       {
         validateStatus: () => true,
@@ -62,7 +62,7 @@ test.describe("GET /v1/dashboard/lists", () => {
   test("should return 400 when date is missing", async () => {
     const query = { type: "TOP_GAINERS" };
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -72,7 +72,7 @@ test.describe("GET /v1/dashboard/lists", () => {
   test("should return 400 when type is missing", async () => {
     const query = { date: TEST_DATETIME };
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -82,7 +82,7 @@ test.describe("GET /v1/dashboard/lists", () => {
   test("should return 400 when date format is invalid", async () => {
     const query = createShortlistsQuery("invalid-date", "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -92,7 +92,7 @@ test.describe("GET /v1/dashboard/lists", () => {
   test("should return 400 when type is invalid enum value", async () => {
     const query = { date: TEST_DATETIME, type: "invalid-type" };
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -103,7 +103,7 @@ test.describe("GET /v1/dashboard/lists", () => {
     const futureDatetime = "2099-01-01T10:06:00";
     const query = createShortlistsQuery(futureDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -129,7 +129,7 @@ test.describe("GET /v1/dashboard/lists", () => {
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -139,7 +139,7 @@ test.describe("GET /v1/dashboard/lists", () => {
 
     // Validate response matches schema
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(body);
+      v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(body);
     expect(validatedData.data.shortlist).not.toBeNull();
   });
 
@@ -157,11 +157,11 @@ test.describe("GET /v1/dashboard/lists", () => {
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
+      v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
         response.data
       );
 
@@ -192,11 +192,11 @@ test.describe("GET /v1/dashboard/lists", () => {
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
+      v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
         response.data
       );
 
@@ -224,11 +224,11 @@ test.describe("GET /v1/dashboard/lists", () => {
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
+      v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
         response.data
       );
 
@@ -258,11 +258,11 @@ test.describe("GET /v1/dashboard/lists", () => {
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
+      v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
         response.data
       );
 
@@ -287,11 +287,11 @@ test.describe("GET /v1/dashboard/lists", () => {
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
+      v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
         response.data
       );
 
@@ -329,7 +329,7 @@ test.describe("GET /v1/dashboard/lists", () => {
       stopLossPercentage: "1.5",
     }).toString();
 
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -339,7 +339,7 @@ test.describe("GET /v1/dashboard/lists", () => {
 
     // Validate response matches schema
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(body);
+      v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(body);
     expect(validatedData.data.shortlist).not.toBeNull();
 
     // Check that trade metrics are included
@@ -368,7 +368,7 @@ test.describe("GET /v1/dashboard/lists", () => {
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
 
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -378,7 +378,7 @@ test.describe("GET /v1/dashboard/lists", () => {
 
     // Validate response matches schema
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(body);
+      v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(body);
     expect(validatedData.data.shortlist).not.toBeNull();
 
     // Check that trade metrics are not included (should be undefined)
@@ -397,7 +397,7 @@ test.describe("GET /v1/dashboard/lists", () => {
       stopLossPercentage: "1.5",
     }).toString();
 
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -412,7 +412,7 @@ test.describe("GET /v1/dashboard/lists", () => {
       stopLossPercentage: "150",
     }).toString();
 
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -438,14 +438,14 @@ test.describe("GET /v1/dashboard/lists", () => {
     // Don't include TP/SL params to test defaults
     const queryString = buildQueryString(query);
 
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
 
     // Validate response matches schema
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(body);
+      v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(body);
 
     // Should work without explicit TP/SL params (defaults are used internally)
     expect(validatedData.data.shortlist).not.toBeNull();
@@ -457,7 +457,7 @@ test.describe("GET /v1/dashboard/lists", () => {
       ...query,
       scope: "INVALID_SCOPE",
     });
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -502,7 +502,7 @@ test.describe("GET /v1/dashboard/lists", () => {
       "TOP_5"
     );
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -544,7 +544,7 @@ test.describe("GET /v1/dashboard/lists", () => {
     // Query without scope parameter
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;

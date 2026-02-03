@@ -19,11 +19,11 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/lists", () => {
+test.describe("GET /v1/lists", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createShortlistsQuery();
     const queryString = buildQueryString(query);
-    const response = await unauthenticatedGet(`/v1/dashboard/lists?${queryString}`);
+    const response = await unauthenticatedGet(`/v1/lists?${queryString}`);
 
     expect(response.status).toBe(401);
   });
@@ -32,7 +32,7 @@ test.describe("GET /v1/dashboard/lists", () => {
     const query = createShortlistsQuery();
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/dashboard/lists?${queryString}`,
+      `/v1/lists?${queryString}`,
       "invalid-token-12345",
       {
         validateStatus: () => true,

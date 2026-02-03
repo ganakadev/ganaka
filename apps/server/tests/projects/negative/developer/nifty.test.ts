@@ -43,10 +43,10 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/nifty", () => {
+test.describe("GET /v1/nifty", () => {
   test("should return 400 when datetime format is invalid", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/nifty?datetime=invalid-date",
+      "/v1/nifty?datetime=invalid-date",
       developerToken,
       {
         validateStatus: () => true,
@@ -57,7 +57,7 @@ test.describe("GET /v1/developer/nifty", () => {
   });
 
   test("should return 400 when datetime is missing", async () => {
-    const response = await authenticatedGet("/v1/developer/nifty", developerToken, {
+    const response = await authenticatedGet("/v1/nifty", developerToken, {
       validateStatus: () => true,
     });
 
@@ -82,7 +82,7 @@ test.describe("GET /v1/developer/nifty", () => {
     const queryString = buildQueryString(query);
 
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/nifty?${queryString}`,
+      `/v1/nifty?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -108,7 +108,7 @@ test.describe("GET /v1/developer/nifty", () => {
     const query = createGrowwNiftyQuoteQuery(testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/nifty?${queryString}`,
+      `/v1/nifty?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,

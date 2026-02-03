@@ -44,7 +44,7 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/nifty", () => {
+test.describe("GET /v1/nifty", () => {
   test("should return snapshot data when valid datetime is provided", async ({ tracker }) => {
     const testQuoteData = createValidGrowwQuotePayload();
     const testDatetime = generateUniqueTestDatetime();
@@ -52,7 +52,7 @@ test.describe("GET /v1/developer/nifty", () => {
 
     const query = createGrowwNiftyQuoteQuery(testDatetime);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/nifty?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/nifty?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -103,7 +103,7 @@ test.describe("GET /v1/developer/nifty", () => {
 
     const query = createGrowwNiftyQuoteQuery(baseDatetime);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/nifty?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/nifty?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -127,7 +127,7 @@ test.describe("GET /v1/developer/nifty", () => {
     const query = createGrowwNiftyQuoteQuery(testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/nifty?${queryString}`,
+      `/v1/nifty?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp
@@ -145,7 +145,7 @@ test.describe("GET /v1/developer/nifty", () => {
 
     const query = createGrowwNiftyQuoteQuery(testDatetime);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/nifty?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/nifty?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;

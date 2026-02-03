@@ -43,16 +43,16 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/quote", () => {
+test.describe("GET /v1/quote", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/developer/quote?symbol=RELIANCE");
+    const response = await unauthenticatedGet("/v1/quote?symbol=RELIANCE");
 
     expect(response.status).toBe(401);
   });
 
   test("should return 401 when invalid token is provided", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/quote?symbol=RELIANCE",
+      "/v1/quote?symbol=RELIANCE",
       "invalid-token-12345",
       {
         validateStatus: () => true,
@@ -63,7 +63,7 @@ test.describe("GET /v1/developer/quote", () => {
   });
 
   test("should return 400 when symbol is missing", async () => {
-    const response = await authenticatedGet("/v1/developer/quote", developerToken, {
+    const response = await authenticatedGet("/v1/quote", developerToken, {
       validateStatus: () => true,
     });
 
@@ -72,7 +72,7 @@ test.describe("GET /v1/developer/quote", () => {
 
   test("should return 400 when datetime format is invalid", async () => {
     const response = await authenticatedGet(
-      `/v1/developer/quote?symbol=${TEST_SYMBOL}&datetime=invalid-date`,
+      `/v1/quote?symbol=${TEST_SYMBOL}&datetime=invalid-date`,
       developerToken,
       {
         validateStatus: () => true,
@@ -92,7 +92,7 @@ test.describe("GET /v1/developer/quote", () => {
     const query = createGrowwQuoteQuery(TEST_SYMBOL, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/quote?${queryString}`,
+      `/v1/quote?${queryString}`,
       developerToken
     );
 
@@ -175,7 +175,7 @@ test.describe("GET /v1/developer/quote", () => {
     const query = createGrowwQuoteQuery(TEST_SYMBOL, futureDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/quote?${queryString}`,
+      `/v1/quote?${queryString}`,
       developerToken
     );
 
@@ -201,7 +201,7 @@ test.describe("GET /v1/developer/quote", () => {
     const query = createGrowwQuoteQuery(testSymbol, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/quote?${queryString}`,
+      `/v1/quote?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp
@@ -230,7 +230,7 @@ test.describe("GET /v1/developer/quote", () => {
     const queryString = buildQueryString(query);
 
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/quote?${queryString}`,
+      `/v1/quote?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -257,7 +257,7 @@ test.describe("GET /v1/developer/quote", () => {
     const query = createGrowwQuoteQuery(testSymbol, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/quote?${queryString}`,
+      `/v1/quote?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -279,7 +279,7 @@ test.describe("GET /v1/developer/quote", () => {
     const query = createGrowwQuoteQuery(testSymbol, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/quote?${queryString}`,
+      `/v1/quote?${queryString}`,
       developerToken
     );
 

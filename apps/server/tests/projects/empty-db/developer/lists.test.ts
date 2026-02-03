@@ -21,12 +21,12 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/lists", () => {
+test.describe("GET /v1/lists", () => {
   test("should return null data when snapshot is not found", async () => {
     const futureDatetime = "2099-01-01T10:30:00";
     const query = createListsQuery("top-gainers", futureDatetime);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;

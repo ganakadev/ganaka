@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { v1_admin_schemas } from "@ganaka/schemas";
+import { v1_dates_schemas, v1_holidays_schemas } from "@ganaka/schemas";
 import { z } from "zod";
 import { authLocalStorage } from "../../utils/authLocalStorage";
 
@@ -8,7 +8,7 @@ const baseUrl = `${import.meta.env.VITE_API_DOMAIN}` || "http://localhost:4000";
 
 // Create base query with admin auth
 const baseQueryWithAuth = fetchBaseQuery({
-  baseUrl: `${baseUrl}/v1/admin`,
+  baseUrl: `${baseUrl}/v1`,
   prepareHeaders: (headers) => {
     const token = authLocalStorage.getToken();
     if (token) {
@@ -40,7 +40,7 @@ export const adminAPI = createApi({
   endpoints: (builder) => ({
     // Get available dates
     getAvailableDates: builder.query<
-      z.infer<typeof v1_admin_schemas.v1_admin_dates_schemas.getAvailableDates.response>,
+      z.infer<typeof v1_dates_schemas.getAvailableDatesAdmin.response>,
       void
     >({
       query: () => ({
@@ -52,8 +52,8 @@ export const adminAPI = createApi({
 
     // Delete dates
     deleteDates: builder.mutation<
-      z.infer<typeof v1_admin_schemas.v1_admin_dates_schemas.deleteDates.response>,
-      z.infer<typeof v1_admin_schemas.v1_admin_dates_schemas.deleteDates.body>
+      z.infer<typeof v1_dates_schemas.deleteDates.response>,
+      z.infer<typeof v1_dates_schemas.deleteDates.body>
     >({
       query: (body) => ({
         url: "/dates",
@@ -64,10 +64,7 @@ export const adminAPI = createApi({
     }),
 
     // Get holidays
-    getHolidays: builder.query<
-      z.infer<typeof v1_admin_schemas.v1_admin_holidays_schemas.getHolidays.response>,
-      void
-    >({
+    getHolidays: builder.query<z.infer<typeof v1_holidays_schemas.getHolidays.response>, void>({
       query: () => ({
         url: "/holidays",
         method: "GET",
@@ -77,8 +74,8 @@ export const adminAPI = createApi({
 
     // Add holidays
     addHolidays: builder.mutation<
-      z.infer<typeof v1_admin_schemas.v1_admin_holidays_schemas.addHolidays.response>,
-      z.infer<typeof v1_admin_schemas.v1_admin_holidays_schemas.addHolidays.body>
+      z.infer<typeof v1_holidays_schemas.addHolidays.response>,
+      z.infer<typeof v1_holidays_schemas.addHolidays.body>
     >({
       query: (body) => ({
         url: "/holidays",
@@ -90,8 +87,8 @@ export const adminAPI = createApi({
 
     // Remove holidays
     removeHolidays: builder.mutation<
-      z.infer<typeof v1_admin_schemas.v1_admin_holidays_schemas.removeHolidays.response>,
-      z.infer<typeof v1_admin_schemas.v1_admin_holidays_schemas.removeHolidays.body>
+      z.infer<typeof v1_holidays_schemas.removeHolidays.response>,
+      z.infer<typeof v1_holidays_schemas.removeHolidays.body>
     >({
       query: (body) => ({
         url: "/holidays",

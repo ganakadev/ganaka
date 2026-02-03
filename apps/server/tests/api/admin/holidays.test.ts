@@ -38,9 +38,9 @@ test.afterAll(async () => {
 test.describe("Admin Holidays API", () => {
   test.describe.configure({ mode: "serial" });
 
-  test.describe("GET /v1/admin/holidays", () => {
+  test.describe("GET /v1/holidays", () => {
     test("should return 401 when authorization header is missing", async () => {
-      const response = await unauthenticatedGet("/v1/admin/holidays");
+      const response = await unauthenticatedGet("/v1/holidays");
 
       expect(response.status).toBe(401);
       const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -48,7 +48,7 @@ test.describe("Admin Holidays API", () => {
     });
 
     test("should return 401 when invalid admin token is provided", async () => {
-      const response = await authenticatedGet("/v1/admin/holidays", "invalid-token-12345", {
+      const response = await authenticatedGet("/v1/holidays", "invalid-token-12345", {
         validateStatus: () => true,
       });
 
@@ -62,7 +62,7 @@ test.describe("Admin Holidays API", () => {
     }) => {
       const dev = await createDeveloperUser(undefined, tracker);
 
-      const response = await authenticatedGet("/v1/admin/holidays", dev.token, {
+      const response = await authenticatedGet("/v1/holidays", dev.token, {
         validateStatus: () => true,
       });
 
@@ -75,7 +75,7 @@ test.describe("Admin Holidays API", () => {
       // Clean up any existing holidays from previous tests to ensure isolation
       await prisma.nseHoliday.deleteMany({});
 
-      const response = await authenticatedGet("/v1/admin/holidays", adminToken);
+      const response = await authenticatedGet("/v1/holidays", adminToken);
 
       expect(response.status).toBe(200);
       const body = response.data;
@@ -98,7 +98,7 @@ test.describe("Admin Holidays API", () => {
       tracker.trackNseHoliday(holiday1.id);
       tracker.trackNseHoliday(holiday2.id);
 
-      const response = await authenticatedGet("/v1/admin/holidays", adminToken);
+      const response = await authenticatedGet("/v1/holidays", adminToken);
 
       expect(response.status).toBe(200);
       const body = response.data;
@@ -111,9 +111,9 @@ test.describe("Admin Holidays API", () => {
     });
   });
 
-  test.describe("POST /v1/admin/holidays", () => {
+  test.describe("POST /v1/holidays", () => {
     test("should return 401 when authorization header is missing", async () => {
-      const response = await unauthenticatedPost("/v1/admin/holidays", {
+      const response = await unauthenticatedPost("/v1/holidays", {
         dates: ["2025-01-15"],
       });
 
@@ -122,7 +122,7 @@ test.describe("Admin Holidays API", () => {
 
     test("should add a single holiday successfully", async ({ tracker }) => {
       const response = await authenticatedPost(
-      "/v1/admin/holidays",
+      "/v1/holidays",
       adminToken,
       {
         dates: ["2025-02-15"],
@@ -143,7 +143,7 @@ test.describe("Admin Holidays API", () => {
 
     test("should add multiple holidays successfully", async ({ tracker }) => {
       const response = await authenticatedPost(
-      "/v1/admin/holidays",
+      "/v1/holidays",
       adminToken,
       {
         dates: ["2025-03-15", "2025-03-20", "2025-03-25"],
@@ -169,7 +169,7 @@ test.describe("Admin Holidays API", () => {
 
     test("should return 400 when dates array is empty", async () => {
       const response = await authenticatedPost(
-      "/v1/admin/holidays",
+      "/v1/holidays",
       adminToken,
       {
         dates: [],
@@ -182,7 +182,7 @@ test.describe("Admin Holidays API", () => {
 
     test("should return 400 when date format is invalid", async () => {
       const response = await authenticatedPost(
-      "/v1/admin/holidays",
+      "/v1/holidays",
       adminToken,
       {
         dates: ["invalid-date"],
@@ -195,7 +195,7 @@ test.describe("Admin Holidays API", () => {
 
     test("should return 400 when duplicate dates in request", async () => {
       const response = await authenticatedPost(
-      "/v1/admin/holidays",
+      "/v1/holidays",
       adminToken,
       {
         dates: ["2025-04-15", "2025-04-15"],
@@ -215,7 +215,7 @@ test.describe("Admin Holidays API", () => {
     tracker.trackNseHoliday(holiday.id);
 
     const response = await authenticatedPost(
-      "/v1/admin/holidays",
+      "/v1/holidays",
       adminToken,
       {
         dates: ["2025-05-15"],
@@ -229,9 +229,9 @@ test.describe("Admin Holidays API", () => {
   });
   });
 
-  test.describe("DELETE /v1/admin/holidays", () => {
+  test.describe("DELETE /v1/holidays", () => {
     test("should return 401 when authorization header is missing", async () => {
-      const response = await unauthenticatedDelete("/v1/admin/holidays", {
+      const response = await unauthenticatedDelete("/v1/holidays", {
       data: {
         dates: ["2025-01-15"],
       },
@@ -247,7 +247,7 @@ test.describe("Admin Holidays API", () => {
     tracker.trackNseHoliday(holiday.id);
 
     const response = await authenticatedDelete(
-      "/v1/admin/holidays",
+      "/v1/holidays",
       adminToken,
       {
         data: {
@@ -279,7 +279,7 @@ test.describe("Admin Holidays API", () => {
     tracker.trackNseHoliday(holiday2.id);
 
     const response = await authenticatedDelete(
-      "/v1/admin/holidays",
+      "/v1/holidays",
       adminToken,
       {
         data: {
@@ -297,7 +297,7 @@ test.describe("Admin Holidays API", () => {
 
     test("should return 400 when dates array is empty", async () => {
       const response = await authenticatedDelete(
-      "/v1/admin/holidays",
+      "/v1/holidays",
       adminToken,
       {
         data: {
@@ -312,7 +312,7 @@ test.describe("Admin Holidays API", () => {
 
     test("should return 404 when no holidays found", async () => {
       const response = await authenticatedDelete(
-      "/v1/admin/holidays",
+      "/v1/holidays",
       adminToken,
       {
         data: {

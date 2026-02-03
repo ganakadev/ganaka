@@ -26,9 +26,9 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/admin/dates", () => {
+test.describe("GET /v1/dates", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/admin/dates");
+    const response = await unauthenticatedGet("/v1/dates");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -36,7 +36,7 @@ test.describe("GET /v1/admin/dates", () => {
   });
 
   test("should return 401 when invalid admin token is provided", async () => {
-    const response = await authenticatedGet("/v1/admin/dates", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/dates", "invalid-token-12345", {
       validateStatus: () => true,
     });
 
@@ -50,7 +50,7 @@ test.describe("GET /v1/admin/dates", () => {
   }) => {
     const dev = await createDeveloperUser(undefined, tracker);
 
-    const response = await authenticatedGet("/v1/admin/dates", dev.token, {
+    const response = await authenticatedGet("/v1/dates", dev.token, {
       validateStatus: () => true,
     });
 
@@ -60,9 +60,9 @@ test.describe("GET /v1/admin/dates", () => {
   });
 });
 
-test.describe("DELETE /v1/admin/dates", () => {
+test.describe("DELETE /v1/dates", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedDelete("/v1/admin/dates", {
+    const response = await unauthenticatedDelete("/v1/dates", {
       data: {
         dates: ["2025-01-15"],
       },

@@ -1,4 +1,4 @@
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_schemas } from "@ganaka/schemas";
 import { expect, test } from "../../../helpers/test-fixtures";
 import { authenticatedGet, unauthenticatedGet } from "../../../helpers/api-client";
 import { createDeveloperUser } from "../../../helpers/auth-helpers";
@@ -22,15 +22,15 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/runs/tags", () => {
+test.describe("GET /v1/runs/tags", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/dashboard/runs/tags");
+    const response = await unauthenticatedGet("/v1/runs/tags");
 
     expect(response.status).toBe(401);
   });
 
   test("should return 401 when invalid token is provided", async () => {
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/runs/tags", "invalid-token-12345", {
       validateStatus: () => true,
     });
 
@@ -38,7 +38,7 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
   });
 
   test("should return 200 with empty array when no runs exist", async () => {
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -59,7 +59,7 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
       tags: ["test"],
     });
 
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -84,7 +84,7 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
       tags: ["v1", "momentum"],
     });
 
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -99,7 +99,7 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
     });
     await createRun(developerId, "2025-01-02T09:15:00", "2025-01-02T15:30:00", tracker);
 
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -112,14 +112,14 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
       tags: ["v1", "momentum"],
     });
 
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
 
     // Validate response matches schema
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_runs_tags_schemas.getRunTags.response.parse(body);
+      v1_schemas.v1_dashboard_runs_tags_schemas.getRunTags.response.parse(body);
     expect(validatedData.data).toBeInstanceOf(Array);
     expect(validatedData.data.every((tag: any) => typeof tag === "string")).toBe(true);
   });
@@ -136,7 +136,7 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
       tags: ["developer2-tag"],
     });
 
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;

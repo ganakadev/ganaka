@@ -31,9 +31,9 @@ test.afterAll(async () => {
 test.describe("Admin Holidays API", () => {
   test.describe.configure({ mode: "serial" });
 
-  test.describe("GET /v1/admin/holidays", () => {
+  test.describe("GET /v1/holidays", () => {
     test("should return 401 when authorization header is missing", async () => {
-      const response = await unauthenticatedGet("/v1/admin/holidays");
+      const response = await unauthenticatedGet("/v1/holidays");
 
       expect(response.status).toBe(401);
       const body =
@@ -42,7 +42,7 @@ test.describe("Admin Holidays API", () => {
     });
 
     test("should return 401 when invalid admin token is provided", async () => {
-      const response = await authenticatedGet("/v1/admin/holidays", "invalid-token-12345", {
+      const response = await authenticatedGet("/v1/holidays", "invalid-token-12345", {
         validateStatus: () => true,
       });
 
@@ -57,7 +57,7 @@ test.describe("Admin Holidays API", () => {
     }) => {
       const dev = await createDeveloperUser(undefined, tracker);
 
-      const response = await authenticatedGet("/v1/admin/holidays", dev.token, {
+      const response = await authenticatedGet("/v1/holidays", dev.token, {
         validateStatus: () => true,
       });
 
@@ -68,9 +68,9 @@ test.describe("Admin Holidays API", () => {
     });
   });
 
-  test.describe("POST /v1/admin/holidays", () => {
+  test.describe("POST /v1/holidays", () => {
     test("should return 401 when authorization header is missing", async () => {
-      const response = await unauthenticatedPost("/v1/admin/holidays", {
+      const response = await unauthenticatedPost("/v1/holidays", {
         dates: ["2025-01-15"],
       });
 
@@ -78,9 +78,9 @@ test.describe("Admin Holidays API", () => {
     });
   });
 
-  test.describe("DELETE /v1/admin/holidays", () => {
+  test.describe("DELETE /v1/holidays", () => {
     test("should return 401 when authorization header is missing", async () => {
-      const response = await unauthenticatedDelete("/v1/admin/holidays", {
+      const response = await unauthenticatedDelete("/v1/holidays", {
         data: {
           dates: ["2025-01-15"],
         },

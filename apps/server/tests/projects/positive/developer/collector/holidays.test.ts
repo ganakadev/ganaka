@@ -25,10 +25,10 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/collector/holidays/check", () => {
+test.describe("GET /v1/holidays/check", () => {
   test("should return 200 with isHoliday=false when date is not a holiday", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/collector/holidays/check?date=2025-06-15",
+      "/v1/holidays/check?date=2025-06-15",
       developerToken
     );
 
@@ -48,7 +48,7 @@ test.describe("GET /v1/developer/collector/holidays/check", () => {
     tracker.trackNseHoliday(holiday.id);
 
     const response = await authenticatedGet(
-      `/v1/developer/collector/holidays/check?date=${dateStr}`,
+      `/v1/holidays/check?date=${dateStr}`,
       developerToken
     );
 
@@ -67,7 +67,7 @@ test.describe("GET /v1/developer/collector/holidays/check", () => {
     tracker.trackNseHoliday(holiday.id);
 
     const response = await authenticatedGet(
-      `/v1/developer/collector/holidays/check?date=${dateStr}`,
+      `/v1/holidays/check?date=${dateStr}`,
       developerToken
     );
 

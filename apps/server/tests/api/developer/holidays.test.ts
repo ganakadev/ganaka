@@ -37,10 +37,10 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/holidays", () => {
+test.describe("GET /v1/holidays", () => {
   test.describe.configure({ mode: "serial" });
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/developer/holidays");
+    const response = await unauthenticatedGet("/v1/holidays");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -48,7 +48,7 @@ test.describe("GET /v1/developer/holidays", () => {
   });
 
   test("should return 401 when invalid developer token is provided", async () => {
-    const response = await authenticatedGet("/v1/developer/holidays", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/holidays", "invalid-token-12345", {
       validateStatus: () => true,
     });
 
@@ -63,7 +63,7 @@ test.describe("GET /v1/developer/holidays", () => {
     // Clean up any existing holidays from previous tests to ensure isolation
     await prisma.nseHoliday.deleteMany({});
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -90,7 +90,7 @@ test.describe("GET /v1/developer/holidays", () => {
     tracker.trackNseHoliday(holiday1.id);
     tracker.trackNseHoliday(holiday2.id);
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -118,7 +118,7 @@ test.describe("GET /v1/developer/holidays", () => {
     tracker.trackNseHoliday(holiday2.id);
     tracker.trackNseHoliday(holiday3.id);
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
@@ -137,7 +137,7 @@ test.describe("GET /v1/developer/holidays", () => {
     const holiday = await prisma.nseHoliday.create({ data: { date } });
     tracker.trackNseHoliday(holiday.id);
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
@@ -159,7 +159,7 @@ test.describe("GET /v1/developer/holidays", () => {
     const holiday = await prisma.nseHoliday.create({ data: { date } });
     tracker.trackNseHoliday(holiday.id);
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
@@ -177,7 +177,7 @@ test.describe("GET /v1/developer/holidays", () => {
     const holiday = await prisma.nseHoliday.create({ data: { date } });
     tracker.trackNseHoliday(holiday.id);
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
@@ -195,7 +195,7 @@ test.describe("GET /v1/developer/holidays", () => {
     const holiday = await prisma.nseHoliday.create({ data: { date } });
     tracker.trackNseHoliday(holiday.id);
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
@@ -216,7 +216,7 @@ test.describe("GET /v1/developer/holidays", () => {
     const holiday = await prisma.nseHoliday.create({ data: { date } });
     tracker.trackNseHoliday(holiday.id);
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
@@ -236,7 +236,7 @@ test.describe("GET /v1/developer/holidays", () => {
     const holiday = await prisma.nseHoliday.create({ data: { date } });
     tracker.trackNseHoliday(holiday.id);
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
@@ -260,7 +260,7 @@ test.describe("GET /v1/developer/holidays", () => {
 
     holidays.forEach((h) => tracker.trackNseHoliday(h.id));
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
@@ -286,7 +286,7 @@ test.describe("GET /v1/developer/holidays", () => {
 
     holidays.forEach((h) => tracker.trackNseHoliday(h.id));
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
@@ -305,7 +305,7 @@ test.describe("GET /v1/developer/holidays", () => {
     const holiday = await prisma.nseHoliday.create({ data: { date } });
     tracker.trackNseHoliday(holiday.id);
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
@@ -325,8 +325,8 @@ test.describe("GET /v1/developer/holidays", () => {
     tracker.trackNseHoliday(holiday.id);
 
     // Make multiple requests
-    const response1 = await authenticatedGet("/v1/developer/holidays", developerToken);
-    const response2 = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response1 = await authenticatedGet("/v1/holidays", developerToken);
+    const response2 = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response1.status).toBe(200);
     expect(response2.status).toBe(200);
@@ -357,7 +357,7 @@ test.describe("GET /v1/developer/holidays", () => {
     const holiday2 = await prisma.nseHoliday.create({ data: { date: date2 } });
     tracker.trackNseHoliday(holiday2.id);
 
-    const response = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const response = await authenticatedGet("/v1/holidays", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
@@ -380,11 +380,11 @@ test.describe("GET /v1/developer/holidays", () => {
     tracker.trackNseHoliday(holiday.id);
 
     // Get from developer endpoint
-    const devResponse = await authenticatedGet("/v1/developer/holidays", developerToken);
+    const devResponse = await authenticatedGet("/v1/holidays", developerToken);
     const devData = v1_developer_holidays_schemas.getHolidays.response.parse(devResponse.data);
 
     // Get from admin endpoint
-    const adminResponse = await authenticatedGet("/v1/admin/holidays", adminToken);
+    const adminResponse = await authenticatedGet("/v1/holidays", adminToken);
     const adminData = adminResponse.data;
 
     // Both should have same structure
@@ -405,7 +405,7 @@ test.describe("GET /v1/developer/holidays", () => {
 
   test("should not allow POST operations (developer endpoint is GET only)", async () => {
     const response = await authenticatedPost(
-      "/v1/developer/holidays",
+      "/v1/holidays",
       developerToken,
       {
         dates: ["2025-12-30"],

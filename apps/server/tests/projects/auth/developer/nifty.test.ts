@@ -20,16 +20,16 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/nifty", () => {
+test.describe("GET /v1/nifty", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/developer/nifty?datetime=2025-12-26T10:06:00");
+    const response = await unauthenticatedGet("/v1/nifty?datetime=2025-12-26T10:06:00");
 
     expect(response.status).toBe(401);
   });
 
   test("should return 401 when invalid token is provided", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/nifty?datetime=2025-12-26T10:06:00",
+      "/v1/nifty?datetime=2025-12-26T10:06:00",
       "invalid-token-12345",
       {
         validateStatus: () => true,

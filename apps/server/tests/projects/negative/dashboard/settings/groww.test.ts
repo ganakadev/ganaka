@@ -6,13 +6,13 @@ import {
   createInvalidGrowwCredentials,
 } from "../../../../fixtures/test-data";
 
-test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
+test.describe("PUT /v1/groww/credentials", () => {
   test("should return 400 when growwApiKey is missing", async ({ tracker }) => {
     const dev = await createDeveloperUser(undefined, tracker);
     const creds = createValidGrowwCredentials();
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       { growwApiSecret: creds.growwApiSecret },
       { validateStatus: () => true }
@@ -26,7 +26,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const creds = createValidGrowwCredentials();
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       { growwApiKey: creds.growwApiKey },
       { validateStatus: () => true }
@@ -40,7 +40,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const invalidCreds = createInvalidGrowwCredentials();
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       invalidCreds,
       { validateStatus: () => true }
@@ -54,7 +54,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const invalidCreds = createInvalidGrowwCredentials();
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       invalidCreds,
       { validateStatus: () => true }
@@ -67,7 +67,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const dev = await createDeveloperUser(undefined, tracker);
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       {},
       { validateStatus: () => true }

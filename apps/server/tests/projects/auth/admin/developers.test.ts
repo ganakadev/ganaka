@@ -30,9 +30,9 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/admin/developers", () => {
+test.describe("GET /v1/developers", () => {
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
-    const response = await unauthenticatedGet("/v1/admin/developers");
+    const response = await unauthenticatedGet("/v1/developers");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -40,7 +40,7 @@ test.describe("GET /v1/admin/developers", () => {
   });
 
   test("should return 401 when invalid admin token is provided", async ({ tracker }) => {
-    const response = await authenticatedGet("/v1/admin/developers", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/developers", "invalid-token-12345", {
       validateStatus: () => true,
     });
 
@@ -54,7 +54,7 @@ test.describe("GET /v1/admin/developers", () => {
   }) => {
     const dev = await createDeveloperUser(undefined, tracker);
 
-    const response = await authenticatedGet("/v1/admin/developers", dev.token, {
+    const response = await authenticatedGet("/v1/developers", dev.token, {
       validateStatus: () => true,
     });
 
@@ -64,39 +64,39 @@ test.describe("GET /v1/admin/developers", () => {
   });
 });
 
-test.describe("GET /v1/admin/developers/:id", () => {
+test.describe("GET /v1/developers/:id", () => {
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
     const dev = await createDeveloperUser(undefined, tracker);
 
-    const response = await unauthenticatedGet(`/v1/admin/developers/${dev.id}`);
+    const response = await unauthenticatedGet(`/v1/developers/${dev.id}`);
 
     expect(response.status).toBe(401);
   });
 });
 
-test.describe("POST /v1/admin/developers", () => {
+test.describe("POST /v1/developers", () => {
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
-    const response = await unauthenticatedPost("/v1/admin/developers", {});
+    const response = await unauthenticatedPost("/v1/developers", {});
 
     expect(response.status).toBe(401);
   });
 });
 
-test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
+test.describe("PATCH /v1/developers/:id/refresh-key", () => {
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
     const dev = await createDeveloperUser(undefined, tracker);
 
-    const response = await unauthenticatedPatch(`/v1/admin/developers/${dev.id}/refresh-key`, {});
+    const response = await unauthenticatedPatch(`/v1/developers/${dev.id}/refresh-key`, {});
 
     expect(response.status).toBe(401);
   });
 });
 
-test.describe("DELETE /v1/admin/developers/:id", () => {
+test.describe("DELETE /v1/developers/:id", () => {
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
     const dev = await createDeveloperUser(undefined, tracker);
 
-    const response = await unauthenticatedDelete(`/v1/admin/developers/${dev.id}`);
+    const response = await unauthenticatedDelete(`/v1/developers/${dev.id}`);
 
     expect(response.status).toBe(401);
   });

@@ -20,9 +20,9 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/groww/token", () => {
+test.describe("GET /v1/groww/token", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/developer/groww/token");
+    const response = await unauthenticatedGet("/v1/groww/token");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -30,7 +30,7 @@ test.describe("GET /v1/developer/groww/token", () => {
   });
 
   test("should return 401 when invalid token is provided", async () => {
-    const response = await authenticatedGet("/v1/developer/groww/token", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/groww/token", "invalid-token-12345", {
       validateStatus: () => true,
     });
 

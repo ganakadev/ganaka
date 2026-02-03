@@ -20,9 +20,9 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("DELETE /v1/admin/dates", () => {
+test.describe("DELETE /v1/dates", () => {
   test("should return 400 when dates array is empty", async () => {
-    const response = await authenticatedDelete("/v1/admin/dates", adminToken, {
+    const response = await authenticatedDelete("/v1/dates", adminToken, {
       data: {
         dates: [],
       },
@@ -33,7 +33,7 @@ test.describe("DELETE /v1/admin/dates", () => {
   });
 
   test("should return 400 when date format is invalid", async () => {
-    const response = await authenticatedDelete("/v1/admin/dates", adminToken, {
+    const response = await authenticatedDelete("/v1/dates", adminToken, {
       data: {
         dates: ["invalid-date"],
       },

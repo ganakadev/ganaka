@@ -26,7 +26,7 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/admin/dates", () => {
+test.describe("GET /v1/dates", () => {
   test.describe.configure({ mode: "serial" });
 
   test("should return dates with data counts", async ({ tracker }) => {
@@ -61,7 +61,7 @@ test.describe("GET /v1/admin/dates", () => {
       "Asia/Kolkata"
     );
 
-    const response = await authenticatedGet("/v1/admin/dates", adminToken);
+    const response = await authenticatedGet("/v1/dates", adminToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -74,7 +74,7 @@ test.describe("GET /v1/admin/dates", () => {
   });
 });
 
-test.describe("DELETE /v1/admin/dates", () => {
+test.describe("DELETE /v1/dates", () => {
   test("should delete data for multiple dates", async ({ tracker }) => {
     // Create test data for two dates
     const date1 = "2025-11-15";
@@ -97,7 +97,7 @@ test.describe("DELETE /v1/admin/dates", () => {
       "TOP_5"
     );
 
-    const response = await authenticatedDelete("/v1/admin/dates", adminToken, {
+    const response = await authenticatedDelete("/v1/dates", adminToken, {
       data: {
         dates: [date1, date2],
       },

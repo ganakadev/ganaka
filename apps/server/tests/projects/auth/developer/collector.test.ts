@@ -31,10 +31,10 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("POST /v1/developer/collector/lists", () => {
+test.describe("POST /v1/lists", () => {
   test("should return 401 when authorization header is missing", async () => {
     const requestBody = createCollectorShortlistRequest();
-    const response = await unauthenticatedPost("/v1/developer/collector/lists", requestBody, {
+    const response = await unauthenticatedPost("/v1/lists", requestBody, {
       validateStatus: () => true,
     });
 
@@ -44,7 +44,7 @@ test.describe("POST /v1/developer/collector/lists", () => {
   test("should return 401 when invalid token is provided", async () => {
     const requestBody = createCollectorShortlistRequest();
     const response = await authenticatedPost(
-      "/v1/developer/collector/lists",
+      "/v1/lists",
       "invalid-token-12345",
       requestBody,
       {
@@ -81,10 +81,10 @@ test.describe("POST /v1/developer/collector/quotes", () => {
   });
 });
 
-test.describe("POST /v1/developer/collector/nifty", () => {
+test.describe("POST /v1/nifty", () => {
   test("should return 401 when authorization header is missing", async () => {
     const requestBody = createCollectorNiftyRequest();
-    const response = await unauthenticatedPost("/v1/developer/collector/nifty", requestBody, {
+    const response = await unauthenticatedPost("/v1/nifty", requestBody, {
       validateStatus: () => true,
     });
 
@@ -94,7 +94,7 @@ test.describe("POST /v1/developer/collector/nifty", () => {
   test("should return 401 when invalid token is provided", async () => {
     const requestBody = createCollectorNiftyRequest();
     const response = await authenticatedPost(
-      "/v1/developer/collector/nifty",
+      "/v1/nifty",
       "invalid-token-12345",
       requestBody,
       {
@@ -106,11 +106,11 @@ test.describe("POST /v1/developer/collector/nifty", () => {
   });
 });
 
-test.describe("GET /v1/developer/collector/lists", () => {
+test.describe("GET /v1/lists", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = { type: "top-gainers" };
     const queryString = buildQueryString(query);
-    const response = await unauthenticatedGet(`/v1/developer/collector/lists?${queryString}`);
+    const response = await unauthenticatedGet(`/v1/lists?${queryString}`);
 
     expect(response.status).toBe(401);
   });
@@ -119,7 +119,7 @@ test.describe("GET /v1/developer/collector/lists", () => {
     const query = { type: "top-gainers" };
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/collector/lists?${queryString}`,
+      `/v1/lists?${queryString}`,
       "invalid-token-12345",
       {
         validateStatus: () => true,

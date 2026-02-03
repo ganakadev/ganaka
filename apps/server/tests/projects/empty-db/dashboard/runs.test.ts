@@ -21,9 +21,9 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/runs", () => {
+test.describe("GET /v1/runs", () => {
   test("should return 200 with empty object when no runs exist", async () => {
-    const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
+    const response = await authenticatedGet("/v1/runs", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -34,7 +34,7 @@ test.describe("GET /v1/dashboard/runs", () => {
   });
 });
 
-test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
+test.describe("GET /v1/runs/:runId/orders", () => {
   test("should return 200 with empty array when no orders exist", async ({ tracker }) => {
     const run = await createRun(
       developerId,
@@ -43,7 +43,7 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const response = await authenticatedGet(`/v1/dashboard/runs/${run.id}/orders`, developerToken);
+    const response = await authenticatedGet(`/v1/runs/${run.id}/orders`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;

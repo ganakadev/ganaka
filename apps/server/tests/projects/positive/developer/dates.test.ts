@@ -37,7 +37,7 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/dates", () => {
+test.describe("GET /v1/dates", () => {
   test.describe.configure({ mode: "serial" });
 
   test("should validate exact timestamp formats (ISO strings)", async ({ tracker }) => {
@@ -45,7 +45,7 @@ test.describe("GET /v1/developer/dates", () => {
     const testEntries = createValidShortlistEntries();
     await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
@@ -69,7 +69,7 @@ test.describe("GET /v1/developer/dates", () => {
     const testEntries = createValidShortlistEntries();
     await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
@@ -100,7 +100,7 @@ test.describe("GET /v1/developer/dates", () => {
     const date3 = generateUniqueTestDatetime("2025-12-27");
     await createShortlistSnapshot("top-gainers", date3, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
@@ -124,7 +124,7 @@ test.describe("GET /v1/developer/dates", () => {
       await createShortlistSnapshot("top-gainers", `${date}T10:06:00`, testEntries, tracker);
     }
 
-    const response = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(

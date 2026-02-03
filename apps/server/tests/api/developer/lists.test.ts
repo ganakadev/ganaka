@@ -1,4 +1,4 @@
-import { v1_developer_lists_schemas } from "@ganaka/schemas";
+import { v1_lists_schemas } from "@ganaka/schemas";
 import { expect, test } from "../../helpers/test-fixtures";
 import {
   createListsQuery,
@@ -34,11 +34,11 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/lists", () => {
+test.describe("GET /v1/lists", () => {
   test("should return 401 when authorization header is missing", async () => {
     const query = createListsQuery("top-gainers");
     const queryString = buildQueryString(query);
-    const response = await unauthenticatedGet(`/v1/developer/lists?${queryString}`);
+    const response = await unauthenticatedGet(`/v1/lists?${queryString}`);
 
     expect(response.status).toBe(401);
   });
@@ -47,7 +47,7 @@ test.describe("GET /v1/developer/lists", () => {
     const query = createListsQuery("top-gainers");
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/lists?${queryString}`,
+      `/v1/lists?${queryString}`,
       "invalid-token-12345",
       {
         validateStatus: () => true,
@@ -58,7 +58,7 @@ test.describe("GET /v1/developer/lists", () => {
   });
 
   test("should return 400 when type parameter is missing", async () => {
-    const response = await authenticatedGet("/v1/developer/lists", developerToken, {
+    const response = await authenticatedGet("/v1/lists", developerToken, {
       validateStatus: () => true,
     });
 
@@ -67,7 +67,7 @@ test.describe("GET /v1/developer/lists", () => {
 
   test("should return 400 when type is invalid enum value", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/lists?type=invalid-type",
+      "/v1/lists?type=invalid-type",
       developerToken,
       {
         validateStatus: () => true,
@@ -80,7 +80,7 @@ test.describe("GET /v1/developer/lists", () => {
   test("should return 400 when datetime format is invalid", async () => {
     const query = createListsQuery("top-gainers", "invalid-datetime");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -91,7 +91,7 @@ test.describe("GET /v1/developer/lists", () => {
     const futureDatetime = "2099-01-01T10:30:00";
     const query = createListsQuery("top-gainers", futureDatetime);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -107,7 +107,7 @@ test.describe("GET /v1/developer/lists", () => {
 
     const query = createListsQuery("top-gainers", testDatetime);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -118,7 +118,7 @@ test.describe("GET /v1/developer/lists", () => {
     expect(body.data.length).toBeGreaterThan(0);
 
     // Validate response matches schema
-    const validatedData = v1_developer_lists_schemas.getLists.response.parse(body);
+    const validatedData = v1_lists_schemas.getLists.response.parse(body);
     expect(validatedData.data).not.toBeNull();
     if (validatedData.data) {
       expect(Array.isArray(validatedData.data)).toBe(true);
@@ -140,7 +140,7 @@ test.describe("GET /v1/developer/lists", () => {
 
     const query = createListsQuery("volume-shockers", testDatetime);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -164,11 +164,11 @@ test.describe("GET /v1/developer/lists", () => {
     // Fetch via API
     const query = createListsQuery(testType, testDatetime);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     // Validate response structure
     expect(response.status).toBe(200);
-    const validatedData = v1_developer_lists_schemas.getLists.response.parse(response.data);
+    const validatedData = v1_lists_schemas.getLists.response.parse(response.data);
 
     // Validate data matches stored snapshot
     expect(validatedData.data).not.toBeNull();
@@ -210,11 +210,11 @@ test.describe("GET /v1/developer/lists", () => {
     // Fetch via API
     const query = createListsQuery(testType, testDatetime);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     // Validate response structure
     expect(response.status).toBe(200);
-    const validatedData = v1_developer_lists_schemas.getLists.response.parse(response.data);
+    const validatedData = v1_lists_schemas.getLists.response.parse(response.data);
 
     // Validate data matches stored snapshot
     expect(validatedData.data).not.toBeNull();
@@ -245,7 +245,7 @@ test.describe("GET /v1/developer/lists", () => {
   test("should handle live fetch when no datetime is provided", async () => {
     const query = createListsQuery("top-gainers");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     // Note: This test may return empty array if external API fails, but should still return 200
     expect([200, 500]).toContain(response.status);
@@ -274,7 +274,7 @@ test.describe("GET /v1/developer/lists", () => {
     const query = createListsQuery("top-gainers", testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/lists?${queryString}`,
+      `/v1/lists?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -298,7 +298,7 @@ test.describe("GET /v1/developer/lists", () => {
     const query = createListsQuery("top-gainers", testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/lists?${queryString}`,
+      `/v1/lists?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -325,7 +325,7 @@ test.describe("GET /v1/developer/lists", () => {
     const query = createListsQuery("top-gainers", testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/lists?${queryString}`,
+      `/v1/lists?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -346,7 +346,7 @@ test.describe("GET /v1/developer/lists", () => {
 
     const query = createListsQuery("top-gainers", testDatetime);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -359,7 +359,7 @@ test.describe("GET /v1/developer/lists", () => {
       ...query,
       scope: "INVALID_SCOPE",
     }).toString();
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -373,7 +373,7 @@ test.describe("GET /v1/developer/lists", () => {
 
     const query = createListsQuery("top-gainers", testDatetime, undefined, "TOP_5");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -392,7 +392,7 @@ test.describe("GET /v1/developer/lists", () => {
 
     const query = createListsQuery("top-gainers", testDatetime, undefined, "FULL");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -416,7 +416,7 @@ test.describe("GET /v1/developer/lists", () => {
     // Query without scope parameter
     const query = createListsQuery("top-gainers", testDatetime);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -439,7 +439,7 @@ test.describe("GET /v1/developer/lists", () => {
     // Query for TOP_5 scope
     const query = createListsQuery("top-gainers", testDatetime, undefined, "TOP_5");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;

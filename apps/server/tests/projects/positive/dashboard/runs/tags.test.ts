@@ -1,4 +1,4 @@
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_schemas } from "@ganaka/schemas";
 import { expect, test } from "../../../../helpers/test-fixtures";
 import { authenticatedGet } from "../../../../helpers/api-client";
 import { createDeveloperUser } from "../../../../helpers/auth-helpers";
@@ -22,7 +22,7 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/runs/tags", () => {
+test.describe("GET /v1/runs/tags", () => {
   test("should return 200 with unique tags from all runs", async ({ tracker }) => {
     // Create runs with different tags
     await createRun(developerId, "2025-01-01T09:15:00", "2025-01-01T15:30:00", tracker, {
@@ -35,7 +35,7 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
       tags: ["test"],
     });
 
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -60,7 +60,7 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
       tags: ["v1", "momentum"],
     });
 
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -73,14 +73,14 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
       tags: ["v1", "momentum"],
     });
 
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
 
     // Validate response matches schema
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_runs_tags_schemas.getRunTags.response.parse(body);
+      v1_schemas.v1_dashboard_runs_tags_schemas.getRunTags.response.parse(body);
     expect(validatedData.data).toBeInstanceOf(Array);
     expect(validatedData.data.every((tag: any) => typeof tag === "string")).toBe(true);
   });
@@ -97,7 +97,7 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
       tags: ["developer2-tag"],
     });
 
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;

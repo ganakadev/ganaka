@@ -27,10 +27,10 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("POST /v1/developer/collector/lists", () => {
+test.describe("POST /v1/lists", () => {
   test("should return 400 when data is missing", async () => {
     const response = await authenticatedPost(
-      "/v1/developer/collector/lists",
+      "/v1/lists",
       developerToken,
       {},
       {
@@ -49,7 +49,7 @@ test.describe("POST /v1/developer/collector/lists", () => {
       },
     };
     const response = await authenticatedPost(
-      "/v1/developer/collector/lists",
+      "/v1/lists",
       developerToken,
       requestBody,
       {
@@ -68,7 +68,7 @@ test.describe("POST /v1/developer/collector/lists", () => {
       },
     };
     const response = await authenticatedPost(
-      "/v1/developer/collector/lists",
+      "/v1/lists",
       developerToken,
       requestBody,
       {
@@ -87,7 +87,7 @@ test.describe("POST /v1/developer/collector/lists", () => {
       },
     };
     const response = await authenticatedPost(
-      "/v1/developer/collector/lists",
+      "/v1/lists",
       developerToken,
       requestBody,
       {
@@ -102,7 +102,7 @@ test.describe("POST /v1/developer/collector/lists", () => {
     const requestBody = createCollectorShortlistRequest();
     requestBody.data.shortlistType = "INVALID_TYPE" as any;
     const response = await authenticatedPost(
-      "/v1/developer/collector/lists",
+      "/v1/lists",
       developerToken,
       requestBody,
       {
@@ -117,7 +117,7 @@ test.describe("POST /v1/developer/collector/lists", () => {
     const requestBody = createCollectorShortlistRequest();
     requestBody.data.timestamp = "invalid-date";
     const response = await authenticatedPost(
-      "/v1/developer/collector/lists",
+      "/v1/lists",
       developerToken,
       requestBody,
       {
@@ -201,10 +201,10 @@ test.describe("POST /v1/developer/collector/quotes", () => {
   });
 });
 
-test.describe("POST /v1/developer/collector/nifty", () => {
+test.describe("POST /v1/nifty", () => {
   test("should return 400 when data is missing", async () => {
     const response = await authenticatedPost(
-      "/v1/developer/collector/nifty",
+      "/v1/nifty",
       developerToken,
       {},
       {
@@ -223,7 +223,7 @@ test.describe("POST /v1/developer/collector/nifty", () => {
       },
     };
     const response = await authenticatedPost(
-      "/v1/developer/collector/nifty",
+      "/v1/nifty",
       developerToken,
       requestBody,
       {
@@ -242,7 +242,7 @@ test.describe("POST /v1/developer/collector/nifty", () => {
       },
     };
     const response = await authenticatedPost(
-      "/v1/developer/collector/nifty",
+      "/v1/nifty",
       developerToken,
       requestBody,
       {
@@ -257,7 +257,7 @@ test.describe("POST /v1/developer/collector/nifty", () => {
     const requestBody = createCollectorNiftyRequest();
     requestBody.data.timestamp = "invalid-date";
     const response = await authenticatedPost(
-      "/v1/developer/collector/nifty",
+      "/v1/nifty",
       developerToken,
       requestBody,
       {
@@ -269,9 +269,9 @@ test.describe("POST /v1/developer/collector/nifty", () => {
   });
 });
 
-test.describe("GET /v1/developer/collector/lists", () => {
+test.describe("GET /v1/lists", () => {
   test("should return 400 when type parameter is missing", async () => {
-    const response = await authenticatedGet("/v1/developer/collector/lists", developerToken, {
+    const response = await authenticatedGet("/v1/lists", developerToken, {
       validateStatus: () => true,
     });
 
@@ -282,7 +282,7 @@ test.describe("GET /v1/developer/collector/lists", () => {
     const query = { type: "invalid-type" };
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/collector/lists?${queryString}`,
+      `/v1/lists?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -296,7 +296,7 @@ test.describe("GET /v1/developer/collector/lists", () => {
     const query = { type: "top-gainers", datetime: "invalid-datetime" };
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/developer/collector/lists?${queryString}`,
+      `/v1/lists?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,

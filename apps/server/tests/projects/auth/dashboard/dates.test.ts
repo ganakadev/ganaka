@@ -18,9 +18,9 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/dates", () => {
+test.describe("GET /v1/dates", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/dashboard/dates");
+    const response = await unauthenticatedGet("/v1/dates");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -28,7 +28,7 @@ test.describe("GET /v1/dashboard/dates", () => {
   });
 
   test("should return 401 when invalid token is provided", async () => {
-    const response = await authenticatedGet("/v1/dashboard/dates", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/dates", "invalid-token-12345", {
       validateStatus: () => true,
     });
 

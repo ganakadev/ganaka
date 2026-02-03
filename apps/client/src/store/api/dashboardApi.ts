@@ -1,5 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import {
+  v1_auth_schemas,
+  v1_candles_schemas,
+  v1_dates_schemas,
+  v1_lists_schemas,
+  v1_runs_schemas,
+  v1_groww_credentials_schemas,
+} from "@ganaka/schemas";
 import { z } from "zod";
 import { authLocalStorage } from "../../utils/authLocalStorage";
 
@@ -8,7 +15,7 @@ const baseUrl = `${import.meta.env.VITE_API_DOMAIN}` || "http://localhost:4000";
 
 // Create base query with 401 error handling
 const baseQueryWithAuth = fetchBaseQuery({
-  baseUrl: `${baseUrl}/v1/dashboard`,
+  baseUrl: `${baseUrl}/v1`,
   prepareHeaders: (headers) => {
     const token = authLocalStorage.getToken();
     if (token) {
@@ -40,10 +47,8 @@ export const dashboardAPI = createApi({
   endpoints: (builder) => ({
     // Get available datetimes
     getAvailableDatetimes: builder.query<
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_dates_schemas.getAvailableDatetimes.response
-      >,
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_dates_schemas.getAvailableDatetimes.query>
+      z.infer<typeof v1_dates_schemas.getAvailableDatetimes.response>,
+      z.infer<typeof v1_dates_schemas.getAvailableDatetimes.query>
     >({
       query: () => ({
         url: "/dates",
@@ -54,13 +59,12 @@ export const dashboardAPI = createApi({
 
     // Get shortlists
     getShortlists: builder.query<
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_lists_schemas.getShortlists.response>,
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_lists_schemas.getShortlists.query>
+      z.infer<typeof v1_lists_schemas.getShortlists.response>,
+      z.infer<typeof v1_lists_schemas.getShortlists.query>
     >({
       query: (params) => {
         // Validate query params using Zod schema
-        const validatedParams =
-          v1_dashboard_schemas.v1_dashboard_lists_schemas.getShortlists.query.parse(params);
+        const validatedParams = v1_lists_schemas.getShortlists.query.parse(params);
         return {
           url: "/lists",
           method: "GET",
@@ -72,12 +76,11 @@ export const dashboardAPI = createApi({
 
     // Get candles
     getCandles: builder.query<
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.response>,
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.query>
+      z.infer<typeof v1_candles_schemas.getCandles.response>,
+      z.infer<typeof v1_candles_schemas.getCandles.query>
     >({
       query: (params) => {
-        const validatedParams =
-          v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.query.parse(params);
+        const validatedParams = v1_candles_schemas.getCandles.query.parse(params);
         return {
           url: "/candles",
           method: "GET",
@@ -89,8 +92,8 @@ export const dashboardAPI = createApi({
 
     // Sign in
     signIn: builder.query<
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.response>,
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.body>
+      z.infer<typeof v1_auth_schemas.signIn.response>,
+      z.infer<typeof v1_auth_schemas.signIn.body>
     >({
       query: (body) => ({
         url: "/auth",
@@ -103,10 +106,7 @@ export const dashboardAPI = createApi({
     }),
 
     // Get runs
-    getRuns: builder.query<
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response>,
-      void
-    >({
+    getRuns: builder.query<z.infer<typeof v1_runs_schemas.getRuns.response>, void>({
       query: () => ({
         url: "/runs",
         method: "GET",
@@ -116,15 +116,13 @@ export const dashboardAPI = createApi({
 
     // Get run orders
     getRunOrders: builder.query<
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response>,
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params> &
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.query>
+      z.infer<typeof v1_runs_schemas.getRunOrders.response>,
+      z.infer<typeof v1_runs_schemas.getRunOrders.params> &
+        z.infer<typeof v1_runs_schemas.getRunOrders.query>
     >({
       query: (params) => {
-        const validatedParams =
-          v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.params.parse(params);
-        const validatedQuery =
-          v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.query.parse(params);
+        const validatedParams = v1_runs_schemas.getRunOrders.params.parse(params);
+        const validatedQuery = v1_runs_schemas.getRunOrders.query.parse(params);
         return {
           url: `/runs/${validatedParams.runId}/orders`,
           method: "GET",
@@ -136,12 +134,11 @@ export const dashboardAPI = createApi({
 
     // Delete run
     deleteRun: builder.mutation<
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.response>,
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.params>
+      z.infer<typeof v1_runs_schemas.deleteRun.response>,
+      z.infer<typeof v1_runs_schemas.deleteRun.params>
     >({
       query: (params) => {
-        const validatedParams =
-          v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.params.parse(params);
+        const validatedParams = v1_runs_schemas.deleteRun.params.parse(params);
         return {
           url: `/runs/${validatedParams.runId}`,
           method: "DELETE",
@@ -152,15 +149,13 @@ export const dashboardAPI = createApi({
 
     // Update run
     updateRun: builder.mutation<
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response>,
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.params> &
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.body>
+      z.infer<typeof v1_runs_schemas.updateRun.response>,
+      z.infer<typeof v1_runs_schemas.updateRun.params> &
+        z.infer<typeof v1_runs_schemas.updateRun.body>
     >({
       query: (params) => {
-        const validatedParams =
-          v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.params.parse(params);
-        const validatedBody =
-          v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.body.parse(params);
+        const validatedParams = v1_runs_schemas.updateRun.params.parse(params);
+        const validatedBody = v1_runs_schemas.updateRun.body.parse(params);
         return {
           url: `/runs/${validatedParams.runId}`,
           method: "PATCH",
@@ -171,10 +166,7 @@ export const dashboardAPI = createApi({
     }),
 
     // Get run tags (for autocomplete)
-    getRunTags: builder.query<
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_tags_schemas.getRunTags.response>,
-      void
-    >({
+    getRunTags: builder.query<z.infer<typeof v1_runs_schemas.getRunTags.response>, void>({
       query: () => ({
         url: "/runs/tags",
         method: "GET",
@@ -185,13 +177,11 @@ export const dashboardAPI = createApi({
 
     // Get Groww credentials
     getGrowwCredentials: builder.query<
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.getGrowwCredentials.response
-      >,
+      z.infer<typeof v1_groww_credentials_schemas.getGrowwCredentials.response>,
       void
     >({
       query: () => ({
-        url: "/settings/groww/credentials",
+        url: "/groww/credentials",
         method: "GET",
       }),
       providesTags: ["GrowwCredentials"],
@@ -199,20 +189,13 @@ export const dashboardAPI = createApi({
 
     // Update Groww credentials
     updateGrowwCredentials: builder.mutation<
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.updateGrowwCredentials.response
-      >,
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.updateGrowwCredentials.body
-      >
+      z.infer<typeof v1_groww_credentials_schemas.updateGrowwCredentials.response>,
+      z.infer<typeof v1_groww_credentials_schemas.updateGrowwCredentials.body>
     >({
       query: (body) => {
-        const validatedBody =
-          v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.updateGrowwCredentials.body.parse(
-            body
-          );
+        const validatedBody = v1_groww_credentials_schemas.updateGrowwCredentials.body.parse(body);
         return {
-          url: "/settings/groww/credentials",
+          url: "/groww/credentials",
           method: "PUT",
           body: validatedBody,
         };
@@ -222,13 +205,11 @@ export const dashboardAPI = createApi({
 
     // Delete Groww credentials
     deleteGrowwCredentials: builder.mutation<
-      z.infer<
-        typeof v1_dashboard_schemas.v1_dashboard_settings_groww_schemas.deleteGrowwCredentials.response
-      >,
+      z.infer<typeof v1_groww_credentials_schemas.deleteGrowwCredentials.response>,
       void
     >({
       query: () => ({
-        url: "/settings/groww/credentials",
+        url: "/groww/credentials",
         method: "DELETE",
       }),
       invalidatesTags: ["GrowwCredentials"],

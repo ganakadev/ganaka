@@ -32,11 +32,11 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/admin/developers/:id", () => {
+test.describe("GET /v1/developers/:id", () => {
   test("should return 404 for non-existent developer ID", async ({ tracker }) => {
     const fakeId = generateUUID();
 
-    const response = await authenticatedGet(`/v1/admin/developers/${fakeId}`, adminToken, {
+    const response = await authenticatedGet(`/v1/developers/${fakeId}`, adminToken, {
       validateStatus: () => true,
     });
 
@@ -46,7 +46,7 @@ test.describe("GET /v1/admin/developers/:id", () => {
   });
 
   test("should return 400 for invalid UUID format", async ({ tracker }) => {
-    const response = await authenticatedGet("/v1/admin/developers/invalid-id", adminToken, {
+    const response = await authenticatedGet("/v1/developers/invalid-id", adminToken, {
       validateStatus: () => true,
     });
 
@@ -55,12 +55,12 @@ test.describe("GET /v1/admin/developers/:id", () => {
   });
 });
 
-test.describe("POST /v1/admin/developers", () => {
+test.describe("POST /v1/developers", () => {
   test("should return 409 when creating developer with duplicate username", async ({ tracker }) => {
     const dev = await createTestDeveloper(tracker, "duplicate-username");
 
     const response = await authenticatedPost(
-      "/v1/admin/developers",
+      "/v1/developers",
       adminToken,
       { username: dev.username },
       { validateStatus: () => true }
@@ -73,7 +73,7 @@ test.describe("POST /v1/admin/developers", () => {
 
   test("should return 400 when username is missing", async ({ tracker }) => {
     const response = await authenticatedPost(
-      "/v1/admin/developers",
+      "/v1/developers",
       adminToken,
       {},
       { validateStatus: () => true }
@@ -85,7 +85,7 @@ test.describe("POST /v1/admin/developers", () => {
   test("should return 400 when username is empty", async ({ tracker }) => {
     const testData = createEmptyDeveloperTestData();
 
-    const response = await authenticatedPost("/v1/admin/developers", adminToken, testData, {
+    const response = await authenticatedPost("/v1/developers", adminToken, testData, {
       validateStatus: () => true,
     });
 
@@ -95,7 +95,7 @@ test.describe("POST /v1/admin/developers", () => {
   test("should return 400 when username exceeds max length", async ({ tracker }) => {
     const testData = createInvalidDeveloperTestData();
 
-    const response = await authenticatedPost("/v1/admin/developers", adminToken, testData, {
+    const response = await authenticatedPost("/v1/developers", adminToken, testData, {
       validateStatus: () => true,
     });
 
@@ -103,12 +103,12 @@ test.describe("POST /v1/admin/developers", () => {
   });
 });
 
-test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
+test.describe("PATCH /v1/developers/:id/refresh-key", () => {
   test("should return 404 for non-existent developer ID", async ({ tracker }) => {
     const fakeId = generateUUID();
 
     const response = await authenticatedPatch(
-      `/v1/admin/developers/${fakeId}/refresh-key`,
+      `/v1/developers/${fakeId}/refresh-key`,
       adminToken,
       {},
       { validateStatus: () => true }
@@ -120,11 +120,11 @@ test.describe("PATCH /v1/admin/developers/:id/refresh-key", () => {
   });
 });
 
-test.describe("DELETE /v1/admin/developers/:id", () => {
+test.describe("DELETE /v1/developers/:id", () => {
   test("should return 404 for non-existent developer ID", async ({ tracker }) => {
     const fakeId = generateUUID();
 
-    const response = await authenticatedDelete(`/v1/admin/developers/${fakeId}`, adminToken, {
+    const response = await authenticatedDelete(`/v1/developers/${fakeId}`, adminToken, {
       validateStatus: () => true,
     });
 

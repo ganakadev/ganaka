@@ -34,10 +34,10 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/dates", () => {
+test.describe("GET /v1/dates", () => {
   test.describe.configure({ mode: "serial" });
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/developer/dates");
+    const response = await unauthenticatedGet("/v1/dates");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -45,7 +45,7 @@ test.describe("GET /v1/developer/dates", () => {
   });
 
   test("should return 401 when invalid developer token is provided", async () => {
-    const response = await authenticatedGet("/v1/developer/dates", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/dates", "invalid-token-12345", {
       validateStatus: () => true,
     });
 
@@ -55,7 +55,7 @@ test.describe("GET /v1/developer/dates", () => {
   });
 
   test("should return 200 with empty dates array when no snapshots exist", async () => {
-    const response = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -86,7 +86,7 @@ test.describe("GET /v1/developer/dates", () => {
     const differentDate = generateUniqueTestDatetime("2025-12-27");
     await createShortlistSnapshot("volume-shockers", differentDate, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -124,7 +124,7 @@ test.describe("GET /v1/developer/dates", () => {
     const testEntries = createValidShortlistEntries();
     await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
@@ -148,7 +148,7 @@ test.describe("GET /v1/developer/dates", () => {
     const testEntries = createValidShortlistEntries();
     await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
@@ -179,7 +179,7 @@ test.describe("GET /v1/developer/dates", () => {
     const date3 = generateUniqueTestDatetime("2025-12-27");
     await createShortlistSnapshot("top-gainers", date3, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
@@ -203,7 +203,7 @@ test.describe("GET /v1/developer/dates", () => {
       await createShortlistSnapshot("top-gainers", `${date}T10:06:00`, testEntries, tracker);
     }
 
-    const response = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
@@ -227,7 +227,7 @@ test.describe("GET /v1/developer/dates", () => {
       await createShortlistSnapshot("top-gainers", timestamp, testEntries, tracker);
     }
 
-    const response = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
@@ -245,7 +245,7 @@ test.describe("GET /v1/developer/dates", () => {
     const testDatetime = generateUniqueTestDatetime("2025-12-29");
     await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
@@ -268,7 +268,7 @@ test.describe("GET /v1/developer/dates", () => {
       await createShortlistSnapshot("top-gainers", `${date}T10:00:00`, testEntries, tracker);
     }
 
-    const response = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
@@ -289,7 +289,7 @@ test.describe("GET /v1/developer/dates", () => {
     const timestamp = `${dateStr}T23:45:00`; // Late IST time that might cross UTC boundary
     await createShortlistSnapshot("top-gainers", timestamp, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_developer_available_dates_schemas.getAvailableDates.response.parse(
@@ -307,8 +307,8 @@ test.describe("GET /v1/developer/dates", () => {
     await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
     // Make multiple requests
-    const response1 = await authenticatedGet("/v1/developer/dates", developerToken);
-    const response2 = await authenticatedGet("/v1/developer/dates", developerToken);
+    const response1 = await authenticatedGet("/v1/dates", developerToken);
+    const response2 = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response1.status).toBe(200);
     expect(response2.status).toBe(200);

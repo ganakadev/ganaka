@@ -6,7 +6,6 @@ import timezone from "dayjs/plugin/timezone";
 import axios from "axios";
 import { isWithinCollectionWindow } from "./utils/time";
 import { collectMarketData } from "./collector";
-import { RedisManager } from "./utils/redis";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -22,7 +21,7 @@ async function checkIfHoliday(): Promise<boolean> {
     const nowIST = dayjs().tz("Asia/Kolkata");
     const dateStr = nowIST.format("YYYY-MM-DD");
 
-    const response = await axios.get(`${API_DOMAIN}/v1/developer/collector/holidays/check`, {
+    const response = await axios.get(`${API_DOMAIN}/v1/holidays/check`, {
       params: {
         date: dateStr,
       },
@@ -85,14 +84,6 @@ async function runCollection(): Promise<void> {
 }
 
 function main() {
-  // Initialize Redis connection
-  try {
-    RedisManager.getInstance();
-  } catch (error) {
-    console.error("Failed to initialize Redis:", error);
-    process.exit(1);
-  }
-
   // Set up cron job: every minute on weekdays (Monday-Friday)
   // Cron expression: * * * * 1-5 (every minute, Monday through Friday)
   const job = new Cron(
@@ -115,8 +106,6 @@ function main() {
   const shutdown = async (signal: string) => {
     console.log(`Received ${signal}, shutting down gracefully...`);
     job.stop();
-    const redisManager = RedisManager.getInstance();
-    await redisManager.close();
     process.exit(0);
   };
 

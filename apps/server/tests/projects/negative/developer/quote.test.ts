@@ -35,9 +35,9 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/quote", () => {
+test.describe("GET /v1/quote", () => {
   test("should return 400 when symbol is missing", async () => {
-    const response = await authenticatedGet("/v1/developer/quote", developerToken, {
+    const response = await authenticatedGet("/v1/quote", developerToken, {
       validateStatus: () => true,
     });
 
@@ -46,7 +46,7 @@ test.describe("GET /v1/developer/quote", () => {
 
   test("should return 400 when datetime format is invalid", async () => {
     const response = await authenticatedGet(
-      `/v1/developer/quote?symbol=${TEST_SYMBOL}&datetime=invalid-date`,
+      `/v1/quote?symbol=${TEST_SYMBOL}&datetime=invalid-date`,
       developerToken,
       {
         validateStatus: () => true,
@@ -73,7 +73,7 @@ test.describe("GET /v1/developer/quote", () => {
     const queryString = buildQueryString(query);
 
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/quote?${queryString}`,
+      `/v1/quote?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -100,7 +100,7 @@ test.describe("GET /v1/developer/quote", () => {
     const query = createGrowwQuoteQuery(testSymbol, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/quote?${queryString}`,
+      `/v1/quote?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,

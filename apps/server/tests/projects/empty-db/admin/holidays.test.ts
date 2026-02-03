@@ -24,12 +24,12 @@ test.afterAll(async () => {
 test.describe("Admin Holidays API", () => {
   test.describe.configure({ mode: "serial" });
 
-  test.describe("GET /v1/admin/holidays", () => {
+  test.describe("GET /v1/holidays", () => {
     test("should return empty array when no holidays exist", async ({ tracker }) => {
       // Clean up any existing holidays from previous tests to ensure isolation
       await prisma.nseHoliday.deleteMany({});
 
-      const response = await authenticatedGet("/v1/admin/holidays", adminToken);
+      const response = await authenticatedGet("/v1/holidays", adminToken);
 
       expect(response.status).toBe(200);
       const body = response.data;

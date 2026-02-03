@@ -21,9 +21,9 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/groww/token", () => {
+test.describe("GET /v1/groww/token", () => {
   test("should return token successfully with valid developer token", async () => {
-    const response = await authenticatedGet("/v1/developer/groww/token", developerToken);
+    const response = await authenticatedGet("/v1/groww/token", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;

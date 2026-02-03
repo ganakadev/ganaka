@@ -17,7 +17,7 @@ import {
   TEST_SYMBOL,
   generateUUID as generateTestUUID,
 } from "../../fixtures/test-data";
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import { TestDataTracker } from "../../helpers/test-tracker";
 
@@ -44,15 +44,15 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/runs", () => {
+test.describe("GET /v1/runs", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/dashboard/runs");
+    const response = await unauthenticatedGet("/v1/runs");
 
     expect(response.status).toBe(401);
   });
 
   test("should return 401 when invalid token is provided", async () => {
-    const response = await authenticatedGet("/v1/dashboard/runs", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/runs", "invalid-token-12345", {
       validateStatus: () => true,
     });
 
@@ -60,7 +60,7 @@ test.describe("GET /v1/dashboard/runs", () => {
   });
 
   test("should return 200 with empty object when no runs exist", async () => {
-    const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
+    const response = await authenticatedGet("/v1/runs", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -79,10 +79,10 @@ test.describe("GET /v1/dashboard/runs", () => {
     await createRun(developerId, startTime1, endTime1, tracker, "Asia/Kolkata");
     await createRun(developerId, startTime2, endTime2, tracker, "Asia/Kolkata");
 
-    const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
+    const response = await authenticatedGet("/v1/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
       response.data
     );
     expect(Object.keys(validatedData.data).length).toBeGreaterThan(0);
@@ -99,10 +99,10 @@ test.describe("GET /v1/dashboard/runs", () => {
       ["v1", "test"]
     );
 
-    const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
+    const response = await authenticatedGet("/v1/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
       response.data
     );
     const allRuns = Object.values(validatedData.data).flat();
@@ -117,10 +117,10 @@ test.describe("GET /v1/dashboard/runs", () => {
     const endTime = "2025-12-26T15:30:00";
     await createRun(developerId, startTime, endTime, tracker, "Asia/Kolkata");
 
-    const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
+    const response = await authenticatedGet("/v1/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
       response.data
     );
     const dateKeys = Object.keys(validatedData.data);
@@ -138,10 +138,10 @@ test.describe("GET /v1/dashboard/runs", () => {
     await createRun(developerId, startTime1, endTime1, tracker, "Asia/Kolkata");
     await createRun(developerId, startTime2, endTime2, tracker, "Asia/Kolkata");
 
-    const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
+    const response = await authenticatedGet("/v1/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
       response.data
     );
     const dateKeys = Object.keys(validatedData.data);
@@ -160,10 +160,10 @@ test.describe("GET /v1/dashboard/runs", () => {
     const endTime = "2025-12-26T15:30:00";
     await createRun(developerId, startTime, endTime, tracker, "Asia/Kolkata");
 
-    const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
+    const response = await authenticatedGet("/v1/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
       response.data
     );
 
@@ -189,10 +189,10 @@ test.describe("GET /v1/dashboard/runs", () => {
     const endTime = "2025-12-26T15:30:00";
     const run = await createRun(developerId, startTime, endTime, tracker);
 
-    const response = await authenticatedGet("/v1/dashboard/runs", developerToken);
+    const response = await authenticatedGet("/v1/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
       response.data
     );
 
@@ -203,10 +203,10 @@ test.describe("GET /v1/dashboard/runs", () => {
   });
 });
 
-test.describe("POST /v1/dashboard/runs", () => {
+test.describe("POST /v1/runs", () => {
   test("should return 401 when authorization header is missing", async () => {
     const testData = createRunTestData();
-    const response = await unauthenticatedPost("/v1/dashboard/runs", testData);
+    const response = await unauthenticatedPost("/v1/runs", testData);
 
     expect(response.status).toBe(401);
   });
@@ -214,7 +214,7 @@ test.describe("POST /v1/dashboard/runs", () => {
   test("should return 401 when invalid token is provided", async () => {
     const testData = createRunTestData();
     const response = await authenticatedPost(
-      "/v1/dashboard/runs",
+      "/v1/runs",
       "invalid-token-12345",
       testData,
       {
@@ -227,7 +227,7 @@ test.describe("POST /v1/dashboard/runs", () => {
 
   test("should return 400 when startTime is missing", async () => {
     const testData = { end_datetime: createRunTestData().end_datetime };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+    const response = await authenticatedPost("/v1/runs", developerToken, testData, {
       validateStatus: () => true,
     });
 
@@ -236,7 +236,7 @@ test.describe("POST /v1/dashboard/runs", () => {
 
   test("should return 400 when endTime is missing", async () => {
     const testData = { start_datetime: createRunTestData().start_datetime };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+    const response = await authenticatedPost("/v1/runs", developerToken, testData, {
       validateStatus: () => true,
     });
 
@@ -248,7 +248,7 @@ test.describe("POST /v1/dashboard/runs", () => {
       start_datetime: "invalid-date",
       end_datetime: createRunTestData().end_datetime,
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+    const response = await authenticatedPost("/v1/runs", developerToken, testData, {
       validateStatus: () => true,
     });
 
@@ -260,7 +260,7 @@ test.describe("POST /v1/dashboard/runs", () => {
       start_datetime: createRunTestData().start_datetime,
       end_datetime: "invalid-date",
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+    const response = await authenticatedPost("/v1/runs", developerToken, testData, {
       validateStatus: () => true,
     });
 
@@ -269,7 +269,7 @@ test.describe("POST /v1/dashboard/runs", () => {
 
   test("should return 201 with created run when valid data provided", async () => {
     const testData = createRunTestData();
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+    const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
     const body = response.data;
@@ -283,10 +283,10 @@ test.describe("POST /v1/dashboard/runs", () => {
 
   test("should validate response structure matches schema", async () => {
     const testData = createRunTestData();
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+    const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
       response.data
     );
     expect(validatedData.data).toHaveProperty("id");
@@ -297,7 +297,7 @@ test.describe("POST /v1/dashboard/runs", () => {
 
   test("should validate run belongs to authenticated developer", async () => {
     const testData = createRunTestData();
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+    const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
     const runId = response.data.data.id;
@@ -308,10 +308,10 @@ test.describe("POST /v1/dashboard/runs", () => {
 
   test("should validate exact timestamps", async () => {
     const testData = createRunTestData();
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+    const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
       response.data
     );
     expect(validatedData.data).toHaveProperty("start_datetime");
@@ -325,10 +325,10 @@ test.describe("POST /v1/dashboard/runs", () => {
       ...createRunTestData(),
       name: "Test Run Name",
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+    const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
       response.data
     );
     expect(validatedData.data.name).toBe("Test Run Name");
@@ -339,10 +339,10 @@ test.describe("POST /v1/dashboard/runs", () => {
       ...createRunTestData(),
       tags: ["v1"],
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+    const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
       response.data
     );
     expect(validatedData.data.tags).toEqual(["v1"]);
@@ -353,10 +353,10 @@ test.describe("POST /v1/dashboard/runs", () => {
       ...createRunTestData(),
       tags: ["v1", "momentum", "experiment"],
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+    const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
       response.data
     );
     expect(validatedData.data.tags).toEqual(["experiment", "momentum", "v1"]); // Should be sorted
@@ -367,10 +367,10 @@ test.describe("POST /v1/dashboard/runs", () => {
       ...createRunTestData(),
       tags: [],
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+    const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
       response.data
     );
     expect(validatedData.data.tags).toEqual([]);
@@ -381,10 +381,10 @@ test.describe("POST /v1/dashboard/runs", () => {
       ...createRunTestData(),
       tags: ["v1", "v1", "momentum"],
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+    const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
       response.data
     );
     expect(validatedData.data.tags).toEqual(["momentum", "v1"]);
@@ -395,7 +395,7 @@ test.describe("POST /v1/dashboard/runs", () => {
       ...createRunTestData(),
       tags: ["a".repeat(51)], // 51 characters
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+    const response = await authenticatedPost("/v1/runs", developerToken, testData, {
       validateStatus: () => true,
     });
 
@@ -407,7 +407,7 @@ test.describe("POST /v1/dashboard/runs", () => {
       ...createRunTestData(),
       tags: ["tag with spaces"],
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+    const response = await authenticatedPost("/v1/runs", developerToken, testData, {
       validateStatus: () => true,
     });
 
@@ -419,7 +419,7 @@ test.describe("POST /v1/dashboard/runs", () => {
       ...createRunTestData(),
       tags: Array.from({ length: 11 }, (_, i) => `tag${i}`),
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+    const response = await authenticatedPost("/v1/runs", developerToken, testData, {
       validateStatus: () => true,
     });
 
@@ -432,10 +432,10 @@ test.describe("POST /v1/dashboard/runs", () => {
       name: "Momentum Strategy v1",
       tags: ["v1", "momentum"],
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData);
+    const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
       response.data
     );
     expect(validatedData.data.name).toBe("Momentum Strategy v1");
@@ -443,7 +443,7 @@ test.describe("POST /v1/dashboard/runs", () => {
   });
 });
 
-test.describe("PATCH /v1/dashboard/runs/:runId", () => {
+test.describe("PATCH /v1/runs/:runId", () => {
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
     const run = await createRun(
       developerId,
@@ -452,7 +452,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const response = await unauthenticatedPatch(`/v1/dashboard/runs/${run.id}`, {
+    const response = await unauthenticatedPatch(`/v1/runs/${run.id}`, {
       completed: true,
     });
 
@@ -468,7 +468,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
       "Asia/Kolkata"
     );
     const response = await authenticatedPatch(
-      `/v1/dashboard/runs/${run.id}`,
+      `/v1/runs/${run.id}`,
       "invalid-token-12345",
       { completed: true },
       { validateStatus: () => true }
@@ -479,7 +479,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
 
   test("should return 404 when runId is invalid UUID", async () => {
     const response = await authenticatedPatch(
-      "/v1/dashboard/runs/invalid-id",
+      "/v1/runs/invalid-id",
       developerToken,
       { completed: true },
       { validateStatus: () => true }
@@ -491,7 +491,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
   test("should return 404 when run does not exist", async () => {
     const fakeId = generateTestUUID();
     const response = await authenticatedPatch(
-      `/v1/dashboard/runs/${fakeId}`,
+      `/v1/runs/${fakeId}`,
       developerToken,
       { completed: true },
       { validateStatus: () => true }
@@ -509,7 +509,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
       "Asia/Kolkata"
     );
     const response = await authenticatedPatch(
-      `/v1/dashboard/runs/${run.id}`,
+      `/v1/runs/${run.id}`,
       developerToken,
       { completed: true },
       { validateStatus: () => true }
@@ -526,7 +526,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
+    const response = await authenticatedPatch(`/v1/runs/${run.id}`, developerToken, {
       completed: true,
     });
 
@@ -545,12 +545,12 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
+    const response = await authenticatedPatch(`/v1/runs/${run.id}`, developerToken, {
       completed: true,
     });
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
       response.data
     );
     expect(validatedData.data).toHaveProperty("id");
@@ -569,7 +569,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
     );
     expect(run.completed).toBe(false);
 
-    const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
+    const response = await authenticatedPatch(`/v1/runs/${run.id}`, developerToken, {
       completed: true,
     });
 
@@ -583,12 +583,12 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
     const endTime = "2025-12-26T15:30:00";
     const run = await createRun(developerId, startTime, endTime, tracker);
 
-    const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
+    const response = await authenticatedPatch(`/v1/runs/${run.id}`, developerToken, {
       completed: true,
     });
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
       response.data
     );
 
@@ -605,12 +605,12 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
       "Asia/Kolkata"
     );
 
-    const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
+    const response = await authenticatedPatch(`/v1/runs/${run.id}`, developerToken, {
       name: "Updated Run Name",
     });
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
       response.data
     );
     expect(validatedData.data.name).toBe("Updated Run Name");
@@ -629,12 +629,12 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
       ["old-tag"]
     );
 
-    const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
+    const response = await authenticatedPatch(`/v1/runs/${run.id}`, developerToken, {
       tags: ["new-tag1", "new-tag2"],
     });
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
       response.data
     );
     expect(validatedData.data.tags).toEqual(["new-tag1", "new-tag2"]);
@@ -651,13 +651,13 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
       "Asia/Kolkata"
     );
 
-    const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
+    const response = await authenticatedPatch(`/v1/runs/${run.id}`, developerToken, {
       name: "Updated Name",
       tags: ["tag1", "tag2"],
     });
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
       response.data
     );
     expect(validatedData.data.name).toBe("Updated Name");
@@ -674,7 +674,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
       "Original Name"
     );
 
-    const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
+    const response = await authenticatedPatch(`/v1/runs/${run.id}`, developerToken, {
       name: null,
     });
 
@@ -694,7 +694,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
       ["tag1", "tag2"]
     );
 
-    const response = await authenticatedPatch(`/v1/dashboard/runs/${run.id}`, developerToken, {
+    const response = await authenticatedPatch(`/v1/runs/${run.id}`, developerToken, {
       tags: [],
     });
 
@@ -704,7 +704,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
   });
 });
 
-test.describe("DELETE /v1/dashboard/runs/:runId", () => {
+test.describe("DELETE /v1/runs/:runId", () => {
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
     const run = await createRun(
       developerId,
@@ -713,7 +713,7 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const response = await unauthenticatedDelete(`/v1/dashboard/runs/${run.id}`);
+    const response = await unauthenticatedDelete(`/v1/runs/${run.id}`);
 
     expect(response.status).toBe(401);
   });
@@ -727,7 +727,7 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
       "Asia/Kolkata"
     );
     const response = await authenticatedDelete(
-      `/v1/dashboard/runs/${run.id}`,
+      `/v1/runs/${run.id}`,
       "invalid-token-12345",
       {
         validateStatus: () => true,
@@ -738,7 +738,7 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
   });
 
   test("should return 404 when runId is invalid UUID", async () => {
-    const response = await authenticatedDelete("/v1/dashboard/runs/invalid-id", developerToken, {
+    const response = await authenticatedDelete("/v1/runs/invalid-id", developerToken, {
       validateStatus: () => true,
     });
 
@@ -747,7 +747,7 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
 
   test("should return 404 when run does not exist", async () => {
     const fakeId = generateTestUUID();
-    const response = await authenticatedDelete(`/v1/dashboard/runs/${fakeId}`, developerToken, {
+    const response = await authenticatedDelete(`/v1/runs/${fakeId}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -762,7 +762,7 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const response = await authenticatedDelete(`/v1/dashboard/runs/${run.id}`, developerToken, {
+    const response = await authenticatedDelete(`/v1/runs/${run.id}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -777,7 +777,7 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const response = await authenticatedDelete(`/v1/dashboard/runs/${run.id}`, developerToken);
+    const response = await authenticatedDelete(`/v1/runs/${run.id}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -794,14 +794,14 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
       tracker,
       "Asia/Kolkata"
     );
-    await authenticatedDelete(`/v1/dashboard/runs/${run.id}`, developerToken);
+    await authenticatedDelete(`/v1/runs/${run.id}`, developerToken);
 
     const deletedRun = await getRunById(run.id);
     expect(deletedRun).toBeNull();
   });
 });
 
-test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
+test.describe("GET /v1/runs/:runId/orders", () => {
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
     const run = await createRun(
       developerId,
@@ -810,7 +810,7 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const response = await unauthenticatedGet(`/v1/dashboard/runs/${run.id}/orders`);
+    const response = await unauthenticatedGet(`/v1/runs/${run.id}/orders`);
 
     expect(response.status).toBe(401);
   });
@@ -824,7 +824,7 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       "Asia/Kolkata"
     );
     const response = await authenticatedGet(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       "invalid-token-12345",
       {
         validateStatus: () => true,
@@ -836,7 +836,7 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
 
   test("should return 404 when runId is invalid UUID", async () => {
     const response = await authenticatedGet(
-      "/v1/dashboard/runs/invalid-id/orders",
+      "/v1/runs/invalid-id/orders",
       developerToken,
       {
         validateStatus: () => true,
@@ -848,7 +848,7 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
 
   test("should return 404 when run does not exist", async () => {
     const fakeId = generateTestUUID();
-    const response = await authenticatedGet(`/v1/dashboard/runs/${fakeId}/orders`, developerToken, {
+    const response = await authenticatedGet(`/v1/runs/${fakeId}/orders`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -863,7 +863,7 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const response = await authenticatedGet(`/v1/dashboard/runs/${run.id}/orders`, developerToken, {
+    const response = await authenticatedGet(`/v1/runs/${run.id}/orders`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -878,7 +878,7 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const response = await authenticatedGet(`/v1/dashboard/runs/${run.id}/orders`, developerToken);
+    const response = await authenticatedGet(`/v1/runs/${run.id}/orders`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -907,7 +907,7 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       tracker
     );
 
-    const response = await authenticatedGet(`/v1/dashboard/runs/${run.id}/orders`, developerToken);
+    const response = await authenticatedGet(`/v1/runs/${run.id}/orders`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -937,11 +937,11 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       tracker
     );
 
-    const response = await authenticatedGet(`/v1/dashboard/runs/${run.id}/orders`, developerToken);
+    const response = await authenticatedGet(`/v1/runs/${run.id}/orders`, developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(response.data);
+      v1_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(response.data);
 
     if (validatedData.data.length > 0) {
       const firstOrder = validatedData.data[0];
@@ -977,13 +977,13 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
     );
 
     const response = await authenticatedGet(
-      `/v1/dashboard/runs/${run.id}/orders?targetGainPercentage=10`,
+      `/v1/runs/${run.id}/orders?targetGainPercentage=10`,
       developerToken
     );
 
     expect(response.status).toBe(200);
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(response.data);
+      v1_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(response.data);
 
     if (validatedData.data.length > 0) {
       const firstOrder = validatedData.data[0];
@@ -1026,11 +1026,11 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       "Asia/Kolkata"
     );
 
-    const response = await authenticatedGet(`/v1/dashboard/runs/${run.id}/orders`, developerToken);
+    const response = await authenticatedGet(`/v1/runs/${run.id}/orders`, developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(response.data);
+      v1_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(response.data);
 
     for (let i = 1; i < validatedData.data.length; i++) {
       const prevTimestamp = dayjs.utc(validatedData.data[i - 1].timestamp).valueOf();
@@ -1058,11 +1058,11 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       tracker
     );
 
-    const response = await authenticatedGet(`/v1/dashboard/runs/${run.id}/orders`, developerToken);
+    const response = await authenticatedGet(`/v1/runs/${run.id}/orders`, developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(response.data);
+      v1_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(response.data);
 
     if (validatedData.data.length > 0) {
       const firstOrder = validatedData.data[0];
@@ -1093,13 +1093,13 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
     );
 
     const response = await authenticatedGet(
-      `/v1/dashboard/runs/${run.id}/orders?targetGainPercentage=10`,
+      `/v1/runs/${run.id}/orders?targetGainPercentage=10`,
       developerToken
     );
 
     expect(response.status).toBe(200);
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(response.data);
+      v1_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(response.data);
 
     if (validatedData.data.length > 0) {
       const firstOrder = validatedData.data[0];
@@ -1109,7 +1109,7 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
   });
 });
 
-test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
+test.describe("POST /v1/runs/:runId/orders", () => {
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
     const run = await createRun(
       developerId,
@@ -1119,7 +1119,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       "Asia/Kolkata"
     );
     const orderData = createOrderTestData();
-    const response = await unauthenticatedPost(`/v1/dashboard/runs/${run.id}/orders`, orderData);
+    const response = await unauthenticatedPost(`/v1/runs/${run.id}/orders`, orderData);
 
     expect(response.status).toBe(401);
   });
@@ -1134,7 +1134,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     );
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       "invalid-token-12345",
       orderData,
       { validateStatus: () => true }
@@ -1146,7 +1146,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
   test("should return 404 when runId is invalid UUID", async () => {
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
-      "/v1/dashboard/runs/invalid-id/orders",
+      "/v1/runs/invalid-id/orders",
       developerToken,
       orderData,
       { validateStatus: () => true }
@@ -1159,7 +1159,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     const fakeId = generateTestUUID();
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${fakeId}/orders`,
+      `/v1/runs/${fakeId}/orders`,
       developerToken,
       orderData,
       { validateStatus: () => true }
@@ -1178,7 +1178,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     );
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderData,
       { validateStatus: () => true }
@@ -1203,7 +1203,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       datetime: orderData.datetime,
     };
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderDataWithoutSymbol,
       { validateStatus: () => true }
@@ -1228,7 +1228,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       datetime: orderData.datetime,
     };
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderDataWithoutEntryPrice,
       { validateStatus: () => true }
@@ -1253,7 +1253,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       datetime: orderData.datetime,
     };
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderDataWithoutStopLoss,
       { validateStatus: () => true }
@@ -1278,7 +1278,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       datetime: orderData.datetime,
     };
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderDataWithoutTakeProfit,
       { validateStatus: () => true }
@@ -1303,7 +1303,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       takeProfitPrice: orderData.takeProfitPrice,
     };
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderDataWithoutTimestamp,
       { validateStatus: () => true }
@@ -1329,7 +1329,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       datetime: "invalid-date",
     };
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderDataWithInvalidDatetime,
       { validateStatus: () => true }
@@ -1348,7 +1348,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     );
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderData
     );
@@ -1376,13 +1376,13 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     );
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderData
     );
 
     expect(response.status).toBe(201);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createOrder.response.parse(
       response.data
     );
     expect(validatedData.data).toHaveProperty("id");
@@ -1404,7 +1404,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     );
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderData
     );
@@ -1426,13 +1426,13 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     );
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderData
     );
 
     expect(response.status).toBe(201);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createOrder.response.parse(
       response.data
     );
     expect(validatedData.data.nseSymbol).toBe(orderData.nseSymbol);
@@ -1442,15 +1442,15 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
   });
 });
 
-test.describe("GET /v1/dashboard/runs/tags", () => {
+test.describe("GET /v1/runs/tags", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/dashboard/runs/tags");
+    const response = await unauthenticatedGet("/v1/runs/tags");
 
     expect(response.status).toBe(401);
   });
 
   test("should return 401 when invalid token is provided", async () => {
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/runs/tags", "invalid-token-12345", {
       validateStatus: () => true,
     });
 
@@ -1458,10 +1458,10 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
   });
 
   test("should return 200 with empty array when no tags exist", async () => {
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunTags.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRunTags.response.parse(
       response.data
     );
     expect(Array.isArray(validatedData.data)).toBe(true);
@@ -1497,10 +1497,10 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
       ["v2"]
     );
 
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunTags.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRunTags.response.parse(
       response.data
     );
     expect(validatedData.data).toContain("v1");
@@ -1522,10 +1522,10 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
       ["zebra", "apple", "banana"]
     );
 
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunTags.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRunTags.response.parse(
       response.data
     );
     expect(validatedData.data).toEqual(["apple", "banana", "zebra"]);
@@ -1551,10 +1551,10 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
       ["developer2-tag"]
     );
 
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunTags.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRunTags.response.parse(
       response.data
     );
     expect(validatedData.data).toContain("developer1-tag");
@@ -1581,10 +1581,10 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
       ["tag1"]
     );
 
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_dashboard_schemas.v1_dashboard_runs_schemas.getRunTags.response.parse(
+    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRunTags.response.parse(
       response.data
     );
     expect(validatedData.data).toEqual(["tag1"]);

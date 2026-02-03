@@ -37,10 +37,10 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("POST /v1/dashboard/runs", () => {
+test.describe("POST /v1/runs", () => {
   test("should return 400 when startTime is missing", async () => {
     const testData = { end_datetime: createRunTestData().end_datetime };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+    const response = await authenticatedPost("/v1/runs", developerToken, testData, {
       validateStatus: () => true,
     });
 
@@ -49,7 +49,7 @@ test.describe("POST /v1/dashboard/runs", () => {
 
   test("should return 400 when endTime is missing", async () => {
     const testData = { start_datetime: createRunTestData().start_datetime };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+    const response = await authenticatedPost("/v1/runs", developerToken, testData, {
       validateStatus: () => true,
     });
 
@@ -61,7 +61,7 @@ test.describe("POST /v1/dashboard/runs", () => {
       start_datetime: "invalid-date",
       end_datetime: createRunTestData().end_datetime,
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+    const response = await authenticatedPost("/v1/runs", developerToken, testData, {
       validateStatus: () => true,
     });
 
@@ -73,7 +73,7 @@ test.describe("POST /v1/dashboard/runs", () => {
       start_datetime: createRunTestData().start_datetime,
       end_datetime: "invalid-date",
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+    const response = await authenticatedPost("/v1/runs", developerToken, testData, {
       validateStatus: () => true,
     });
 
@@ -85,7 +85,7 @@ test.describe("POST /v1/dashboard/runs", () => {
       ...createRunTestData(),
       tags: ["a".repeat(51)], // 51 characters
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+    const response = await authenticatedPost("/v1/runs", developerToken, testData, {
       validateStatus: () => true,
     });
 
@@ -97,7 +97,7 @@ test.describe("POST /v1/dashboard/runs", () => {
       ...createRunTestData(),
       tags: ["tag with spaces"],
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+    const response = await authenticatedPost("/v1/runs", developerToken, testData, {
       validateStatus: () => true,
     });
 
@@ -109,7 +109,7 @@ test.describe("POST /v1/dashboard/runs", () => {
       ...createRunTestData(),
       tags: Array.from({ length: 11 }, (_, i) => `tag${i}`),
     };
-    const response = await authenticatedPost("/v1/dashboard/runs", developerToken, testData, {
+    const response = await authenticatedPost("/v1/runs", developerToken, testData, {
       validateStatus: () => true,
     });
 
@@ -117,10 +117,10 @@ test.describe("POST /v1/dashboard/runs", () => {
   });
 });
 
-test.describe("PATCH /v1/dashboard/runs/:runId", () => {
+test.describe("PATCH /v1/runs/:runId", () => {
   test("should return 404 when runId is invalid UUID", async () => {
     const response = await authenticatedPatch(
-      "/v1/dashboard/runs/invalid-id",
+      "/v1/runs/invalid-id",
       developerToken,
       { completed: true },
       { validateStatus: () => true }
@@ -132,7 +132,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
   test("should return 404 when run does not exist", async () => {
     const fakeId = generateTestUUID();
     const response = await authenticatedPatch(
-      `/v1/dashboard/runs/${fakeId}`,
+      `/v1/runs/${fakeId}`,
       developerToken,
       { completed: true },
       { validateStatus: () => true }
@@ -150,7 +150,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
       "Asia/Kolkata"
     );
     const response = await authenticatedPatch(
-      `/v1/dashboard/runs/${run.id}`,
+      `/v1/runs/${run.id}`,
       developerToken,
       { completed: true },
       { validateStatus: () => true }
@@ -160,9 +160,9 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
   });
 });
 
-test.describe("DELETE /v1/dashboard/runs/:runId", () => {
+test.describe("DELETE /v1/runs/:runId", () => {
   test("should return 404 when runId is invalid UUID", async () => {
-    const response = await authenticatedDelete("/v1/dashboard/runs/invalid-id", developerToken, {
+    const response = await authenticatedDelete("/v1/runs/invalid-id", developerToken, {
       validateStatus: () => true,
     });
 
@@ -171,7 +171,7 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
 
   test("should return 404 when run does not exist", async () => {
     const fakeId = generateTestUUID();
-    const response = await authenticatedDelete(`/v1/dashboard/runs/${fakeId}`, developerToken, {
+    const response = await authenticatedDelete(`/v1/runs/${fakeId}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -186,7 +186,7 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const response = await authenticatedDelete(`/v1/dashboard/runs/${run.id}`, developerToken, {
+    const response = await authenticatedDelete(`/v1/runs/${run.id}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -194,10 +194,10 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
   });
 });
 
-test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
+test.describe("GET /v1/runs/:runId/orders", () => {
   test("should return 404 when runId is invalid UUID", async () => {
     const response = await authenticatedGet(
-      "/v1/dashboard/runs/invalid-id/orders",
+      "/v1/runs/invalid-id/orders",
       developerToken,
       {
         validateStatus: () => true,
@@ -209,7 +209,7 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
 
   test("should return 404 when run does not exist", async () => {
     const fakeId = generateTestUUID();
-    const response = await authenticatedGet(`/v1/dashboard/runs/${fakeId}/orders`, developerToken, {
+    const response = await authenticatedGet(`/v1/runs/${fakeId}/orders`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -224,7 +224,7 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const response = await authenticatedGet(`/v1/dashboard/runs/${run.id}/orders`, developerToken, {
+    const response = await authenticatedGet(`/v1/runs/${run.id}/orders`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -232,11 +232,11 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
   });
 });
 
-test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
+test.describe("POST /v1/runs/:runId/orders", () => {
   test("should return 404 when runId is invalid UUID", async () => {
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
-      "/v1/dashboard/runs/invalid-id/orders",
+      "/v1/runs/invalid-id/orders",
       developerToken,
       orderData,
       { validateStatus: () => true }
@@ -249,7 +249,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     const fakeId = generateTestUUID();
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${fakeId}/orders`,
+      `/v1/runs/${fakeId}/orders`,
       developerToken,
       orderData,
       { validateStatus: () => true }
@@ -268,7 +268,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     );
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderData,
       { validateStatus: () => true }
@@ -293,7 +293,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       datetime: orderData.datetime,
     };
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderDataWithoutSymbol,
       { validateStatus: () => true }
@@ -318,7 +318,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       datetime: orderData.datetime,
     };
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderDataWithoutEntryPrice,
       { validateStatus: () => true }
@@ -343,7 +343,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       datetime: orderData.datetime,
     };
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderDataWithoutStopLoss,
       { validateStatus: () => true }
@@ -368,7 +368,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       datetime: orderData.datetime,
     };
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderDataWithoutTakeProfit,
       { validateStatus: () => true }
@@ -393,7 +393,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       takeProfitPrice: orderData.takeProfitPrice,
     };
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderDataWithoutTimestamp,
       { validateStatus: () => true }
@@ -419,7 +419,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       datetime: "invalid-date",
     };
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       developerToken,
       orderDataWithInvalidDatetime,
       { validateStatus: () => true }

@@ -28,10 +28,10 @@ test.afterAll(async () => {
 test.describe("Admin Holidays API", () => {
   test.describe.configure({ mode: "serial" });
 
-  test.describe("POST /v1/admin/holidays", () => {
+  test.describe("POST /v1/holidays", () => {
     test("should return 400 when dates array is empty", async () => {
       const response = await authenticatedPost(
-        "/v1/admin/holidays",
+        "/v1/holidays",
         adminToken,
         {
           dates: [],
@@ -44,7 +44,7 @@ test.describe("Admin Holidays API", () => {
 
     test("should return 400 when date format is invalid", async () => {
       const response = await authenticatedPost(
-        "/v1/admin/holidays",
+        "/v1/holidays",
         adminToken,
         {
           dates: ["invalid-date"],
@@ -57,7 +57,7 @@ test.describe("Admin Holidays API", () => {
 
     test("should return 400 when duplicate dates in request", async () => {
       const response = await authenticatedPost(
-        "/v1/admin/holidays",
+        "/v1/holidays",
         adminToken,
         {
           dates: ["2025-04-15", "2025-04-15"],
@@ -78,7 +78,7 @@ test.describe("Admin Holidays API", () => {
       tracker.trackNseHoliday(holiday.id);
 
       const response = await authenticatedPost(
-        "/v1/admin/holidays",
+        "/v1/holidays",
         adminToken,
         {
           dates: ["2025-05-15"],
@@ -93,9 +93,9 @@ test.describe("Admin Holidays API", () => {
     });
   });
 
-  test.describe("DELETE /v1/admin/holidays", () => {
+  test.describe("DELETE /v1/holidays", () => {
     test("should return 400 when dates array is empty", async () => {
-      const response = await authenticatedDelete("/v1/admin/holidays", adminToken, {
+      const response = await authenticatedDelete("/v1/holidays", adminToken, {
         data: {
           dates: [],
         },
@@ -106,7 +106,7 @@ test.describe("Admin Holidays API", () => {
     });
 
     test("should return 404 when no holidays found", async () => {
-      const response = await authenticatedDelete("/v1/admin/holidays", adminToken, {
+      const response = await authenticatedDelete("/v1/holidays", adminToken, {
         data: {
           dates: ["2025-08-15"],
         },

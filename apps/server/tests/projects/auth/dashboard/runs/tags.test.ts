@@ -20,15 +20,15 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/runs/tags", () => {
+test.describe("GET /v1/runs/tags", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/dashboard/runs/tags");
+    const response = await unauthenticatedGet("/v1/runs/tags");
 
     expect(response.status).toBe(401);
   });
 
   test("should return 401 when invalid token is provided", async () => {
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/runs/tags", "invalid-token-12345", {
       validateStatus: () => true,
     });
 

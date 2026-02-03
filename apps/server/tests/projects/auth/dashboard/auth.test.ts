@@ -15,11 +15,11 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("POST /v1/dashboard/auth/sign-in", () => {
+test.describe("POST /v1/auth/sign-in", () => {
   test("should return 401 when invalid developer token provided", async ({ tracker }) => {
     const dev = await createDeveloperUser(undefined, tracker);
     const response = await authenticatedPost(
-      "/v1/dashboard/auth/sign-in",
+      "/v1/auth/sign-in",
       dev.token,
       { developerToken: "invalid-token-12345" },
       { validateStatus: () => true }

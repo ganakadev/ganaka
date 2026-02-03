@@ -39,11 +39,11 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/admin/dates", () => {
+test.describe("GET /v1/dates", () => {
   test.describe.configure({ mode: "serial" });
 
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/admin/dates");
+    const response = await unauthenticatedGet("/v1/dates");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -51,7 +51,7 @@ test.describe("GET /v1/admin/dates", () => {
   });
 
   test("should return 401 when invalid admin token is provided", async () => {
-    const response = await authenticatedGet("/v1/admin/dates", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/dates", "invalid-token-12345", {
       validateStatus: () => true,
     });
 
@@ -65,7 +65,7 @@ test.describe("GET /v1/admin/dates", () => {
   }) => {
     const dev = await createDeveloperUser(undefined, tracker);
 
-    const response = await authenticatedGet("/v1/admin/dates", dev.token, {
+    const response = await authenticatedGet("/v1/dates", dev.token, {
       validateStatus: () => true,
     });
 
@@ -80,7 +80,7 @@ test.describe("GET /v1/admin/dates", () => {
   //   await prisma.quoteSnapshot.deleteMany({});
   //   await prisma.niftyQuote.deleteMany({});
 
-  //   const response = await authenticatedGet("/v1/admin/dates", adminToken);
+  //   const response = await authenticatedGet("/v1/dates", adminToken);
 
   //   expect(response.status).toBe(200);
   //   const body = response.data;
@@ -121,7 +121,7 @@ test.describe("GET /v1/admin/dates", () => {
       "Asia/Kolkata"
     );
 
-    const response = await authenticatedGet("/v1/admin/dates", adminToken);
+    const response = await authenticatedGet("/v1/dates", adminToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -134,9 +134,9 @@ test.describe("GET /v1/admin/dates", () => {
   });
 });
 
-test.describe("DELETE /v1/admin/dates", () => {
+test.describe("DELETE /v1/dates", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedDelete("/v1/admin/dates", {
+    const response = await unauthenticatedDelete("/v1/dates", {
       data: {
         dates: ["2025-01-15"],
       },
@@ -176,7 +176,7 @@ test.describe("DELETE /v1/admin/dates", () => {
 
   //   // Delete the date
   //   const response = await authenticatedDelete(
-  //     "/v1/admin/dates",
+  //     "/v1/dates",
   //     adminToken,
   //     {
   //       data: {
@@ -228,7 +228,7 @@ test.describe("DELETE /v1/admin/dates", () => {
       "TOP_5"
     );
 
-    const response = await authenticatedDelete("/v1/admin/dates", adminToken, {
+    const response = await authenticatedDelete("/v1/dates", adminToken, {
       data: {
         dates: [date1, date2],
       },
@@ -241,7 +241,7 @@ test.describe("DELETE /v1/admin/dates", () => {
   });
 
   test("should return 400 when dates array is empty", async () => {
-    const response = await authenticatedDelete("/v1/admin/dates", adminToken, {
+    const response = await authenticatedDelete("/v1/dates", adminToken, {
       data: {
         dates: [],
       },
@@ -252,7 +252,7 @@ test.describe("DELETE /v1/admin/dates", () => {
   });
 
   test("should return 400 when date format is invalid", async () => {
-    const response = await authenticatedDelete("/v1/admin/dates", adminToken, {
+    const response = await authenticatedDelete("/v1/dates", adminToken, {
       data: {
         dates: ["invalid-date"],
       },
@@ -263,7 +263,7 @@ test.describe("DELETE /v1/admin/dates", () => {
   });
 
   test("should handle non-existent dates gracefully", async () => {
-    const response = await authenticatedDelete("/v1/admin/dates", adminToken, {
+    const response = await authenticatedDelete("/v1/dates", adminToken, {
       data: {
         dates: ["2099-12-31"],
       },

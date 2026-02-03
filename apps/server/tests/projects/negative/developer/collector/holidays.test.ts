@@ -20,10 +20,10 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/collector/holidays/check", () => {
+test.describe("GET /v1/holidays/check", () => {
   test("should return 400 when date query parameter is missing", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/collector/holidays/check",
+      "/v1/holidays/check",
       developerToken,
       {
         validateStatus: () => true,
@@ -35,7 +35,7 @@ test.describe("GET /v1/developer/collector/holidays/check", () => {
 
   test("should return 400 when date format is invalid", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/collector/holidays/check?date=invalid-date",
+      "/v1/holidays/check?date=invalid-date",
       developerToken,
       {
         validateStatus: () => true,
@@ -47,7 +47,7 @@ test.describe("GET /v1/developer/collector/holidays/check", () => {
 
   test("should return 400 when date is not a valid date", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/collector/holidays/check?date=2025-13-45",
+      "/v1/holidays/check?date=2025-13-45",
       developerToken,
       {
         validateStatus: () => true,

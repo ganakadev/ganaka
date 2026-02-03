@@ -36,7 +36,7 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/quote", () => {
+test.describe("GET /v1/quote", () => {
   test("should return snapshot data when valid datetime and symbol are provided", async ({
     tracker,
   }) => {
@@ -46,7 +46,7 @@ test.describe("GET /v1/developer/quote", () => {
 
     const query = createGrowwQuoteQuery(TEST_SYMBOL, testDatetime);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/quote?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/quote?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -89,7 +89,7 @@ test.describe("GET /v1/developer/quote", () => {
     const query = createGrowwQuoteQuery(testSymbol, testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/quote?${queryString}`,
+      `/v1/quote?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp
@@ -108,7 +108,7 @@ test.describe("GET /v1/developer/quote", () => {
 
     const query = createGrowwQuoteQuery(testSymbol, testDatetime);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/quote?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/quote?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;

@@ -24,14 +24,14 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/candles", () => {
+test.describe("GET /v1/candles", () => {
   test.describe.configure({ mode: "default" });
 
   test("should return 400 when symbol is missing", async () => {
     const query = { date: CANDLES_TEST_DATE };
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/dashboard/candles?${queryString}`,
+      `/v1/candles?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -45,7 +45,7 @@ test.describe("GET /v1/dashboard/candles", () => {
     const query = { symbol: TEST_SYMBOL };
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/dashboard/candles?${queryString}`,
+      `/v1/candles?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -59,7 +59,7 @@ test.describe("GET /v1/dashboard/candles", () => {
     const query = createCandlesQuery(TEST_SYMBOL, "invalid-date");
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/dashboard/candles?${queryString}`,
+      `/v1/candles?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -73,7 +73,7 @@ test.describe("GET /v1/dashboard/candles", () => {
     const query = createCandlesQuery(TEST_SYMBOL, CANDLES_TEST_DATE, "invalid-interval" as any);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/dashboard/candles?${queryString}`,
+      `/v1/candles?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -89,7 +89,7 @@ test.describe("GET /v1/dashboard/candles", () => {
     const query = createCandlesQuery("INVALID_SYMBOL_XYZ", futureDate);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(
-      `/v1/dashboard/candles?${queryString}`,
+      `/v1/candles?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,

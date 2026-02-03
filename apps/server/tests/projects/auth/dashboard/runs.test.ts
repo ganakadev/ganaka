@@ -31,15 +31,15 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/runs", () => {
+test.describe("GET /v1/runs", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/dashboard/runs");
+    const response = await unauthenticatedGet("/v1/runs");
 
     expect(response.status).toBe(401);
   });
 
   test("should return 401 when invalid token is provided", async () => {
-    const response = await authenticatedGet("/v1/dashboard/runs", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/runs", "invalid-token-12345", {
       validateStatus: () => true,
     });
 
@@ -47,10 +47,10 @@ test.describe("GET /v1/dashboard/runs", () => {
   });
 });
 
-test.describe("POST /v1/dashboard/runs", () => {
+test.describe("POST /v1/runs", () => {
   test("should return 401 when authorization header is missing", async () => {
     const testData = createRunTestData();
-    const response = await unauthenticatedPost("/v1/dashboard/runs", testData);
+    const response = await unauthenticatedPost("/v1/runs", testData);
 
     expect(response.status).toBe(401);
   });
@@ -58,7 +58,7 @@ test.describe("POST /v1/dashboard/runs", () => {
   test("should return 401 when invalid token is provided", async () => {
     const testData = createRunTestData();
     const response = await authenticatedPost(
-      "/v1/dashboard/runs",
+      "/v1/runs",
       "invalid-token-12345",
       testData,
       {
@@ -70,7 +70,7 @@ test.describe("POST /v1/dashboard/runs", () => {
   });
 });
 
-test.describe("PATCH /v1/dashboard/runs/:runId", () => {
+test.describe("PATCH /v1/runs/:runId", () => {
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
     const run = await createRun(
       developerId,
@@ -79,7 +79,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const response = await unauthenticatedPatch(`/v1/dashboard/runs/${run.id}`, {
+    const response = await unauthenticatedPatch(`/v1/runs/${run.id}`, {
       completed: true,
     });
 
@@ -95,7 +95,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
       "Asia/Kolkata"
     );
     const response = await authenticatedPatch(
-      `/v1/dashboard/runs/${run.id}`,
+      `/v1/runs/${run.id}`,
       "invalid-token-12345",
       { completed: true },
       { validateStatus: () => true }
@@ -105,7 +105,7 @@ test.describe("PATCH /v1/dashboard/runs/:runId", () => {
   });
 });
 
-test.describe("DELETE /v1/dashboard/runs/:runId", () => {
+test.describe("DELETE /v1/runs/:runId", () => {
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
     const run = await createRun(
       developerId,
@@ -114,7 +114,7 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const response = await unauthenticatedDelete(`/v1/dashboard/runs/${run.id}`);
+    const response = await unauthenticatedDelete(`/v1/runs/${run.id}`);
 
     expect(response.status).toBe(401);
   });
@@ -128,7 +128,7 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
       "Asia/Kolkata"
     );
     const response = await authenticatedDelete(
-      `/v1/dashboard/runs/${run.id}`,
+      `/v1/runs/${run.id}`,
       "invalid-token-12345",
       {
         validateStatus: () => true,
@@ -139,7 +139,7 @@ test.describe("DELETE /v1/dashboard/runs/:runId", () => {
   });
 });
 
-test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
+test.describe("GET /v1/runs/:runId/orders", () => {
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
     const run = await createRun(
       developerId,
@@ -148,7 +148,7 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const response = await unauthenticatedGet(`/v1/dashboard/runs/${run.id}/orders`);
+    const response = await unauthenticatedGet(`/v1/runs/${run.id}/orders`);
 
     expect(response.status).toBe(401);
   });
@@ -162,7 +162,7 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
       "Asia/Kolkata"
     );
     const response = await authenticatedGet(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       "invalid-token-12345",
       {
         validateStatus: () => true,
@@ -173,7 +173,7 @@ test.describe("GET /v1/dashboard/runs/:runId/orders", () => {
   });
 });
 
-test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
+test.describe("POST /v1/runs/:runId/orders", () => {
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
     const run = await createRun(
       developerId,
@@ -183,7 +183,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
       "Asia/Kolkata"
     );
     const orderData = createOrderTestData();
-    const response = await unauthenticatedPost(`/v1/dashboard/runs/${run.id}/orders`, orderData);
+    const response = await unauthenticatedPost(`/v1/runs/${run.id}/orders`, orderData);
 
     expect(response.status).toBe(401);
   });
@@ -198,7 +198,7 @@ test.describe("POST /v1/dashboard/runs/:runId/orders", () => {
     );
     const orderData = createOrderTestData();
     const response = await authenticatedPost(
-      `/v1/dashboard/runs/${run.id}/orders`,
+      `/v1/runs/${run.id}/orders`,
       "invalid-token-12345",
       orderData,
       { validateStatus: () => true }

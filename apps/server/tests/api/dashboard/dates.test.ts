@@ -1,4 +1,4 @@
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_schemas } from "@ganaka/schemas";
 import { createValidShortlistEntries, generateUniqueTestDatetime } from "../../fixtures/test-data";
 import { authenticatedGet, unauthenticatedGet } from "../../helpers/api-client";
 import { createDeveloperUser } from "../../helpers/auth-helpers";
@@ -25,9 +25,9 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/dates", () => {
+test.describe("GET /v1/dates", () => {
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/dashboard/dates");
+    const response = await unauthenticatedGet("/v1/dates");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -35,7 +35,7 @@ test.describe("GET /v1/dashboard/dates", () => {
   });
 
   test("should return 401 when invalid token is provided", async () => {
-    const response = await authenticatedGet("/v1/dashboard/dates", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/dates", "invalid-token-12345", {
       validateStatus: () => true,
     });
 
@@ -45,7 +45,7 @@ test.describe("GET /v1/dashboard/dates", () => {
   });
 
   test("should return 200 with empty dates array when no snapshots exist", async () => {
-    const response = await authenticatedGet("/v1/dashboard/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -55,7 +55,7 @@ test.describe("GET /v1/dashboard/dates", () => {
 
     // Validate response matches schema
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
+      v1_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
         body
       );
     expect(validatedData.data.dates).toBeInstanceOf(Array);
@@ -78,7 +78,7 @@ test.describe("GET /v1/dashboard/dates", () => {
     const differentDate = generateUniqueTestDatetime("2025-12-27");
     await createShortlistSnapshot("volume-shockers", differentDate, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/dashboard/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -87,7 +87,7 @@ test.describe("GET /v1/dashboard/dates", () => {
 
     // Validate response matches schema
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
+      v1_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
         body
       );
     expect(validatedData.data.dates).toBeInstanceOf(Array);
@@ -118,11 +118,11 @@ test.describe("GET /v1/dashboard/dates", () => {
     const testEntries = createValidShortlistEntries();
     await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/dashboard/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
+      v1_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
         response.data
       );
 
@@ -143,11 +143,11 @@ test.describe("GET /v1/dashboard/dates", () => {
     const testEntries = createValidShortlistEntries();
     await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/dashboard/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
+      v1_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
         response.data
       );
 
@@ -175,11 +175,11 @@ test.describe("GET /v1/dashboard/dates", () => {
     const date3 = generateUniqueTestDatetime("2025-12-27");
     await createShortlistSnapshot("top-gainers", date3, testEntries, tracker);
 
-    const response = await authenticatedGet("/v1/dashboard/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
+      v1_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
         response.data
       );
 
@@ -200,11 +200,11 @@ test.describe("GET /v1/dashboard/dates", () => {
       await createShortlistSnapshot("top-gainers", `${date}T10:06:00`, testEntries, tracker);
     }
 
-    const response = await authenticatedGet("/v1/dashboard/dates", developerToken);
+    const response = await authenticatedGet("/v1/dates", developerToken);
 
     expect(response.status).toBe(200);
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
+      v1_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
         response.data
       );
 

@@ -25,11 +25,11 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/lists", () => {
+test.describe("GET /v1/lists", () => {
   test("should return 400 when date is missing", async () => {
     const query = { type: "TOP_GAINERS" };
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -39,7 +39,7 @@ test.describe("GET /v1/dashboard/lists", () => {
   test("should return 400 when type is missing", async () => {
     const query = { date: TEST_DATETIME };
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -49,7 +49,7 @@ test.describe("GET /v1/dashboard/lists", () => {
   test("should return 400 when date format is invalid", async () => {
     const query = createShortlistsQuery("invalid-date", "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -59,7 +59,7 @@ test.describe("GET /v1/dashboard/lists", () => {
   test("should return 400 when type is invalid enum value", async () => {
     const query = { date: TEST_DATETIME, type: "invalid-type" };
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -74,7 +74,7 @@ test.describe("GET /v1/dashboard/lists", () => {
       stopLossPercentage: "1.5",
     }).toString();
 
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -89,7 +89,7 @@ test.describe("GET /v1/dashboard/lists", () => {
       stopLossPercentage: "150",
     }).toString();
 
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -102,7 +102,7 @@ test.describe("GET /v1/dashboard/lists", () => {
       ...query,
       scope: "INVALID_SCOPE",
     });
-    const response = await authenticatedGet(`/v1/dashboard/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 

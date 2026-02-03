@@ -20,10 +20,10 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/collector/holidays/check", () => {
+test.describe("GET /v1/holidays/check", () => {
   test("should return 401 when authorization header is missing", async () => {
     const response = await unauthenticatedGet(
-      "/v1/developer/collector/holidays/check?date=2025-01-15",
+      "/v1/holidays/check?date=2025-01-15",
       {
         validateStatus: () => true,
       }
@@ -34,7 +34,7 @@ test.describe("GET /v1/developer/collector/holidays/check", () => {
 
   test("should return 401 when invalid token is provided", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/collector/holidays/check?date=2025-01-15",
+      "/v1/holidays/check?date=2025-01-15",
       "invalid-token-12345",
       {
         validateStatus: () => true,

@@ -28,9 +28,9 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/lists", () => {
+test.describe("GET /v1/lists", () => {
   test("should return 400 when type parameter is missing", async () => {
-    const response = await authenticatedGet("/v1/developer/lists", developerToken, {
+    const response = await authenticatedGet("/v1/lists", developerToken, {
       validateStatus: () => true,
     });
 
@@ -39,7 +39,7 @@ test.describe("GET /v1/developer/lists", () => {
 
   test("should return 400 when type is invalid enum value", async () => {
     const response = await authenticatedGet(
-      "/v1/developer/lists?type=invalid-type",
+      "/v1/lists?type=invalid-type",
       developerToken,
       {
         validateStatus: () => true,
@@ -52,7 +52,7 @@ test.describe("GET /v1/developer/lists", () => {
   test("should return 400 when datetime format is invalid", async () => {
     const query = createListsQuery("top-gainers", "invalid-datetime");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 
@@ -70,7 +70,7 @@ test.describe("GET /v1/developer/lists", () => {
     const query = createListsQuery("top-gainers", testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/lists?${queryString}`,
+      `/v1/lists?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -97,7 +97,7 @@ test.describe("GET /v1/developer/lists", () => {
     const query = createListsQuery("top-gainers", testDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/lists?${queryString}`,
+      `/v1/lists?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -117,7 +117,7 @@ test.describe("GET /v1/developer/lists", () => {
       ...query,
       scope: "INVALID_SCOPE",
     }).toString();
-    const response = await authenticatedGet(`/v1/developer/lists?${queryString}`, developerToken, {
+    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });
 

@@ -25,11 +25,11 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/holidays", () => {
+test.describe("GET /v1/holidays", () => {
   test.describe.configure({ mode: "serial" });
 
   test("should return 401 when authorization header is missing", async () => {
-    const response = await unauthenticatedGet("/v1/developer/holidays");
+    const response = await unauthenticatedGet("/v1/holidays");
 
     expect(response.status).toBe(401);
     const body = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
@@ -37,7 +37,7 @@ test.describe("GET /v1/developer/holidays", () => {
   });
 
   test("should return 401 when invalid developer token is provided", async () => {
-    const response = await authenticatedGet("/v1/developer/holidays", "invalid-token-12345", {
+    const response = await authenticatedGet("/v1/holidays", "invalid-token-12345", {
       validateStatus: () => true,
     });
 

@@ -5,20 +5,20 @@ import {
   createValidGrowwCredentials,
   createTestDeveloperWithGrowwCredentials,
 } from "../../../../fixtures/test-data";
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_schemas } from "@ganaka/schemas";
 import {
   getDeveloperGrowwCredentials,
   getDeveloperGrowwCredentialsRaw,
   isEncrypted,
 } from "../../../../helpers/db-helpers";
 
-test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
+test.describe("PUT /v1/groww/credentials", () => {
   test("should successfully save credentials and return success: true", async ({ tracker }) => {
     const dev = await createDeveloperUser(undefined, tracker);
     const creds = createValidGrowwCredentials();
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       creds
     );
@@ -31,7 +31,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
 
     // Validate response matches schema
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_settings_schemas.updateGrowwCredentials.response.parse(
+      v1_schemas.v1_dashboard_settings_schemas.updateGrowwCredentials.response.parse(
         body
       );
     expect(validatedData.data.success).toBe(true);
@@ -63,7 +63,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const creds2 = createValidGrowwCredentials();
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       creds2
     );
@@ -85,7 +85,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const creds = createValidGrowwCredentials();
 
     // Save credentials
-    await authenticatedPut("/v1/dashboard/settings/groww/credentials", dev.token, creds);
+    await authenticatedPut("/v1/groww/credentials", dev.token, creds);
 
     // Verify credentials are encrypted in database
     const rawCreds = await getDeveloperGrowwCredentialsRaw(dev.id);
@@ -94,7 +94,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
 
     // Fetch and verify masked key
     const getResponse = await authenticatedGet(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token
     );
 
@@ -116,7 +116,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const longKey = "a".repeat(500);
     const longSecret = "b".repeat(500);
 
-    const response = await authenticatedPut("/v1/dashboard/settings/groww/credentials", dev.token, {
+    const response = await authenticatedPut("/v1/groww/credentials", dev.token, {
       growwApiKey: longKey,
       growwApiSecret: longSecret,
     });
@@ -138,7 +138,7 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     };
 
     const response = await authenticatedPut(
-      "/v1/dashboard/settings/groww/credentials",
+      "/v1/groww/credentials",
       dev.token,
       specialCreds
     );
@@ -161,10 +161,10 @@ test.describe("PUT /v1/dashboard/settings/groww/credentials", () => {
     const creds2 = createValidGrowwCredentials();
 
     // Set credentials for dev1
-    await authenticatedPut("/v1/dashboard/settings/groww/credentials", dev1.token, creds1);
+    await authenticatedPut("/v1/groww/credentials", dev1.token, creds1);
 
     // Set credentials for dev2
-    await authenticatedPut("/v1/dashboard/settings/groww/credentials", dev2.token, creds2);
+    await authenticatedPut("/v1/groww/credentials", dev2.token, creds2);
 
     // Verify isolation
     const savedCreds1 = await getDeveloperGrowwCredentials(dev1.id);

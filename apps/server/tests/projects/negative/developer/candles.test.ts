@@ -34,7 +34,7 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/developer/candles", () => {
+test.describe("GET /v1/candles", () => {
   test("should return 400 when symbol is missing", async () => {
     const query = createHistoricalCandlesQuery();
     const queryWithoutSymbol = {
@@ -45,7 +45,7 @@ test.describe("GET /v1/developer/candles", () => {
     };
     const queryString = buildQueryString(queryWithoutSymbol);
     const response = await authenticatedGet(
-      `/v1/developer/candles?${queryString}`,
+      `/v1/candles?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -65,7 +65,7 @@ test.describe("GET /v1/developer/candles", () => {
     };
     const queryString = buildQueryString(queryWithoutInterval);
     const response = await authenticatedGet(
-      `/v1/developer/candles?${queryString}`,
+      `/v1/candles?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -85,7 +85,7 @@ test.describe("GET /v1/developer/candles", () => {
     };
     const queryString = buildQueryString(queryWithoutStartTime);
     const response = await authenticatedGet(
-      `/v1/developer/candles?${queryString}`,
+      `/v1/candles?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -105,7 +105,7 @@ test.describe("GET /v1/developer/candles", () => {
     };
     const queryString = buildQueryString(queryWithoutEndTime);
     const response = await authenticatedGet(
-      `/v1/developer/candles?${queryString}`,
+      `/v1/candles?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -126,7 +126,7 @@ test.describe("GET /v1/developer/candles", () => {
     };
     const queryString = buildQueryString(queryWithInvalidInterval);
     const response = await authenticatedGet(
-      `/v1/developer/candles?${queryString}`,
+      `/v1/candles?${queryString}`,
       developerToken,
       {
         validateStatus: () => true,
@@ -153,7 +153,7 @@ test.describe("GET /v1/developer/candles", () => {
     const query = createHistoricalCandlesQuery(TEST_SYMBOL, "5minute", startDatetime, endDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/candles?${queryString}`,
+      `/v1/candles?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,
@@ -185,7 +185,7 @@ test.describe("GET /v1/developer/candles", () => {
     const query = createHistoricalCandlesQuery(TEST_SYMBOL, "5minute", startDatetime, endDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
-      `/v1/developer/candles?${queryString}`,
+      `/v1/candles?${queryString}`,
       developerToken,
       run.id,
       currentTimestamp,

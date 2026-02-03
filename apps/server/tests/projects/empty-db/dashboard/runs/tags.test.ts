@@ -1,4 +1,4 @@
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_schemas } from "@ganaka/schemas";
 import { expect, test } from "../../../../helpers/test-fixtures";
 import { authenticatedGet } from "../../../../helpers/api-client";
 import { createDeveloperUser } from "../../../../helpers/auth-helpers";
@@ -22,9 +22,9 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/dashboard/runs/tags", () => {
+test.describe("GET /v1/runs/tags", () => {
   test("should return 200 with empty array when no runs exist", async () => {
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -40,7 +40,7 @@ test.describe("GET /v1/dashboard/runs/tags", () => {
     });
     await createRun(developerId, "2025-01-02T09:15:00", "2025-01-02T15:30:00", tracker);
 
-    const response = await authenticatedGet("/v1/dashboard/runs/tags", developerToken);
+    const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;

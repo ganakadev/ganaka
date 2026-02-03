@@ -1,13 +1,13 @@
 import { test, expect } from "../../../helpers/test-fixtures";
 import { createDeveloperUser } from "../../../helpers/auth-helpers";
 import { authenticatedPost } from "../../../helpers/api-client";
-import { v1_dashboard_schemas } from "@ganaka/schemas";
+import { v1_schemas } from "@ganaka/schemas";
 
-test.describe("POST /v1/dashboard/auth/sign-in", () => {
+test.describe("POST /v1/auth/sign-in", () => {
   test("should return 200 with developer data when valid token provided", async ({ tracker }) => {
     const dev = await createDeveloperUser(undefined, tracker);
 
-    const response = await authenticatedPost("/v1/dashboard/auth/sign-in", dev.token, {
+    const response = await authenticatedPost("/v1/auth/sign-in", dev.token, {
       developerToken: dev.token,
     });
 
@@ -20,7 +20,7 @@ test.describe("POST /v1/dashboard/auth/sign-in", () => {
 
     // Validate response matches schema
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.response.parse(body);
+      v1_schemas.v1_dashboard_auth_schemas.signIn.response.parse(body);
     expect(validatedData.data.id).toBe(dev.id);
     expect(validatedData.data.username).toBe(dev.username);
   });
@@ -28,7 +28,7 @@ test.describe("POST /v1/dashboard/auth/sign-in", () => {
   test("should validate response schema matches expected structure", async ({ tracker }) => {
     const dev = await createDeveloperUser(undefined, tracker);
 
-    const response = await authenticatedPost("/v1/dashboard/auth/sign-in", dev.token, {
+    const response = await authenticatedPost("/v1/auth/sign-in", dev.token, {
       developerToken: dev.token,
     });
 
@@ -37,7 +37,7 @@ test.describe("POST /v1/dashboard/auth/sign-in", () => {
 
     // Validate response matches schema
     const validatedData =
-      v1_dashboard_schemas.v1_dashboard_auth_schemas.signIn.response.parse(body);
+      v1_schemas.v1_dashboard_auth_schemas.signIn.response.parse(body);
     expect(validatedData.statusCode).toBe(200);
     expect(validatedData.message).toBe("Developer signed in successfully");
     expect(validatedData.data).toHaveProperty("id");
@@ -52,7 +52,7 @@ test.describe("POST /v1/dashboard/auth/sign-in", () => {
   test("should return exact developer id and username matching database", async ({ tracker }) => {
     const dev = await createDeveloperUser(undefined, tracker);
 
-    const response = await authenticatedPost("/v1/dashboard/auth/sign-in", dev.token, {
+    const response = await authenticatedPost("/v1/auth/sign-in", dev.token, {
       developerToken: dev.token,
     });
 
