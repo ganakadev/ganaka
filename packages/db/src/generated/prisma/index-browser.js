@@ -158,6 +158,7 @@ exports.Prisma.OrderScalarFieldEnum = {
 exports.Prisma.NseIntrumentScalarFieldEnum = {
   id: 'id',
   symbol: 'symbol',
+  growwSymbol: 'growwSymbol',
   name: 'name',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

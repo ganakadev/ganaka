@@ -5041,6 +5041,7 @@ export namespace Prisma {
   export type NseIntrumentMinAggregateOutputType = {
     id: string | null
     symbol: string | null
+    growwSymbol: string | null
     name: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -5049,6 +5050,7 @@ export namespace Prisma {
   export type NseIntrumentMaxAggregateOutputType = {
     id: string | null
     symbol: string | null
+    growwSymbol: string | null
     name: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -5057,6 +5059,7 @@ export namespace Prisma {
   export type NseIntrumentCountAggregateOutputType = {
     id: number
     symbol: number
+    growwSymbol: number
     name: number
     createdAt: number
     updatedAt: number
@@ -5067,6 +5070,7 @@ export namespace Prisma {
   export type NseIntrumentMinAggregateInputType = {
     id?: true
     symbol?: true
+    growwSymbol?: true
     name?: true
     createdAt?: true
     updatedAt?: true
@@ -5075,6 +5079,7 @@ export namespace Prisma {
   export type NseIntrumentMaxAggregateInputType = {
     id?: true
     symbol?: true
+    growwSymbol?: true
     name?: true
     createdAt?: true
     updatedAt?: true
@@ -5083,6 +5088,7 @@ export namespace Prisma {
   export type NseIntrumentCountAggregateInputType = {
     id?: true
     symbol?: true
+    growwSymbol?: true
     name?: true
     createdAt?: true
     updatedAt?: true
@@ -5164,6 +5170,7 @@ export namespace Prisma {
   export type NseIntrumentGroupByOutputType = {
     id: string
     symbol: string
+    growwSymbol: string
     name: string
     createdAt: Date
     updatedAt: Date
@@ -5189,6 +5196,7 @@ export namespace Prisma {
   export type NseIntrumentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     symbol?: boolean
+    growwSymbol?: boolean
     name?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5199,6 +5207,7 @@ export namespace Prisma {
   export type NseIntrumentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     symbol?: boolean
+    growwSymbol?: boolean
     name?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5207,6 +5216,7 @@ export namespace Prisma {
   export type NseIntrumentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     symbol?: boolean
+    growwSymbol?: boolean
     name?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5215,12 +5225,13 @@ export namespace Prisma {
   export type NseIntrumentSelectScalar = {
     id?: boolean
     symbol?: boolean
+    growwSymbol?: boolean
     name?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type NseIntrumentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "name" | "createdAt" | "updatedAt", ExtArgs["result"]["nseIntrument"]>
+  export type NseIntrumentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "growwSymbol" | "name" | "createdAt" | "updatedAt", ExtArgs["result"]["nseIntrument"]>
   export type NseIntrumentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     candles?: boolean | NseIntrument$candlesArgs<ExtArgs>
     _count?: boolean | NseIntrumentCountOutputTypeDefaultArgs<ExtArgs>
@@ -5236,6 +5247,10 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       symbol: string
+      /**
+       * NSE-<symbol>
+       */
+      growwSymbol: string
       name: string
       createdAt: Date
       updatedAt: Date
@@ -5665,6 +5680,7 @@ export namespace Prisma {
   interface NseIntrumentFieldRefs {
     readonly id: FieldRef<"NseIntrument", 'String'>
     readonly symbol: FieldRef<"NseIntrument", 'String'>
+    readonly growwSymbol: FieldRef<"NseIntrument", 'String'>
     readonly name: FieldRef<"NseIntrument", 'String'>
     readonly createdAt: FieldRef<"NseIntrument", 'DateTime'>
     readonly updatedAt: FieldRef<"NseIntrument", 'DateTime'>
@@ -10347,6 +10363,7 @@ export namespace Prisma {
   export const NseIntrumentScalarFieldEnum: {
     id: 'id',
     symbol: 'symbol',
+    growwSymbol: 'growwSymbol',
     name: 'name',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -10822,6 +10839,7 @@ export namespace Prisma {
     NOT?: NseIntrumentWhereInput | NseIntrumentWhereInput[]
     id?: StringFilter<"NseIntrument"> | string
     symbol?: StringFilter<"NseIntrument"> | string
+    growwSymbol?: StringFilter<"NseIntrument"> | string
     name?: StringFilter<"NseIntrument"> | string
     createdAt?: DateTimeFilter<"NseIntrument"> | Date | string
     updatedAt?: DateTimeFilter<"NseIntrument"> | Date | string
@@ -10831,6 +10849,7 @@ export namespace Prisma {
   export type NseIntrumentOrderByWithRelationInput = {
     id?: SortOrder
     symbol?: SortOrder
+    growwSymbol?: SortOrder
     name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10840,6 +10859,7 @@ export namespace Prisma {
   export type NseIntrumentWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     symbol?: string
+    growwSymbol?: string
     AND?: NseIntrumentWhereInput | NseIntrumentWhereInput[]
     OR?: NseIntrumentWhereInput[]
     NOT?: NseIntrumentWhereInput | NseIntrumentWhereInput[]
@@ -10847,11 +10867,12 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"NseIntrument"> | Date | string
     updatedAt?: DateTimeFilter<"NseIntrument"> | Date | string
     candles?: NseCandleListRelationFilter
-  }, "id" | "symbol">
+  }, "id" | "symbol" | "growwSymbol">
 
   export type NseIntrumentOrderByWithAggregationInput = {
     id?: SortOrder
     symbol?: SortOrder
+    growwSymbol?: SortOrder
     name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10866,6 +10887,7 @@ export namespace Prisma {
     NOT?: NseIntrumentScalarWhereWithAggregatesInput | NseIntrumentScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"NseIntrument"> | string
     symbol?: StringWithAggregatesFilter<"NseIntrument"> | string
+    growwSymbol?: StringWithAggregatesFilter<"NseIntrument"> | string
     name?: StringWithAggregatesFilter<"NseIntrument"> | string
     createdAt?: DateTimeWithAggregatesFilter<"NseIntrument"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"NseIntrument"> | Date | string
@@ -11371,6 +11393,7 @@ export namespace Prisma {
   export type NseIntrumentCreateInput = {
     id?: string
     symbol: string
+    growwSymbol: string
     name: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11380,6 +11403,7 @@ export namespace Prisma {
   export type NseIntrumentUncheckedCreateInput = {
     id?: string
     symbol: string
+    growwSymbol: string
     name: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11389,6 +11413,7 @@ export namespace Prisma {
   export type NseIntrumentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     symbol?: StringFieldUpdateOperationsInput | string
+    growwSymbol?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11398,6 +11423,7 @@ export namespace Prisma {
   export type NseIntrumentUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     symbol?: StringFieldUpdateOperationsInput | string
+    growwSymbol?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11407,6 +11433,7 @@ export namespace Prisma {
   export type NseIntrumentCreateManyInput = {
     id?: string
     symbol: string
+    growwSymbol: string
     name: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11415,6 +11442,7 @@ export namespace Prisma {
   export type NseIntrumentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     symbol?: StringFieldUpdateOperationsInput | string
+    growwSymbol?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11423,6 +11451,7 @@ export namespace Prisma {
   export type NseIntrumentUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     symbol?: StringFieldUpdateOperationsInput | string
+    growwSymbol?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12006,6 +12035,7 @@ export namespace Prisma {
   export type NseIntrumentCountOrderByAggregateInput = {
     id?: SortOrder
     symbol?: SortOrder
+    growwSymbol?: SortOrder
     name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -12014,6 +12044,7 @@ export namespace Prisma {
   export type NseIntrumentMaxOrderByAggregateInput = {
     id?: SortOrder
     symbol?: SortOrder
+    growwSymbol?: SortOrder
     name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -12022,6 +12053,7 @@ export namespace Prisma {
   export type NseIntrumentMinOrderByAggregateInput = {
     id?: SortOrder
     symbol?: SortOrder
+    growwSymbol?: SortOrder
     name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -13126,6 +13158,7 @@ export namespace Prisma {
   export type NseIntrumentCreateWithoutCandlesInput = {
     id?: string
     symbol: string
+    growwSymbol: string
     name: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13134,6 +13167,7 @@ export namespace Prisma {
   export type NseIntrumentUncheckedCreateWithoutCandlesInput = {
     id?: string
     symbol: string
+    growwSymbol: string
     name: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13158,6 +13192,7 @@ export namespace Prisma {
   export type NseIntrumentUpdateWithoutCandlesInput = {
     id?: StringFieldUpdateOperationsInput | string
     symbol?: StringFieldUpdateOperationsInput | string
+    growwSymbol?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13166,6 +13201,7 @@ export namespace Prisma {
   export type NseIntrumentUncheckedUpdateWithoutCandlesInput = {
     id?: StringFieldUpdateOperationsInput | string
     symbol?: StringFieldUpdateOperationsInput | string
+    growwSymbol?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
