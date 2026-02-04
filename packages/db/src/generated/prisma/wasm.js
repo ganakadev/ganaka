@@ -93,34 +93,6 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.ShortlistSnapshotScalarFieldEnum = {
-  id: 'id',
-  timestamp: 'timestamp',
-  shortlistType: 'shortlistType',
-  entries: 'entries',
-  scope: 'scope',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.QuoteSnapshotScalarFieldEnum = {
-  id: 'id',
-  timestamp: 'timestamp',
-  nseSymbol: 'nseSymbol',
-  quoteData: 'quoteData',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.NiftyQuoteScalarFieldEnum = {
-  id: 'id',
-  timestamp: 'timestamp',
-  quoteData: 'quoteData',
-  dayChangePerc: 'dayChangePerc',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.DeveloperScalarFieldEnum = {
   id: 'id',
   username: 'username',
@@ -151,6 +123,34 @@ exports.Prisma.OrderScalarFieldEnum = {
   entryPrice: 'entryPrice',
   timestamp: 'timestamp',
   runId: 'runId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.QuoteSnapshotScalarFieldEnum = {
+  id: 'id',
+  timestamp: 'timestamp',
+  nseSymbol: 'nseSymbol',
+  quoteData: 'quoteData',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NiftyQuoteScalarFieldEnum = {
+  id: 'id',
+  timestamp: 'timestamp',
+  quoteData: 'quoteData',
+  dayChangePerc: 'dayChangePerc',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ShortlistSnapshotScalarFieldEnum = {
+  id: 'id',
+  timestamp: 'timestamp',
+  shortlistType: 'shortlistType',
+  entries: 'entries',
+  scope: 'scope',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -191,15 +191,15 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
-};
-
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
 };
 exports.ShortlistType = exports.$Enums.ShortlistType = {
   TOP_GAINERS: 'TOP_GAINERS',
@@ -212,12 +212,12 @@ exports.ShortlistScope = exports.$Enums.ShortlistScope = {
 };
 
 exports.Prisma.ModelName = {
-  ShortlistSnapshot: 'ShortlistSnapshot',
-  QuoteSnapshot: 'QuoteSnapshot',
-  NiftyQuote: 'NiftyQuote',
   Developer: 'Developer',
   Run: 'Run',
   Order: 'Order',
+  QuoteSnapshot: 'QuoteSnapshot',
+  NiftyQuote: 'NiftyQuote',
+  ShortlistSnapshot: 'ShortlistSnapshot',
   CollectorError: 'CollectorError',
   NseHoliday: 'NseHoliday'
 };
@@ -267,13 +267,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel ShortlistSnapshot {\n  id            String         @id @default(uuid())\n  timestamp     DateTime\n  shortlistType ShortlistType\n  entries       Json // Array of shortlist items with nseSymbol, name, price\n  scope         ShortlistScope @default(TOP_5) // we store both the entire shortlist as well as the top 5 which are quote fetched\n\n  createdAt DateTime @default(now()) @db.Timestamptz(6)\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@map(\"shortlist_snapshots\")\n}\n\nmodel QuoteSnapshot {\n  id        String   @id @default(uuid())\n  timestamp DateTime\n  nseSymbol String\n  quoteData Json // Full quote payload from Groww API\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@index([nseSymbol])\n  @@index([timestamp, nseSymbol])\n  @@map(\"quote_snapshots\")\n}\n\nmodel NiftyQuote {\n  id            String   @id @default(uuid())\n  timestamp     DateTime\n  quoteData     Json // Full NIFTY quote payload\n  dayChangePerc Decimal\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@map(\"nifty_quotes\")\n}\n\nmodel Developer {\n  id       String @unique @default(uuid())\n  username String @id @unique\n\n  runs  Run[]\n  token String @unique\n\n  growwApiKey    String? /// @encrypted\n  growwApiSecret String? /// @encrypted \n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([token, username])\n  @@map(\"developers\")\n}\n\nmodel Run {\n  id String @id @default(uuid())\n\n  startTime DateTime\n  endTime   DateTime\n\n  completed Boolean    @default(false)\n  orders    Order[]\n  developer Developer? @relation(fields: [developerId], references: [id], onDelete: Cascade)\n\n  name String?\n  tags String[] @default([])\n\n  developerId String?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  @@index([startTime, endTime, completed])\n  @@map(\"runs\")\n}\n\nmodel Order {\n  id String @id @default(uuid())\n\n  run Run @relation(fields: [runId], references: [id], onDelete: Cascade)\n\n  nseSymbol       String\n  stopLossPrice   Decimal\n  takeProfitPrice Decimal\n  entryPrice      Decimal\n  timestamp       DateTime\n\n  runId     String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([runId, nseSymbol])\n  @@map(\"orders\")\n}\n\nmodel CollectorError {\n  id           String   @id @default(uuid())\n  timestamp    DateTime\n  errorMessage String\n  errorStack   String?\n  errorContext Json?\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@map(\"collector_errors\")\n}\n\nmodel NseHoliday {\n  id   String   @id @default(uuid())\n  date DateTime @unique\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([date])\n  @@map(\"nse_holidays\")\n}\n\nenum ShortlistType {\n  TOP_GAINERS\n  VOLUME_SHOCKERS\n}\n\nenum ShortlistScope {\n  FULL\n  TOP_5\n}\n",
-  "inlineSchemaHash": "da2217849302daf85175cccc6b2c9dac31cba6366d0cb47f255d12386a6cf725",
+  "inlineSchema": "model Developer {\n  id       String @unique @default(uuid())\n  username String @id @unique\n\n  runs  Run[]\n  token String @unique\n\n  growwApiKey    String? /// @encrypted\n  growwApiSecret String? /// @encrypted \n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([token, username])\n  @@map(\"developers\")\n}\n\nmodel Run {\n  id String @id @default(uuid())\n\n  startTime DateTime\n  endTime   DateTime\n\n  completed Boolean    @default(false)\n  orders    Order[]\n  developer Developer? @relation(fields: [developerId], references: [id], onDelete: Cascade)\n\n  name String?\n  tags String[] @default([])\n\n  developerId String?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  @@index([startTime, endTime, completed])\n  @@map(\"runs\")\n}\n\nmodel Order {\n  id String @id @default(uuid())\n\n  run Run @relation(fields: [runId], references: [id], onDelete: Cascade)\n\n  nseSymbol       String\n  stopLossPrice   Decimal\n  takeProfitPrice Decimal\n  entryPrice      Decimal\n  timestamp       DateTime\n\n  runId     String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([runId, nseSymbol])\n  @@map(\"orders\")\n}\n\nmodel QuoteSnapshot {\n  id        String   @id @default(uuid())\n  timestamp DateTime\n  nseSymbol String\n  quoteData Json // Full quote payload from Groww API\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@index([nseSymbol])\n  @@index([timestamp, nseSymbol])\n  @@map(\"quote_snapshots\")\n}\n\nmodel NiftyQuote {\n  id            String   @id @default(uuid())\n  timestamp     DateTime\n  quoteData     Json // Full NIFTY quote payload\n  dayChangePerc Decimal\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@map(\"nifty_quotes\")\n}\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel ShortlistSnapshot {\n  id            String         @id @default(uuid())\n  timestamp     DateTime\n  shortlistType ShortlistType\n  entries       Json // Array of shortlist items with nseSymbol, name, price\n  scope         ShortlistScope @default(TOP_5) // we store both the entire shortlist as well as the top 5 which are quote fetched\n\n  createdAt DateTime @default(now()) @db.Timestamptz(6)\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@map(\"shortlist_snapshots\")\n}\n\nenum ShortlistType {\n  TOP_GAINERS\n  VOLUME_SHOCKERS\n}\n\nenum ShortlistScope {\n  FULL\n  TOP_5\n}\n\nmodel CollectorError {\n  id           String   @id @default(uuid())\n  timestamp    DateTime\n  errorMessage String\n  errorStack   String?\n  errorContext Json?\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([timestamp])\n  @@map(\"collector_errors\")\n}\n\nmodel NseHoliday {\n  id   String   @id @default(uuid())\n  date DateTime @unique\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([date])\n  @@map(\"nse_holidays\")\n}\n",
+  "inlineSchemaHash": "40ace9a198f46df9d69ad0b220246e7dfd09f1fd04518f19b2079ef74a8bde3f",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"ShortlistSnapshot\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"shortlistType\",\"kind\":\"enum\",\"type\":\"ShortlistType\"},{\"name\":\"entries\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"scope\",\"kind\":\"enum\",\"type\":\"ShortlistScope\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"shortlist_snapshots\"},\"QuoteSnapshot\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"nseSymbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quoteData\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"quote_snapshots\"},\"NiftyQuote\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"quoteData\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"dayChangePerc\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"nifty_quotes\"},\"Developer\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"runs\",\"kind\":\"object\",\"type\":\"Run\",\"relationName\":\"DeveloperToRun\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"growwApiKey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"growwApiSecret\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"developers\"},\"Run\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"startTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"endTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"completed\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"orders\",\"kind\":\"object\",\"type\":\"Order\",\"relationName\":\"OrderToRun\"},{\"name\":\"developer\",\"kind\":\"object\",\"type\":\"Developer\",\"relationName\":\"DeveloperToRun\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tags\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"developerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"runs\"},\"Order\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"run\",\"kind\":\"object\",\"type\":\"Run\",\"relationName\":\"OrderToRun\"},{\"name\":\"nseSymbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"stopLossPrice\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"takeProfitPrice\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"entryPrice\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"runId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"orders\"},\"CollectorError\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"errorMessage\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"errorStack\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"errorContext\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"collector_errors\"},\"NseHoliday\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"date\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"nse_holidays\"}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Developer\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"runs\",\"kind\":\"object\",\"type\":\"Run\",\"relationName\":\"DeveloperToRun\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"growwApiKey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"growwApiSecret\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"developers\"},\"Run\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"startTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"endTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"completed\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"orders\",\"kind\":\"object\",\"type\":\"Order\",\"relationName\":\"OrderToRun\"},{\"name\":\"developer\",\"kind\":\"object\",\"type\":\"Developer\",\"relationName\":\"DeveloperToRun\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tags\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"developerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"runs\"},\"Order\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"run\",\"kind\":\"object\",\"type\":\"Run\",\"relationName\":\"OrderToRun\"},{\"name\":\"nseSymbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"stopLossPrice\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"takeProfitPrice\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"entryPrice\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"runId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"orders\"},\"QuoteSnapshot\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"nseSymbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quoteData\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"quote_snapshots\"},\"NiftyQuote\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"quoteData\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"dayChangePerc\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"nifty_quotes\"},\"ShortlistSnapshot\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"shortlistType\",\"kind\":\"enum\",\"type\":\"ShortlistType\"},{\"name\":\"entries\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"scope\",\"kind\":\"enum\",\"type\":\"ShortlistScope\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"shortlist_snapshots\"},\"CollectorError\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"errorMessage\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"errorStack\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"errorContext\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"collector_errors\"},\"NseHoliday\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"date\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"nse_holidays\"}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

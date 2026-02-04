@@ -1,55 +1,3 @@
-generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model ShortlistSnapshot {
-  id            String         @id @default(uuid())
-  timestamp     DateTime
-  shortlistType ShortlistType
-  entries       Json // Array of shortlist items with nseSymbol, name, price
-  scope         ShortlistScope @default(TOP_5) // we store both the entire shortlist as well as the top 5 which are quote fetched
-
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt
-
-  @@index([timestamp])
-  @@map("shortlist_snapshots")
-}
-
-model QuoteSnapshot {
-  id        String   @id @default(uuid())
-  timestamp DateTime
-  nseSymbol String
-  quoteData Json // Full quote payload from Groww API
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([timestamp])
-  @@index([nseSymbol])
-  @@index([timestamp, nseSymbol])
-  @@map("quote_snapshots")
-}
-
-model NiftyQuote {
-  id            String   @id @default(uuid())
-  timestamp     DateTime
-  quoteData     Json // Full NIFTY quote payload
-  dayChangePerc Decimal
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([timestamp])
-  @@map("nifty_quotes")
-}
-
 model Developer {
   id       String @unique @default(uuid())
   username String @id @unique
@@ -107,6 +55,68 @@ model Order {
   @@map("orders")
 }
 
+model QuoteSnapshot {
+  id        String   @id @default(uuid())
+  timestamp DateTime
+  nseSymbol String
+  quoteData Json // Full quote payload from Groww API
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([timestamp])
+  @@index([nseSymbol])
+  @@index([timestamp, nseSymbol])
+  @@map("quote_snapshots")
+}
+
+model NiftyQuote {
+  id            String   @id @default(uuid())
+  timestamp     DateTime
+  quoteData     Json // Full NIFTY quote payload
+  dayChangePerc Decimal
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([timestamp])
+  @@map("nifty_quotes")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ShortlistSnapshot {
+  id            String         @id @default(uuid())
+  timestamp     DateTime
+  shortlistType ShortlistType
+  entries       Json // Array of shortlist items with nseSymbol, name, price
+  scope         ShortlistScope @default(TOP_5) // we store both the entire shortlist as well as the top 5 which are quote fetched
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt
+
+  @@index([timestamp])
+  @@map("shortlist_snapshots")
+}
+
+enum ShortlistType {
+  TOP_GAINERS
+  VOLUME_SHOCKERS
+}
+
+enum ShortlistScope {
+  FULL
+  TOP_5
+}
+
 model CollectorError {
   id           String   @id @default(uuid())
   timestamp    DateTime
@@ -130,14 +140,4 @@ model NseHoliday {
 
   @@index([date])
   @@map("nse_holidays")
-}
-
-enum ShortlistType {
-  TOP_GAINERS
-  VOLUME_SHOCKERS
-}
-
-enum ShortlistScope {
-  FULL
-  TOP_5
 }

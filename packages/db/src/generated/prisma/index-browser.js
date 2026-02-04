@@ -121,34 +121,6 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.ShortlistSnapshotScalarFieldEnum = {
-  id: 'id',
-  timestamp: 'timestamp',
-  shortlistType: 'shortlistType',
-  entries: 'entries',
-  scope: 'scope',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.QuoteSnapshotScalarFieldEnum = {
-  id: 'id',
-  timestamp: 'timestamp',
-  nseSymbol: 'nseSymbol',
-  quoteData: 'quoteData',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.NiftyQuoteScalarFieldEnum = {
-  id: 'id',
-  timestamp: 'timestamp',
-  quoteData: 'quoteData',
-  dayChangePerc: 'dayChangePerc',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.DeveloperScalarFieldEnum = {
   id: 'id',
   username: 'username',
@@ -179,6 +151,34 @@ exports.Prisma.OrderScalarFieldEnum = {
   entryPrice: 'entryPrice',
   timestamp: 'timestamp',
   runId: 'runId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.QuoteSnapshotScalarFieldEnum = {
+  id: 'id',
+  timestamp: 'timestamp',
+  nseSymbol: 'nseSymbol',
+  quoteData: 'quoteData',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NiftyQuoteScalarFieldEnum = {
+  id: 'id',
+  timestamp: 'timestamp',
+  quoteData: 'quoteData',
+  dayChangePerc: 'dayChangePerc',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ShortlistSnapshotScalarFieldEnum = {
+  id: 'id',
+  timestamp: 'timestamp',
+  shortlistType: 'shortlistType',
+  entries: 'entries',
+  scope: 'scope',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -219,15 +219,15 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
-};
-
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
 };
 exports.ShortlistType = exports.$Enums.ShortlistType = {
   TOP_GAINERS: 'TOP_GAINERS',
@@ -240,12 +240,12 @@ exports.ShortlistScope = exports.$Enums.ShortlistScope = {
 };
 
 exports.Prisma.ModelName = {
-  ShortlistSnapshot: 'ShortlistSnapshot',
-  QuoteSnapshot: 'QuoteSnapshot',
-  NiftyQuote: 'NiftyQuote',
   Developer: 'Developer',
   Run: 'Run',
   Order: 'Order',
+  QuoteSnapshot: 'QuoteSnapshot',
+  NiftyQuote: 'NiftyQuote',
+  ShortlistSnapshot: 'ShortlistSnapshot',
   CollectorError: 'CollectorError',
   NseHoliday: 'NseHoliday'
 };
