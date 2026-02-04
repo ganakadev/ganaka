@@ -1,3 +1,22 @@
+## [@ganaka/sdk v1.10.2](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Bug Fixes
+
+* **sdk:** update schema imports and API endpoint paths ([0b9b730](https://github.com/ganakadev/ganaka/commit/0b9b730a1cc95795f570218ccb90e6e310ee51a3))
+* **sdk:** update schema imports and remove unused functions ([f8f0073](https://github.com/ganakadev/ganaka/commit/f8f00736ba4f8c9f7deace2d79544fd3b2d74ee5))
+* **server:** update server routes for consistency ([4505d3b](https://github.com/ganakadev/ganaka/commit/4505d3b64356aeb36f467827cd5a1f6495284984))
+
+
+### Features
+
+* **api:** add x-source header to admin API requests ([b76277a](https://github.com/ganakadev/ganaka/commit/b76277a2f89957b57eec11167f677db367958070))
+* **tests:** add comprehensive tests for developer and admin endpoints ([b926e22](https://github.com/ganakadev/ganaka/commit/b926e229d43e108d11c78ae7ff03715f301b7f5b))
+* **tests:** enhance test organization and structure ([97a8f3b](https://github.com/ganakadev/ganaka/commit/97a8f3b886844042f4dbac626418ceb58f0f2635))
+
 ## [@ganaka/sdk v1.10.1](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
