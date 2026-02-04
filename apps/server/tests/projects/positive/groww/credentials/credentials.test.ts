@@ -1,16 +1,14 @@
-import { test, expect } from "../../../../../helpers/test-fixtures";
-import { authenticatedPut, authenticatedGet } from "../../../../../helpers/api-client";
-import { createDeveloperUser } from "../../../../../helpers/auth-helpers";
-import {
-  createValidGrowwCredentials,
-  createTestDeveloperWithGrowwCredentials,
-} from "../../../../../fixtures/test-data";
 import { v1_schemas } from "@ganaka/schemas";
+import { createValidGrowwCredentials } from "../../../../fixtures/test-data";
+import { authenticatedPut, authenticatedGet } from "../../../../helpers/api-client";
+import { createDeveloperUser } from "../../../../helpers/auth-helpers";
+import { expect, test } from "../../../../helpers/test-fixtures";
 import {
   getDeveloperGrowwCredentials,
   getDeveloperGrowwCredentialsRaw,
   isEncrypted,
-} from "../../../../../helpers/db-helpers";
+  createTestDeveloperWithGrowwCredentials,
+} from "../../../../helpers/db-helpers";
 
 test.describe("PUT /v1/groww/credentials", () => {
   test("should successfully save credentials and return success: true", async ({ tracker }) => {
@@ -27,7 +25,7 @@ test.describe("PUT /v1/groww/credentials", () => {
 
     // Validate response matches schema
     const validatedData =
-      v1_schemas.v1_dashboard_settings_schemas.updateGrowwCredentials.response.parse(body);
+      v1_schemas.v1_groww_credentials_schemas.updateGrowwCredentials.response.parse(body);
     expect(validatedData.data.success).toBe(true);
 
     // Verify credentials are encrypted in database

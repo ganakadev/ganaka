@@ -47,8 +47,8 @@ export const dashboardAPI = createApi({
   endpoints: (builder) => ({
     // Get available datetimes
     getAvailableDatetimes: builder.query<
-      z.infer<typeof v1_dates_schemas.getAvailableDatetimes.response>,
-      z.infer<typeof v1_dates_schemas.getAvailableDatetimes.query>
+      z.infer<typeof v1_dates_schemas.getDates.response>,
+      z.infer<typeof v1_dates_schemas.getDates.query>
     >({
       query: () => ({
         url: "/dates",

@@ -1,20 +1,16 @@
-import { test, expect } from "../../../../helpers/test-fixtures";
+import { v1_schemas } from "@ganaka/schemas";
+import dayjs from "dayjs";
+import { createRunTestData, createOrderTestData, TEST_SYMBOL } from "../../../fixtures/test-data";
 import {
   authenticatedGet,
   authenticatedPost,
   authenticatedPatch,
   authenticatedDelete,
-} from "../../../../helpers/api-client";
-import { createDeveloperUser } from "../../../../helpers/auth-helpers";
-import { createRun, createOrder, getRunById, getOrderById } from "../../../../helpers/db-helpers";
-import {
-  createRunTestData,
-  createOrderTestData,
-  TEST_SYMBOL,
-} from "../../../../fixtures/test-data";
-import { v1_schemas } from "@ganaka/schemas";
-import dayjs from "dayjs";
-import { TestDataTracker } from "../../../../helpers/test-tracker";
+} from "../../../helpers/api-client";
+import { createDeveloperUser } from "../../../helpers/auth-helpers";
+import { createRun, getRunById, createOrder, getOrderById } from "../../../helpers/db-helpers";
+import { expect, test } from "../../../helpers/test-fixtures";
+import { TestDataTracker } from "../../../helpers/test-tracker";
 
 let developerToken: string;
 let developerId: string;
@@ -46,9 +42,7 @@ test.describe("GET /v1/runs", () => {
     const response = await authenticatedGet("/v1/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.getRuns.response.parse(response.data);
     expect(Object.keys(validatedData.data).length).toBeGreaterThan(0);
   });
 
@@ -66,9 +60,7 @@ test.describe("GET /v1/runs", () => {
     const response = await authenticatedGet("/v1/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.getRuns.response.parse(response.data);
     const allRuns = Object.values(validatedData.data).flat();
     const testRun = allRuns.find((run) => run.name === "Test Run");
     expect(testRun).toBeDefined();
@@ -84,9 +76,7 @@ test.describe("GET /v1/runs", () => {
     const response = await authenticatedGet("/v1/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.getRuns.response.parse(response.data);
     const dateKeys = Object.keys(validatedData.data);
     dateKeys.forEach((dateKey) => {
       expect(dateKey).toMatch(/^\d{4}-\d{2}-\d{2}$/);
@@ -105,9 +95,7 @@ test.describe("GET /v1/runs", () => {
     const response = await authenticatedGet("/v1/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.getRuns.response.parse(response.data);
     const dateKeys = Object.keys(validatedData.data);
 
     for (let i = 1; i < dateKeys.length; i++) {
@@ -127,9 +115,7 @@ test.describe("GET /v1/runs", () => {
     const response = await authenticatedGet("/v1/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.getRuns.response.parse(response.data);
 
     const dateKeys = Object.keys(validatedData.data);
     if (dateKeys.length > 0) {
@@ -156,9 +142,7 @@ test.describe("GET /v1/runs", () => {
     const response = await authenticatedGet("/v1/runs", developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRuns.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.getRuns.response.parse(response.data);
 
     // Group by creation date (createdAt), not execution date (startTime)
     const creationDateKey = dayjs.utc(run.createdAt).format("YYYY-MM-DD");
@@ -187,9 +171,7 @@ test.describe("POST /v1/runs", () => {
     const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.createRun.response.parse(response.data);
     expect(validatedData.data).toHaveProperty("id");
     expect(validatedData.data).toHaveProperty("start_datetime");
     expect(validatedData.data).toHaveProperty("end_datetime");
@@ -212,9 +194,7 @@ test.describe("POST /v1/runs", () => {
     const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.createRun.response.parse(response.data);
     expect(validatedData.data).toHaveProperty("start_datetime");
     expect(validatedData.data).toHaveProperty("end_datetime");
     expect(validatedData.data.start_datetime).toBe("2025-12-26T03:45:00");
@@ -229,9 +209,7 @@ test.describe("POST /v1/runs", () => {
     const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.createRun.response.parse(response.data);
     expect(validatedData.data.name).toBe("Test Run Name");
   });
 
@@ -243,9 +221,7 @@ test.describe("POST /v1/runs", () => {
     const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.createRun.response.parse(response.data);
     expect(validatedData.data.tags).toEqual(["v1"]);
   });
 
@@ -257,9 +233,7 @@ test.describe("POST /v1/runs", () => {
     const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.createRun.response.parse(response.data);
     expect(validatedData.data.tags).toEqual(["experiment", "momentum", "v1"]); // Should be sorted
   });
 
@@ -271,9 +245,7 @@ test.describe("POST /v1/runs", () => {
     const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.createRun.response.parse(response.data);
     expect(validatedData.data.tags).toEqual([]);
   });
 
@@ -285,9 +257,7 @@ test.describe("POST /v1/runs", () => {
     const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.createRun.response.parse(response.data);
     expect(validatedData.data.tags).toEqual(["momentum", "v1"]);
   });
 
@@ -300,9 +270,7 @@ test.describe("POST /v1/runs", () => {
     const response = await authenticatedPost("/v1/runs", developerToken, testData);
 
     expect(response.status).toBe(201);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createRun.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.createRun.response.parse(response.data);
     expect(validatedData.data.name).toBe("Momentum Strategy v1");
     expect(validatedData.data.tags).toEqual(["momentum", "v1"]);
   });
@@ -341,9 +309,7 @@ test.describe("PATCH /v1/runs/:runId", () => {
     });
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.updateRun.response.parse(response.data);
     expect(validatedData.data).toHaveProperty("id");
     expect(validatedData.data).toHaveProperty("start_datetime");
     expect(validatedData.data).toHaveProperty("end_datetime");
@@ -379,9 +345,7 @@ test.describe("PATCH /v1/runs/:runId", () => {
     });
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.updateRun.response.parse(response.data);
 
     expect(validatedData.data.start_datetime).toBe("2025-12-26T03:45:00");
     expect(validatedData.data.end_datetime).toBe("2025-12-26T10:00:00");
@@ -401,9 +365,7 @@ test.describe("PATCH /v1/runs/:runId", () => {
     });
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.updateRun.response.parse(response.data);
     expect(validatedData.data.name).toBe("Updated Run Name");
     const updatedRun = await getRunById(run.id);
     expect(updatedRun?.name).toBe("Updated Run Name");
@@ -425,9 +387,7 @@ test.describe("PATCH /v1/runs/:runId", () => {
     });
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.updateRun.response.parse(response.data);
     expect(validatedData.data.tags).toEqual(["new-tag1", "new-tag2"]);
     const updatedRun = await getRunById(run.id);
     expect(updatedRun?.tags).toEqual(["new-tag1", "new-tag2"]);
@@ -448,9 +408,7 @@ test.describe("PATCH /v1/runs/:runId", () => {
     });
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.updateRun.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.updateRun.response.parse(response.data);
     expect(validatedData.data.name).toBe("Updated Name");
     expect(validatedData.data.tags).toEqual(["tag1", "tag2"]);
   });
@@ -581,9 +539,7 @@ test.describe("GET /v1/runs/:runId/orders", () => {
     const response = await authenticatedGet(`/v1/runs/${run.id}/orders`, developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.getRunOrders.response.parse(response.data);
 
     if (validatedData.data.length > 0) {
       const firstOrder = validatedData.data[0];
@@ -624,9 +580,7 @@ test.describe("GET /v1/runs/:runId/orders", () => {
     );
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.getRunOrders.response.parse(response.data);
 
     if (validatedData.data.length > 0) {
       const firstOrder = validatedData.data[0];
@@ -672,9 +626,7 @@ test.describe("GET /v1/runs/:runId/orders", () => {
     const response = await authenticatedGet(`/v1/runs/${run.id}/orders`, developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.getRunOrders.response.parse(response.data);
 
     for (let i = 1; i < validatedData.data.length; i++) {
       const prevTimestamp = dayjs.utc(validatedData.data[i - 1].timestamp).valueOf();
@@ -705,9 +657,7 @@ test.describe("GET /v1/runs/:runId/orders", () => {
     const response = await authenticatedGet(`/v1/runs/${run.id}/orders`, developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.getRunOrders.response.parse(response.data);
 
     if (validatedData.data.length > 0) {
       const firstOrder = validatedData.data[0];
@@ -743,9 +693,7 @@ test.describe("GET /v1/runs/:runId/orders", () => {
     );
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.getRunOrders.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.getRunOrders.response.parse(response.data);
 
     if (validatedData.data.length > 0) {
       const firstOrder = validatedData.data[0];
@@ -800,9 +748,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
     );
 
     expect(response.status).toBe(201);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createOrder.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.createOrder.response.parse(response.data);
     expect(validatedData.data).toHaveProperty("id");
     expect(validatedData.data).toHaveProperty("nseSymbol");
     expect(validatedData.data).toHaveProperty("entryPrice");
@@ -850,9 +796,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
     );
 
     expect(response.status).toBe(201);
-    const validatedData = v1_schemas.v1_dashboard_runs_schemas.createOrder.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_runs_schemas.createOrder.response.parse(response.data);
     expect(validatedData.data.nseSymbol).toBe(orderData.nseSymbol);
     expect(validatedData.data.entryPrice).toBe(orderData.entryPrice);
     expect(validatedData.data.stopLossPrice).toBe(orderData.stopLossPrice);

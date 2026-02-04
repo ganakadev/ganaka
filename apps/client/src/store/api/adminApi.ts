@@ -39,16 +39,15 @@ export const adminAPI = createApi({
   tagTypes: ["AvailableDates", "Holidays"],
   endpoints: (builder) => ({
     // Get available dates
-    getAvailableDates: builder.query<
-      z.infer<typeof v1_dates_schemas.getAvailableDatesAdmin.response>,
-      void
-    >({
-      query: () => ({
-        url: "/dates",
-        method: "GET",
-      }),
-      providesTags: ["AvailableDates"],
-    }),
+    getAvailableDates: builder.query<z.infer<typeof v1_dates_schemas.getDatesAdmin.response>, void>(
+      {
+        query: () => ({
+          url: "/dates",
+          method: "GET",
+        }),
+        providesTags: ["AvailableDates"],
+      }
+    ),
 
     // Delete dates
     deleteDates: builder.mutation<

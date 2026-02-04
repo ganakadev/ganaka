@@ -1,20 +1,20 @@
-import { v1_developer_groww_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { parseDateTimeInTimezone } from "../../../../../src/utils/timezone";
+import { expect, test } from "../../../helpers/test-fixtures";
+import { parseDateTimeInTimezone } from "../../../../src/utils/timezone";
 import {
-  createGrowwQuoteQuery,
   createValidGrowwQuotePayload,
   generateUniqueTestDatetime,
   TEST_SYMBOL,
+  createGrowwQuoteQuery,
   buildQueryString,
-} from "../../../../fixtures/test-data";
-import { authenticatedGet, authenticatedGetWithRunContext } from "../../../../helpers/api-client";
-import { createDeveloperUser } from "../../../../helpers/auth-helpers";
-import { createQuoteSnapshot, createRun } from "../../../../helpers/db-helpers";
-import { expect, test } from "../../../../helpers/test-fixtures";
-import { TestDataTracker } from "../../../../helpers/test-tracker";
+} from "../../../fixtures/test-data";
+import { authenticatedGet, authenticatedGetWithRunContext } from "../../../helpers/api-client";
+import { createDeveloperUser } from "../../../helpers/auth-helpers";
+import { createQuoteSnapshot, createRun } from "../../../helpers/db-helpers";
+import { TestDataTracker } from "../../../helpers/test-tracker";
+import { v1_schemas } from "@ganaka/schemas";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -44,7 +44,7 @@ test.describe("GET /v1/quote", () => {
     const testDatetime = generateUniqueTestDatetime();
     await createQuoteSnapshot(TEST_SYMBOL, testDatetime, testQuoteData, tracker);
 
-    const query = createGrowwQuoteQuery(TEST_SYMBOL, testDatetime);
+    const query = createGrowwQuoteQuery(TEST_SYMBOL);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/quote?${queryString}`, developerToken);
 
@@ -55,7 +55,7 @@ test.describe("GET /v1/quote", () => {
     expect(body.data).not.toBeNull();
 
     // Validate response matches schema
-    const validatedData = v1_developer_groww_schemas.getGrowwQuote.response.parse(body);
+    const validatedData = v1_schemas.v1_quote_schemas.getGrowwQuote.response.parse(body);
     expect(validatedData.data).not.toBeNull();
 
     // Validate data structure matches stored snapshot
@@ -86,7 +86,7 @@ test.describe("GET /v1/quote", () => {
     currentTimestamp.setHours(currentTimestamp.getHours() + 1);
     const run = await createRun(developerId, testDatetime, currentTimestamp.toISOString(), tracker);
 
-    const query = createGrowwQuoteQuery(testSymbol, testDatetime);
+    const query = createGrowwQuoteQuery(testSymbol);
     const queryString = buildQueryString(query);
     const response = await authenticatedGetWithRunContext(
       `/v1/quote?${queryString}`,
@@ -106,7 +106,7 @@ test.describe("GET /v1/quote", () => {
     const testSymbol = TEST_SYMBOL;
     await createQuoteSnapshot(testSymbol, testDatetime, createValidGrowwQuotePayload(), tracker);
 
-    const query = createGrowwQuoteQuery(testSymbol, testDatetime);
+    const query = createGrowwQuoteQuery(testSymbol);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/quote?${queryString}`, developerToken);
 

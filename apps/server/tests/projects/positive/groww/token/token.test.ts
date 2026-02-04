@@ -1,8 +1,8 @@
-import { v1_developer_groww_schemas } from "@ganaka/schemas";
-import { authenticatedGet } from "../../../../../helpers/api-client";
-import { createDeveloperUser } from "../../../../../helpers/auth-helpers";
-import { expect, test } from "../../../../../helpers/test-fixtures";
-import { TestDataTracker } from "../../../../../helpers/test-tracker";
+import { v1_schemas } from "@ganaka/schemas";
+import { authenticatedGet } from "../../../../helpers/api-client";
+import { createDeveloperUser } from "../../../../helpers/auth-helpers";
+import { expect, test } from "../../../../helpers/test-fixtures";
+import { TestDataTracker } from "../../../../helpers/test-tracker";
 
 let developerToken: string;
 let developerId: string;
@@ -33,7 +33,7 @@ test.describe("GET /v1/groww/token", () => {
     expect(body.data.length).toBeGreaterThan(0);
 
     // Validate response matches schema
-    const validatedData = v1_developer_groww_schemas.getGrowwToken.response.parse(body);
+    const validatedData = v1_schemas.v1_groww_token_schemas.getGrowwToken.response.parse(body);
     expect(validatedData.data).toBe(body.data);
   });
 });

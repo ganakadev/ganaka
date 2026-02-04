@@ -98,7 +98,7 @@ test.describe("GET /v1/dates", () => {
       expect(response.status).toBe(200);
       const body = response.data;
       expect(body.statusCode).toBe(200);
-      expect(body.message).toBe("Available datetimes fetched successfully");
+      expect(body.message).toBe("Dates fetched successfully");
 
       // Validate response matches schema
       const validatedData = v1_schemas.v1_dates_schemas.getDates.response.parse(body);
@@ -158,7 +158,7 @@ test.describe("GET /v1/dates", () => {
       const validatedData = v1_schemas.v1_dates_schemas.getDates.response.parse(response.data);
 
       expect(validatedData.statusCode).toBe(200);
-      expect(validatedData.message).toBe("Available datetimes fetched successfully");
+      expect(validatedData.message).toBe("Dates fetched successfully");
       expect(validatedData.data).toHaveProperty("dates");
       expect(Array.isArray(validatedData.data.dates)).toBe(true);
 

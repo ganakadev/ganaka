@@ -1,9 +1,9 @@
 import { v1_schemas } from "@ganaka/schemas";
-import { expect, test } from "../../../../../helpers/test-fixtures";
-import { authenticatedGet } from "../../../../../helpers/api-client";
-import { createDeveloperUser } from "../../../../../helpers/auth-helpers";
-import { createRun } from "../../../../../helpers/db-helpers";
-import { TestDataTracker } from "../../../../../helpers/test-tracker";
+import { expect, test } from "../../../../helpers/test-fixtures";
+import { TestDataTracker } from "../../../../helpers/test-tracker";
+import { authenticatedGet } from "../../../../helpers/api-client";
+import { createDeveloperUser } from "../../../../helpers/auth-helpers";
+import { createRun } from "../../../../helpers/db-helpers";
 
 let developerToken: string;
 let developerId: string;
@@ -25,15 +25,33 @@ test.afterAll(async () => {
 test.describe("GET /v1/runs/tags", () => {
   test("should return 200 with unique tags from all runs", async ({ tracker }) => {
     // Create runs with different tags
-    await createRun(developerId, "2025-01-01T09:15:00", "2025-01-01T15:30:00", tracker, {
-      tags: ["v1", "momentum"],
-    });
-    await createRun(developerId, "2025-01-02T09:15:00", "2025-01-02T15:30:00", tracker, {
-      tags: ["v1", "experiment"],
-    });
-    await createRun(developerId, "2025-01-03T09:15:00", "2025-01-03T15:30:00", tracker, {
-      tags: ["test"],
-    });
+    await createRun(
+      developerId,
+      "2025-01-01T09:15:00",
+      "2025-01-01T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      undefined,
+      ["v1", "momentum"]
+    );
+    await createRun(
+      developerId,
+      "2025-01-02T09:15:00",
+      "2025-01-02T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      undefined,
+      ["v1", "experiment"]
+    );
+    await createRun(
+      developerId,
+      "2025-01-03T09:15:00",
+      "2025-01-03T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      undefined,
+      ["test"]
+    );
 
     const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
@@ -53,12 +71,24 @@ test.describe("GET /v1/runs/tags", () => {
 
   test("should return unique tags (remove duplicates)", async ({ tracker }) => {
     // Create runs with duplicate tags
-    await createRun(developerId, "2025-01-01T09:15:00", "2025-01-01T15:30:00", tracker, {
-      tags: ["v1", "momentum"],
-    });
-    await createRun(developerId, "2025-01-02T09:15:00", "2025-01-02T15:30:00", tracker, {
-      tags: ["v1", "momentum"],
-    });
+    await createRun(
+      developerId,
+      "2025-01-01T09:15:00",
+      "2025-01-01T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      undefined,
+      ["v1", "momentum"]
+    );
+    await createRun(
+      developerId,
+      "2025-01-02T09:15:00",
+      "2025-01-02T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      undefined,
+      ["v1", "momentum"]
+    );
 
     const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
@@ -69,9 +99,15 @@ test.describe("GET /v1/runs/tags", () => {
   });
 
   test("should validate response structure matches schema", async ({ tracker }) => {
-    await createRun(developerId, "2025-01-01T09:15:00", "2025-01-01T15:30:00", tracker, {
-      tags: ["v1", "momentum"],
-    });
+    await createRun(
+      developerId,
+      "2025-01-01T09:15:00",
+      "2025-01-01T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      undefined,
+      ["v1", "momentum"]
+    );
 
     const response = await authenticatedGet("/v1/runs/tags", developerToken);
 
@@ -79,22 +115,34 @@ test.describe("GET /v1/runs/tags", () => {
     const body = response.data;
 
     // Validate response matches schema
-    const validatedData = v1_schemas.v1_dashboard_runs_tags_schemas.getRunTags.response.parse(body);
+    const validatedData = v1_schemas.v1_runs_schemas.getRunTags.response.parse(body);
     expect(validatedData.data).toBeInstanceOf(Array);
     expect(validatedData.data.every((tag: any) => typeof tag === "string")).toBe(true);
   });
 
   test("should only return tags for authenticated developer's runs", async ({ tracker }) => {
     // Create a run for the current developer
-    await createRun(developerId, "2025-01-01T09:15:00", "2025-01-01T15:30:00", tracker, {
-      tags: ["developer1-tag"],
-    });
+    await createRun(
+      developerId,
+      "2025-01-01T09:15:00",
+      "2025-01-01T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      undefined,
+      ["developer1-tag"]
+    );
 
     // Create another developer and their run
     const otherDev = await createDeveloperUser(undefined, tracker);
-    await createRun(otherDev.id, "2025-01-01T09:15:00", "2025-01-01T15:30:00", tracker, {
-      tags: ["developer2-tag"],
-    });
+    await createRun(
+      otherDev.id,
+      "2025-01-01T09:15:00",
+      "2025-01-01T15:30:00",
+      tracker,
+      "Asia/Kolkata",
+      undefined,
+      ["developer2-tag"]
+    );
 
     const response = await authenticatedGet("/v1/runs/tags", developerToken);
 

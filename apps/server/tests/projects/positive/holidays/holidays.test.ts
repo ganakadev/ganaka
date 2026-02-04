@@ -1,11 +1,11 @@
-import { authenticatedGet } from "../../../../helpers/api-client";
-import { createDeveloperUser } from "../../../../helpers/auth-helpers";
-import { expect, test } from "../../../../helpers/test-fixtures";
-import { TestDataTracker } from "../../../../helpers/test-tracker";
-import { prisma } from "../../../../../src/utils/prisma";
-import { v1_developer_holidays_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { expect, test } from "../../../helpers/test-fixtures";
+import { prisma } from "../../../../src/utils/prisma";
+import { authenticatedGet } from "../../../helpers/api-client";
+import { createDeveloperUser } from "../../../helpers/auth-helpers";
+import { TestDataTracker } from "../../../helpers/test-tracker";
+import { v1_schemas } from "@ganaka/schemas";
 
 dayjs.extend(utc);
 
@@ -47,7 +47,9 @@ test.describe("GET /v1/holidays", () => {
       const response = await authenticatedGet("/v1/holidays", developerToken);
 
       expect(response.status).toBe(200);
-      const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
+      const validatedData = v1_schemas.v1_holidays_schemas.getHolidays.response.parse(
+        response.data
+      );
 
       expect(validatedData.statusCode).toBe(200);
       expect(validatedData.message).toBe("Holidays fetched successfully");
@@ -65,7 +67,9 @@ test.describe("GET /v1/holidays", () => {
       const response = await authenticatedGet("/v1/holidays", developerToken);
 
       expect(response.status).toBe(200);
-      const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
+      const validatedData = v1_schemas.v1_holidays_schemas.getHolidays.response.parse(
+        response.data
+      );
 
       validatedData.data.holidays.forEach((h: { date: string }) => {
         expect(typeof h.date).toBe("string");
@@ -83,7 +87,9 @@ test.describe("GET /v1/holidays", () => {
       const response = await authenticatedGet("/v1/holidays", developerToken);
 
       expect(response.status).toBe(200);
-      const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(response.data);
+      const validatedData = v1_schemas.v1_holidays_schemas.getHolidays.response.parse(
+        response.data
+      );
 
       validatedData.data.holidays.forEach((h: { id: string }) => {
         expect(typeof h.id).toBe("string");
