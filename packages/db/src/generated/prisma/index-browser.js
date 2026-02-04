@@ -183,24 +183,6 @@ exports.Prisma.NseHolidayScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.QuoteSnapshotScalarFieldEnum = {
-  id: 'id',
-  timestamp: 'timestamp',
-  nseSymbol: 'nseSymbol',
-  quoteData: 'quoteData',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.NiftyQuoteScalarFieldEnum = {
-  id: 'id',
-  timestamp: 'timestamp',
-  quoteData: 'quoteData',
-  dayChangePerc: 'dayChangePerc',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.ShortlistSnapshotScalarFieldEnum = {
   id: 'id',
   timestamp: 'timestamp',
@@ -267,8 +249,6 @@ exports.Prisma.ModelName = {
   NseIntrument: 'NseIntrument',
   NseCandle: 'NseCandle',
   NseHoliday: 'NseHoliday',
-  QuoteSnapshot: 'QuoteSnapshot',
-  NiftyQuote: 'NiftyQuote',
   ShortlistSnapshot: 'ShortlistSnapshot',
   CollectorError: 'CollectorError'
 };

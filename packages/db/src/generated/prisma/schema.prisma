@@ -98,34 +98,6 @@ model NseHoliday {
   @@map("nse_holidays")
 }
 
-model QuoteSnapshot {
-  id        String   @id @default(uuid())
-  timestamp DateTime
-  nseSymbol String
-  quoteData Json // Full quote payload from Groww API
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([timestamp])
-  @@index([nseSymbol])
-  @@index([timestamp, nseSymbol])
-  @@map("quote_snapshots")
-}
-
-model NiftyQuote {
-  id            String   @id @default(uuid())
-  timestamp     DateTime
-  quoteData     Json // Full NIFTY quote payload
-  dayChangePerc Decimal
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([timestamp])
-  @@map("nifty_quotes")
-}
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"

@@ -1,8 +1,7 @@
 import { authenticatedGet, authenticatedDelete } from "../../../helpers/api-client";
 import { expect, test } from "../../../helpers/test-fixtures";
 import { TestDataTracker } from "../../../helpers/test-tracker";
-import { createShortlistSnapshot, createQuoteSnapshot } from "../../../helpers/db-helpers";
-import { createValidGrowwQuotePayload } from "../../../fixtures/test-data";
+import { createShortlistSnapshot } from "../../../helpers/db-helpers";
 import { createDeveloperUser } from "../../../helpers/auth-helpers";
 import { v1_schemas } from "@ganaka/schemas";
 import {
@@ -53,15 +52,6 @@ test.describe("GET /v1/dates", () => {
         tracker,
         "Asia/Kolkata",
         "TOP_5"
-      );
-
-      // Create quote snapshot
-      await createQuoteSnapshot(
-        "RELIANCE",
-        `${dateStr}T10:00:00`,
-        createValidGrowwQuotePayload(),
-        tracker,
-        "Asia/Kolkata"
       );
 
       const response = await authenticatedGet("/v1/dates", adminToken);

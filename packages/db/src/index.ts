@@ -2,8 +2,6 @@ import type { ShortlistType, ShortlistScope } from "./generated/prisma";
 
 export {
   type ShortlistSnapshot,
-  type QuoteSnapshot,
-  type NiftyQuote,
   type Developer,
   type ShortlistType,
   type ShortlistScope,
@@ -23,7 +21,4 @@ export const shortlistTypeEnum = [
   "VOLUME_SHOCKERS",
 ] as const satisfies readonly ShortlistType[];
 
-export const shortlistScopeEnum = [
-  "FULL",
-  "TOP_5",
-] as const satisfies readonly ShortlistScope[];
+export const shortlistScopeEnum = ["FULL", "TOP_5"] as const satisfies readonly ShortlistScope[];

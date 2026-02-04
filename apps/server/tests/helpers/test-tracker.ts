@@ -7,9 +7,7 @@ export class TestDataTracker {
   private developerIds: string[] = [];
   private runIds: string[] = [];
   private orderIds: string[] = [];
-  private quoteSnapshotIds: string[] = [];
   private shortlistSnapshotIds: string[] = [];
-  private niftyQuoteIds: string[] = [];
   private collectorErrorIds: string[] = [];
   private nseHolidayIds: string[] = [];
 
@@ -35,24 +33,10 @@ export class TestDataTracker {
   }
 
   /**
-   * Track a quote snapshot ID
-   */
-  trackQuoteSnapshot(id: string): void {
-    this.quoteSnapshotIds.push(id);
-  }
-
-  /**
    * Track a shortlist snapshot ID
    */
   trackShortlistSnapshot(id: string): void {
     this.shortlistSnapshotIds.push(id);
-  }
-
-  /**
-   * Track a nifty quote ID
-   */
-  trackNiftyQuote(id: string): void {
-    this.niftyQuoteIds.push(id);
   }
 
   /**
@@ -93,24 +77,10 @@ export class TestDataTracker {
       });
     }
 
-    // Delete quote snapshots
-    if (this.quoteSnapshotIds.length > 0) {
-      await prisma.quoteSnapshot.deleteMany({
-        where: { id: { in: this.quoteSnapshotIds } },
-      });
-    }
-
     // Delete shortlist snapshots
     if (this.shortlistSnapshotIds.length > 0) {
       await prisma.shortlistSnapshot.deleteMany({
         where: { id: { in: this.shortlistSnapshotIds } },
-      });
-    }
-
-    // Delete nifty quotes
-    if (this.niftyQuoteIds.length > 0) {
-      await prisma.niftyQuote.deleteMany({
-        where: { id: { in: this.niftyQuoteIds } },
       });
     }
 
@@ -147,9 +117,7 @@ export class TestDataTracker {
     this.developerIds = [];
     this.runIds = [];
     this.orderIds = [];
-    this.quoteSnapshotIds = [];
     this.shortlistSnapshotIds = [];
-    this.niftyQuoteIds = [];
     this.collectorErrorIds = [];
     this.nseHolidayIds = [];
   }
