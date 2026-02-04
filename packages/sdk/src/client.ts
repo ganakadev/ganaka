@@ -107,7 +107,7 @@ export class GanakaClient {
    * Fetch shortlist for a specific type and datetime.
    *
    * @param queryParams - Query parameters for fetching shortlist
-   * @param queryParams.type - The type of shortlist (e.g., "top-gainers", "top-losers")
+   * @param queryParams.type - The type of shortlist (e.g., "TOP_GAINERS", "VOLUME_SHOCKERS")
    * @param queryParams.datetime - Datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
    * @returns Promise resolving to shortlist data or null
    */
@@ -134,7 +134,7 @@ export class GanakaClient {
    * over a given period of time.
    *
    * @param queryParams - Query parameters for fetching shortlist persistence
-   * @param queryParams.type - The type of shortlist (e.g., "top-gainers", "top-losers")
+   * @param queryParams.type - The type of shortlist (e.g., "TOP_GAINERS", "VOLUME_SHOCKERS")
    * @param queryParams.start_datetime - Start datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
    * @param queryParams.end_datetime - End datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
    * @returns Promise resolving to shortlist persistence data or null
@@ -158,9 +158,7 @@ export class GanakaClient {
    *
    * @returns Promise resolving to available dates data with dates and timestamps
    */
-  async fetchAvailableDates(): Promise<
-    z.infer<typeof v1_dates_schemas.getAvailableDates.response>["data"]
-  > {
+  async fetchAvailableDates(): Promise<z.infer<typeof v1_dates_schemas.getDates.response>["data"]> {
     const callback = fetchAvailableDates({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,

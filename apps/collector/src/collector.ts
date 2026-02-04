@@ -9,7 +9,7 @@ dayjs.extend(utc);
 const API_DOMAIN = process.env.API_DOMAIN ?? "https://api.ganaka.live";
 
 export const getLists =
-  (developerKey: string) => async (type: "top-gainers" | "volume-shockers") => {
+  (developerKey: string) => async (type: "TOP_GAINERS" | "VOLUME_SHOCKERS") => {
     const params: z.infer<typeof v1_lists_schemas.getListsScrap.query> = {
       type,
     };
@@ -68,11 +68,11 @@ async function collectMarketData(): Promise<void> {
     // 1. Fetch both shortlists in parallel
     console.log("Fetching shortlists...");
     const [topGainers, volumeShockers] = await Promise.all([
-      getLists(process.env.DEVELOPER_KEY!)("top-gainers").catch((error: unknown) => {
+      getLists(process.env.DEVELOPER_KEY!)("TOP_GAINERS").catch((error: unknown) => {
         console.error("Failed to fetch top-gainers:", error);
         return null;
       }),
-      getLists(process.env.DEVELOPER_KEY!)("volume-shockers").catch((error: unknown) => {
+      getLists(process.env.DEVELOPER_KEY!)("VOLUME_SHOCKERS").catch((error: unknown) => {
         console.error("Failed to fetch volume-shockers:", error);
         return null;
       }),

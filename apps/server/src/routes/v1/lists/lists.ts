@@ -456,7 +456,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
           reply,
           {
             statusCode: 200,
-            message: "Shortlist fetched successfully",
+            message: "Shortlist snapshot not found",
             data: {
               shortlist: null,
             },

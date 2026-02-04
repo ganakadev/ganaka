@@ -1,7 +1,7 @@
-import { test, expect } from "../../../../helpers/test-fixtures";
-import { authenticatedGet } from "../../../../helpers/api-client";
-import { createListsQuery, buildQueryString } from "../../../../fixtures/test-data";
-import { TestDataTracker } from "../../../../helpers/test-tracker";
+import { test, expect } from "../../../helpers/test-fixtures";
+import { authenticatedGet } from "../../../helpers/api-client";
+import { createListsQuery, buildQueryString } from "../../../fixtures/test-data";
+import { TestDataTracker } from "../../../helpers/test-tracker";
 
 let developerToken: string;
 let developerId: string;
@@ -24,7 +24,7 @@ test.afterAll(async () => {
 test.describe("GET /v1/lists", () => {
   test("should return null data when snapshot is not found", async () => {
     const futureDatetime = "2099-01-01T10:30:00";
-    const query = createListsQuery("top-gainers", futureDatetime);
+    const query = createListsQuery("TOP_GAINERS", futureDatetime);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
@@ -32,6 +32,6 @@ test.describe("GET /v1/lists", () => {
     const body = response.data;
     expect(body.statusCode).toBe(200);
     expect(body.message).toBe("Shortlist snapshot not found");
-    expect(body.data).toBeNull();
+    expect(body.data.shortlist).toBeNull();
   });
 });

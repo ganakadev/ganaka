@@ -1,9 +1,9 @@
-import { authenticatedGet } from "../../../../helpers/api-client";
-import { createDeveloperUser } from "../../../../helpers/auth-helpers";
-import { expect, test } from "../../../../helpers/test-fixtures";
-import { TestDataTracker } from "../../../../helpers/test-tracker";
-import { prisma } from "../../../../../src/utils/prisma";
-import { v1_developer_holidays_schemas } from "@ganaka/schemas";
+import { authenticatedGet } from "../../../helpers/api-client";
+import { createDeveloperUser } from "../../../helpers/auth-helpers";
+import { expect, test } from "../../../helpers/test-fixtures";
+import { TestDataTracker } from "../../../helpers/test-tracker";
+import { prisma } from "../../../../src/utils/prisma";
+import { v1_holidays_schemas } from "@ganaka/schemas";
 
 let developerToken: string;
 let adminToken: string;
@@ -61,7 +61,7 @@ test.describe("GET /v1/holidays", () => {
       expect(body.data.holidays).toEqual([]);
 
       // Validate response matches schema
-      const validatedData = v1_developer_holidays_schemas.getHolidays.response.parse(body);
+      const validatedData = v1_holidays_schemas.getHolidays.response.parse(body);
       expect(validatedData.data.holidays).toEqual([]);
     });
   });

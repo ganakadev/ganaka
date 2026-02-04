@@ -17,7 +17,7 @@ export const fetchAvailableDates =
     currentTimestamp: string;
     currentTimezone?: string;
   }) =>
-  async (): Promise<z.infer<typeof v1_dates_schemas.getAvailableDates.response>["data"]> => {
+  async (): Promise<z.infer<typeof v1_dates_schemas.getDates.response>["data"]> => {
     if (!developerToken) {
       throw new Error(
         "Developer token not found. Please set DEVELOPER_TOKEN environment variable."
@@ -39,7 +39,7 @@ export const fetchAvailableDates =
         headers["X-Current-Timezone"] = currentTimezone;
       }
 
-      const response = await axios.get<z.infer<typeof v1_dates_schemas.getAvailableDates.response>>(
+      const response = await axios.get<z.infer<typeof v1_dates_schemas.getDates.response>>(
         `${apiDomain}/v1/dates`,
         {
           headers,

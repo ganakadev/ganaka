@@ -1,11 +1,11 @@
 /// <reference types="node" />
 import { faker } from "@faker-js/faker";
 import {
-  v1_developer_groww_schemas,
-  v1_developer_lists_schemas,
-  v1_developer_collector_schemas,
-  v1_dashboard_schemas,
   growwQuoteSchema,
+  shortlistEntrySchema,
+  v1_candles_schemas,
+  v1_lists_schemas,
+  v1_runs_schemas,
 } from "@ganaka/schemas";
 import type { z } from "zod";
 import dayjs from "dayjs";
@@ -195,9 +195,7 @@ export function createValidGrowwQuotePayload(): z.infer<typeof growwQuoteSchema>
 /**
  * Creates valid shortlist entries array matching listSchema[]
  */
-export function createValidShortlistEntries(): z.infer<
-  typeof v1_developer_lists_schemas.listSchema
->[] {
+export function createValidShortlistEntries(): z.infer<typeof shortlistEntrySchema>[] {
   return [
     { name: "Reliance Industries Ltd", price: 2500.0, nseSymbol: "RELIANCE" },
     { name: "Tata Consultancy Services", price: 3500.0, nseSymbol: "TCS" },
@@ -217,9 +215,7 @@ export function createQuoteSnapshotTestData(): z.infer<typeof growwQuoteSchema> 
 /**
  * Creates shortlist snapshot test data matching listSchema[]
  */
-export function createShortlistSnapshotTestData(): z.infer<
-  typeof v1_developer_lists_schemas.listSchema
->[] {
+export function createShortlistSnapshotTestData(): z.infer<(typeof shortlistEntrySchema)[]>[] {
   return createValidShortlistEntries();
 }
 
@@ -228,8 +224,8 @@ export function createShortlistSnapshotTestData(): z.infer<
  */
 export function createCollectorShortlistRequest(
   shortlistType: "TOP_GAINERS" | "VOLUME_SHOCKERS" = "TOP_GAINERS",
-  entries?: z.infer<typeof v1_developer_lists_schemas.listSchema>[]
-): z.infer<typeof v1_developer_collector_schemas.createShortlistSnapshot.body> {
+  entries?: z.infer<typeof shortlistEntrySchema>[]
+): z.infer<typeof v1_lists_schemas.createShortlistSnapshot.body> {
   return {
     data: {
       timestamp: TEST_DATETIME,
@@ -241,85 +237,15 @@ export function createCollectorShortlistRequest(
 }
 
 /**
- * Creates collector quote snapshots request body
- */
-export function createCollectorQuotesRequest(
-  quotes?: z.infer<typeof v1_developer_collector_schemas.quoteSnapshotDataSchema>[]
-): z.infer<typeof v1_developer_collector_schemas.createQuoteSnapshots.body> {
-  const defaultQuotes: z.infer<typeof v1_developer_collector_schemas.quoteSnapshotDataSchema>[] = [
-    {
-      nseSymbol: "RELIANCE",
-      quoteData: createValidGrowwQuotePayload(),
-    },
-    {
-      nseSymbol: "TCS",
-      quoteData: createValidGrowwQuotePayload(),
-    },
-  ];
-
-  return {
-    data: {
-      timestamp: TEST_DATETIME,
-      timezone: "Etc/UTC",
-      quotes: quotes || defaultQuotes,
-    },
-  };
-}
-
-/**
- * Creates collector NIFTY quote request body
- */
-export function createCollectorNiftyRequest(
-  dayChangePerc: number = 0.5
-): z.infer<typeof v1_developer_collector_schemas.createNiftyQuote.body> {
-  return {
-    data: {
-      timestamp: TEST_DATETIME,
-      timezone: "Etc/UTC",
-      quoteData: createValidGrowwQuotePayload(),
-      dayChangePerc,
-    },
-  };
-}
-
-/**
- * Creates valid quote query parameters
- */
-export function createGrowwQuoteQuery(
-  symbol?: string,
-  datetime?: string,
-  timezone?: string
-): z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.query> {
-  return {
-    symbol: symbol || TEST_SYMBOL,
-    timezone: timezone || "Asia/Kolkata",
-    ...(datetime && { datetime }),
-  };
-}
-
-/**
- * Creates valid NIFTY quote query parameters
- */
-export function createGrowwNiftyQuoteQuery(
-  datetime?: string,
-  timezone?: string
-): z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuote.query> {
-  return {
-    timezone: timezone || "Asia/Kolkata",
-    ...(datetime && { datetime }),
-  };
-}
-
-/**
  * Creates valid historical candles query parameters
  */
 export function createHistoricalCandlesQuery(
   symbol?: string,
-  interval?: z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.query>["interval"],
+  interval?: z.infer<typeof v1_candles_schemas.getGrowwHistoricalCandles.query>["interval"],
   startTime?: string,
   endTime?: string,
   timezone?: string
-): z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.query> {
+): z.infer<typeof v1_candles_schemas.getGrowwHistoricalCandles.query> {
   return {
     symbol: symbol || TEST_SYMBOL,
     interval: interval || "5minute",
@@ -330,44 +256,16 @@ export function createHistoricalCandlesQuery(
 }
 
 /**
- * Creates valid quote timeline query parameters
- */
-export function createQuoteTimelineQuery(
-  symbol?: string,
-  end_datetime?: string,
-  timezone?: string
-): z.infer<typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.query> {
-  return {
-    symbol: symbol || TEST_SYMBOL,
-    end_datetime: end_datetime || `${TEST_DATE}T15:30:00`,
-    ...(timezone && { timezone }),
-  };
-}
-
-/**
- * Creates valid NIFTY quote timeline query parameters
- */
-export function createNiftyQuoteTimelineQuery(
-  end_datetime?: string,
-  timezone?: string
-): z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuoteTimeline.query> {
-  return {
-    end_datetime: end_datetime || `${TEST_DATE}T15:30:00`,
-    ...(timezone && { timezone }),
-  };
-}
-
-/**
  * Creates valid lists query parameters
  */
 export function createListsQuery(
-  type?: "top-gainers" | "volume-shockers",
+  type?: z.infer<typeof v1_lists_schemas.getLists.query>["type"],
   datetime?: string,
   timezone?: string,
   scope?: "FULL" | "TOP_5"
-): z.infer<typeof v1_developer_lists_schemas.getLists.query> {
+): z.infer<typeof v1_lists_schemas.getLists.query> {
   return {
-    type: type || "top-gainers",
+    type: type || ("top-gainers" as z.infer<typeof v1_lists_schemas.getLists.query>["type"]),
     timezone: timezone || "Asia/Kolkata",
     ...(datetime && { datetime }),
     ...(scope && { scope }),
@@ -382,7 +280,7 @@ export function createListsQuery(
 export function createRunTestData(
   startTime?: string,
   endTime?: string
-): z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.body> {
+): z.infer<typeof v1_runs_schemas.createRun.body> {
   const defaultStart = "2025-12-26T09:15:00";
   const defaultEnd = "2025-12-26T15:30:00";
   return {
@@ -401,7 +299,7 @@ export function createOrderTestData(
   stopLossPrice?: number,
   takeProfitPrice?: number,
   timestamp?: string
-): z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createOrder.body> {
+): z.infer<typeof v1_runs_schemas.createOrder.body> {
   const defaultTimestamp = "2025-12-26T10:00:00";
   return {
     nseSymbol: nseSymbol || TEST_SYMBOL,
@@ -422,7 +320,7 @@ export function createShortlistsQuery(
   takeProfitPercentage?: number,
   stopLossPercentage?: number,
   scope?: "FULL" | "TOP_5"
-): z.infer<typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.getShortlists.query> {
+): z.infer<typeof v1_lists_schemas.getShortlists.query> {
   const result: any = {
     datetime: datetime || TEST_DATETIME,
     timezone: timezone || "Asia/Kolkata",
@@ -450,11 +348,9 @@ export function createShortlistsQuery(
 export function createCandlesQuery(
   symbol?: string,
   date?: string,
-  interval?: z.infer<
-    typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.query
-  >["interval"],
+  interval?: z.infer<typeof v1_candles_schemas.getCandles.query>["interval"],
   timezone?: string
-): z.infer<typeof v1_dashboard_schemas.v1_dashboard_candles_schemas.getCandles.query> {
+): z.infer<typeof v1_candles_schemas.getCandles.query> {
   return {
     symbol: symbol || TEST_SYMBOL,
     date: date || TEST_DATE,
@@ -463,56 +359,17 @@ export function createCandlesQuery(
 }
 
 /**
- * Creates valid quote timeline query parameters for dashboard
- */
-export function createQuoteTimelineQueryForDashboard(
-  symbol?: string,
-  date?: string,
-  timezone?: string
-): z.infer<typeof v1_dashboard_schemas.v1_dashboard_quote_timeline_schemas.getQuoteTimeline.query> {
-  return {
-    symbol: symbol || TEST_SYMBOL,
-    date: date || TEST_DATE,
-  };
-}
-
-/**
- * Creates valid daily persistent companies query parameters
- */
-export function createDailyPersistentCompaniesQuery(
-  date?: string,
-  type?: "TOP_GAINERS" | "VOLUME_SHOCKERS",
-  timezone?: string
-): z.infer<
-  typeof v1_dashboard_schemas.v1_dashboard_daily_persistent_companies_schemas.getDailyPersistentCompanies.query
-> {
-  return {
-    date: date || TEST_DATE,
-    type: type || "TOP_GAINERS",
-  };
-}
-
-/**
- * Creates valid daily unique companies query parameters
- */
-export function createDailyUniqueCompaniesQuery(
-  date?: string,
-  type?: "TOP_GAINERS" | "VOLUME_SHOCKERS",
-  timezone?: string
-): z.infer<
-  typeof v1_dashboard_schemas.v1_dashboard_daily_unique_companies_schemas.getDailyUniqueCompanies.query
-> {
-  return {
-    date: date || TEST_DATE,
-    type: type || "TOP_GAINERS",
-  };
-}
-
-/**
  * Helper function to convert query object to URLSearchParams-compatible format
  * Converts all primitive values to strings and filters out undefined values
  */
-export function buildQueryString(query: Record<string, string | number | boolean | undefined>): string {
+export function buildQueryString(
+  query:
+    | z.infer<typeof v1_lists_schemas.getLists.query>
+    | z.infer<typeof v1_lists_schemas.getShortlists.query>
+    | z.infer<typeof v1_candles_schemas.getCandles.query>
+    | z.infer<typeof v1_runs_schemas.createRun.body>
+    | z.infer<typeof v1_runs_schemas.createOrder.body>
+): string {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(query)) {
     if (value !== undefined) {

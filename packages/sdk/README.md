@@ -51,7 +51,7 @@ const quote = await client.fetchQuote({
 
 // Fetch shortlist
 const shortlist = await client.fetchShortlist({
-  type: "top-gainers",
+  type: "TOP_GAINERS",
   datetime: "2026-01-20T10:30:00",
 });
 ```
@@ -187,7 +187,7 @@ Fetch shortlist for a specific type and datetime.
 
 ```typescript
 const shortlist = await client.fetchShortlist({
-  type: "top-gainers", // or "top-losers", etc.
+  type: "TOP_GAINERS", 
   datetime: "2026-01-20T10:30:00", // IST format
 });
 ```
@@ -198,7 +198,7 @@ Fetch shortlist persistence - stocks that consistently appeared in a shortlist o
 
 ```typescript
 const persistence = await client.fetchShortlistPersistence({
-  type: "top-gainers",
+  type: "TOP_GAINERS",
   start_datetime: "2026-01-20T09:15:00", // IST format
   end_datetime: "2026-01-20T15:30:00", // IST format
 });

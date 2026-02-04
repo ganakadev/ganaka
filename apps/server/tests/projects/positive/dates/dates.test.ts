@@ -1,14 +1,14 @@
-import { authenticatedGet, authenticatedDelete } from "../../../../helpers/api-client";
-import { expect, test } from "../../../../helpers/test-fixtures";
-import { TestDataTracker } from "../../../../helpers/test-tracker";
-import { createShortlistSnapshot, createQuoteSnapshot } from "../../../../helpers/db-helpers";
-import { createValidGrowwQuotePayload } from "../../../../fixtures/test-data";
-import { createDeveloperUser } from "../../../../helpers/auth-helpers";
+import { authenticatedGet, authenticatedDelete } from "../../../helpers/api-client";
+import { expect, test } from "../../../helpers/test-fixtures";
+import { TestDataTracker } from "../../../helpers/test-tracker";
+import { createShortlistSnapshot, createQuoteSnapshot } from "../../../helpers/db-helpers";
+import { createValidGrowwQuotePayload } from "../../../fixtures/test-data";
+import { createDeveloperUser } from "../../../helpers/auth-helpers";
 import { v1_schemas } from "@ganaka/schemas";
 import {
   createValidShortlistEntries,
   generateUniqueTestDatetime,
-} from "../../../../fixtures/test-data";
+} from "../../../fixtures/test-data";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -47,7 +47,7 @@ test.describe("GET /v1/dates", () => {
 
       // Create shortlist snapshot
       await createShortlistSnapshot(
-        "top-gainers",
+        "TOP_GAINERS",
         `${dateStr}T10:00:00`,
         [{ nseSymbol: "RELIANCE", name: "Reliance Industries", price: 2500 }],
         tracker,
@@ -82,16 +82,16 @@ test.describe("GET /v1/dates", () => {
       // Create snapshots for testing
       const testDatetime = generateUniqueTestDatetime();
       const testEntries = createValidShortlistEntries();
-      await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+      await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
 
       // Create another snapshot on the same date but different time
       const baseDate = testDatetime.split("T")[0];
       const anotherDatetime = `${baseDate}T11:00:00`;
-      await createShortlistSnapshot("top-gainers", anotherDatetime, testEntries, tracker);
+      await createShortlistSnapshot("TOP_GAINERS", anotherDatetime, testEntries, tracker);
 
       // Create snapshot on different date
       const differentDate = generateUniqueTestDatetime("2025-12-27");
-      await createShortlistSnapshot("volume-shockers", differentDate, testEntries, tracker);
+      await createShortlistSnapshot("VOLUME_SHOCKERS", differentDate, testEntries, tracker);
 
       const response = await authenticatedGet("/v1/dates", developerToken);
 
@@ -101,10 +101,7 @@ test.describe("GET /v1/dates", () => {
       expect(body.message).toBe("Available datetimes fetched successfully");
 
       // Validate response matches schema
-      const validatedData =
-        v1_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
-          body
-        );
+      const validatedData = v1_schemas.v1_dates_schemas.getDates.response.parse(body);
       expect(validatedData.data.dates).toBeInstanceOf(Array);
       expect(validatedData.data.dates.length).toBeGreaterThan(0);
 
@@ -131,15 +128,12 @@ test.describe("GET /v1/dates", () => {
     test("should validate exact timestamp formats (ISO strings)", async ({ tracker }) => {
       const testDatetime = generateUniqueTestDatetime();
       const testEntries = createValidShortlistEntries();
-      await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+      await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
 
       const response = await authenticatedGet("/v1/dates", developerToken);
 
       expect(response.status).toBe(200);
-      const validatedData =
-        v1_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
-          response.data
-        );
+      const validatedData = v1_schemas.v1_dates_schemas.getDates.response.parse(response.data);
 
       // Validate timestamp format (YYYY-MM-DDTHH:mm:ss - no milliseconds, no timezone)
       validatedData.data.dates.forEach((dateEntry) => {
@@ -156,15 +150,12 @@ test.describe("GET /v1/dates", () => {
     test("should validate response schema matches expected structure", async ({ tracker }) => {
       const testDatetime = generateUniqueTestDatetime();
       const testEntries = createValidShortlistEntries();
-      await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+      await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
 
       const response = await authenticatedGet("/v1/dates", developerToken);
 
       expect(response.status).toBe(200);
-      const validatedData =
-        v1_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
-          response.data
-        );
+      const validatedData = v1_schemas.v1_dates_schemas.getDates.response.parse(response.data);
 
       expect(validatedData.statusCode).toBe(200);
       expect(validatedData.message).toBe("Available datetimes fetched successfully");
@@ -185,18 +176,15 @@ test.describe("GET /v1/dates", () => {
       const testEntries = createValidShortlistEntries();
       // Create snapshots on different dates
       const date1 = generateUniqueTestDatetime("2025-12-25");
-      await createShortlistSnapshot("top-gainers", date1, testEntries, tracker);
-      await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+      await createShortlistSnapshot("TOP_GAINERS", date1, testEntries, tracker);
+      await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
       const date3 = generateUniqueTestDatetime("2025-12-27");
-      await createShortlistSnapshot("top-gainers", date3, testEntries, tracker);
+      await createShortlistSnapshot("TOP_GAINERS", date3, testEntries, tracker);
 
       const response = await authenticatedGet("/v1/dates", developerToken);
 
       expect(response.status).toBe(200);
-      const validatedData =
-        v1_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
-          response.data
-        );
+      const validatedData = v1_schemas.v1_dates_schemas.getDates.response.parse(response.data);
 
       // Validate dates are sorted ascending
       for (let i = 1; i < validatedData.data.dates.length; i++) {
@@ -212,16 +200,13 @@ test.describe("GET /v1/dates", () => {
 
       // Create snapshots on different dates
       for (const date of dates) {
-        await createShortlistSnapshot("top-gainers", `${date}T10:06:00`, testEntries, tracker);
+        await createShortlistSnapshot("TOP_GAINERS", `${date}T10:06:00`, testEntries, tracker);
       }
 
       const response = await authenticatedGet("/v1/dates", developerToken);
 
       expect(response.status).toBe(200);
-      const validatedData =
-        v1_schemas.v1_dashboard_available_datetimes_schemas.getAvailableDatetimes.response.parse(
-          response.data
-        );
+      const validatedData = v1_schemas.v1_dates_schemas.getDates.response.parse(response.data);
 
       // Should have entries for all dates
       const returnedDates = validatedData.data.dates.map((d) => d.date);
@@ -240,7 +225,7 @@ test.describe("DELETE /v1/dates", () => {
       const date2 = "2025-11-20";
 
       await createShortlistSnapshot(
-        "top-gainers",
+        "TOP_GAINERS",
         `${date1}T10:00:00`,
         [{ nseSymbol: "RELIANCE", name: "Reliance Industries", price: 2500 }],
         tracker,
@@ -248,7 +233,7 @@ test.describe("DELETE /v1/dates", () => {
         "TOP_5"
       );
       await createShortlistSnapshot(
-        "top-gainers",
+        "TOP_GAINERS",
         `${date2}T10:00:00`,
         [{ nseSymbol: "TCS", name: "Tata Consultancy Services", price: 3500 }],
         tracker,

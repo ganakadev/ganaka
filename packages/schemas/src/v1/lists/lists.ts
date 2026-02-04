@@ -65,7 +65,7 @@ export const getShortlists = {
 
 export const getLists = {
   query: z.object({
-    type: z.enum(["top-gainers", "volume-shockers"]),
+    type: shortlistTypeSchema,
     datetime: datetimeFormatSchema.optional(),
     timezone: timezoneSchema.optional(),
     scope: shortlistScopeSchema.optional(),

@@ -198,7 +198,7 @@ export async function createShortlistSnapshot(
   scope?: ShortlistScope
 ) {
   const timestamp = parseDateTimeInTimezone(datetime, timezone || "Asia/Kolkata");
-  const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
+  const shortlistType: ShortlistType = type;
 
   const snapshot = await prisma.shortlistSnapshot.create({
     data: {
@@ -502,7 +502,7 @@ export async function createMultipleShortlistSnapshots(
   scope?: ShortlistScope
 ): Promise<ShortlistSnapshot[]> {
   const tz = timezone || "Asia/Kolkata";
-  const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
+  const shortlistType: ShortlistType = type;
   const snapshots: ShortlistSnapshot[] = [];
 
   // Create snapshots at different times during market hours (9:15 AM - 3:30 PM IST)
@@ -554,7 +554,7 @@ export async function createShortlistSnapshotsWithUniqueCompanies(
   scope?: ShortlistScope
 ): Promise<ShortlistSnapshot[]> {
   const baseDate = dayjs.tz(datetime, "Asia/Kolkata").utc();
-  const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
+  const shortlistType: ShortlistType = type;
   const snapshots: ShortlistSnapshot[] = [];
 
   // Generate entries with the required number of unique companies

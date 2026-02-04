@@ -55,15 +55,16 @@ const datesRoutes: FastifyPluginAsync = async (fastify) => {
               }))
               .sort((a, b) => a.date.localeCompare(b.date));
 
-            return sendResponse<
-              z.infer<typeof v1_schemas.v1_dates_schemas.getAvailableDatesAdmin.response>
-            >(reply, {
-              statusCode: 200,
-              message: "Available dates fetched successfully",
-              data: {
-                dates,
-              },
-            });
+            return sendResponse<z.infer<typeof v1_schemas.v1_dates_schemas.getDatesAdmin.response>>(
+              reply,
+              {
+                statusCode: 200,
+                message: "Dates fetched successfully",
+                data: {
+                  dates,
+                },
+              }
+            );
           },
           developer: async () => {
             // Get all unique timestamps from ShortlistSnapshot
@@ -97,15 +98,16 @@ const datesRoutes: FastifyPluginAsync = async (fastify) => {
               timestamps,
             }));
 
-            return sendResponse<
-              z.infer<typeof v1_schemas.v1_dates_schemas.getAvailableDatetimes.response>
-            >(reply, {
-              statusCode: 200,
-              message: "Available datetimes fetched successfully",
-              data: {
-                dates,
-              },
-            });
+            return sendResponse<z.infer<typeof v1_schemas.v1_dates_schemas.getDates.response>>(
+              reply,
+              {
+                statusCode: 200,
+                message: "Dates fetched successfully",
+                data: {
+                  dates,
+                },
+              }
+            );
           },
         },
       });

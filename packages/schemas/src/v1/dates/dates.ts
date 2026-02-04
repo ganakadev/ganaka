@@ -5,7 +5,7 @@ import { apiResponseSchema, dateFormatSchema } from "../../common";
 // Role-based: returns different data for admin vs developer
 
 // Developer response (with timestamps)
-export const getAvailableDates = {
+export const getDates = {
   query: z.object({}),
   response: apiResponseSchema.extend({
     data: z.object({
@@ -20,7 +20,7 @@ export const getAvailableDates = {
 };
 
 // Admin response (with counts)
-export const getAvailableDatesAdmin = {
+export const getDatesAdmin = {
   query: z.object({}),
   response: apiResponseSchema.extend({
     data: z.object({
@@ -28,21 +28,6 @@ export const getAvailableDatesAdmin = {
         z.object({
           date: dateFormatSchema,
           shortlistCount: z.number(),
-        })
-      ),
-    }),
-  }),
-};
-
-// Dashboard response (with timestamps) - same as developer
-export const getAvailableDatetimes = {
-  query: z.object({}),
-  response: apiResponseSchema.extend({
-    data: z.object({
-      dates: z.array(
-        z.object({
-          date: z.string(), // Format: YYYY-MM-DD
-          timestamps: z.array(z.string()), // Format: YYYY-MM-DDTHH:mm:ss (UTC)
         })
       ),
     }),

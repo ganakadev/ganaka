@@ -1,18 +1,20 @@
-import { test, expect } from "../../../../helpers/test-fixtures";
-import { authenticatedGet } from "../../../../helpers/api-client";
-import { createShortlistSnapshot, createQuoteSnapshot } from "../../../../helpers/db-helpers";
+import { v1_schemas } from "@ganaka/schemas";
+import { expect } from "@playwright/test";
+import dayjs from "dayjs";
 import {
+  generateUniqueTestDatetime,
   createValidShortlistEntries,
   createValidGrowwQuotePayload,
   createShortlistsQuery,
-  generateUniqueTestDatetime,
   buildQueryString,
-} from "../../../../fixtures/test-data";
-import { v1_schemas } from "@ganaka/schemas";
-import { TestDataTracker } from "../../../../helpers/test-tracker";
-import dayjs from "dayjs";
+} from "../../../fixtures/test-data";
+import { authenticatedGet } from "../../../helpers/api-client";
+import { createShortlistSnapshot, createQuoteSnapshot } from "../../../helpers/db-helpers";
+import { TestDataTracker } from "../../../helpers/test-tracker";
+import { createDeveloperUser } from "../../../helpers/auth-helpers";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
+import { test } from "../../../helpers/test-fixtures";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -23,7 +25,6 @@ let sharedTracker: TestDataTracker;
 
 test.beforeAll(async () => {
   sharedTracker = new TestDataTracker();
-  const { createDeveloperUser } = await import("../../../../helpers/auth-helpers");
   const dev = await createDeveloperUser(undefined, sharedTracker);
   developerToken = dev.token;
   developerId = dev.id;
@@ -42,7 +43,7 @@ test.describe("GET /v1/lists", () => {
     const testQuoteData = createValidGrowwQuotePayload();
 
     // Create shortlist snapshot
-    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+    await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
 
     // Create quote snapshots for each entry
     for (const entry of testEntries) {
@@ -60,8 +61,7 @@ test.describe("GET /v1/lists", () => {
     expect(body.data.shortlist).not.toBeNull();
 
     // Validate response matches schema
-    const validatedData =
-      v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(body);
+    const validatedData = v1_schemas.v1_lists_schemas.getShortlists.response.parse(body);
     expect(validatedData.data.shortlist).not.toBeNull();
   });
 
@@ -72,7 +72,7 @@ test.describe("GET /v1/lists", () => {
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+    await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
     for (const entry of testEntries) {
       await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
     }
@@ -82,9 +82,7 @@ test.describe("GET /v1/lists", () => {
     const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_lists_schemas.getShortlists.response.parse(response.data);
 
     if (validatedData.data.shortlist) {
       expect(validatedData.data.shortlist).toHaveProperty("id");
@@ -106,7 +104,7 @@ test.describe("GET /v1/lists", () => {
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+    await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
     for (const entry of testEntries) {
       await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
     }
@@ -116,9 +114,7 @@ test.describe("GET /v1/lists", () => {
     const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_lists_schemas.getShortlists.response.parse(response.data);
 
     if (validatedData.data.shortlist && validatedData.data.shortlist.entries.length > 0) {
       const firstEntry = validatedData.data.shortlist.entries[0];
@@ -137,7 +133,7 @@ test.describe("GET /v1/lists", () => {
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+    await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
     for (const entry of testEntries) {
       await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
     }
@@ -147,9 +143,7 @@ test.describe("GET /v1/lists", () => {
     const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_lists_schemas.getShortlists.response.parse(response.data);
 
     if (validatedData.data.shortlist && validatedData.data.shortlist.entries.length > 0) {
       const firstEntry = validatedData.data.shortlist.entries[0];
@@ -170,7 +164,7 @@ test.describe("GET /v1/lists", () => {
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+    await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
     for (const entry of testEntries) {
       await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
     }
@@ -180,9 +174,7 @@ test.describe("GET /v1/lists", () => {
     const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_lists_schemas.getShortlists.response.parse(response.data);
 
     if (validatedData.data.shortlist) {
       // Validate timestamp is within 1 second of requested datetime
@@ -198,7 +190,7 @@ test.describe("GET /v1/lists", () => {
     const testEntries = createValidShortlistEntries();
     const testQuoteData = createValidGrowwQuotePayload();
 
-    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+    await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
     for (const entry of testEntries) {
       await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
     }
@@ -208,9 +200,7 @@ test.describe("GET /v1/lists", () => {
     const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(
-      response.data
-    );
+    const validatedData = v1_schemas.v1_lists_schemas.getShortlists.response.parse(response.data);
 
     if (validatedData.data.shortlist && validatedData.data.shortlist.entries.length > 0) {
       const firstEntry = validatedData.data.shortlist.entries[0];
@@ -231,7 +221,7 @@ test.describe("GET /v1/lists", () => {
     const testQuoteData = createValidGrowwQuotePayload();
 
     // Create shortlist snapshot
-    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+    await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
 
     // Create quote snapshots for each entry
     for (const entry of testEntries) {
@@ -254,8 +244,7 @@ test.describe("GET /v1/lists", () => {
     expect(body.data.shortlist).not.toBeNull();
 
     // Validate response matches schema
-    const validatedData =
-      v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(body);
+    const validatedData = v1_schemas.v1_lists_schemas.getShortlists.response.parse(body);
     expect(validatedData.data.shortlist).not.toBeNull();
 
     // Check that trade metrics are included
@@ -274,7 +263,7 @@ test.describe("GET /v1/lists", () => {
     const testQuoteData = createValidGrowwQuotePayload();
 
     // Create shortlist snapshot
-    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+    await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
 
     // Create quote snapshots for each entry
     for (const entry of testEntries) {
@@ -293,8 +282,7 @@ test.describe("GET /v1/lists", () => {
     expect(body.data.shortlist).not.toBeNull();
 
     // Validate response matches schema
-    const validatedData =
-      v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(body);
+    const validatedData = v1_schemas.v1_lists_schemas.getShortlists.response.parse(body);
     expect(validatedData.data.shortlist).not.toBeNull();
 
     // Check that trade metrics are not included (should be undefined)
@@ -313,7 +301,7 @@ test.describe("GET /v1/lists", () => {
     const testQuoteData = createValidGrowwQuotePayload();
 
     // Create shortlist snapshot
-    await createShortlistSnapshot("top-gainers", testDatetime, testEntries, tracker);
+    await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
 
     // Create quote snapshots for each entry
     for (const entry of testEntries) {
@@ -330,8 +318,7 @@ test.describe("GET /v1/lists", () => {
     const body = response.data;
 
     // Validate response matches schema
-    const validatedData =
-      v1_schemas.v1_dashboard_shortlists_schemas.getShortlists.response.parse(body);
+    const validatedData = v1_schemas.v1_lists_schemas.getShortlists.response.parse(body);
 
     // Should work without explicit TP/SL params (defaults are used internally)
     expect(validatedData.data.shortlist).not.toBeNull();
@@ -344,7 +331,7 @@ test.describe("GET /v1/lists", () => {
 
     // Create shortlist snapshots with different scopes
     await createShortlistSnapshot(
-      "top-gainers",
+      "TOP_GAINERS",
       testDatetime,
       testEntries,
       tracker,
@@ -352,7 +339,7 @@ test.describe("GET /v1/lists", () => {
       "TOP_5"
     );
     await createShortlistSnapshot(
-      "top-gainers",
+      "TOP_GAINERS",
       testDatetime,
       testEntries,
       tracker,
@@ -393,7 +380,7 @@ test.describe("GET /v1/lists", () => {
 
     // Create both TOP_5 and FULL snapshots
     await createShortlistSnapshot(
-      "top-gainers",
+      "TOP_GAINERS",
       testDatetime,
       testEntries,
       tracker,
@@ -401,7 +388,7 @@ test.describe("GET /v1/lists", () => {
       "TOP_5"
     );
     await createShortlistSnapshot(
-      "top-gainers",
+      "TOP_GAINERS",
       testDatetime,
       testEntries,
       tracker,

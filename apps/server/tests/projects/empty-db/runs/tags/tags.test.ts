@@ -1,9 +1,8 @@
-import { v1_schemas } from "@ganaka/schemas";
-import { expect, test } from "../../../../../helpers/test-fixtures";
-import { authenticatedGet } from "../../../../../helpers/api-client";
-import { createDeveloperUser } from "../../../../../helpers/auth-helpers";
-import { createRun } from "../../../../../helpers/db-helpers";
-import { TestDataTracker } from "../../../../../helpers/test-tracker";
+import { expect, test } from "../../../../helpers/test-fixtures";
+import { authenticatedGet } from "../../../../helpers/api-client";
+import { createDeveloperUser } from "../../../../helpers/auth-helpers";
+import { createRun } from "../../../../helpers/db-helpers";
+import { TestDataTracker } from "../../../../helpers/test-tracker";
 
 let developerToken: string;
 let developerId: string;
@@ -35,9 +34,7 @@ test.describe("GET /v1/runs/tags", () => {
 
   test("should return empty array when all runs have no tags", async ({ tracker }) => {
     // Create runs without tags
-    await createRun(developerId, "2025-01-01T09:15:00", "2025-01-01T15:30:00", tracker, {
-      tags: [],
-    });
+    await createRun(developerId, "2025-01-01T09:15:00", "2025-01-01T15:30:00", tracker);
     await createRun(developerId, "2025-01-02T09:15:00", "2025-01-02T15:30:00", tracker);
 
     const response = await authenticatedGet("/v1/runs/tags", developerToken);
