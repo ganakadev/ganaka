@@ -1,14 +1,13 @@
+import { createDeveloperTestData } from "../../../fixtures/test-data";
 import {
-  authenticatedGet,
-  authenticatedPost,
-  authenticatedPatch,
   authenticatedDelete,
-} from "../../../../helpers/api-client";
-import { createDeveloperUser } from "../../../../helpers/auth-helpers";
-import { createTestDeveloper, getDeveloperById } from "../../../../helpers/db-helpers";
-import { expect, test } from "../../../../helpers/test-fixtures";
-import { TestDataTracker } from "../../../../helpers/test-tracker";
-import { createDeveloperTestData } from "../../../../fixtures/test-data";
+  authenticatedGet,
+  authenticatedPatch,
+  authenticatedPost,
+} from "../../../helpers/api-client";
+import { createTestDeveloper, getDeveloperById } from "../../../helpers/db-helpers";
+import { expect, test } from "../../../helpers/test-fixtures";
+import { TestDataTracker } from "../../../helpers/test-tracker";
 
 let adminToken: string;
 let sharedTracker: TestDataTracker;
@@ -64,16 +63,12 @@ test.describe("POST /v1/developers", () => {
   });
 });
 
-test.describe("PATCH /v1/developers/:id/refresh-key", () => {
+test.describe("PATCH /v1/developers/:id/refresh", () => {
   test("should refresh developer key successfully", async ({ tracker }) => {
     const dev = await createTestDeveloper(tracker, "test-refresh-dev");
     const oldToken = dev.token;
 
-    const response = await authenticatedPatch(
-      `/v1/developers/${dev.id}/refresh-key`,
-      adminToken,
-      {}
-    );
+    const response = await authenticatedPatch(`/v1/developers/${dev.id}/refresh`, adminToken, {});
 
     expect(response.status).toBe(200);
     const body = response.data;

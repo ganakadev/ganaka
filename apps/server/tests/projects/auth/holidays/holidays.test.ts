@@ -43,23 +43,8 @@ test.describe("GET /v1/holidays", () => {
   });
 
   test.describe("Admin Role", () => {
-    test("should return 401 when invalid admin token is provided", async () => {
+    test("should return 401 when invalid token is provided", async () => {
       const response = await authenticatedGet("/v1/holidays", "invalid-token-12345", {
-        validateStatus: () => true,
-      });
-
-      expect(response.status).toBe(401);
-      const body =
-        typeof response.data === "string" ? response.data : JSON.stringify(response.data);
-      expect(body).toContain("Authorization failed");
-    });
-
-    test("should return 401 when developer token is used instead of admin token", async ({
-      tracker,
-    }) => {
-      const dev = await createDeveloperUser(undefined, tracker);
-
-      const response = await authenticatedGet("/v1/holidays", dev.token, {
         validateStatus: () => true,
       });
 

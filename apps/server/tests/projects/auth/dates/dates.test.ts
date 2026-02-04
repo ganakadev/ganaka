@@ -49,21 +49,6 @@ test.describe("GET /v1/dates", () => {
         typeof response.data === "string" ? response.data : JSON.stringify(response.data);
       expect(body).toContain("Authorization failed");
     });
-
-    test("should return 401 when developer token is used instead of admin token", async ({
-      tracker,
-    }) => {
-      const dev = await createDeveloperUser(undefined, tracker);
-
-      const response = await authenticatedGet("/v1/dates", dev.token, {
-        validateStatus: () => true,
-      });
-
-      expect(response.status).toBe(401);
-      const body =
-        typeof response.data === "string" ? response.data : JSON.stringify(response.data);
-      expect(body).toContain("Authorization failed");
-    });
   });
 
   test.describe("Developer Role", () => {

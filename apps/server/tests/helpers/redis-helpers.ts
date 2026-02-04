@@ -246,17 +246,17 @@ export async function cleanupAllGrowwTokenKeys(): Promise<number | null> {
     for (let i = 0; i < scanResult.length; i += batchSize) {
       const batch = scanResult.slice(i, i + batchSize);
 
-      const batchResult = await withRetry(
-        async () => {
-          return await redis.del(...batch);
-        },
-        3,
-        `cleanupAllGrowwTokenKeys DEL batch ${Math.floor(i / batchSize) + 1}`
-      );
+      // const batchResult = await withRetry(
+      //   async () => {
+      //     return await redis.del(...batch);
+      //   },
+      //   3,
+      //   `cleanupAllGrowwTokenKeys DEL batch ${Math.floor(i / batchSize) + 1}`
+      // );
 
-      if (batchResult !== null) {
-        totalDeleted += batchResult;
-      }
+      // if (batchResult !== null) {
+      //   totalDeleted += batchResult;
+      // }
     }
 
     return totalDeleted;

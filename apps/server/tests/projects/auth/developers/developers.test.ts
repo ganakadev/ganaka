@@ -82,11 +82,11 @@ test.describe("POST /v1/developers", () => {
   });
 });
 
-test.describe("PATCH /v1/developers/:id/refresh-key", () => {
+test.describe("PATCH /v1/developers/:id/refresh", () => {
   test("should return 401 when authorization header is missing", async ({ tracker }) => {
     const dev = await createDeveloperUser(undefined, tracker);
 
-    const response = await unauthenticatedPatch(`/v1/developers/${dev.id}/refresh-key`, {});
+    const response = await unauthenticatedPatch(`/v1/developers/${dev.id}/refresh`, {});
 
     expect(response.status).toBe(401);
   });

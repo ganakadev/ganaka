@@ -103,12 +103,12 @@ test.describe("POST /v1/developers", () => {
   });
 });
 
-test.describe("PATCH /v1/developers/:id/refresh-key", () => {
+test.describe("PATCH /v1/developers/:id/refresh", () => {
   test("should return 404 for non-existent developer ID", async ({ tracker }) => {
     const fakeId = generateUUID();
 
     const response = await authenticatedPatch(
-      `/v1/developers/${fakeId}/refresh-key`,
+      `/v1/developers/${fakeId}/refresh`,
       adminToken,
       {},
       { validateStatus: () => true }
