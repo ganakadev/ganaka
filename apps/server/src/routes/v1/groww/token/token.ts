@@ -5,19 +5,6 @@ import { TokenManager } from "../../../../utils/token-manager";
 import { v1_schemas } from "@ganaka/schemas";
 import z from "zod";
 
-/**
- * Mask API key for display (show first 4 and last 4 characters)
- */
-function maskApiKey(apiKey: string | null | undefined): string | null {
-  if (!apiKey) {
-    return null;
-  }
-  if (apiKey.length <= 8) {
-    return "****";
-  }
-  return `${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}`;
-}
-
 const tokenRoutes: FastifyPluginAsync = async (fastify) => {
   const redisManager = RedisManager.getInstance(fastify);
   const tokenManager = new TokenManager(redisManager.redis, fastify);

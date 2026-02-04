@@ -1,12 +1,9 @@
 import {
   authenticatedGet,
-  authenticatedPost,
-  authenticatedPatch,
-  authenticatedDelete,
-  unauthenticatedGet,
-  unauthenticatedPost,
-  unauthenticatedPatch,
   unauthenticatedDelete,
+  unauthenticatedGet,
+  unauthenticatedPatch,
+  unauthenticatedPost,
 } from "../../../helpers/api-client";
 import { createDeveloperUser } from "../../../helpers/auth-helpers";
 import { expect, test } from "../../../helpers/test-fixtures";

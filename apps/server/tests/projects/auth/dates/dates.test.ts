@@ -1,8 +1,7 @@
 import {
   authenticatedGet,
-  unauthenticatedGet,
-  authenticatedDelete,
   unauthenticatedDelete,
+  unauthenticatedGet,
 } from "../../../helpers/api-client";
 import { createDeveloperUser } from "../../../helpers/auth-helpers";
 import { expect, test } from "../../../helpers/test-fixtures";
