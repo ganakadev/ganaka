@@ -23,7 +23,9 @@ export const roleBasedExecute = ({
     case "developer": {
       if (!roles.developer) {
         if (roles.admin) {
-          return reply.badRequest("Admin access required");
+          return reply.unauthorized(
+            "Authorization failed for this user request. Please check your credentials and try again."
+          );
         }
       } else {
         return roles.developer?.();

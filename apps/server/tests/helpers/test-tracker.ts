@@ -1,5 +1,4 @@
 import { prisma } from "../../src/utils/prisma";
-import { cleanupGrowwTokenKeys } from "./redis-helpers";
 
 /**
  * Tracks database entities created during a test for selective cleanup
@@ -137,14 +136,6 @@ export class TestDataTracker {
           username: { not: "admin" },
         },
       });
-
-      // Clean up Redis keys for deleted developers
-      try {
-        await cleanupGrowwTokenKeys(this.developerIds);
-      } catch (error) {
-        // Log error but don't fail test cleanup if Redis is unavailable
-        console.warn("Failed to clean up Redis keys during test cleanup:", error);
-      }
     }
   }
 
