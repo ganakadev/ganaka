@@ -56,9 +56,10 @@ model Order {
 }
 
 model NseIntrument {
-  id     String @id @default(uuid())
-  symbol String @unique
-  name   String
+  id          String @id @default(uuid())
+  symbol      String @unique
+  growwSymbol String @unique /// NSE-<symbol>
+  name        String
 
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
