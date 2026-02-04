@@ -40,7 +40,6 @@ export default defineConfig({
     {
       name: "empty-db",
       testDir: "./tests/projects/empty-db",
-      fullyParallel: false, // Run serially to avoid data conflicts
       use: {
         ...devices["Desktop Chrome"],
       },
