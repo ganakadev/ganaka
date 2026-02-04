@@ -1,10 +1,10 @@
-import { test, expect } from "../../../../../helpers/test-fixtures";
-import { authenticatedPut } from "../../../../../helpers/api-client";
-import { createDeveloperUser } from "../../../../../helpers/auth-helpers";
+import { test, expect } from "../../../../helpers/test-fixtures";
+import { authenticatedPut } from "../../../../helpers/api-client";
+import { createDeveloperUser } from "../../../../helpers/auth-helpers";
 import {
   createValidGrowwCredentials,
   createInvalidGrowwCredentials,
-} from "../../../../../fixtures/test-data";
+} from "../../../../fixtures/test-data";
 
 test.describe("PUT /v1/groww/credentials", () => {
   test("should return 400 when growwApiKey is missing", async ({ tracker }) => {
@@ -39,12 +39,9 @@ test.describe("PUT /v1/groww/credentials", () => {
     const dev = await createDeveloperUser(undefined, tracker);
     const invalidCreds = createInvalidGrowwCredentials();
 
-    const response = await authenticatedPut(
-      "/v1/groww/credentials",
-      dev.token,
-      invalidCreds,
-      { validateStatus: () => true }
-    );
+    const response = await authenticatedPut("/v1/groww/credentials", dev.token, invalidCreds, {
+      validateStatus: () => true,
+    });
 
     expect(response.status).toBe(400);
   });
@@ -53,12 +50,9 @@ test.describe("PUT /v1/groww/credentials", () => {
     const dev = await createDeveloperUser(undefined, tracker);
     const invalidCreds = createInvalidGrowwCredentials();
 
-    const response = await authenticatedPut(
-      "/v1/groww/credentials",
-      dev.token,
-      invalidCreds,
-      { validateStatus: () => true }
-    );
+    const response = await authenticatedPut("/v1/groww/credentials", dev.token, invalidCreds, {
+      validateStatus: () => true,
+    });
 
     expect(response.status).toBe(400);
   });

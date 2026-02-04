@@ -1,6 +1,6 @@
-import { authenticatedDelete } from "../../../../helpers/api-client";
-import { expect, test } from "../../../../helpers/test-fixtures";
-import { TestDataTracker } from "../../../../helpers/test-tracker";
+import { authenticatedDelete } from "../../../helpers/api-client";
+import { expect, test } from "../../../helpers/test-fixtures";
+import { TestDataTracker } from "../../../helpers/test-tracker";
 
 let adminToken: string;
 let sharedTracker: TestDataTracker;

@@ -1,12 +1,12 @@
-import { FastifyInstance, FastifyPluginAsync } from "fastify";
-import { prisma } from "../utils/prisma";
-import { parseDateTimeInTimezone } from "../utils/timezone";
 import { datetimeFormatSchema } from "@ganaka/schemas";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { decrypt } from "../utils/encryption";
+import utc from "dayjs/plugin/utc";
+import { FastifyInstance } from "fastify";
 import "../types/fastify";
+import { decrypt } from "../utils/encryption";
+import { prisma } from "../utils/prisma";
+import { parseDateTimeInTimezone } from "../utils/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

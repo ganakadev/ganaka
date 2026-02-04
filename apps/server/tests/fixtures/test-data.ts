@@ -245,13 +245,13 @@ export function createHistoricalCandlesQuery(
   startTime?: string,
   endTime?: string,
   timezone?: string
-): z.infer<typeof v1_candles_schemas.getGrowwHistoricalCandles.query> {
+): Partial<z.infer<typeof v1_candles_schemas.getGrowwHistoricalCandles.query>> {
   return {
-    symbol: symbol || TEST_SYMBOL,
-    interval: interval || "5minute",
-    start_datetime: startTime || "2025-12-26T09:15:00",
-    end_datetime: endTime || "2025-12-26T10:00:00",
-    timezone: timezone || "Asia/Kolkata",
+    symbol: symbol,
+    interval: interval,
+    start_datetime: startTime,
+    end_datetime: endTime,
+    timezone: timezone,
   };
 }
 
@@ -343,6 +343,13 @@ export function createShortlistsQuery(
 }
 
 /**
+ * Creates valid Groww quote query parameters (symbol and optional datetime)
+ */
+export function createGrowwQuoteQuery(symbol: string): { symbol: string } {
+  return { symbol };
+}
+
+/**
  * Creates valid candles query parameters for dashboard
  */
 export function createCandlesQuery(
@@ -364,11 +371,12 @@ export function createCandlesQuery(
  */
 export function buildQueryString(
   query:
-    | z.infer<typeof v1_lists_schemas.getLists.query>
-    | z.infer<typeof v1_lists_schemas.getShortlists.query>
-    | z.infer<typeof v1_candles_schemas.getCandles.query>
-    | z.infer<typeof v1_runs_schemas.createRun.body>
-    | z.infer<typeof v1_runs_schemas.createOrder.body>
+    | Partial<z.infer<typeof v1_lists_schemas.getLists.query>>
+    | Partial<z.infer<typeof v1_lists_schemas.getShortlists.query>>
+    | Partial<z.infer<typeof v1_candles_schemas.getCandles.query>>
+    | Partial<z.infer<typeof v1_runs_schemas.createRun.body>>
+    | Partial<z.infer<typeof v1_runs_schemas.createOrder.body>>
+    | ReturnType<typeof createGrowwQuoteQuery>
 ): string {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(query)) {

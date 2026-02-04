@@ -1,17 +1,17 @@
-import { test, expect } from "../../../helpers/test-fixtures";
 import {
-  authenticatedPost,
-  authenticatedPatch,
-  authenticatedDelete,
-  authenticatedGet,
-} from "../../../helpers/api-client";
-import { createDeveloperUser } from "../../../helpers/auth-helpers";
-import { createRun, createOrder } from "../../../helpers/db-helpers";
-import {
-  createRunTestData,
   createOrderTestData,
+  createRunTestData,
   generateUUID as generateTestUUID,
 } from "../../../fixtures/test-data";
+import {
+  authenticatedDelete,
+  authenticatedGet,
+  authenticatedPatch,
+  authenticatedPost,
+} from "../../../helpers/api-client";
+import { createDeveloperUser } from "../../../helpers/auth-helpers";
+import { createRun } from "../../../helpers/db-helpers";
+import { expect, test } from "../../../helpers/test-fixtures";
 import { TestDataTracker } from "../../../helpers/test-tracker";
 
 let developerToken: string;
@@ -196,13 +196,9 @@ test.describe("DELETE /v1/runs/:runId", () => {
 
 test.describe("GET /v1/runs/:runId/orders", () => {
   test("should return 404 when runId is invalid UUID", async () => {
-    const response = await authenticatedGet(
-      "/v1/runs/invalid-id/orders",
-      developerToken,
-      {
-        validateStatus: () => true,
-      }
-    );
+    const response = await authenticatedGet("/v1/runs/invalid-id/orders", developerToken, {
+      validateStatus: () => true,
+    });
 
     expect([400, 404]).toContain(response.status);
   });

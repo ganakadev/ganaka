@@ -1,20 +1,20 @@
-import { test, expect } from "../../../../helpers/test-fixtures";
-import { authenticatedGet, authenticatedGetWithRunContext } from "../../../../helpers/api-client";
-import { createDeveloperUser } from "../../../../helpers/auth-helpers";
-import { createRun } from "../../../../helpers/db-helpers";
-import {
-  CANDLES_TEST_DATE,
-  createCandlesQuery,
-  createHistoricalCandlesQuery,
-  TEST_SYMBOL,
-  buildQueryString,
-  generateUniqueTestDatetime,
-} from "../../../../fixtures/test-data";
-import { parseDateTimeInTimezone } from "../../../../../src/utils/timezone";
-import { TestDataTracker } from "../../../../helpers/test-tracker";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
+import { expect, test } from "../../../helpers/test-fixtures";
+import {
+  CANDLES_TEST_DATE,
+  buildQueryString,
+  TEST_SYMBOL,
+  createCandlesQuery,
+  createHistoricalCandlesQuery,
+  generateUniqueTestDatetime,
+} from "../../../fixtures/test-data";
+import { authenticatedGet, authenticatedGetWithRunContext } from "../../../helpers/api-client";
+import { createDeveloperUser } from "../../../helpers/auth-helpers";
+import { TestDataTracker } from "../../../helpers/test-tracker";
+import { parseDateTimeInTimezone } from "../../../../src/utils/timezone";
+import { createRun } from "../../../helpers/db-helpers";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -41,7 +41,7 @@ test.describe("GET /v1/candles", () => {
 
   test.describe("Dashboard Source", () => {
     test("should return 400 when symbol is missing", async () => {
-      const query = { date: CANDLES_TEST_DATE };
+      const query = createCandlesQuery(undefined, CANDLES_TEST_DATE);
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         validateStatus: () => true,
@@ -51,7 +51,7 @@ test.describe("GET /v1/candles", () => {
     });
 
     test("should return 400 when date is missing", async () => {
-      const query = { symbol: TEST_SYMBOL };
+      const query = createCandlesQuery(TEST_SYMBOL, undefined);
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         validateStatus: () => true,
@@ -127,14 +127,15 @@ test.describe("GET /v1/candles", () => {
       expect(response.status).toBe(400);
     });
 
-    test("should return 400 when start_time is missing", async () => {
+    test("should return 400 when start_datetime is missing", async () => {
       const query = createHistoricalCandlesQuery();
-      const queryWithoutStartTime = {
-        symbol: query.symbol,
-        interval: query.interval,
-        end_datetime: query.end_datetime,
-        timezone: query.timezone,
-      };
+      const queryWithoutStartTime = createHistoricalCandlesQuery(
+        query.symbol,
+        query.interval,
+        undefined,
+        query.end_datetime,
+        query.timezone
+      );
       const queryString = buildQueryString(queryWithoutStartTime);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         validateStatus: () => true,
@@ -143,14 +144,15 @@ test.describe("GET /v1/candles", () => {
       expect(response.status).toBe(400);
     });
 
-    test("should return 400 when end_time is missing", async () => {
+    test("should return 400 when end_datetime is missing", async () => {
       const query = createHistoricalCandlesQuery();
-      const queryWithoutEndTime = {
-        symbol: query.symbol,
-        interval: query.interval,
-        start_datetime: query.start_datetime,
-        timezone: query.timezone,
-      };
+      const queryWithoutEndTime = createHistoricalCandlesQuery(
+        query.symbol,
+        query.interval,
+        query.start_datetime,
+        undefined,
+        query.timezone
+      );
       const queryString = buildQueryString(queryWithoutEndTime);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         validateStatus: () => true,

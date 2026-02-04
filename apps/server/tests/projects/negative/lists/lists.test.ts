@@ -1,11 +1,12 @@
-import { test, expect } from "../../../../helpers/test-fixtures";
-import { authenticatedGet } from "../../../../helpers/api-client";
 import {
-  createShortlistsQuery,
-  TEST_DATETIME,
   buildQueryString,
-} from "../../../../fixtures/test-data";
-import { TestDataTracker } from "../../../../helpers/test-tracker";
+  TEST_DATETIME,
+  createShortlistsQuery,
+  createListsQuery,
+} from "../../../fixtures/test-data";
+import { authenticatedGet } from "../../../helpers/api-client";
+import { expect, test } from "../../../helpers/test-fixtures";
+import { TestDataTracker } from "../../../helpers/test-tracker";
 
 let developerToken: string;
 let developerId: string;
@@ -27,7 +28,7 @@ test.afterAll(async () => {
 
 test.describe("GET /v1/lists", () => {
   test("should return 400 when date is missing", async () => {
-    const query = { type: "TOP_GAINERS" };
+    const query = createListsQuery("TOP_GAINERS", undefined);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
@@ -37,7 +38,7 @@ test.describe("GET /v1/lists", () => {
   });
 
   test("should return 400 when type is missing", async () => {
-    const query = { date: TEST_DATETIME };
+    const query = createListsQuery(undefined, TEST_DATETIME);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
@@ -57,7 +58,7 @@ test.describe("GET /v1/lists", () => {
   });
 
   test("should return 400 when type is invalid enum value", async () => {
-    const query = { date: TEST_DATETIME, type: "invalid-type" };
+    const query = createListsQuery(undefined, TEST_DATETIME, undefined, "invalid-type" as any);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
@@ -100,7 +101,7 @@ test.describe("GET /v1/lists", () => {
     const query = createShortlistsQuery();
     const queryString = buildQueryString({
       ...query,
-      scope: "INVALID_SCOPE",
+      scope: "INVALID_SCOPE" as any,
     });
     const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken, {
       validateStatus: () => true,
