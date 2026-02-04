@@ -155,6 +155,34 @@ exports.Prisma.OrderScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.NseIntrumentScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NseCandleScalarFieldEnum = {
+  id: 'id',
+  timestamp: 'timestamp',
+  open: 'open',
+  high: 'high',
+  low: 'low',
+  close: 'close',
+  volume: 'volume',
+  instrumentId: 'instrumentId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NseHolidayScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.QuoteSnapshotScalarFieldEnum = {
   id: 'id',
   timestamp: 'timestamp',
@@ -189,13 +217,6 @@ exports.Prisma.CollectorErrorScalarFieldEnum = {
   errorMessage: 'errorMessage',
   errorStack: 'errorStack',
   errorContext: 'errorContext',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.NseHolidayScalarFieldEnum = {
-  id: 'id',
-  date: 'date',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -243,11 +264,13 @@ exports.Prisma.ModelName = {
   Developer: 'Developer',
   Run: 'Run',
   Order: 'Order',
+  NseIntrument: 'NseIntrument',
+  NseCandle: 'NseCandle',
+  NseHoliday: 'NseHoliday',
   QuoteSnapshot: 'QuoteSnapshot',
   NiftyQuote: 'NiftyQuote',
   ShortlistSnapshot: 'ShortlistSnapshot',
-  CollectorError: 'CollectorError',
-  NseHoliday: 'NseHoliday'
+  CollectorError: 'CollectorError'
 };
 
 /**

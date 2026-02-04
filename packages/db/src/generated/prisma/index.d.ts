@@ -29,6 +29,21 @@ export type Run = $Result.DefaultSelection<Prisma.$RunPayload>
  */
 export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
 /**
+ * Model NseIntrument
+ * 
+ */
+export type NseIntrument = $Result.DefaultSelection<Prisma.$NseIntrumentPayload>
+/**
+ * Model NseCandle
+ * 
+ */
+export type NseCandle = $Result.DefaultSelection<Prisma.$NseCandlePayload>
+/**
+ * Model NseHoliday
+ * 
+ */
+export type NseHoliday = $Result.DefaultSelection<Prisma.$NseHolidayPayload>
+/**
  * Model QuoteSnapshot
  * 
  */
@@ -48,11 +63,6 @@ export type ShortlistSnapshot = $Result.DefaultSelection<Prisma.$ShortlistSnapsh
  * 
  */
 export type CollectorError = $Result.DefaultSelection<Prisma.$CollectorErrorPayload>
-/**
- * Model NseHoliday
- * 
- */
-export type NseHoliday = $Result.DefaultSelection<Prisma.$NseHolidayPayload>
 
 /**
  * Enums
@@ -232,6 +242,36 @@ export class PrismaClient<
   get order(): Prisma.OrderDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.nseIntrument`: Exposes CRUD operations for the **NseIntrument** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NseIntruments
+    * const nseIntruments = await prisma.nseIntrument.findMany()
+    * ```
+    */
+  get nseIntrument(): Prisma.NseIntrumentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.nseCandle`: Exposes CRUD operations for the **NseCandle** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NseCandles
+    * const nseCandles = await prisma.nseCandle.findMany()
+    * ```
+    */
+  get nseCandle(): Prisma.NseCandleDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.nseHoliday`: Exposes CRUD operations for the **NseHoliday** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NseHolidays
+    * const nseHolidays = await prisma.nseHoliday.findMany()
+    * ```
+    */
+  get nseHoliday(): Prisma.NseHolidayDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.quoteSnapshot`: Exposes CRUD operations for the **QuoteSnapshot** model.
     * Example usage:
     * ```ts
@@ -270,16 +310,6 @@ export class PrismaClient<
     * ```
     */
   get collectorError(): Prisma.CollectorErrorDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.nseHoliday`: Exposes CRUD operations for the **NseHoliday** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more NseHolidays
-    * const nseHolidays = await prisma.nseHoliday.findMany()
-    * ```
-    */
-  get nseHoliday(): Prisma.NseHolidayDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -724,11 +754,13 @@ export namespace Prisma {
     Developer: 'Developer',
     Run: 'Run',
     Order: 'Order',
+    NseIntrument: 'NseIntrument',
+    NseCandle: 'NseCandle',
+    NseHoliday: 'NseHoliday',
     QuoteSnapshot: 'QuoteSnapshot',
     NiftyQuote: 'NiftyQuote',
     ShortlistSnapshot: 'ShortlistSnapshot',
-    CollectorError: 'CollectorError',
-    NseHoliday: 'NseHoliday'
+    CollectorError: 'CollectorError'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -747,7 +779,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "developer" | "run" | "order" | "quoteSnapshot" | "niftyQuote" | "shortlistSnapshot" | "collectorError" | "nseHoliday"
+      modelProps: "developer" | "run" | "order" | "nseIntrument" | "nseCandle" | "nseHoliday" | "quoteSnapshot" | "niftyQuote" | "shortlistSnapshot" | "collectorError"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -970,6 +1002,228 @@ export namespace Prisma {
           count: {
             args: Prisma.OrderCountArgs<ExtArgs>
             result: $Utils.Optional<OrderCountAggregateOutputType> | number
+          }
+        }
+      }
+      NseIntrument: {
+        payload: Prisma.$NseIntrumentPayload<ExtArgs>
+        fields: Prisma.NseIntrumentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NseIntrumentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseIntrumentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NseIntrumentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseIntrumentPayload>
+          }
+          findFirst: {
+            args: Prisma.NseIntrumentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseIntrumentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NseIntrumentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseIntrumentPayload>
+          }
+          findMany: {
+            args: Prisma.NseIntrumentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseIntrumentPayload>[]
+          }
+          create: {
+            args: Prisma.NseIntrumentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseIntrumentPayload>
+          }
+          createMany: {
+            args: Prisma.NseIntrumentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NseIntrumentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseIntrumentPayload>[]
+          }
+          delete: {
+            args: Prisma.NseIntrumentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseIntrumentPayload>
+          }
+          update: {
+            args: Prisma.NseIntrumentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseIntrumentPayload>
+          }
+          deleteMany: {
+            args: Prisma.NseIntrumentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NseIntrumentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NseIntrumentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseIntrumentPayload>[]
+          }
+          upsert: {
+            args: Prisma.NseIntrumentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseIntrumentPayload>
+          }
+          aggregate: {
+            args: Prisma.NseIntrumentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNseIntrument>
+          }
+          groupBy: {
+            args: Prisma.NseIntrumentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NseIntrumentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NseIntrumentCountArgs<ExtArgs>
+            result: $Utils.Optional<NseIntrumentCountAggregateOutputType> | number
+          }
+        }
+      }
+      NseCandle: {
+        payload: Prisma.$NseCandlePayload<ExtArgs>
+        fields: Prisma.NseCandleFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NseCandleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseCandlePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NseCandleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseCandlePayload>
+          }
+          findFirst: {
+            args: Prisma.NseCandleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseCandlePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NseCandleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseCandlePayload>
+          }
+          findMany: {
+            args: Prisma.NseCandleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseCandlePayload>[]
+          }
+          create: {
+            args: Prisma.NseCandleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseCandlePayload>
+          }
+          createMany: {
+            args: Prisma.NseCandleCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NseCandleCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseCandlePayload>[]
+          }
+          delete: {
+            args: Prisma.NseCandleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseCandlePayload>
+          }
+          update: {
+            args: Prisma.NseCandleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseCandlePayload>
+          }
+          deleteMany: {
+            args: Prisma.NseCandleDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NseCandleUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NseCandleUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseCandlePayload>[]
+          }
+          upsert: {
+            args: Prisma.NseCandleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseCandlePayload>
+          }
+          aggregate: {
+            args: Prisma.NseCandleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNseCandle>
+          }
+          groupBy: {
+            args: Prisma.NseCandleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NseCandleGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NseCandleCountArgs<ExtArgs>
+            result: $Utils.Optional<NseCandleCountAggregateOutputType> | number
+          }
+        }
+      }
+      NseHoliday: {
+        payload: Prisma.$NseHolidayPayload<ExtArgs>
+        fields: Prisma.NseHolidayFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NseHolidayFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NseHolidayFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>
+          }
+          findFirst: {
+            args: Prisma.NseHolidayFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NseHolidayFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>
+          }
+          findMany: {
+            args: Prisma.NseHolidayFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>[]
+          }
+          create: {
+            args: Prisma.NseHolidayCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>
+          }
+          createMany: {
+            args: Prisma.NseHolidayCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NseHolidayCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>[]
+          }
+          delete: {
+            args: Prisma.NseHolidayDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>
+          }
+          update: {
+            args: Prisma.NseHolidayUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>
+          }
+          deleteMany: {
+            args: Prisma.NseHolidayDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NseHolidayUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NseHolidayUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>[]
+          }
+          upsert: {
+            args: Prisma.NseHolidayUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>
+          }
+          aggregate: {
+            args: Prisma.NseHolidayAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNseHoliday>
+          }
+          groupBy: {
+            args: Prisma.NseHolidayGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NseHolidayGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NseHolidayCountArgs<ExtArgs>
+            result: $Utils.Optional<NseHolidayCountAggregateOutputType> | number
           }
         }
       }
@@ -1269,80 +1523,6 @@ export namespace Prisma {
           }
         }
       }
-      NseHoliday: {
-        payload: Prisma.$NseHolidayPayload<ExtArgs>
-        fields: Prisma.NseHolidayFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.NseHolidayFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.NseHolidayFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>
-          }
-          findFirst: {
-            args: Prisma.NseHolidayFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.NseHolidayFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>
-          }
-          findMany: {
-            args: Prisma.NseHolidayFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>[]
-          }
-          create: {
-            args: Prisma.NseHolidayCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>
-          }
-          createMany: {
-            args: Prisma.NseHolidayCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.NseHolidayCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>[]
-          }
-          delete: {
-            args: Prisma.NseHolidayDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>
-          }
-          update: {
-            args: Prisma.NseHolidayUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>
-          }
-          deleteMany: {
-            args: Prisma.NseHolidayDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.NseHolidayUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.NseHolidayUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>[]
-          }
-          upsert: {
-            args: Prisma.NseHolidayUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NseHolidayPayload>
-          }
-          aggregate: {
-            args: Prisma.NseHolidayAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateNseHoliday>
-          }
-          groupBy: {
-            args: Prisma.NseHolidayGroupByArgs<ExtArgs>
-            result: $Utils.Optional<NseHolidayGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.NseHolidayCountArgs<ExtArgs>
-            result: $Utils.Optional<NseHolidayCountAggregateOutputType> | number
-          }
-        }
-      }
     }
   } & {
     other: {
@@ -1442,11 +1622,13 @@ export namespace Prisma {
     developer?: DeveloperOmit
     run?: RunOmit
     order?: OrderOmit
+    nseIntrument?: NseIntrumentOmit
+    nseCandle?: NseCandleOmit
+    nseHoliday?: NseHolidayOmit
     quoteSnapshot?: QuoteSnapshotOmit
     niftyQuote?: NiftyQuoteOmit
     shortlistSnapshot?: ShortlistSnapshotOmit
     collectorError?: CollectorErrorOmit
-    nseHoliday?: NseHolidayOmit
   }
 
   /* Types for Logging */
@@ -1581,6 +1763,37 @@ export namespace Prisma {
    */
   export type RunCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderWhereInput
+  }
+
+
+  /**
+   * Count Type NseIntrumentCountOutputType
+   */
+
+  export type NseIntrumentCountOutputType = {
+    candles: number
+  }
+
+  export type NseIntrumentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    candles?: boolean | NseIntrumentCountOutputTypeCountCandlesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * NseIntrumentCountOutputType without action
+   */
+  export type NseIntrumentCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseIntrumentCountOutputType
+     */
+    select?: NseIntrumentCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * NseIntrumentCountOutputType without action
+   */
+  export type NseIntrumentCountOutputTypeCountCandlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NseCandleWhereInput
   }
 
 
@@ -4994,6 +5207,3231 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: OrderInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model NseIntrument
+   */
+
+  export type AggregateNseIntrument = {
+    _count: NseIntrumentCountAggregateOutputType | null
+    _min: NseIntrumentMinAggregateOutputType | null
+    _max: NseIntrumentMaxAggregateOutputType | null
+  }
+
+  export type NseIntrumentMinAggregateOutputType = {
+    id: string | null
+    symbol: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NseIntrumentMaxAggregateOutputType = {
+    id: string | null
+    symbol: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NseIntrumentCountAggregateOutputType = {
+    id: number
+    symbol: number
+    name: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type NseIntrumentMinAggregateInputType = {
+    id?: true
+    symbol?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NseIntrumentMaxAggregateInputType = {
+    id?: true
+    symbol?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NseIntrumentCountAggregateInputType = {
+    id?: true
+    symbol?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type NseIntrumentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NseIntrument to aggregate.
+     */
+    where?: NseIntrumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NseIntruments to fetch.
+     */
+    orderBy?: NseIntrumentOrderByWithRelationInput | NseIntrumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NseIntrumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NseIntruments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NseIntruments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned NseIntruments
+    **/
+    _count?: true | NseIntrumentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NseIntrumentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NseIntrumentMaxAggregateInputType
+  }
+
+  export type GetNseIntrumentAggregateType<T extends NseIntrumentAggregateArgs> = {
+        [P in keyof T & keyof AggregateNseIntrument]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNseIntrument[P]>
+      : GetScalarType<T[P], AggregateNseIntrument[P]>
+  }
+
+
+
+
+  export type NseIntrumentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NseIntrumentWhereInput
+    orderBy?: NseIntrumentOrderByWithAggregationInput | NseIntrumentOrderByWithAggregationInput[]
+    by: NseIntrumentScalarFieldEnum[] | NseIntrumentScalarFieldEnum
+    having?: NseIntrumentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NseIntrumentCountAggregateInputType | true
+    _min?: NseIntrumentMinAggregateInputType
+    _max?: NseIntrumentMaxAggregateInputType
+  }
+
+  export type NseIntrumentGroupByOutputType = {
+    id: string
+    symbol: string
+    name: string
+    createdAt: Date
+    updatedAt: Date
+    _count: NseIntrumentCountAggregateOutputType | null
+    _min: NseIntrumentMinAggregateOutputType | null
+    _max: NseIntrumentMaxAggregateOutputType | null
+  }
+
+  type GetNseIntrumentGroupByPayload<T extends NseIntrumentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NseIntrumentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NseIntrumentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NseIntrumentGroupByOutputType[P]>
+            : GetScalarType<T[P], NseIntrumentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NseIntrumentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    symbol?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    candles?: boolean | NseIntrument$candlesArgs<ExtArgs>
+    _count?: boolean | NseIntrumentCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["nseIntrument"]>
+
+  export type NseIntrumentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    symbol?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["nseIntrument"]>
+
+  export type NseIntrumentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    symbol?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["nseIntrument"]>
+
+  export type NseIntrumentSelectScalar = {
+    id?: boolean
+    symbol?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type NseIntrumentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "name" | "createdAt" | "updatedAt", ExtArgs["result"]["nseIntrument"]>
+  export type NseIntrumentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    candles?: boolean | NseIntrument$candlesArgs<ExtArgs>
+    _count?: boolean | NseIntrumentCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type NseIntrumentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type NseIntrumentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $NseIntrumentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NseIntrument"
+    objects: {
+      candles: Prisma.$NseCandlePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      symbol: string
+      name: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["nseIntrument"]>
+    composites: {}
+  }
+
+  type NseIntrumentGetPayload<S extends boolean | null | undefined | NseIntrumentDefaultArgs> = $Result.GetResult<Prisma.$NseIntrumentPayload, S>
+
+  type NseIntrumentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NseIntrumentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NseIntrumentCountAggregateInputType | true
+    }
+
+  export interface NseIntrumentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NseIntrument'], meta: { name: 'NseIntrument' } }
+    /**
+     * Find zero or one NseIntrument that matches the filter.
+     * @param {NseIntrumentFindUniqueArgs} args - Arguments to find a NseIntrument
+     * @example
+     * // Get one NseIntrument
+     * const nseIntrument = await prisma.nseIntrument.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NseIntrumentFindUniqueArgs>(args: SelectSubset<T, NseIntrumentFindUniqueArgs<ExtArgs>>): Prisma__NseIntrumentClient<$Result.GetResult<Prisma.$NseIntrumentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one NseIntrument that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NseIntrumentFindUniqueOrThrowArgs} args - Arguments to find a NseIntrument
+     * @example
+     * // Get one NseIntrument
+     * const nseIntrument = await prisma.nseIntrument.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NseIntrumentFindUniqueOrThrowArgs>(args: SelectSubset<T, NseIntrumentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NseIntrumentClient<$Result.GetResult<Prisma.$NseIntrumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NseIntrument that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseIntrumentFindFirstArgs} args - Arguments to find a NseIntrument
+     * @example
+     * // Get one NseIntrument
+     * const nseIntrument = await prisma.nseIntrument.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NseIntrumentFindFirstArgs>(args?: SelectSubset<T, NseIntrumentFindFirstArgs<ExtArgs>>): Prisma__NseIntrumentClient<$Result.GetResult<Prisma.$NseIntrumentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NseIntrument that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseIntrumentFindFirstOrThrowArgs} args - Arguments to find a NseIntrument
+     * @example
+     * // Get one NseIntrument
+     * const nseIntrument = await prisma.nseIntrument.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NseIntrumentFindFirstOrThrowArgs>(args?: SelectSubset<T, NseIntrumentFindFirstOrThrowArgs<ExtArgs>>): Prisma__NseIntrumentClient<$Result.GetResult<Prisma.$NseIntrumentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more NseIntruments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseIntrumentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NseIntruments
+     * const nseIntruments = await prisma.nseIntrument.findMany()
+     * 
+     * // Get first 10 NseIntruments
+     * const nseIntruments = await prisma.nseIntrument.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const nseIntrumentWithIdOnly = await prisma.nseIntrument.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NseIntrumentFindManyArgs>(args?: SelectSubset<T, NseIntrumentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NseIntrumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a NseIntrument.
+     * @param {NseIntrumentCreateArgs} args - Arguments to create a NseIntrument.
+     * @example
+     * // Create one NseIntrument
+     * const NseIntrument = await prisma.nseIntrument.create({
+     *   data: {
+     *     // ... data to create a NseIntrument
+     *   }
+     * })
+     * 
+     */
+    create<T extends NseIntrumentCreateArgs>(args: SelectSubset<T, NseIntrumentCreateArgs<ExtArgs>>): Prisma__NseIntrumentClient<$Result.GetResult<Prisma.$NseIntrumentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many NseIntruments.
+     * @param {NseIntrumentCreateManyArgs} args - Arguments to create many NseIntruments.
+     * @example
+     * // Create many NseIntruments
+     * const nseIntrument = await prisma.nseIntrument.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NseIntrumentCreateManyArgs>(args?: SelectSubset<T, NseIntrumentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many NseIntruments and returns the data saved in the database.
+     * @param {NseIntrumentCreateManyAndReturnArgs} args - Arguments to create many NseIntruments.
+     * @example
+     * // Create many NseIntruments
+     * const nseIntrument = await prisma.nseIntrument.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many NseIntruments and only return the `id`
+     * const nseIntrumentWithIdOnly = await prisma.nseIntrument.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NseIntrumentCreateManyAndReturnArgs>(args?: SelectSubset<T, NseIntrumentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NseIntrumentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a NseIntrument.
+     * @param {NseIntrumentDeleteArgs} args - Arguments to delete one NseIntrument.
+     * @example
+     * // Delete one NseIntrument
+     * const NseIntrument = await prisma.nseIntrument.delete({
+     *   where: {
+     *     // ... filter to delete one NseIntrument
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NseIntrumentDeleteArgs>(args: SelectSubset<T, NseIntrumentDeleteArgs<ExtArgs>>): Prisma__NseIntrumentClient<$Result.GetResult<Prisma.$NseIntrumentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one NseIntrument.
+     * @param {NseIntrumentUpdateArgs} args - Arguments to update one NseIntrument.
+     * @example
+     * // Update one NseIntrument
+     * const nseIntrument = await prisma.nseIntrument.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NseIntrumentUpdateArgs>(args: SelectSubset<T, NseIntrumentUpdateArgs<ExtArgs>>): Prisma__NseIntrumentClient<$Result.GetResult<Prisma.$NseIntrumentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more NseIntruments.
+     * @param {NseIntrumentDeleteManyArgs} args - Arguments to filter NseIntruments to delete.
+     * @example
+     * // Delete a few NseIntruments
+     * const { count } = await prisma.nseIntrument.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NseIntrumentDeleteManyArgs>(args?: SelectSubset<T, NseIntrumentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NseIntruments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseIntrumentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NseIntruments
+     * const nseIntrument = await prisma.nseIntrument.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NseIntrumentUpdateManyArgs>(args: SelectSubset<T, NseIntrumentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NseIntruments and returns the data updated in the database.
+     * @param {NseIntrumentUpdateManyAndReturnArgs} args - Arguments to update many NseIntruments.
+     * @example
+     * // Update many NseIntruments
+     * const nseIntrument = await prisma.nseIntrument.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more NseIntruments and only return the `id`
+     * const nseIntrumentWithIdOnly = await prisma.nseIntrument.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends NseIntrumentUpdateManyAndReturnArgs>(args: SelectSubset<T, NseIntrumentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NseIntrumentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one NseIntrument.
+     * @param {NseIntrumentUpsertArgs} args - Arguments to update or create a NseIntrument.
+     * @example
+     * // Update or create a NseIntrument
+     * const nseIntrument = await prisma.nseIntrument.upsert({
+     *   create: {
+     *     // ... data to create a NseIntrument
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NseIntrument we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NseIntrumentUpsertArgs>(args: SelectSubset<T, NseIntrumentUpsertArgs<ExtArgs>>): Prisma__NseIntrumentClient<$Result.GetResult<Prisma.$NseIntrumentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of NseIntruments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseIntrumentCountArgs} args - Arguments to filter NseIntruments to count.
+     * @example
+     * // Count the number of NseIntruments
+     * const count = await prisma.nseIntrument.count({
+     *   where: {
+     *     // ... the filter for the NseIntruments we want to count
+     *   }
+     * })
+    **/
+    count<T extends NseIntrumentCountArgs>(
+      args?: Subset<T, NseIntrumentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NseIntrumentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NseIntrument.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseIntrumentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NseIntrumentAggregateArgs>(args: Subset<T, NseIntrumentAggregateArgs>): Prisma.PrismaPromise<GetNseIntrumentAggregateType<T>>
+
+    /**
+     * Group by NseIntrument.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseIntrumentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NseIntrumentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NseIntrumentGroupByArgs['orderBy'] }
+        : { orderBy?: NseIntrumentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NseIntrumentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNseIntrumentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NseIntrument model
+   */
+  readonly fields: NseIntrumentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NseIntrument.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NseIntrumentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    candles<T extends NseIntrument$candlesArgs<ExtArgs> = {}>(args?: Subset<T, NseIntrument$candlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NseCandlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NseIntrument model
+   */
+  interface NseIntrumentFieldRefs {
+    readonly id: FieldRef<"NseIntrument", 'String'>
+    readonly symbol: FieldRef<"NseIntrument", 'String'>
+    readonly name: FieldRef<"NseIntrument", 'String'>
+    readonly createdAt: FieldRef<"NseIntrument", 'DateTime'>
+    readonly updatedAt: FieldRef<"NseIntrument", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * NseIntrument findUnique
+   */
+  export type NseIntrumentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseIntrument
+     */
+    select?: NseIntrumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseIntrument
+     */
+    omit?: NseIntrumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseIntrumentInclude<ExtArgs> | null
+    /**
+     * Filter, which NseIntrument to fetch.
+     */
+    where: NseIntrumentWhereUniqueInput
+  }
+
+  /**
+   * NseIntrument findUniqueOrThrow
+   */
+  export type NseIntrumentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseIntrument
+     */
+    select?: NseIntrumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseIntrument
+     */
+    omit?: NseIntrumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseIntrumentInclude<ExtArgs> | null
+    /**
+     * Filter, which NseIntrument to fetch.
+     */
+    where: NseIntrumentWhereUniqueInput
+  }
+
+  /**
+   * NseIntrument findFirst
+   */
+  export type NseIntrumentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseIntrument
+     */
+    select?: NseIntrumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseIntrument
+     */
+    omit?: NseIntrumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseIntrumentInclude<ExtArgs> | null
+    /**
+     * Filter, which NseIntrument to fetch.
+     */
+    where?: NseIntrumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NseIntruments to fetch.
+     */
+    orderBy?: NseIntrumentOrderByWithRelationInput | NseIntrumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NseIntruments.
+     */
+    cursor?: NseIntrumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NseIntruments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NseIntruments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NseIntruments.
+     */
+    distinct?: NseIntrumentScalarFieldEnum | NseIntrumentScalarFieldEnum[]
+  }
+
+  /**
+   * NseIntrument findFirstOrThrow
+   */
+  export type NseIntrumentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseIntrument
+     */
+    select?: NseIntrumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseIntrument
+     */
+    omit?: NseIntrumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseIntrumentInclude<ExtArgs> | null
+    /**
+     * Filter, which NseIntrument to fetch.
+     */
+    where?: NseIntrumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NseIntruments to fetch.
+     */
+    orderBy?: NseIntrumentOrderByWithRelationInput | NseIntrumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NseIntruments.
+     */
+    cursor?: NseIntrumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NseIntruments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NseIntruments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NseIntruments.
+     */
+    distinct?: NseIntrumentScalarFieldEnum | NseIntrumentScalarFieldEnum[]
+  }
+
+  /**
+   * NseIntrument findMany
+   */
+  export type NseIntrumentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseIntrument
+     */
+    select?: NseIntrumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseIntrument
+     */
+    omit?: NseIntrumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseIntrumentInclude<ExtArgs> | null
+    /**
+     * Filter, which NseIntruments to fetch.
+     */
+    where?: NseIntrumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NseIntruments to fetch.
+     */
+    orderBy?: NseIntrumentOrderByWithRelationInput | NseIntrumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing NseIntruments.
+     */
+    cursor?: NseIntrumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NseIntruments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NseIntruments.
+     */
+    skip?: number
+    distinct?: NseIntrumentScalarFieldEnum | NseIntrumentScalarFieldEnum[]
+  }
+
+  /**
+   * NseIntrument create
+   */
+  export type NseIntrumentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseIntrument
+     */
+    select?: NseIntrumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseIntrument
+     */
+    omit?: NseIntrumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseIntrumentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a NseIntrument.
+     */
+    data: XOR<NseIntrumentCreateInput, NseIntrumentUncheckedCreateInput>
+  }
+
+  /**
+   * NseIntrument createMany
+   */
+  export type NseIntrumentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NseIntruments.
+     */
+    data: NseIntrumentCreateManyInput | NseIntrumentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NseIntrument createManyAndReturn
+   */
+  export type NseIntrumentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseIntrument
+     */
+    select?: NseIntrumentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseIntrument
+     */
+    omit?: NseIntrumentOmit<ExtArgs> | null
+    /**
+     * The data used to create many NseIntruments.
+     */
+    data: NseIntrumentCreateManyInput | NseIntrumentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NseIntrument update
+   */
+  export type NseIntrumentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseIntrument
+     */
+    select?: NseIntrumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseIntrument
+     */
+    omit?: NseIntrumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseIntrumentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a NseIntrument.
+     */
+    data: XOR<NseIntrumentUpdateInput, NseIntrumentUncheckedUpdateInput>
+    /**
+     * Choose, which NseIntrument to update.
+     */
+    where: NseIntrumentWhereUniqueInput
+  }
+
+  /**
+   * NseIntrument updateMany
+   */
+  export type NseIntrumentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NseIntruments.
+     */
+    data: XOR<NseIntrumentUpdateManyMutationInput, NseIntrumentUncheckedUpdateManyInput>
+    /**
+     * Filter which NseIntruments to update
+     */
+    where?: NseIntrumentWhereInput
+    /**
+     * Limit how many NseIntruments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NseIntrument updateManyAndReturn
+   */
+  export type NseIntrumentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseIntrument
+     */
+    select?: NseIntrumentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseIntrument
+     */
+    omit?: NseIntrumentOmit<ExtArgs> | null
+    /**
+     * The data used to update NseIntruments.
+     */
+    data: XOR<NseIntrumentUpdateManyMutationInput, NseIntrumentUncheckedUpdateManyInput>
+    /**
+     * Filter which NseIntruments to update
+     */
+    where?: NseIntrumentWhereInput
+    /**
+     * Limit how many NseIntruments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NseIntrument upsert
+   */
+  export type NseIntrumentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseIntrument
+     */
+    select?: NseIntrumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseIntrument
+     */
+    omit?: NseIntrumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseIntrumentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the NseIntrument to update in case it exists.
+     */
+    where: NseIntrumentWhereUniqueInput
+    /**
+     * In case the NseIntrument found by the `where` argument doesn't exist, create a new NseIntrument with this data.
+     */
+    create: XOR<NseIntrumentCreateInput, NseIntrumentUncheckedCreateInput>
+    /**
+     * In case the NseIntrument was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NseIntrumentUpdateInput, NseIntrumentUncheckedUpdateInput>
+  }
+
+  /**
+   * NseIntrument delete
+   */
+  export type NseIntrumentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseIntrument
+     */
+    select?: NseIntrumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseIntrument
+     */
+    omit?: NseIntrumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseIntrumentInclude<ExtArgs> | null
+    /**
+     * Filter which NseIntrument to delete.
+     */
+    where: NseIntrumentWhereUniqueInput
+  }
+
+  /**
+   * NseIntrument deleteMany
+   */
+  export type NseIntrumentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NseIntruments to delete
+     */
+    where?: NseIntrumentWhereInput
+    /**
+     * Limit how many NseIntruments to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * NseIntrument.candles
+   */
+  export type NseIntrument$candlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseCandle
+     */
+    select?: NseCandleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseCandle
+     */
+    omit?: NseCandleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseCandleInclude<ExtArgs> | null
+    where?: NseCandleWhereInput
+    orderBy?: NseCandleOrderByWithRelationInput | NseCandleOrderByWithRelationInput[]
+    cursor?: NseCandleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NseCandleScalarFieldEnum | NseCandleScalarFieldEnum[]
+  }
+
+  /**
+   * NseIntrument without action
+   */
+  export type NseIntrumentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseIntrument
+     */
+    select?: NseIntrumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseIntrument
+     */
+    omit?: NseIntrumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseIntrumentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model NseCandle
+   */
+
+  export type AggregateNseCandle = {
+    _count: NseCandleCountAggregateOutputType | null
+    _avg: NseCandleAvgAggregateOutputType | null
+    _sum: NseCandleSumAggregateOutputType | null
+    _min: NseCandleMinAggregateOutputType | null
+    _max: NseCandleMaxAggregateOutputType | null
+  }
+
+  export type NseCandleAvgAggregateOutputType = {
+    open: Decimal | null
+    high: Decimal | null
+    low: Decimal | null
+    close: Decimal | null
+    volume: number | null
+  }
+
+  export type NseCandleSumAggregateOutputType = {
+    open: Decimal | null
+    high: Decimal | null
+    low: Decimal | null
+    close: Decimal | null
+    volume: bigint | null
+  }
+
+  export type NseCandleMinAggregateOutputType = {
+    id: string | null
+    timestamp: Date | null
+    open: Decimal | null
+    high: Decimal | null
+    low: Decimal | null
+    close: Decimal | null
+    volume: bigint | null
+    instrumentId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NseCandleMaxAggregateOutputType = {
+    id: string | null
+    timestamp: Date | null
+    open: Decimal | null
+    high: Decimal | null
+    low: Decimal | null
+    close: Decimal | null
+    volume: bigint | null
+    instrumentId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NseCandleCountAggregateOutputType = {
+    id: number
+    timestamp: number
+    open: number
+    high: number
+    low: number
+    close: number
+    volume: number
+    instrumentId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type NseCandleAvgAggregateInputType = {
+    open?: true
+    high?: true
+    low?: true
+    close?: true
+    volume?: true
+  }
+
+  export type NseCandleSumAggregateInputType = {
+    open?: true
+    high?: true
+    low?: true
+    close?: true
+    volume?: true
+  }
+
+  export type NseCandleMinAggregateInputType = {
+    id?: true
+    timestamp?: true
+    open?: true
+    high?: true
+    low?: true
+    close?: true
+    volume?: true
+    instrumentId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NseCandleMaxAggregateInputType = {
+    id?: true
+    timestamp?: true
+    open?: true
+    high?: true
+    low?: true
+    close?: true
+    volume?: true
+    instrumentId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NseCandleCountAggregateInputType = {
+    id?: true
+    timestamp?: true
+    open?: true
+    high?: true
+    low?: true
+    close?: true
+    volume?: true
+    instrumentId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type NseCandleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NseCandle to aggregate.
+     */
+    where?: NseCandleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NseCandles to fetch.
+     */
+    orderBy?: NseCandleOrderByWithRelationInput | NseCandleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NseCandleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NseCandles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NseCandles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned NseCandles
+    **/
+    _count?: true | NseCandleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: NseCandleAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: NseCandleSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NseCandleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NseCandleMaxAggregateInputType
+  }
+
+  export type GetNseCandleAggregateType<T extends NseCandleAggregateArgs> = {
+        [P in keyof T & keyof AggregateNseCandle]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNseCandle[P]>
+      : GetScalarType<T[P], AggregateNseCandle[P]>
+  }
+
+
+
+
+  export type NseCandleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NseCandleWhereInput
+    orderBy?: NseCandleOrderByWithAggregationInput | NseCandleOrderByWithAggregationInput[]
+    by: NseCandleScalarFieldEnum[] | NseCandleScalarFieldEnum
+    having?: NseCandleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NseCandleCountAggregateInputType | true
+    _avg?: NseCandleAvgAggregateInputType
+    _sum?: NseCandleSumAggregateInputType
+    _min?: NseCandleMinAggregateInputType
+    _max?: NseCandleMaxAggregateInputType
+  }
+
+  export type NseCandleGroupByOutputType = {
+    id: string
+    timestamp: Date
+    open: Decimal
+    high: Decimal
+    low: Decimal
+    close: Decimal
+    volume: bigint
+    instrumentId: string
+    createdAt: Date
+    updatedAt: Date
+    _count: NseCandleCountAggregateOutputType | null
+    _avg: NseCandleAvgAggregateOutputType | null
+    _sum: NseCandleSumAggregateOutputType | null
+    _min: NseCandleMinAggregateOutputType | null
+    _max: NseCandleMaxAggregateOutputType | null
+  }
+
+  type GetNseCandleGroupByPayload<T extends NseCandleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NseCandleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NseCandleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NseCandleGroupByOutputType[P]>
+            : GetScalarType<T[P], NseCandleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NseCandleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    timestamp?: boolean
+    open?: boolean
+    high?: boolean
+    low?: boolean
+    close?: boolean
+    volume?: boolean
+    instrumentId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    instrument?: boolean | NseIntrumentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["nseCandle"]>
+
+  export type NseCandleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    timestamp?: boolean
+    open?: boolean
+    high?: boolean
+    low?: boolean
+    close?: boolean
+    volume?: boolean
+    instrumentId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    instrument?: boolean | NseIntrumentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["nseCandle"]>
+
+  export type NseCandleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    timestamp?: boolean
+    open?: boolean
+    high?: boolean
+    low?: boolean
+    close?: boolean
+    volume?: boolean
+    instrumentId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    instrument?: boolean | NseIntrumentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["nseCandle"]>
+
+  export type NseCandleSelectScalar = {
+    id?: boolean
+    timestamp?: boolean
+    open?: boolean
+    high?: boolean
+    low?: boolean
+    close?: boolean
+    volume?: boolean
+    instrumentId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type NseCandleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "open" | "high" | "low" | "close" | "volume" | "instrumentId" | "createdAt" | "updatedAt", ExtArgs["result"]["nseCandle"]>
+  export type NseCandleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    instrument?: boolean | NseIntrumentDefaultArgs<ExtArgs>
+  }
+  export type NseCandleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    instrument?: boolean | NseIntrumentDefaultArgs<ExtArgs>
+  }
+  export type NseCandleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    instrument?: boolean | NseIntrumentDefaultArgs<ExtArgs>
+  }
+
+  export type $NseCandlePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NseCandle"
+    objects: {
+      instrument: Prisma.$NseIntrumentPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      timestamp: Date
+      open: Prisma.Decimal
+      high: Prisma.Decimal
+      low: Prisma.Decimal
+      close: Prisma.Decimal
+      volume: bigint
+      instrumentId: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["nseCandle"]>
+    composites: {}
+  }
+
+  type NseCandleGetPayload<S extends boolean | null | undefined | NseCandleDefaultArgs> = $Result.GetResult<Prisma.$NseCandlePayload, S>
+
+  type NseCandleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NseCandleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NseCandleCountAggregateInputType | true
+    }
+
+  export interface NseCandleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NseCandle'], meta: { name: 'NseCandle' } }
+    /**
+     * Find zero or one NseCandle that matches the filter.
+     * @param {NseCandleFindUniqueArgs} args - Arguments to find a NseCandle
+     * @example
+     * // Get one NseCandle
+     * const nseCandle = await prisma.nseCandle.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NseCandleFindUniqueArgs>(args: SelectSubset<T, NseCandleFindUniqueArgs<ExtArgs>>): Prisma__NseCandleClient<$Result.GetResult<Prisma.$NseCandlePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one NseCandle that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NseCandleFindUniqueOrThrowArgs} args - Arguments to find a NseCandle
+     * @example
+     * // Get one NseCandle
+     * const nseCandle = await prisma.nseCandle.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NseCandleFindUniqueOrThrowArgs>(args: SelectSubset<T, NseCandleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NseCandleClient<$Result.GetResult<Prisma.$NseCandlePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NseCandle that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseCandleFindFirstArgs} args - Arguments to find a NseCandle
+     * @example
+     * // Get one NseCandle
+     * const nseCandle = await prisma.nseCandle.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NseCandleFindFirstArgs>(args?: SelectSubset<T, NseCandleFindFirstArgs<ExtArgs>>): Prisma__NseCandleClient<$Result.GetResult<Prisma.$NseCandlePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NseCandle that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseCandleFindFirstOrThrowArgs} args - Arguments to find a NseCandle
+     * @example
+     * // Get one NseCandle
+     * const nseCandle = await prisma.nseCandle.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NseCandleFindFirstOrThrowArgs>(args?: SelectSubset<T, NseCandleFindFirstOrThrowArgs<ExtArgs>>): Prisma__NseCandleClient<$Result.GetResult<Prisma.$NseCandlePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more NseCandles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseCandleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NseCandles
+     * const nseCandles = await prisma.nseCandle.findMany()
+     * 
+     * // Get first 10 NseCandles
+     * const nseCandles = await prisma.nseCandle.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const nseCandleWithIdOnly = await prisma.nseCandle.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NseCandleFindManyArgs>(args?: SelectSubset<T, NseCandleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NseCandlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a NseCandle.
+     * @param {NseCandleCreateArgs} args - Arguments to create a NseCandle.
+     * @example
+     * // Create one NseCandle
+     * const NseCandle = await prisma.nseCandle.create({
+     *   data: {
+     *     // ... data to create a NseCandle
+     *   }
+     * })
+     * 
+     */
+    create<T extends NseCandleCreateArgs>(args: SelectSubset<T, NseCandleCreateArgs<ExtArgs>>): Prisma__NseCandleClient<$Result.GetResult<Prisma.$NseCandlePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many NseCandles.
+     * @param {NseCandleCreateManyArgs} args - Arguments to create many NseCandles.
+     * @example
+     * // Create many NseCandles
+     * const nseCandle = await prisma.nseCandle.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NseCandleCreateManyArgs>(args?: SelectSubset<T, NseCandleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many NseCandles and returns the data saved in the database.
+     * @param {NseCandleCreateManyAndReturnArgs} args - Arguments to create many NseCandles.
+     * @example
+     * // Create many NseCandles
+     * const nseCandle = await prisma.nseCandle.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many NseCandles and only return the `id`
+     * const nseCandleWithIdOnly = await prisma.nseCandle.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NseCandleCreateManyAndReturnArgs>(args?: SelectSubset<T, NseCandleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NseCandlePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a NseCandle.
+     * @param {NseCandleDeleteArgs} args - Arguments to delete one NseCandle.
+     * @example
+     * // Delete one NseCandle
+     * const NseCandle = await prisma.nseCandle.delete({
+     *   where: {
+     *     // ... filter to delete one NseCandle
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NseCandleDeleteArgs>(args: SelectSubset<T, NseCandleDeleteArgs<ExtArgs>>): Prisma__NseCandleClient<$Result.GetResult<Prisma.$NseCandlePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one NseCandle.
+     * @param {NseCandleUpdateArgs} args - Arguments to update one NseCandle.
+     * @example
+     * // Update one NseCandle
+     * const nseCandle = await prisma.nseCandle.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NseCandleUpdateArgs>(args: SelectSubset<T, NseCandleUpdateArgs<ExtArgs>>): Prisma__NseCandleClient<$Result.GetResult<Prisma.$NseCandlePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more NseCandles.
+     * @param {NseCandleDeleteManyArgs} args - Arguments to filter NseCandles to delete.
+     * @example
+     * // Delete a few NseCandles
+     * const { count } = await prisma.nseCandle.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NseCandleDeleteManyArgs>(args?: SelectSubset<T, NseCandleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NseCandles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseCandleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NseCandles
+     * const nseCandle = await prisma.nseCandle.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NseCandleUpdateManyArgs>(args: SelectSubset<T, NseCandleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NseCandles and returns the data updated in the database.
+     * @param {NseCandleUpdateManyAndReturnArgs} args - Arguments to update many NseCandles.
+     * @example
+     * // Update many NseCandles
+     * const nseCandle = await prisma.nseCandle.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more NseCandles and only return the `id`
+     * const nseCandleWithIdOnly = await prisma.nseCandle.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends NseCandleUpdateManyAndReturnArgs>(args: SelectSubset<T, NseCandleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NseCandlePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one NseCandle.
+     * @param {NseCandleUpsertArgs} args - Arguments to update or create a NseCandle.
+     * @example
+     * // Update or create a NseCandle
+     * const nseCandle = await prisma.nseCandle.upsert({
+     *   create: {
+     *     // ... data to create a NseCandle
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NseCandle we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NseCandleUpsertArgs>(args: SelectSubset<T, NseCandleUpsertArgs<ExtArgs>>): Prisma__NseCandleClient<$Result.GetResult<Prisma.$NseCandlePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of NseCandles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseCandleCountArgs} args - Arguments to filter NseCandles to count.
+     * @example
+     * // Count the number of NseCandles
+     * const count = await prisma.nseCandle.count({
+     *   where: {
+     *     // ... the filter for the NseCandles we want to count
+     *   }
+     * })
+    **/
+    count<T extends NseCandleCountArgs>(
+      args?: Subset<T, NseCandleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NseCandleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NseCandle.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseCandleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NseCandleAggregateArgs>(args: Subset<T, NseCandleAggregateArgs>): Prisma.PrismaPromise<GetNseCandleAggregateType<T>>
+
+    /**
+     * Group by NseCandle.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseCandleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NseCandleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NseCandleGroupByArgs['orderBy'] }
+        : { orderBy?: NseCandleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NseCandleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNseCandleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NseCandle model
+   */
+  readonly fields: NseCandleFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NseCandle.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NseCandleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    instrument<T extends NseIntrumentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, NseIntrumentDefaultArgs<ExtArgs>>): Prisma__NseIntrumentClient<$Result.GetResult<Prisma.$NseIntrumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NseCandle model
+   */
+  interface NseCandleFieldRefs {
+    readonly id: FieldRef<"NseCandle", 'String'>
+    readonly timestamp: FieldRef<"NseCandle", 'DateTime'>
+    readonly open: FieldRef<"NseCandle", 'Decimal'>
+    readonly high: FieldRef<"NseCandle", 'Decimal'>
+    readonly low: FieldRef<"NseCandle", 'Decimal'>
+    readonly close: FieldRef<"NseCandle", 'Decimal'>
+    readonly volume: FieldRef<"NseCandle", 'BigInt'>
+    readonly instrumentId: FieldRef<"NseCandle", 'String'>
+    readonly createdAt: FieldRef<"NseCandle", 'DateTime'>
+    readonly updatedAt: FieldRef<"NseCandle", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * NseCandle findUnique
+   */
+  export type NseCandleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseCandle
+     */
+    select?: NseCandleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseCandle
+     */
+    omit?: NseCandleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseCandleInclude<ExtArgs> | null
+    /**
+     * Filter, which NseCandle to fetch.
+     */
+    where: NseCandleWhereUniqueInput
+  }
+
+  /**
+   * NseCandle findUniqueOrThrow
+   */
+  export type NseCandleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseCandle
+     */
+    select?: NseCandleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseCandle
+     */
+    omit?: NseCandleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseCandleInclude<ExtArgs> | null
+    /**
+     * Filter, which NseCandle to fetch.
+     */
+    where: NseCandleWhereUniqueInput
+  }
+
+  /**
+   * NseCandle findFirst
+   */
+  export type NseCandleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseCandle
+     */
+    select?: NseCandleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseCandle
+     */
+    omit?: NseCandleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseCandleInclude<ExtArgs> | null
+    /**
+     * Filter, which NseCandle to fetch.
+     */
+    where?: NseCandleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NseCandles to fetch.
+     */
+    orderBy?: NseCandleOrderByWithRelationInput | NseCandleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NseCandles.
+     */
+    cursor?: NseCandleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NseCandles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NseCandles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NseCandles.
+     */
+    distinct?: NseCandleScalarFieldEnum | NseCandleScalarFieldEnum[]
+  }
+
+  /**
+   * NseCandle findFirstOrThrow
+   */
+  export type NseCandleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseCandle
+     */
+    select?: NseCandleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseCandle
+     */
+    omit?: NseCandleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseCandleInclude<ExtArgs> | null
+    /**
+     * Filter, which NseCandle to fetch.
+     */
+    where?: NseCandleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NseCandles to fetch.
+     */
+    orderBy?: NseCandleOrderByWithRelationInput | NseCandleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NseCandles.
+     */
+    cursor?: NseCandleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NseCandles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NseCandles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NseCandles.
+     */
+    distinct?: NseCandleScalarFieldEnum | NseCandleScalarFieldEnum[]
+  }
+
+  /**
+   * NseCandle findMany
+   */
+  export type NseCandleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseCandle
+     */
+    select?: NseCandleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseCandle
+     */
+    omit?: NseCandleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseCandleInclude<ExtArgs> | null
+    /**
+     * Filter, which NseCandles to fetch.
+     */
+    where?: NseCandleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NseCandles to fetch.
+     */
+    orderBy?: NseCandleOrderByWithRelationInput | NseCandleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing NseCandles.
+     */
+    cursor?: NseCandleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NseCandles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NseCandles.
+     */
+    skip?: number
+    distinct?: NseCandleScalarFieldEnum | NseCandleScalarFieldEnum[]
+  }
+
+  /**
+   * NseCandle create
+   */
+  export type NseCandleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseCandle
+     */
+    select?: NseCandleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseCandle
+     */
+    omit?: NseCandleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseCandleInclude<ExtArgs> | null
+    /**
+     * The data needed to create a NseCandle.
+     */
+    data: XOR<NseCandleCreateInput, NseCandleUncheckedCreateInput>
+  }
+
+  /**
+   * NseCandle createMany
+   */
+  export type NseCandleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NseCandles.
+     */
+    data: NseCandleCreateManyInput | NseCandleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NseCandle createManyAndReturn
+   */
+  export type NseCandleCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseCandle
+     */
+    select?: NseCandleSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseCandle
+     */
+    omit?: NseCandleOmit<ExtArgs> | null
+    /**
+     * The data used to create many NseCandles.
+     */
+    data: NseCandleCreateManyInput | NseCandleCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseCandleIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NseCandle update
+   */
+  export type NseCandleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseCandle
+     */
+    select?: NseCandleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseCandle
+     */
+    omit?: NseCandleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseCandleInclude<ExtArgs> | null
+    /**
+     * The data needed to update a NseCandle.
+     */
+    data: XOR<NseCandleUpdateInput, NseCandleUncheckedUpdateInput>
+    /**
+     * Choose, which NseCandle to update.
+     */
+    where: NseCandleWhereUniqueInput
+  }
+
+  /**
+   * NseCandle updateMany
+   */
+  export type NseCandleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NseCandles.
+     */
+    data: XOR<NseCandleUpdateManyMutationInput, NseCandleUncheckedUpdateManyInput>
+    /**
+     * Filter which NseCandles to update
+     */
+    where?: NseCandleWhereInput
+    /**
+     * Limit how many NseCandles to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NseCandle updateManyAndReturn
+   */
+  export type NseCandleUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseCandle
+     */
+    select?: NseCandleSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseCandle
+     */
+    omit?: NseCandleOmit<ExtArgs> | null
+    /**
+     * The data used to update NseCandles.
+     */
+    data: XOR<NseCandleUpdateManyMutationInput, NseCandleUncheckedUpdateManyInput>
+    /**
+     * Filter which NseCandles to update
+     */
+    where?: NseCandleWhereInput
+    /**
+     * Limit how many NseCandles to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseCandleIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NseCandle upsert
+   */
+  export type NseCandleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseCandle
+     */
+    select?: NseCandleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseCandle
+     */
+    omit?: NseCandleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseCandleInclude<ExtArgs> | null
+    /**
+     * The filter to search for the NseCandle to update in case it exists.
+     */
+    where: NseCandleWhereUniqueInput
+    /**
+     * In case the NseCandle found by the `where` argument doesn't exist, create a new NseCandle with this data.
+     */
+    create: XOR<NseCandleCreateInput, NseCandleUncheckedCreateInput>
+    /**
+     * In case the NseCandle was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NseCandleUpdateInput, NseCandleUncheckedUpdateInput>
+  }
+
+  /**
+   * NseCandle delete
+   */
+  export type NseCandleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseCandle
+     */
+    select?: NseCandleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseCandle
+     */
+    omit?: NseCandleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseCandleInclude<ExtArgs> | null
+    /**
+     * Filter which NseCandle to delete.
+     */
+    where: NseCandleWhereUniqueInput
+  }
+
+  /**
+   * NseCandle deleteMany
+   */
+  export type NseCandleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NseCandles to delete
+     */
+    where?: NseCandleWhereInput
+    /**
+     * Limit how many NseCandles to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * NseCandle without action
+   */
+  export type NseCandleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseCandle
+     */
+    select?: NseCandleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseCandle
+     */
+    omit?: NseCandleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NseCandleInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model NseHoliday
+   */
+
+  export type AggregateNseHoliday = {
+    _count: NseHolidayCountAggregateOutputType | null
+    _min: NseHolidayMinAggregateOutputType | null
+    _max: NseHolidayMaxAggregateOutputType | null
+  }
+
+  export type NseHolidayMinAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NseHolidayMaxAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NseHolidayCountAggregateOutputType = {
+    id: number
+    date: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type NseHolidayMinAggregateInputType = {
+    id?: true
+    date?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NseHolidayMaxAggregateInputType = {
+    id?: true
+    date?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NseHolidayCountAggregateInputType = {
+    id?: true
+    date?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type NseHolidayAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NseHoliday to aggregate.
+     */
+    where?: NseHolidayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NseHolidays to fetch.
+     */
+    orderBy?: NseHolidayOrderByWithRelationInput | NseHolidayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NseHolidayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NseHolidays from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NseHolidays.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned NseHolidays
+    **/
+    _count?: true | NseHolidayCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NseHolidayMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NseHolidayMaxAggregateInputType
+  }
+
+  export type GetNseHolidayAggregateType<T extends NseHolidayAggregateArgs> = {
+        [P in keyof T & keyof AggregateNseHoliday]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNseHoliday[P]>
+      : GetScalarType<T[P], AggregateNseHoliday[P]>
+  }
+
+
+
+
+  export type NseHolidayGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NseHolidayWhereInput
+    orderBy?: NseHolidayOrderByWithAggregationInput | NseHolidayOrderByWithAggregationInput[]
+    by: NseHolidayScalarFieldEnum[] | NseHolidayScalarFieldEnum
+    having?: NseHolidayScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NseHolidayCountAggregateInputType | true
+    _min?: NseHolidayMinAggregateInputType
+    _max?: NseHolidayMaxAggregateInputType
+  }
+
+  export type NseHolidayGroupByOutputType = {
+    id: string
+    date: Date
+    createdAt: Date
+    updatedAt: Date
+    _count: NseHolidayCountAggregateOutputType | null
+    _min: NseHolidayMinAggregateOutputType | null
+    _max: NseHolidayMaxAggregateOutputType | null
+  }
+
+  type GetNseHolidayGroupByPayload<T extends NseHolidayGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NseHolidayGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NseHolidayGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NseHolidayGroupByOutputType[P]>
+            : GetScalarType<T[P], NseHolidayGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NseHolidaySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["nseHoliday"]>
+
+  export type NseHolidaySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["nseHoliday"]>
+
+  export type NseHolidaySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["nseHoliday"]>
+
+  export type NseHolidaySelectScalar = {
+    id?: boolean
+    date?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type NseHolidayOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "date" | "createdAt" | "updatedAt", ExtArgs["result"]["nseHoliday"]>
+
+  export type $NseHolidayPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NseHoliday"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      date: Date
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["nseHoliday"]>
+    composites: {}
+  }
+
+  type NseHolidayGetPayload<S extends boolean | null | undefined | NseHolidayDefaultArgs> = $Result.GetResult<Prisma.$NseHolidayPayload, S>
+
+  type NseHolidayCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NseHolidayFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NseHolidayCountAggregateInputType | true
+    }
+
+  export interface NseHolidayDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NseHoliday'], meta: { name: 'NseHoliday' } }
+    /**
+     * Find zero or one NseHoliday that matches the filter.
+     * @param {NseHolidayFindUniqueArgs} args - Arguments to find a NseHoliday
+     * @example
+     * // Get one NseHoliday
+     * const nseHoliday = await prisma.nseHoliday.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NseHolidayFindUniqueArgs>(args: SelectSubset<T, NseHolidayFindUniqueArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one NseHoliday that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NseHolidayFindUniqueOrThrowArgs} args - Arguments to find a NseHoliday
+     * @example
+     * // Get one NseHoliday
+     * const nseHoliday = await prisma.nseHoliday.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NseHolidayFindUniqueOrThrowArgs>(args: SelectSubset<T, NseHolidayFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NseHoliday that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseHolidayFindFirstArgs} args - Arguments to find a NseHoliday
+     * @example
+     * // Get one NseHoliday
+     * const nseHoliday = await prisma.nseHoliday.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NseHolidayFindFirstArgs>(args?: SelectSubset<T, NseHolidayFindFirstArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NseHoliday that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseHolidayFindFirstOrThrowArgs} args - Arguments to find a NseHoliday
+     * @example
+     * // Get one NseHoliday
+     * const nseHoliday = await prisma.nseHoliday.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NseHolidayFindFirstOrThrowArgs>(args?: SelectSubset<T, NseHolidayFindFirstOrThrowArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more NseHolidays that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseHolidayFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NseHolidays
+     * const nseHolidays = await prisma.nseHoliday.findMany()
+     * 
+     * // Get first 10 NseHolidays
+     * const nseHolidays = await prisma.nseHoliday.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const nseHolidayWithIdOnly = await prisma.nseHoliday.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NseHolidayFindManyArgs>(args?: SelectSubset<T, NseHolidayFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a NseHoliday.
+     * @param {NseHolidayCreateArgs} args - Arguments to create a NseHoliday.
+     * @example
+     * // Create one NseHoliday
+     * const NseHoliday = await prisma.nseHoliday.create({
+     *   data: {
+     *     // ... data to create a NseHoliday
+     *   }
+     * })
+     * 
+     */
+    create<T extends NseHolidayCreateArgs>(args: SelectSubset<T, NseHolidayCreateArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many NseHolidays.
+     * @param {NseHolidayCreateManyArgs} args - Arguments to create many NseHolidays.
+     * @example
+     * // Create many NseHolidays
+     * const nseHoliday = await prisma.nseHoliday.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NseHolidayCreateManyArgs>(args?: SelectSubset<T, NseHolidayCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many NseHolidays and returns the data saved in the database.
+     * @param {NseHolidayCreateManyAndReturnArgs} args - Arguments to create many NseHolidays.
+     * @example
+     * // Create many NseHolidays
+     * const nseHoliday = await prisma.nseHoliday.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many NseHolidays and only return the `id`
+     * const nseHolidayWithIdOnly = await prisma.nseHoliday.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NseHolidayCreateManyAndReturnArgs>(args?: SelectSubset<T, NseHolidayCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a NseHoliday.
+     * @param {NseHolidayDeleteArgs} args - Arguments to delete one NseHoliday.
+     * @example
+     * // Delete one NseHoliday
+     * const NseHoliday = await prisma.nseHoliday.delete({
+     *   where: {
+     *     // ... filter to delete one NseHoliday
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NseHolidayDeleteArgs>(args: SelectSubset<T, NseHolidayDeleteArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one NseHoliday.
+     * @param {NseHolidayUpdateArgs} args - Arguments to update one NseHoliday.
+     * @example
+     * // Update one NseHoliday
+     * const nseHoliday = await prisma.nseHoliday.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NseHolidayUpdateArgs>(args: SelectSubset<T, NseHolidayUpdateArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more NseHolidays.
+     * @param {NseHolidayDeleteManyArgs} args - Arguments to filter NseHolidays to delete.
+     * @example
+     * // Delete a few NseHolidays
+     * const { count } = await prisma.nseHoliday.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NseHolidayDeleteManyArgs>(args?: SelectSubset<T, NseHolidayDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NseHolidays.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseHolidayUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NseHolidays
+     * const nseHoliday = await prisma.nseHoliday.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NseHolidayUpdateManyArgs>(args: SelectSubset<T, NseHolidayUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NseHolidays and returns the data updated in the database.
+     * @param {NseHolidayUpdateManyAndReturnArgs} args - Arguments to update many NseHolidays.
+     * @example
+     * // Update many NseHolidays
+     * const nseHoliday = await prisma.nseHoliday.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more NseHolidays and only return the `id`
+     * const nseHolidayWithIdOnly = await prisma.nseHoliday.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends NseHolidayUpdateManyAndReturnArgs>(args: SelectSubset<T, NseHolidayUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one NseHoliday.
+     * @param {NseHolidayUpsertArgs} args - Arguments to update or create a NseHoliday.
+     * @example
+     * // Update or create a NseHoliday
+     * const nseHoliday = await prisma.nseHoliday.upsert({
+     *   create: {
+     *     // ... data to create a NseHoliday
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NseHoliday we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NseHolidayUpsertArgs>(args: SelectSubset<T, NseHolidayUpsertArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of NseHolidays.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseHolidayCountArgs} args - Arguments to filter NseHolidays to count.
+     * @example
+     * // Count the number of NseHolidays
+     * const count = await prisma.nseHoliday.count({
+     *   where: {
+     *     // ... the filter for the NseHolidays we want to count
+     *   }
+     * })
+    **/
+    count<T extends NseHolidayCountArgs>(
+      args?: Subset<T, NseHolidayCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NseHolidayCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NseHoliday.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseHolidayAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NseHolidayAggregateArgs>(args: Subset<T, NseHolidayAggregateArgs>): Prisma.PrismaPromise<GetNseHolidayAggregateType<T>>
+
+    /**
+     * Group by NseHoliday.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NseHolidayGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NseHolidayGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NseHolidayGroupByArgs['orderBy'] }
+        : { orderBy?: NseHolidayGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NseHolidayGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNseHolidayGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NseHoliday model
+   */
+  readonly fields: NseHolidayFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NseHoliday.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NseHolidayClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NseHoliday model
+   */
+  interface NseHolidayFieldRefs {
+    readonly id: FieldRef<"NseHoliday", 'String'>
+    readonly date: FieldRef<"NseHoliday", 'DateTime'>
+    readonly createdAt: FieldRef<"NseHoliday", 'DateTime'>
+    readonly updatedAt: FieldRef<"NseHoliday", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * NseHoliday findUnique
+   */
+  export type NseHolidayFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseHoliday
+     */
+    select?: NseHolidaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseHoliday
+     */
+    omit?: NseHolidayOmit<ExtArgs> | null
+    /**
+     * Filter, which NseHoliday to fetch.
+     */
+    where: NseHolidayWhereUniqueInput
+  }
+
+  /**
+   * NseHoliday findUniqueOrThrow
+   */
+  export type NseHolidayFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseHoliday
+     */
+    select?: NseHolidaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseHoliday
+     */
+    omit?: NseHolidayOmit<ExtArgs> | null
+    /**
+     * Filter, which NseHoliday to fetch.
+     */
+    where: NseHolidayWhereUniqueInput
+  }
+
+  /**
+   * NseHoliday findFirst
+   */
+  export type NseHolidayFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseHoliday
+     */
+    select?: NseHolidaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseHoliday
+     */
+    omit?: NseHolidayOmit<ExtArgs> | null
+    /**
+     * Filter, which NseHoliday to fetch.
+     */
+    where?: NseHolidayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NseHolidays to fetch.
+     */
+    orderBy?: NseHolidayOrderByWithRelationInput | NseHolidayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NseHolidays.
+     */
+    cursor?: NseHolidayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NseHolidays from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NseHolidays.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NseHolidays.
+     */
+    distinct?: NseHolidayScalarFieldEnum | NseHolidayScalarFieldEnum[]
+  }
+
+  /**
+   * NseHoliday findFirstOrThrow
+   */
+  export type NseHolidayFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseHoliday
+     */
+    select?: NseHolidaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseHoliday
+     */
+    omit?: NseHolidayOmit<ExtArgs> | null
+    /**
+     * Filter, which NseHoliday to fetch.
+     */
+    where?: NseHolidayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NseHolidays to fetch.
+     */
+    orderBy?: NseHolidayOrderByWithRelationInput | NseHolidayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NseHolidays.
+     */
+    cursor?: NseHolidayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NseHolidays from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NseHolidays.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NseHolidays.
+     */
+    distinct?: NseHolidayScalarFieldEnum | NseHolidayScalarFieldEnum[]
+  }
+
+  /**
+   * NseHoliday findMany
+   */
+  export type NseHolidayFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseHoliday
+     */
+    select?: NseHolidaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseHoliday
+     */
+    omit?: NseHolidayOmit<ExtArgs> | null
+    /**
+     * Filter, which NseHolidays to fetch.
+     */
+    where?: NseHolidayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NseHolidays to fetch.
+     */
+    orderBy?: NseHolidayOrderByWithRelationInput | NseHolidayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing NseHolidays.
+     */
+    cursor?: NseHolidayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NseHolidays from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NseHolidays.
+     */
+    skip?: number
+    distinct?: NseHolidayScalarFieldEnum | NseHolidayScalarFieldEnum[]
+  }
+
+  /**
+   * NseHoliday create
+   */
+  export type NseHolidayCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseHoliday
+     */
+    select?: NseHolidaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseHoliday
+     */
+    omit?: NseHolidayOmit<ExtArgs> | null
+    /**
+     * The data needed to create a NseHoliday.
+     */
+    data: XOR<NseHolidayCreateInput, NseHolidayUncheckedCreateInput>
+  }
+
+  /**
+   * NseHoliday createMany
+   */
+  export type NseHolidayCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NseHolidays.
+     */
+    data: NseHolidayCreateManyInput | NseHolidayCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NseHoliday createManyAndReturn
+   */
+  export type NseHolidayCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseHoliday
+     */
+    select?: NseHolidaySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseHoliday
+     */
+    omit?: NseHolidayOmit<ExtArgs> | null
+    /**
+     * The data used to create many NseHolidays.
+     */
+    data: NseHolidayCreateManyInput | NseHolidayCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NseHoliday update
+   */
+  export type NseHolidayUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseHoliday
+     */
+    select?: NseHolidaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseHoliday
+     */
+    omit?: NseHolidayOmit<ExtArgs> | null
+    /**
+     * The data needed to update a NseHoliday.
+     */
+    data: XOR<NseHolidayUpdateInput, NseHolidayUncheckedUpdateInput>
+    /**
+     * Choose, which NseHoliday to update.
+     */
+    where: NseHolidayWhereUniqueInput
+  }
+
+  /**
+   * NseHoliday updateMany
+   */
+  export type NseHolidayUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NseHolidays.
+     */
+    data: XOR<NseHolidayUpdateManyMutationInput, NseHolidayUncheckedUpdateManyInput>
+    /**
+     * Filter which NseHolidays to update
+     */
+    where?: NseHolidayWhereInput
+    /**
+     * Limit how many NseHolidays to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NseHoliday updateManyAndReturn
+   */
+  export type NseHolidayUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseHoliday
+     */
+    select?: NseHolidaySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseHoliday
+     */
+    omit?: NseHolidayOmit<ExtArgs> | null
+    /**
+     * The data used to update NseHolidays.
+     */
+    data: XOR<NseHolidayUpdateManyMutationInput, NseHolidayUncheckedUpdateManyInput>
+    /**
+     * Filter which NseHolidays to update
+     */
+    where?: NseHolidayWhereInput
+    /**
+     * Limit how many NseHolidays to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NseHoliday upsert
+   */
+  export type NseHolidayUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseHoliday
+     */
+    select?: NseHolidaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseHoliday
+     */
+    omit?: NseHolidayOmit<ExtArgs> | null
+    /**
+     * The filter to search for the NseHoliday to update in case it exists.
+     */
+    where: NseHolidayWhereUniqueInput
+    /**
+     * In case the NseHoliday found by the `where` argument doesn't exist, create a new NseHoliday with this data.
+     */
+    create: XOR<NseHolidayCreateInput, NseHolidayUncheckedCreateInput>
+    /**
+     * In case the NseHoliday was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NseHolidayUpdateInput, NseHolidayUncheckedUpdateInput>
+  }
+
+  /**
+   * NseHoliday delete
+   */
+  export type NseHolidayDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseHoliday
+     */
+    select?: NseHolidaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseHoliday
+     */
+    omit?: NseHolidayOmit<ExtArgs> | null
+    /**
+     * Filter which NseHoliday to delete.
+     */
+    where: NseHolidayWhereUniqueInput
+  }
+
+  /**
+   * NseHoliday deleteMany
+   */
+  export type NseHolidayDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NseHolidays to delete
+     */
+    where?: NseHolidayWhereInput
+    /**
+     * Limit how many NseHolidays to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * NseHoliday without action
+   */
+  export type NseHolidayDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NseHoliday
+     */
+    select?: NseHolidaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NseHoliday
+     */
+    omit?: NseHolidayOmit<ExtArgs> | null
   }
 
 
@@ -9074,988 +12512,6 @@ export namespace Prisma {
 
 
   /**
-   * Model NseHoliday
-   */
-
-  export type AggregateNseHoliday = {
-    _count: NseHolidayCountAggregateOutputType | null
-    _min: NseHolidayMinAggregateOutputType | null
-    _max: NseHolidayMaxAggregateOutputType | null
-  }
-
-  export type NseHolidayMinAggregateOutputType = {
-    id: string | null
-    date: Date | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type NseHolidayMaxAggregateOutputType = {
-    id: string | null
-    date: Date | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type NseHolidayCountAggregateOutputType = {
-    id: number
-    date: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type NseHolidayMinAggregateInputType = {
-    id?: true
-    date?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type NseHolidayMaxAggregateInputType = {
-    id?: true
-    date?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type NseHolidayCountAggregateInputType = {
-    id?: true
-    date?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type NseHolidayAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which NseHoliday to aggregate.
-     */
-    where?: NseHolidayWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NseHolidays to fetch.
-     */
-    orderBy?: NseHolidayOrderByWithRelationInput | NseHolidayOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: NseHolidayWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NseHolidays from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NseHolidays.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned NseHolidays
-    **/
-    _count?: true | NseHolidayCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: NseHolidayMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: NseHolidayMaxAggregateInputType
-  }
-
-  export type GetNseHolidayAggregateType<T extends NseHolidayAggregateArgs> = {
-        [P in keyof T & keyof AggregateNseHoliday]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateNseHoliday[P]>
-      : GetScalarType<T[P], AggregateNseHoliday[P]>
-  }
-
-
-
-
-  export type NseHolidayGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NseHolidayWhereInput
-    orderBy?: NseHolidayOrderByWithAggregationInput | NseHolidayOrderByWithAggregationInput[]
-    by: NseHolidayScalarFieldEnum[] | NseHolidayScalarFieldEnum
-    having?: NseHolidayScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: NseHolidayCountAggregateInputType | true
-    _min?: NseHolidayMinAggregateInputType
-    _max?: NseHolidayMaxAggregateInputType
-  }
-
-  export type NseHolidayGroupByOutputType = {
-    id: string
-    date: Date
-    createdAt: Date
-    updatedAt: Date
-    _count: NseHolidayCountAggregateOutputType | null
-    _min: NseHolidayMinAggregateOutputType | null
-    _max: NseHolidayMaxAggregateOutputType | null
-  }
-
-  type GetNseHolidayGroupByPayload<T extends NseHolidayGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<NseHolidayGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof NseHolidayGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], NseHolidayGroupByOutputType[P]>
-            : GetScalarType<T[P], NseHolidayGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type NseHolidaySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    date?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }, ExtArgs["result"]["nseHoliday"]>
-
-  export type NseHolidaySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    date?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }, ExtArgs["result"]["nseHoliday"]>
-
-  export type NseHolidaySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    date?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }, ExtArgs["result"]["nseHoliday"]>
-
-  export type NseHolidaySelectScalar = {
-    id?: boolean
-    date?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }
-
-  export type NseHolidayOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "date" | "createdAt" | "updatedAt", ExtArgs["result"]["nseHoliday"]>
-
-  export type $NseHolidayPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "NseHoliday"
-    objects: {}
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      date: Date
-      createdAt: Date
-      updatedAt: Date
-    }, ExtArgs["result"]["nseHoliday"]>
-    composites: {}
-  }
-
-  type NseHolidayGetPayload<S extends boolean | null | undefined | NseHolidayDefaultArgs> = $Result.GetResult<Prisma.$NseHolidayPayload, S>
-
-  type NseHolidayCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<NseHolidayFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: NseHolidayCountAggregateInputType | true
-    }
-
-  export interface NseHolidayDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NseHoliday'], meta: { name: 'NseHoliday' } }
-    /**
-     * Find zero or one NseHoliday that matches the filter.
-     * @param {NseHolidayFindUniqueArgs} args - Arguments to find a NseHoliday
-     * @example
-     * // Get one NseHoliday
-     * const nseHoliday = await prisma.nseHoliday.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends NseHolidayFindUniqueArgs>(args: SelectSubset<T, NseHolidayFindUniqueArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one NseHoliday that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {NseHolidayFindUniqueOrThrowArgs} args - Arguments to find a NseHoliday
-     * @example
-     * // Get one NseHoliday
-     * const nseHoliday = await prisma.nseHoliday.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends NseHolidayFindUniqueOrThrowArgs>(args: SelectSubset<T, NseHolidayFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first NseHoliday that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NseHolidayFindFirstArgs} args - Arguments to find a NseHoliday
-     * @example
-     * // Get one NseHoliday
-     * const nseHoliday = await prisma.nseHoliday.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends NseHolidayFindFirstArgs>(args?: SelectSubset<T, NseHolidayFindFirstArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first NseHoliday that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NseHolidayFindFirstOrThrowArgs} args - Arguments to find a NseHoliday
-     * @example
-     * // Get one NseHoliday
-     * const nseHoliday = await prisma.nseHoliday.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends NseHolidayFindFirstOrThrowArgs>(args?: SelectSubset<T, NseHolidayFindFirstOrThrowArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more NseHolidays that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NseHolidayFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all NseHolidays
-     * const nseHolidays = await prisma.nseHoliday.findMany()
-     * 
-     * // Get first 10 NseHolidays
-     * const nseHolidays = await prisma.nseHoliday.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const nseHolidayWithIdOnly = await prisma.nseHoliday.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends NseHolidayFindManyArgs>(args?: SelectSubset<T, NseHolidayFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a NseHoliday.
-     * @param {NseHolidayCreateArgs} args - Arguments to create a NseHoliday.
-     * @example
-     * // Create one NseHoliday
-     * const NseHoliday = await prisma.nseHoliday.create({
-     *   data: {
-     *     // ... data to create a NseHoliday
-     *   }
-     * })
-     * 
-     */
-    create<T extends NseHolidayCreateArgs>(args: SelectSubset<T, NseHolidayCreateArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many NseHolidays.
-     * @param {NseHolidayCreateManyArgs} args - Arguments to create many NseHolidays.
-     * @example
-     * // Create many NseHolidays
-     * const nseHoliday = await prisma.nseHoliday.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends NseHolidayCreateManyArgs>(args?: SelectSubset<T, NseHolidayCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many NseHolidays and returns the data saved in the database.
-     * @param {NseHolidayCreateManyAndReturnArgs} args - Arguments to create many NseHolidays.
-     * @example
-     * // Create many NseHolidays
-     * const nseHoliday = await prisma.nseHoliday.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many NseHolidays and only return the `id`
-     * const nseHolidayWithIdOnly = await prisma.nseHoliday.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends NseHolidayCreateManyAndReturnArgs>(args?: SelectSubset<T, NseHolidayCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a NseHoliday.
-     * @param {NseHolidayDeleteArgs} args - Arguments to delete one NseHoliday.
-     * @example
-     * // Delete one NseHoliday
-     * const NseHoliday = await prisma.nseHoliday.delete({
-     *   where: {
-     *     // ... filter to delete one NseHoliday
-     *   }
-     * })
-     * 
-     */
-    delete<T extends NseHolidayDeleteArgs>(args: SelectSubset<T, NseHolidayDeleteArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one NseHoliday.
-     * @param {NseHolidayUpdateArgs} args - Arguments to update one NseHoliday.
-     * @example
-     * // Update one NseHoliday
-     * const nseHoliday = await prisma.nseHoliday.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends NseHolidayUpdateArgs>(args: SelectSubset<T, NseHolidayUpdateArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more NseHolidays.
-     * @param {NseHolidayDeleteManyArgs} args - Arguments to filter NseHolidays to delete.
-     * @example
-     * // Delete a few NseHolidays
-     * const { count } = await prisma.nseHoliday.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends NseHolidayDeleteManyArgs>(args?: SelectSubset<T, NseHolidayDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more NseHolidays.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NseHolidayUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many NseHolidays
-     * const nseHoliday = await prisma.nseHoliday.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends NseHolidayUpdateManyArgs>(args: SelectSubset<T, NseHolidayUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more NseHolidays and returns the data updated in the database.
-     * @param {NseHolidayUpdateManyAndReturnArgs} args - Arguments to update many NseHolidays.
-     * @example
-     * // Update many NseHolidays
-     * const nseHoliday = await prisma.nseHoliday.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more NseHolidays and only return the `id`
-     * const nseHolidayWithIdOnly = await prisma.nseHoliday.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends NseHolidayUpdateManyAndReturnArgs>(args: SelectSubset<T, NseHolidayUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one NseHoliday.
-     * @param {NseHolidayUpsertArgs} args - Arguments to update or create a NseHoliday.
-     * @example
-     * // Update or create a NseHoliday
-     * const nseHoliday = await prisma.nseHoliday.upsert({
-     *   create: {
-     *     // ... data to create a NseHoliday
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the NseHoliday we want to update
-     *   }
-     * })
-     */
-    upsert<T extends NseHolidayUpsertArgs>(args: SelectSubset<T, NseHolidayUpsertArgs<ExtArgs>>): Prisma__NseHolidayClient<$Result.GetResult<Prisma.$NseHolidayPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of NseHolidays.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NseHolidayCountArgs} args - Arguments to filter NseHolidays to count.
-     * @example
-     * // Count the number of NseHolidays
-     * const count = await prisma.nseHoliday.count({
-     *   where: {
-     *     // ... the filter for the NseHolidays we want to count
-     *   }
-     * })
-    **/
-    count<T extends NseHolidayCountArgs>(
-      args?: Subset<T, NseHolidayCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], NseHolidayCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a NseHoliday.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NseHolidayAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends NseHolidayAggregateArgs>(args: Subset<T, NseHolidayAggregateArgs>): Prisma.PrismaPromise<GetNseHolidayAggregateType<T>>
-
-    /**
-     * Group by NseHoliday.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NseHolidayGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends NseHolidayGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: NseHolidayGroupByArgs['orderBy'] }
-        : { orderBy?: NseHolidayGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, NseHolidayGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNseHolidayGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the NseHoliday model
-   */
-  readonly fields: NseHolidayFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for NseHoliday.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__NseHolidayClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the NseHoliday model
-   */
-  interface NseHolidayFieldRefs {
-    readonly id: FieldRef<"NseHoliday", 'String'>
-    readonly date: FieldRef<"NseHoliday", 'DateTime'>
-    readonly createdAt: FieldRef<"NseHoliday", 'DateTime'>
-    readonly updatedAt: FieldRef<"NseHoliday", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * NseHoliday findUnique
-   */
-  export type NseHolidayFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NseHoliday
-     */
-    select?: NseHolidaySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the NseHoliday
-     */
-    omit?: NseHolidayOmit<ExtArgs> | null
-    /**
-     * Filter, which NseHoliday to fetch.
-     */
-    where: NseHolidayWhereUniqueInput
-  }
-
-  /**
-   * NseHoliday findUniqueOrThrow
-   */
-  export type NseHolidayFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NseHoliday
-     */
-    select?: NseHolidaySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the NseHoliday
-     */
-    omit?: NseHolidayOmit<ExtArgs> | null
-    /**
-     * Filter, which NseHoliday to fetch.
-     */
-    where: NseHolidayWhereUniqueInput
-  }
-
-  /**
-   * NseHoliday findFirst
-   */
-  export type NseHolidayFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NseHoliday
-     */
-    select?: NseHolidaySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the NseHoliday
-     */
-    omit?: NseHolidayOmit<ExtArgs> | null
-    /**
-     * Filter, which NseHoliday to fetch.
-     */
-    where?: NseHolidayWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NseHolidays to fetch.
-     */
-    orderBy?: NseHolidayOrderByWithRelationInput | NseHolidayOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for NseHolidays.
-     */
-    cursor?: NseHolidayWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NseHolidays from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NseHolidays.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of NseHolidays.
-     */
-    distinct?: NseHolidayScalarFieldEnum | NseHolidayScalarFieldEnum[]
-  }
-
-  /**
-   * NseHoliday findFirstOrThrow
-   */
-  export type NseHolidayFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NseHoliday
-     */
-    select?: NseHolidaySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the NseHoliday
-     */
-    omit?: NseHolidayOmit<ExtArgs> | null
-    /**
-     * Filter, which NseHoliday to fetch.
-     */
-    where?: NseHolidayWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NseHolidays to fetch.
-     */
-    orderBy?: NseHolidayOrderByWithRelationInput | NseHolidayOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for NseHolidays.
-     */
-    cursor?: NseHolidayWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NseHolidays from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NseHolidays.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of NseHolidays.
-     */
-    distinct?: NseHolidayScalarFieldEnum | NseHolidayScalarFieldEnum[]
-  }
-
-  /**
-   * NseHoliday findMany
-   */
-  export type NseHolidayFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NseHoliday
-     */
-    select?: NseHolidaySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the NseHoliday
-     */
-    omit?: NseHolidayOmit<ExtArgs> | null
-    /**
-     * Filter, which NseHolidays to fetch.
-     */
-    where?: NseHolidayWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NseHolidays to fetch.
-     */
-    orderBy?: NseHolidayOrderByWithRelationInput | NseHolidayOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing NseHolidays.
-     */
-    cursor?: NseHolidayWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NseHolidays from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NseHolidays.
-     */
-    skip?: number
-    distinct?: NseHolidayScalarFieldEnum | NseHolidayScalarFieldEnum[]
-  }
-
-  /**
-   * NseHoliday create
-   */
-  export type NseHolidayCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NseHoliday
-     */
-    select?: NseHolidaySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the NseHoliday
-     */
-    omit?: NseHolidayOmit<ExtArgs> | null
-    /**
-     * The data needed to create a NseHoliday.
-     */
-    data: XOR<NseHolidayCreateInput, NseHolidayUncheckedCreateInput>
-  }
-
-  /**
-   * NseHoliday createMany
-   */
-  export type NseHolidayCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many NseHolidays.
-     */
-    data: NseHolidayCreateManyInput | NseHolidayCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * NseHoliday createManyAndReturn
-   */
-  export type NseHolidayCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NseHoliday
-     */
-    select?: NseHolidaySelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the NseHoliday
-     */
-    omit?: NseHolidayOmit<ExtArgs> | null
-    /**
-     * The data used to create many NseHolidays.
-     */
-    data: NseHolidayCreateManyInput | NseHolidayCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * NseHoliday update
-   */
-  export type NseHolidayUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NseHoliday
-     */
-    select?: NseHolidaySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the NseHoliday
-     */
-    omit?: NseHolidayOmit<ExtArgs> | null
-    /**
-     * The data needed to update a NseHoliday.
-     */
-    data: XOR<NseHolidayUpdateInput, NseHolidayUncheckedUpdateInput>
-    /**
-     * Choose, which NseHoliday to update.
-     */
-    where: NseHolidayWhereUniqueInput
-  }
-
-  /**
-   * NseHoliday updateMany
-   */
-  export type NseHolidayUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update NseHolidays.
-     */
-    data: XOR<NseHolidayUpdateManyMutationInput, NseHolidayUncheckedUpdateManyInput>
-    /**
-     * Filter which NseHolidays to update
-     */
-    where?: NseHolidayWhereInput
-    /**
-     * Limit how many NseHolidays to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * NseHoliday updateManyAndReturn
-   */
-  export type NseHolidayUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NseHoliday
-     */
-    select?: NseHolidaySelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the NseHoliday
-     */
-    omit?: NseHolidayOmit<ExtArgs> | null
-    /**
-     * The data used to update NseHolidays.
-     */
-    data: XOR<NseHolidayUpdateManyMutationInput, NseHolidayUncheckedUpdateManyInput>
-    /**
-     * Filter which NseHolidays to update
-     */
-    where?: NseHolidayWhereInput
-    /**
-     * Limit how many NseHolidays to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * NseHoliday upsert
-   */
-  export type NseHolidayUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NseHoliday
-     */
-    select?: NseHolidaySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the NseHoliday
-     */
-    omit?: NseHolidayOmit<ExtArgs> | null
-    /**
-     * The filter to search for the NseHoliday to update in case it exists.
-     */
-    where: NseHolidayWhereUniqueInput
-    /**
-     * In case the NseHoliday found by the `where` argument doesn't exist, create a new NseHoliday with this data.
-     */
-    create: XOR<NseHolidayCreateInput, NseHolidayUncheckedCreateInput>
-    /**
-     * In case the NseHoliday was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<NseHolidayUpdateInput, NseHolidayUncheckedUpdateInput>
-  }
-
-  /**
-   * NseHoliday delete
-   */
-  export type NseHolidayDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NseHoliday
-     */
-    select?: NseHolidaySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the NseHoliday
-     */
-    omit?: NseHolidayOmit<ExtArgs> | null
-    /**
-     * Filter which NseHoliday to delete.
-     */
-    where: NseHolidayWhereUniqueInput
-  }
-
-  /**
-   * NseHoliday deleteMany
-   */
-  export type NseHolidayDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which NseHolidays to delete
-     */
-    where?: NseHolidayWhereInput
-    /**
-     * Limit how many NseHolidays to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * NseHoliday without action
-   */
-  export type NseHolidayDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NseHoliday
-     */
-    select?: NseHolidaySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the NseHoliday
-     */
-    omit?: NseHolidayOmit<ExtArgs> | null
-  }
-
-
-  /**
    * Enums
    */
 
@@ -10112,6 +12568,43 @@ export namespace Prisma {
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
+  export const NseIntrumentScalarFieldEnum: {
+    id: 'id',
+    symbol: 'symbol',
+    name: 'name',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type NseIntrumentScalarFieldEnum = (typeof NseIntrumentScalarFieldEnum)[keyof typeof NseIntrumentScalarFieldEnum]
+
+
+  export const NseCandleScalarFieldEnum: {
+    id: 'id',
+    timestamp: 'timestamp',
+    open: 'open',
+    high: 'high',
+    low: 'low',
+    close: 'close',
+    volume: 'volume',
+    instrumentId: 'instrumentId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type NseCandleScalarFieldEnum = (typeof NseCandleScalarFieldEnum)[keyof typeof NseCandleScalarFieldEnum]
+
+
+  export const NseHolidayScalarFieldEnum: {
+    id: 'id',
+    date: 'date',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type NseHolidayScalarFieldEnum = (typeof NseHolidayScalarFieldEnum)[keyof typeof NseHolidayScalarFieldEnum]
+
+
   export const QuoteSnapshotScalarFieldEnum: {
     id: 'id',
     timestamp: 'timestamp',
@@ -10160,16 +12653,6 @@ export namespace Prisma {
   };
 
   export type CollectorErrorScalarFieldEnum = (typeof CollectorErrorScalarFieldEnum)[keyof typeof CollectorErrorScalarFieldEnum]
-
-
-  export const NseHolidayScalarFieldEnum: {
-    id: 'id',
-    date: 'date',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type NseHolidayScalarFieldEnum = (typeof NseHolidayScalarFieldEnum)[keyof typeof NseHolidayScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -10275,6 +12758,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'BigInt'
+   */
+  export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
+    
+
+
+  /**
+   * Reference to a field of type 'BigInt[]'
+   */
+  export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Json'
    */
   export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -10327,6 +12824,20 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
   /**
    * Deep Input Types
@@ -10551,6 +13062,190 @@ export namespace Prisma {
     runId?: StringWithAggregatesFilter<"Order"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
+  }
+
+  export type NseIntrumentWhereInput = {
+    AND?: NseIntrumentWhereInput | NseIntrumentWhereInput[]
+    OR?: NseIntrumentWhereInput[]
+    NOT?: NseIntrumentWhereInput | NseIntrumentWhereInput[]
+    id?: StringFilter<"NseIntrument"> | string
+    symbol?: StringFilter<"NseIntrument"> | string
+    name?: StringFilter<"NseIntrument"> | string
+    createdAt?: DateTimeFilter<"NseIntrument"> | Date | string
+    updatedAt?: DateTimeFilter<"NseIntrument"> | Date | string
+    candles?: NseCandleListRelationFilter
+  }
+
+  export type NseIntrumentOrderByWithRelationInput = {
+    id?: SortOrder
+    symbol?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    candles?: NseCandleOrderByRelationAggregateInput
+  }
+
+  export type NseIntrumentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    symbol?: string
+    AND?: NseIntrumentWhereInput | NseIntrumentWhereInput[]
+    OR?: NseIntrumentWhereInput[]
+    NOT?: NseIntrumentWhereInput | NseIntrumentWhereInput[]
+    name?: StringFilter<"NseIntrument"> | string
+    createdAt?: DateTimeFilter<"NseIntrument"> | Date | string
+    updatedAt?: DateTimeFilter<"NseIntrument"> | Date | string
+    candles?: NseCandleListRelationFilter
+  }, "id" | "symbol">
+
+  export type NseIntrumentOrderByWithAggregationInput = {
+    id?: SortOrder
+    symbol?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: NseIntrumentCountOrderByAggregateInput
+    _max?: NseIntrumentMaxOrderByAggregateInput
+    _min?: NseIntrumentMinOrderByAggregateInput
+  }
+
+  export type NseIntrumentScalarWhereWithAggregatesInput = {
+    AND?: NseIntrumentScalarWhereWithAggregatesInput | NseIntrumentScalarWhereWithAggregatesInput[]
+    OR?: NseIntrumentScalarWhereWithAggregatesInput[]
+    NOT?: NseIntrumentScalarWhereWithAggregatesInput | NseIntrumentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"NseIntrument"> | string
+    symbol?: StringWithAggregatesFilter<"NseIntrument"> | string
+    name?: StringWithAggregatesFilter<"NseIntrument"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"NseIntrument"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"NseIntrument"> | Date | string
+  }
+
+  export type NseCandleWhereInput = {
+    AND?: NseCandleWhereInput | NseCandleWhereInput[]
+    OR?: NseCandleWhereInput[]
+    NOT?: NseCandleWhereInput | NseCandleWhereInput[]
+    id?: StringFilter<"NseCandle"> | string
+    timestamp?: DateTimeFilter<"NseCandle"> | Date | string
+    open?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    high?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    low?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    close?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    volume?: BigIntFilter<"NseCandle"> | bigint | number
+    instrumentId?: StringFilter<"NseCandle"> | string
+    createdAt?: DateTimeFilter<"NseCandle"> | Date | string
+    updatedAt?: DateTimeFilter<"NseCandle"> | Date | string
+    instrument?: XOR<NseIntrumentScalarRelationFilter, NseIntrumentWhereInput>
+  }
+
+  export type NseCandleOrderByWithRelationInput = {
+    id?: SortOrder
+    timestamp?: SortOrder
+    open?: SortOrder
+    high?: SortOrder
+    low?: SortOrder
+    close?: SortOrder
+    volume?: SortOrder
+    instrumentId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    instrument?: NseIntrumentOrderByWithRelationInput
+  }
+
+  export type NseCandleWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: NseCandleWhereInput | NseCandleWhereInput[]
+    OR?: NseCandleWhereInput[]
+    NOT?: NseCandleWhereInput | NseCandleWhereInput[]
+    timestamp?: DateTimeFilter<"NseCandle"> | Date | string
+    open?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    high?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    low?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    close?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    volume?: BigIntFilter<"NseCandle"> | bigint | number
+    instrumentId?: StringFilter<"NseCandle"> | string
+    createdAt?: DateTimeFilter<"NseCandle"> | Date | string
+    updatedAt?: DateTimeFilter<"NseCandle"> | Date | string
+    instrument?: XOR<NseIntrumentScalarRelationFilter, NseIntrumentWhereInput>
+  }, "id">
+
+  export type NseCandleOrderByWithAggregationInput = {
+    id?: SortOrder
+    timestamp?: SortOrder
+    open?: SortOrder
+    high?: SortOrder
+    low?: SortOrder
+    close?: SortOrder
+    volume?: SortOrder
+    instrumentId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: NseCandleCountOrderByAggregateInput
+    _avg?: NseCandleAvgOrderByAggregateInput
+    _max?: NseCandleMaxOrderByAggregateInput
+    _min?: NseCandleMinOrderByAggregateInput
+    _sum?: NseCandleSumOrderByAggregateInput
+  }
+
+  export type NseCandleScalarWhereWithAggregatesInput = {
+    AND?: NseCandleScalarWhereWithAggregatesInput | NseCandleScalarWhereWithAggregatesInput[]
+    OR?: NseCandleScalarWhereWithAggregatesInput[]
+    NOT?: NseCandleScalarWhereWithAggregatesInput | NseCandleScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"NseCandle"> | string
+    timestamp?: DateTimeWithAggregatesFilter<"NseCandle"> | Date | string
+    open?: DecimalWithAggregatesFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    high?: DecimalWithAggregatesFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    low?: DecimalWithAggregatesFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    close?: DecimalWithAggregatesFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    volume?: BigIntWithAggregatesFilter<"NseCandle"> | bigint | number
+    instrumentId?: StringWithAggregatesFilter<"NseCandle"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"NseCandle"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"NseCandle"> | Date | string
+  }
+
+  export type NseHolidayWhereInput = {
+    AND?: NseHolidayWhereInput | NseHolidayWhereInput[]
+    OR?: NseHolidayWhereInput[]
+    NOT?: NseHolidayWhereInput | NseHolidayWhereInput[]
+    id?: StringFilter<"NseHoliday"> | string
+    date?: DateTimeFilter<"NseHoliday"> | Date | string
+    createdAt?: DateTimeFilter<"NseHoliday"> | Date | string
+    updatedAt?: DateTimeFilter<"NseHoliday"> | Date | string
+  }
+
+  export type NseHolidayOrderByWithRelationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NseHolidayWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    date?: Date | string
+    AND?: NseHolidayWhereInput | NseHolidayWhereInput[]
+    OR?: NseHolidayWhereInput[]
+    NOT?: NseHolidayWhereInput | NseHolidayWhereInput[]
+    createdAt?: DateTimeFilter<"NseHoliday"> | Date | string
+    updatedAt?: DateTimeFilter<"NseHoliday"> | Date | string
+  }, "id" | "date">
+
+  export type NseHolidayOrderByWithAggregationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: NseHolidayCountOrderByAggregateInput
+    _max?: NseHolidayMaxOrderByAggregateInput
+    _min?: NseHolidayMinOrderByAggregateInput
+  }
+
+  export type NseHolidayScalarWhereWithAggregatesInput = {
+    AND?: NseHolidayScalarWhereWithAggregatesInput | NseHolidayScalarWhereWithAggregatesInput[]
+    OR?: NseHolidayScalarWhereWithAggregatesInput[]
+    NOT?: NseHolidayScalarWhereWithAggregatesInput | NseHolidayScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"NseHoliday"> | string
+    date?: DateTimeWithAggregatesFilter<"NseHoliday"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"NseHoliday"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"NseHoliday"> | Date | string
   }
 
   export type QuoteSnapshotWhereInput = {
@@ -10793,53 +13488,6 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"CollectorError"> | Date | string
   }
 
-  export type NseHolidayWhereInput = {
-    AND?: NseHolidayWhereInput | NseHolidayWhereInput[]
-    OR?: NseHolidayWhereInput[]
-    NOT?: NseHolidayWhereInput | NseHolidayWhereInput[]
-    id?: StringFilter<"NseHoliday"> | string
-    date?: DateTimeFilter<"NseHoliday"> | Date | string
-    createdAt?: DateTimeFilter<"NseHoliday"> | Date | string
-    updatedAt?: DateTimeFilter<"NseHoliday"> | Date | string
-  }
-
-  export type NseHolidayOrderByWithRelationInput = {
-    id?: SortOrder
-    date?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type NseHolidayWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    date?: Date | string
-    AND?: NseHolidayWhereInput | NseHolidayWhereInput[]
-    OR?: NseHolidayWhereInput[]
-    NOT?: NseHolidayWhereInput | NseHolidayWhereInput[]
-    createdAt?: DateTimeFilter<"NseHoliday"> | Date | string
-    updatedAt?: DateTimeFilter<"NseHoliday"> | Date | string
-  }, "id" | "date">
-
-  export type NseHolidayOrderByWithAggregationInput = {
-    id?: SortOrder
-    date?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: NseHolidayCountOrderByAggregateInput
-    _max?: NseHolidayMaxOrderByAggregateInput
-    _min?: NseHolidayMinOrderByAggregateInput
-  }
-
-  export type NseHolidayScalarWhereWithAggregatesInput = {
-    AND?: NseHolidayScalarWhereWithAggregatesInput | NseHolidayScalarWhereWithAggregatesInput[]
-    OR?: NseHolidayScalarWhereWithAggregatesInput[]
-    NOT?: NseHolidayScalarWhereWithAggregatesInput | NseHolidayScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"NseHoliday"> | string
-    date?: DateTimeWithAggregatesFilter<"NseHoliday"> | Date | string
-    createdAt?: DateTimeWithAggregatesFilter<"NseHoliday"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"NseHoliday"> | Date | string
-  }
-
   export type DeveloperCreateInput = {
     id?: string
     username: string
@@ -11080,6 +13728,205 @@ export namespace Prisma {
     entryPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     runId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NseIntrumentCreateInput = {
+    id?: string
+    symbol: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    candles?: NseCandleCreateNestedManyWithoutInstrumentInput
+  }
+
+  export type NseIntrumentUncheckedCreateInput = {
+    id?: string
+    symbol: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    candles?: NseCandleUncheckedCreateNestedManyWithoutInstrumentInput
+  }
+
+  export type NseIntrumentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    candles?: NseCandleUpdateManyWithoutInstrumentNestedInput
+  }
+
+  export type NseIntrumentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    candles?: NseCandleUncheckedUpdateManyWithoutInstrumentNestedInput
+  }
+
+  export type NseIntrumentCreateManyInput = {
+    id?: string
+    symbol: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NseIntrumentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NseIntrumentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NseCandleCreateInput = {
+    id?: string
+    timestamp: Date | string
+    open: Decimal | DecimalJsLike | number | string
+    high: Decimal | DecimalJsLike | number | string
+    low: Decimal | DecimalJsLike | number | string
+    close: Decimal | DecimalJsLike | number | string
+    volume: bigint | number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    instrument: NseIntrumentCreateNestedOneWithoutCandlesInput
+  }
+
+  export type NseCandleUncheckedCreateInput = {
+    id?: string
+    timestamp: Date | string
+    open: Decimal | DecimalJsLike | number | string
+    high: Decimal | DecimalJsLike | number | string
+    low: Decimal | DecimalJsLike | number | string
+    close: Decimal | DecimalJsLike | number | string
+    volume: bigint | number
+    instrumentId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NseCandleUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    high?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    low?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    close?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    volume?: BigIntFieldUpdateOperationsInput | bigint | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    instrument?: NseIntrumentUpdateOneRequiredWithoutCandlesNestedInput
+  }
+
+  export type NseCandleUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    high?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    low?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    close?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    volume?: BigIntFieldUpdateOperationsInput | bigint | number
+    instrumentId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NseCandleCreateManyInput = {
+    id?: string
+    timestamp: Date | string
+    open: Decimal | DecimalJsLike | number | string
+    high: Decimal | DecimalJsLike | number | string
+    low: Decimal | DecimalJsLike | number | string
+    close: Decimal | DecimalJsLike | number | string
+    volume: bigint | number
+    instrumentId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NseCandleUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    high?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    low?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    close?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    volume?: BigIntFieldUpdateOperationsInput | bigint | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NseCandleUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    high?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    low?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    close?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    volume?: BigIntFieldUpdateOperationsInput | bigint | number
+    instrumentId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NseHolidayCreateInput = {
+    id?: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NseHolidayUncheckedCreateInput = {
+    id?: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NseHolidayUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NseHolidayUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NseHolidayCreateManyInput = {
+    id?: string
+    date: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NseHolidayUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NseHolidayUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11346,55 +14193,6 @@ export namespace Prisma {
     errorMessage?: StringFieldUpdateOperationsInput | string
     errorStack?: NullableStringFieldUpdateOperationsInput | string | null
     errorContext?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NseHolidayCreateInput = {
-    id?: string
-    date: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type NseHolidayUncheckedCreateInput = {
-    id?: string
-    date: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type NseHolidayUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NseHolidayUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NseHolidayCreateManyInput = {
-    id?: string
-    date: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type NseHolidayUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NseHolidayUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11684,6 +14482,148 @@ export namespace Prisma {
     _min?: NestedDecimalFilter<$PrismaModel>
     _max?: NestedDecimalFilter<$PrismaModel>
   }
+
+  export type NseCandleListRelationFilter = {
+    every?: NseCandleWhereInput
+    some?: NseCandleWhereInput
+    none?: NseCandleWhereInput
+  }
+
+  export type NseCandleOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type NseIntrumentCountOrderByAggregateInput = {
+    id?: SortOrder
+    symbol?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NseIntrumentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    symbol?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NseIntrumentMinOrderByAggregateInput = {
+    id?: SortOrder
+    symbol?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BigIntFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
+  }
+
+  export type NseIntrumentScalarRelationFilter = {
+    is?: NseIntrumentWhereInput
+    isNot?: NseIntrumentWhereInput
+  }
+
+  export type NseCandleCountOrderByAggregateInput = {
+    id?: SortOrder
+    timestamp?: SortOrder
+    open?: SortOrder
+    high?: SortOrder
+    low?: SortOrder
+    close?: SortOrder
+    volume?: SortOrder
+    instrumentId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NseCandleAvgOrderByAggregateInput = {
+    open?: SortOrder
+    high?: SortOrder
+    low?: SortOrder
+    close?: SortOrder
+    volume?: SortOrder
+  }
+
+  export type NseCandleMaxOrderByAggregateInput = {
+    id?: SortOrder
+    timestamp?: SortOrder
+    open?: SortOrder
+    high?: SortOrder
+    low?: SortOrder
+    close?: SortOrder
+    volume?: SortOrder
+    instrumentId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NseCandleMinOrderByAggregateInput = {
+    id?: SortOrder
+    timestamp?: SortOrder
+    open?: SortOrder
+    high?: SortOrder
+    low?: SortOrder
+    close?: SortOrder
+    volume?: SortOrder
+    instrumentId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NseCandleSumOrderByAggregateInput = {
+    open?: SortOrder
+    high?: SortOrder
+    low?: SortOrder
+    close?: SortOrder
+    volume?: SortOrder
+  }
+
+  export type BigIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedBigIntFilter<$PrismaModel>
+    _min?: NestedBigIntFilter<$PrismaModel>
+    _max?: NestedBigIntFilter<$PrismaModel>
+  }
+
+  export type NseHolidayCountOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NseHolidayMaxOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NseHolidayMinOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
@@ -11931,27 +14871,6 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
-  export type NseHolidayCountOrderByAggregateInput = {
-    id?: SortOrder
-    date?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type NseHolidayMaxOrderByAggregateInput = {
-    id?: SortOrder
-    date?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type NseHolidayMinOrderByAggregateInput = {
-    id?: SortOrder
-    date?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
   export type RunCreateNestedManyWithoutDeveloperInput = {
     create?: XOR<RunCreateWithoutDeveloperInput, RunUncheckedCreateWithoutDeveloperInput> | RunCreateWithoutDeveloperInput[] | RunUncheckedCreateWithoutDeveloperInput[]
     connectOrCreate?: RunCreateOrConnectWithoutDeveloperInput | RunCreateOrConnectWithoutDeveloperInput[]
@@ -12097,6 +15016,70 @@ export namespace Prisma {
     upsert?: RunUpsertWithoutOrdersInput
     connect?: RunWhereUniqueInput
     update?: XOR<XOR<RunUpdateToOneWithWhereWithoutOrdersInput, RunUpdateWithoutOrdersInput>, RunUncheckedUpdateWithoutOrdersInput>
+  }
+
+  export type NseCandleCreateNestedManyWithoutInstrumentInput = {
+    create?: XOR<NseCandleCreateWithoutInstrumentInput, NseCandleUncheckedCreateWithoutInstrumentInput> | NseCandleCreateWithoutInstrumentInput[] | NseCandleUncheckedCreateWithoutInstrumentInput[]
+    connectOrCreate?: NseCandleCreateOrConnectWithoutInstrumentInput | NseCandleCreateOrConnectWithoutInstrumentInput[]
+    createMany?: NseCandleCreateManyInstrumentInputEnvelope
+    connect?: NseCandleWhereUniqueInput | NseCandleWhereUniqueInput[]
+  }
+
+  export type NseCandleUncheckedCreateNestedManyWithoutInstrumentInput = {
+    create?: XOR<NseCandleCreateWithoutInstrumentInput, NseCandleUncheckedCreateWithoutInstrumentInput> | NseCandleCreateWithoutInstrumentInput[] | NseCandleUncheckedCreateWithoutInstrumentInput[]
+    connectOrCreate?: NseCandleCreateOrConnectWithoutInstrumentInput | NseCandleCreateOrConnectWithoutInstrumentInput[]
+    createMany?: NseCandleCreateManyInstrumentInputEnvelope
+    connect?: NseCandleWhereUniqueInput | NseCandleWhereUniqueInput[]
+  }
+
+  export type NseCandleUpdateManyWithoutInstrumentNestedInput = {
+    create?: XOR<NseCandleCreateWithoutInstrumentInput, NseCandleUncheckedCreateWithoutInstrumentInput> | NseCandleCreateWithoutInstrumentInput[] | NseCandleUncheckedCreateWithoutInstrumentInput[]
+    connectOrCreate?: NseCandleCreateOrConnectWithoutInstrumentInput | NseCandleCreateOrConnectWithoutInstrumentInput[]
+    upsert?: NseCandleUpsertWithWhereUniqueWithoutInstrumentInput | NseCandleUpsertWithWhereUniqueWithoutInstrumentInput[]
+    createMany?: NseCandleCreateManyInstrumentInputEnvelope
+    set?: NseCandleWhereUniqueInput | NseCandleWhereUniqueInput[]
+    disconnect?: NseCandleWhereUniqueInput | NseCandleWhereUniqueInput[]
+    delete?: NseCandleWhereUniqueInput | NseCandleWhereUniqueInput[]
+    connect?: NseCandleWhereUniqueInput | NseCandleWhereUniqueInput[]
+    update?: NseCandleUpdateWithWhereUniqueWithoutInstrumentInput | NseCandleUpdateWithWhereUniqueWithoutInstrumentInput[]
+    updateMany?: NseCandleUpdateManyWithWhereWithoutInstrumentInput | NseCandleUpdateManyWithWhereWithoutInstrumentInput[]
+    deleteMany?: NseCandleScalarWhereInput | NseCandleScalarWhereInput[]
+  }
+
+  export type NseCandleUncheckedUpdateManyWithoutInstrumentNestedInput = {
+    create?: XOR<NseCandleCreateWithoutInstrumentInput, NseCandleUncheckedCreateWithoutInstrumentInput> | NseCandleCreateWithoutInstrumentInput[] | NseCandleUncheckedCreateWithoutInstrumentInput[]
+    connectOrCreate?: NseCandleCreateOrConnectWithoutInstrumentInput | NseCandleCreateOrConnectWithoutInstrumentInput[]
+    upsert?: NseCandleUpsertWithWhereUniqueWithoutInstrumentInput | NseCandleUpsertWithWhereUniqueWithoutInstrumentInput[]
+    createMany?: NseCandleCreateManyInstrumentInputEnvelope
+    set?: NseCandleWhereUniqueInput | NseCandleWhereUniqueInput[]
+    disconnect?: NseCandleWhereUniqueInput | NseCandleWhereUniqueInput[]
+    delete?: NseCandleWhereUniqueInput | NseCandleWhereUniqueInput[]
+    connect?: NseCandleWhereUniqueInput | NseCandleWhereUniqueInput[]
+    update?: NseCandleUpdateWithWhereUniqueWithoutInstrumentInput | NseCandleUpdateWithWhereUniqueWithoutInstrumentInput[]
+    updateMany?: NseCandleUpdateManyWithWhereWithoutInstrumentInput | NseCandleUpdateManyWithWhereWithoutInstrumentInput[]
+    deleteMany?: NseCandleScalarWhereInput | NseCandleScalarWhereInput[]
+  }
+
+  export type NseIntrumentCreateNestedOneWithoutCandlesInput = {
+    create?: XOR<NseIntrumentCreateWithoutCandlesInput, NseIntrumentUncheckedCreateWithoutCandlesInput>
+    connectOrCreate?: NseIntrumentCreateOrConnectWithoutCandlesInput
+    connect?: NseIntrumentWhereUniqueInput
+  }
+
+  export type BigIntFieldUpdateOperationsInput = {
+    set?: bigint | number
+    increment?: bigint | number
+    decrement?: bigint | number
+    multiply?: bigint | number
+    divide?: bigint | number
+  }
+
+  export type NseIntrumentUpdateOneRequiredWithoutCandlesNestedInput = {
+    create?: XOR<NseIntrumentCreateWithoutCandlesInput, NseIntrumentUncheckedCreateWithoutCandlesInput>
+    connectOrCreate?: NseIntrumentCreateOrConnectWithoutCandlesInput
+    upsert?: NseIntrumentUpsertWithoutCandlesInput
+    connect?: NseIntrumentWhereUniqueInput
+    update?: XOR<XOR<NseIntrumentUpdateToOneWithWhereWithoutCandlesInput, NseIntrumentUpdateWithoutCandlesInput>, NseIntrumentUncheckedUpdateWithoutCandlesInput>
   }
 
   export type EnumShortlistTypeFieldUpdateOperationsInput = {
@@ -12254,6 +15237,44 @@ export namespace Prisma {
     _sum?: NestedDecimalFilter<$PrismaModel>
     _min?: NestedDecimalFilter<$PrismaModel>
     _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type NestedBigIntFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
+  }
+
+  export type NestedBigIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedBigIntFilter<$PrismaModel>
+    _min?: NestedBigIntFilter<$PrismaModel>
+    _max?: NestedBigIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
   }
   export type NestedJsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -12584,6 +15605,120 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type NseCandleCreateWithoutInstrumentInput = {
+    id?: string
+    timestamp: Date | string
+    open: Decimal | DecimalJsLike | number | string
+    high: Decimal | DecimalJsLike | number | string
+    low: Decimal | DecimalJsLike | number | string
+    close: Decimal | DecimalJsLike | number | string
+    volume: bigint | number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NseCandleUncheckedCreateWithoutInstrumentInput = {
+    id?: string
+    timestamp: Date | string
+    open: Decimal | DecimalJsLike | number | string
+    high: Decimal | DecimalJsLike | number | string
+    low: Decimal | DecimalJsLike | number | string
+    close: Decimal | DecimalJsLike | number | string
+    volume: bigint | number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NseCandleCreateOrConnectWithoutInstrumentInput = {
+    where: NseCandleWhereUniqueInput
+    create: XOR<NseCandleCreateWithoutInstrumentInput, NseCandleUncheckedCreateWithoutInstrumentInput>
+  }
+
+  export type NseCandleCreateManyInstrumentInputEnvelope = {
+    data: NseCandleCreateManyInstrumentInput | NseCandleCreateManyInstrumentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NseCandleUpsertWithWhereUniqueWithoutInstrumentInput = {
+    where: NseCandleWhereUniqueInput
+    update: XOR<NseCandleUpdateWithoutInstrumentInput, NseCandleUncheckedUpdateWithoutInstrumentInput>
+    create: XOR<NseCandleCreateWithoutInstrumentInput, NseCandleUncheckedCreateWithoutInstrumentInput>
+  }
+
+  export type NseCandleUpdateWithWhereUniqueWithoutInstrumentInput = {
+    where: NseCandleWhereUniqueInput
+    data: XOR<NseCandleUpdateWithoutInstrumentInput, NseCandleUncheckedUpdateWithoutInstrumentInput>
+  }
+
+  export type NseCandleUpdateManyWithWhereWithoutInstrumentInput = {
+    where: NseCandleScalarWhereInput
+    data: XOR<NseCandleUpdateManyMutationInput, NseCandleUncheckedUpdateManyWithoutInstrumentInput>
+  }
+
+  export type NseCandleScalarWhereInput = {
+    AND?: NseCandleScalarWhereInput | NseCandleScalarWhereInput[]
+    OR?: NseCandleScalarWhereInput[]
+    NOT?: NseCandleScalarWhereInput | NseCandleScalarWhereInput[]
+    id?: StringFilter<"NseCandle"> | string
+    timestamp?: DateTimeFilter<"NseCandle"> | Date | string
+    open?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    high?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    low?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    close?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
+    volume?: BigIntFilter<"NseCandle"> | bigint | number
+    instrumentId?: StringFilter<"NseCandle"> | string
+    createdAt?: DateTimeFilter<"NseCandle"> | Date | string
+    updatedAt?: DateTimeFilter<"NseCandle"> | Date | string
+  }
+
+  export type NseIntrumentCreateWithoutCandlesInput = {
+    id?: string
+    symbol: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NseIntrumentUncheckedCreateWithoutCandlesInput = {
+    id?: string
+    symbol: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NseIntrumentCreateOrConnectWithoutCandlesInput = {
+    where: NseIntrumentWhereUniqueInput
+    create: XOR<NseIntrumentCreateWithoutCandlesInput, NseIntrumentUncheckedCreateWithoutCandlesInput>
+  }
+
+  export type NseIntrumentUpsertWithoutCandlesInput = {
+    update: XOR<NseIntrumentUpdateWithoutCandlesInput, NseIntrumentUncheckedUpdateWithoutCandlesInput>
+    create: XOR<NseIntrumentCreateWithoutCandlesInput, NseIntrumentUncheckedCreateWithoutCandlesInput>
+    where?: NseIntrumentWhereInput
+  }
+
+  export type NseIntrumentUpdateToOneWithWhereWithoutCandlesInput = {
+    where?: NseIntrumentWhereInput
+    data: XOR<NseIntrumentUpdateWithoutCandlesInput, NseIntrumentUncheckedUpdateWithoutCandlesInput>
+  }
+
+  export type NseIntrumentUpdateWithoutCandlesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NseIntrumentUncheckedUpdateWithoutCandlesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type RunCreateManyDeveloperInput = {
     id?: string
     startTime: Date | string
@@ -12670,6 +15805,54 @@ export namespace Prisma {
     takeProfitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     entryPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NseCandleCreateManyInstrumentInput = {
+    id?: string
+    timestamp: Date | string
+    open: Decimal | DecimalJsLike | number | string
+    high: Decimal | DecimalJsLike | number | string
+    low: Decimal | DecimalJsLike | number | string
+    close: Decimal | DecimalJsLike | number | string
+    volume: bigint | number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NseCandleUpdateWithoutInstrumentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    high?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    low?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    close?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    volume?: BigIntFieldUpdateOperationsInput | bigint | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NseCandleUncheckedUpdateWithoutInstrumentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    high?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    low?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    close?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    volume?: BigIntFieldUpdateOperationsInput | bigint | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NseCandleUncheckedUpdateManyWithoutInstrumentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    high?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    low?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    close?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    volume?: BigIntFieldUpdateOperationsInput | bigint | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
