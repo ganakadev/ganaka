@@ -65,7 +65,7 @@ model NseIntrument {
   updatedAt DateTime    @updatedAt
   candles   NseCandle[]
 
-  @@index([symbol])
+  @@index([symbol, growwSymbol])
   @@map("nse_instruments")
 }
 
