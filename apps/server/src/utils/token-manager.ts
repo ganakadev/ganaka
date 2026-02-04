@@ -16,9 +16,15 @@ export class TokenManager {
 
   /**
    * Get Redis key for a developer-specific token
+   * Uses developer-specific key only when developer has custom credentials
+   * Otherwise uses global key
    */
-  private getRedisKey(developerId?: string): string {
-    if (developerId) {
+  private getRedisKey(
+    developerId?: string,
+    apiKey?: string | null,
+    apiSecret?: string | null
+  ): string {
+    if (developerId && apiKey && apiSecret) {
       return `groww:token:${developerId}`;
     }
     return REDIS_KEY;
@@ -55,8 +61,8 @@ export class TokenManager {
     apiKey?: string | null,
     apiSecret?: string | null
   ): Promise<string> {
-    const redisKey = this.getRedisKey(developerId);
-    const generationKey = developerId || "global";
+    const redisKey = this.getRedisKey(developerId, apiKey, apiSecret);
+    const generationKey = developerId && apiKey && apiSecret ? developerId : "global";
 
     try {
       // Check Redis first
@@ -64,7 +70,7 @@ export class TokenManager {
       if (cachedToken) {
         const isValid = await this.checkIfTokenIsValid(cachedToken);
         if (!isValid) {
-          await this.invalidateToken(developerId);
+          await this.invalidateToken(developerId, apiKey, apiSecret);
           return this.getToken(developerId, apiKey, apiSecret);
         }
         return cachedToken;
@@ -102,7 +108,7 @@ export class TokenManager {
     apiKey?: string | null,
     apiSecret?: string | null
   ): Promise<string> {
-    const redisKey = this.getRedisKey(developerId);
+    const redisKey = this.getRedisKey(developerId, apiKey, apiSecret);
     const isDeveloperSpecific = developerId && apiKey && apiSecret;
 
     if (isDeveloperSpecific) {
@@ -144,16 +150,24 @@ export class TokenManager {
   /**
    * Invalidate the current token in Redis
    * @param developerId - Optional developer ID for per-developer tokens
+   * @param apiKey - Optional API key (if provided, uses developer-specific credentials)
+   * @param apiSecret - Optional API secret (if provided, uses developer-specific credentials)
    */
-  async invalidateToken(developerId?: string): Promise<void> {
-    const redisKey = this.getRedisKey(developerId);
+  async invalidateToken(
+    developerId?: string,
+    apiKey?: string | null,
+    apiSecret?: string | null
+  ): Promise<void> {
+    const redisKey = this.getRedisKey(developerId, apiKey, apiSecret);
     await this.redis.del(redisKey);
   }
 
   /**
    * Invalidate token for a specific developer
+   * Only deletes the developer-specific key, not the global key
+   * This is used when credentials are updated/deleted for a developer
    */
   async invalidateTokenForDeveloper(developerId: string): Promise<void> {
-    await this.invalidateToken(developerId);
+    await this.redis.del(`groww:token:${developerId}`);
   }
 }

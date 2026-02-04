@@ -1,8 +1,8 @@
-import { v1_dashboard_schemas } from "@ganaka/schemas";
 import { Skeleton, Table, Text } from "@mantine/core";
 import { z } from "zod";
 import type { ShortlistEntryWithQuote } from "../../../types";
 import { times } from "lodash";
+import type { v1_lists_schemas } from "@ganaka/schemas";
 
 export const ShortlistTable = ({
   shortlist,
@@ -10,7 +10,7 @@ export const ShortlistTable = ({
   loading,
   selectedDate,
 }: {
-  shortlist: z.infer<typeof v1_dashboard_schemas.v1_dashboard_shortlists_schemas.shortlistEntryWithMetricsSchema>[] | null;
+  shortlist: z.infer<typeof v1_lists_schemas.shortlistEntryWithMetricsSchema>[] | null;
   onRowClick: (entry: ShortlistEntryWithQuote) => void;
   loading: boolean;
   selectedDate: Date | null;

@@ -1,4 +1,4 @@
-import { v1_developer_groww_schemas } from "@ganaka/schemas";
+import { v1_candles_schemas } from "@ganaka/schemas";
 import axios from "axios";
 import z from "zod";
 import dayjs from "dayjs";
@@ -25,10 +25,8 @@ export const fetchCandles =
     currentTimezone?: string;
   }) =>
   async (
-    params: z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.query>
-  ): Promise<
-    z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response>["data"]
-  > => {
+    params: z.infer<typeof v1_candles_schemas.getGrowwHistoricalCandles.query>
+  ): Promise<z.infer<typeof v1_candles_schemas.getGrowwHistoricalCandles.response>["data"]> => {
     if (!developerToken) {
       throw new Error(
         "Developer token not found. Please set DEVELOPER_TOKEN or GANAKA_TOKEN environment variable."
@@ -37,8 +35,7 @@ export const fetchCandles =
 
     try {
       // Validate input params
-      const validatedParams =
-        v1_developer_groww_schemas.getGrowwHistoricalCandles.query.parse(params);
+      const validatedParams = v1_candles_schemas.getGrowwHistoricalCandles.query.parse(params);
 
       const headers: Record<string, string> = {
         Authorization: `Bearer ${developerToken}`,
@@ -55,8 +52,8 @@ export const fetchCandles =
       }
 
       const response = await growwRateLimiter.execute(() =>
-        axios.get<z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response>>(
-          `${apiDomain}/v1/developer/historical-candles`,
+        axios.get<z.infer<typeof v1_candles_schemas.getGrowwHistoricalCandles.response>>(
+          `${apiDomain}/v1/candles`,
           {
             params: validatedParams,
             headers,

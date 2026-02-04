@@ -31,7 +31,36 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: "api",
+      name: "auth",
+      testDir: "./tests/projects/auth",
+      use: {
+        ...devices["Desktop Chrome"],
+      },
+    },
+    {
+      name: "empty-db",
+      testDir: "./tests/projects/empty-db",
+      use: {
+        ...devices["Desktop Chrome"],
+      },
+    },
+    {
+      name: "positive",
+      testDir: "./tests/projects/positive",
+      use: {
+        ...devices["Desktop Chrome"],
+      },
+    },
+    {
+      name: "negative",
+      testDir: "./tests/projects/negative",
+      use: {
+        ...devices["Desktop Chrome"],
+      },
+    },
+    {
+      name: "all",
+      testDir: "./tests/projects",
       use: {
         ...devices["Desktop Chrome"],
       },

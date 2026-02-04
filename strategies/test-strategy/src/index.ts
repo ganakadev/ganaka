@@ -14,14 +14,7 @@ const tradingWindowEnd = "2026-01-05T17:15:00";
 
 async function main() {
   await ganaka({
-    fn: async ({
-      fetchShortlist,
-      fetchQuote,
-      fetchCandles,
-      placeOrder,
-      currentTimestamp,
-      fetchQuoteTimeline,
-    }) => {
+    fn: async ({ fetchShortlist, fetchQuote, fetchCandles, placeOrder, currentTimestamp }) => {
       const client = new GanakaClient();
 
       const currentTimestampForRequest = dayjs
@@ -32,14 +25,13 @@ async function main() {
       console.log(currentTimestampForRequest);
 
       const fetchShortlistResponse = await fetchShortlist({
-        type: "top-gainers",
+        type: "TOP_GAINERS",
         datetime: currentTimestampForRequest,
       });
       console.log(fetchShortlistResponse);
 
       const fetchQuoteResponse = await fetchQuote({
         symbol: "TARC",
-        datetime: currentTimestampForRequest,
       });
       console.log(fetchQuoteResponse);
 

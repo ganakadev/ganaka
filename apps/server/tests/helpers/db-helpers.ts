@@ -11,11 +11,7 @@ import type {
   NiftyQuote,
 } from "@ganaka/db";
 import type { z } from "zod";
-import {
-  growwQuoteSchema,
-  v1_developer_groww_schemas,
-  v1_developer_lists_schemas,
-} from "@ganaka/schemas";
+import { growwQuoteSchema, v1_lists_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -194,15 +190,15 @@ export async function createNiftyQuoteSnapshot(
  * Creates a shortlist snapshot in DB with specific type, datetime, and entries
  */
 export async function createShortlistSnapshot(
-  type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
+  type: z.infer<typeof v1_lists_schemas.getLists.query>["type"],
   datetime: string,
-  entries: Array<z.infer<typeof v1_developer_lists_schemas.listSchema>>,
+  entries: Array<z.infer<typeof v1_lists_schemas.listSchema>>,
   tracker: TestDataTracker,
   timezone?: string,
   scope?: ShortlistScope
 ) {
   const timestamp = parseDateTimeInTimezone(datetime, timezone || "Asia/Kolkata");
-  const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
+  const shortlistType: ShortlistType = type;
 
   const snapshot = await prisma.shortlistSnapshot.create({
     data: {
@@ -498,7 +494,7 @@ export async function createOrder(
  * Creates multiple shortlist snapshots for a date (for testing daily persistent/unique companies)
  */
 export async function createMultipleShortlistSnapshots(
-  type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
+  type: z.infer<typeof v1_lists_schemas.getLists.query>["type"],
   date: string,
   count: number,
   tracker: TestDataTracker,
@@ -506,7 +502,7 @@ export async function createMultipleShortlistSnapshots(
   scope?: ShortlistScope
 ): Promise<ShortlistSnapshot[]> {
   const tz = timezone || "Asia/Kolkata";
-  const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
+  const shortlistType: ShortlistType = type;
   const snapshots: ShortlistSnapshot[] = [];
 
   // Create snapshots at different times during market hours (9:15 AM - 3:30 PM IST)
@@ -551,14 +547,14 @@ export async function createMultipleShortlistSnapshots(
  * This is useful for testing unique company counts
  */
 export async function createShortlistSnapshotsWithUniqueCompanies(
-  type: z.infer<typeof v1_developer_lists_schemas.getLists.query>["type"],
+  type: z.infer<typeof v1_lists_schemas.getLists.query>["type"],
   datetime: string,
   uniqueCompanyCount: number = 10,
   tracker: TestDataTracker,
   scope?: ShortlistScope
 ): Promise<ShortlistSnapshot[]> {
   const baseDate = dayjs.tz(datetime, "Asia/Kolkata").utc();
-  const shortlistType: ShortlistType = type === "top-gainers" ? "TOP_GAINERS" : "VOLUME_SHOCKERS";
+  const shortlistType: ShortlistType = type;
   const snapshots: ShortlistSnapshot[] = [];
 
   // Generate entries with the required number of unique companies

@@ -5,28 +5,26 @@
  * This package provides type-safe API contracts using Zod schemas.
  */
 
-// Re-export developer groww endpoint schemas
-import * as v1_developer_collector_schemas from "./v1/developer/collector/collector";
-import * as v1_developer_groww_schemas from "./v1/developer/groww/groww";
-import * as v1_developer_lists_schemas from "./v1/developer/lists/lists";
-import * as v1_developer_shortlist_persistence_schemas from "./v1/developer/shortlist-persistence";
-import * as v1_developer_available_dates_schemas from "./v1/developer/available-dates";
-import * as v1_developer_holidays_schemas from "./v1/developer/holidays";
-
-// Re-export dashboard endpoint schemas
-import * as v1_dashboard_schemas from "./v1/dashboard";
-
-// Re-export admin endpoint schemas
-import * as v1_admin_schemas from "./v1/admin";
+// Re-export new flat structure schemas
+import * as v1_schemas from "./v1";
 
 // Re-export common types
 export * from "./common";
 
-export { v1_developer_collector_schemas };
-export { v1_developer_groww_schemas };
-export { v1_developer_lists_schemas };
-export { v1_developer_shortlist_persistence_schemas };
-export { v1_developer_available_dates_schemas };
-export { v1_developer_holidays_schemas };
-export { v1_dashboard_schemas };
-export { v1_admin_schemas };
+// Export new flat structure
+export { v1_schemas };
+
+// Export new flat structure
+export {
+  // Individual exports for convenience
+  v1_auth_schemas,
+  v1_candles_schemas,
+  v1_dates_schemas,
+  v1_developers_schemas,
+  v1_groww_credentials_schemas,
+  v1_groww_token_schemas,
+  v1_holidays_schemas,
+  v1_lists_schemas,
+  v1_quote_schemas,
+  v1_runs_schemas,
+} from "./v1";

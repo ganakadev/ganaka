@@ -7,7 +7,11 @@
     "build": "env-cmd -f ../../.env --silent tsc",
     "start": "env-cmd -f ../../.env --silent node dist/index.js",
     "lint": "tsc --noEmit",
-    "test": "playwright test"
+    "test": "playwright test --project=auth && playwright test --project=empty-db && playwright test --project=negative && playwright test --project=positive",
+    "test:auth": "playwright test --project=auth",
+    "test:empty-db": "playwright test --project=empty-db",
+    "test:positive": "playwright test --project=positive",
+    "test:negative": "playwright test --project=negative"
   },
   "dependencies": {
     "@fastify/autoload": "^6.3.1",

@@ -1,19 +1,16 @@
 import {
-  v1_developer_groww_schemas,
-  v1_developer_lists_schemas,
-  v1_developer_shortlist_persistence_schemas,
-  v1_developer_available_dates_schemas,
-  v1_developer_holidays_schemas,
+  v1_candles_schemas,
+  v1_quote_schemas,
+  v1_lists_schemas,
+  v1_dates_schemas,
+  v1_holidays_schemas,
 } from "@ganaka/schemas";
 import { z } from "zod";
 import { fetchCandles } from "./callbacks/fetchCandles";
 import { fetchQuote } from "./callbacks/fetchQuote";
-import { fetchQuoteTimeline } from "./callbacks/fetchQuoteTimeline";
-import { fetchNiftyQuote } from "./callbacks/fetchNiftyQuote";
-import { fetchNiftyQuoteTimeline } from "./callbacks/fetchNiftyQuoteTimeline";
 import { fetchShortlist } from "./callbacks/fetchShortlist";
 import { fetchShortlistPersistence } from "./callbacks/fetchShortlistPersistence";
-import { fetchAvailableDates } from "./callbacks/fetchAvailableDates";
+import { fetchDates } from "./callbacks/fetchDates";
 import { fetchHolidays } from "./callbacks/fetchHolidays";
 
 export interface GanakaClientConfig {
@@ -52,10 +49,8 @@ export class GanakaClient {
   private apiDomain: string;
 
   constructor(config?: GanakaClientConfig) {
-    this.developerToken =
-      config?.developerToken || process.env.DEVELOPER_KEY || "";
-    this.apiDomain =
-      config?.apiDomain || process.env.API_DOMAIN || "https://api.ganaka.live";
+    this.developerToken = config?.developerToken || process.env.DEVELOPER_KEY || "";
+    this.apiDomain = config?.apiDomain || process.env.API_DOMAIN || "https://api.ganaka.live";
 
     if (!this.developerToken) {
       throw new Error(
@@ -75,10 +70,8 @@ export class GanakaClient {
    * @returns Promise resolving to candle data
    */
   async fetchCandles(
-    params: z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.query>
-  ): Promise<
-    z.infer<typeof v1_developer_groww_schemas.getGrowwHistoricalCandles.response>["data"]
-  > {
+    params: z.infer<typeof v1_candles_schemas.getGrowwHistoricalCandles.query>
+  ): Promise<z.infer<typeof v1_candles_schemas.getGrowwHistoricalCandles.response>["data"]> {
     const callback = fetchCandles({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
@@ -98,101 +91,27 @@ export class GanakaClient {
    * @returns Promise resolving to quote data or null
    */
   async fetchQuote(
-    params: z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.query>
-  ): Promise<z.infer<typeof v1_developer_groww_schemas.getGrowwQuote.response>["data"] | null> {
+    params: z.infer<typeof v1_quote_schemas.getGrowwQuote.query>
+  ): Promise<z.infer<typeof v1_quote_schemas.getGrowwQuote.response>["data"] | null> {
     const callback = fetchQuote({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
       runId: null,
-      currentTimestamp: "",
-      currentTimezone: "Asia/Kolkata",
     });
     return callback(params);
-  }
-
-  /**
-   * Fetch quote timeline for a symbol.
-   * Given a symbol and an end_datetime, returns the quote timeline for the given date.
-   *
-   * @param symbol - The symbol to fetch quote timeline for
-   * @param end_datetime - End datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
-   * @returns Promise resolving to quote timeline data
-   */
-  async fetchQuoteTimeline(
-    symbol: string,
-    end_datetime: string
-  ): Promise<
-    z.infer<
-      typeof v1_developer_groww_schemas.getGrowwQuoteTimeline.response
-    >["data"]["quoteTimeline"]
-  > {
-    const callback = fetchQuoteTimeline({
-      developerToken: this.developerToken,
-      apiDomain: this.apiDomain,
-      runId: null,
-      currentTimestamp: "",
-      currentTimezone: "Asia/Kolkata",
-    });
-    return callback(symbol, end_datetime);
-  }
-
-  /**
-   * Fetch NIFTY quote at a specific datetime.
-   *
-   * @param params - Query parameters for fetching NIFTY quote
-   * @param params.datetime - Datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
-   * @returns Promise resolving to NIFTY quote data or null
-   */
-  async fetchNiftyQuote(
-    params: z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuote.query>
-  ): Promise<
-    z.infer<typeof v1_developer_groww_schemas.getGrowwNiftyQuote.response>["data"] | null
-  > {
-    const callback = fetchNiftyQuote({
-      developerToken: this.developerToken,
-      apiDomain: this.apiDomain,
-      runId: null,
-      currentTimestamp: "",
-      currentTimezone: "Asia/Kolkata",
-    });
-    return callback(params);
-  }
-
-  /**
-   * Fetch NIFTY quote timeline.
-   * Given an end_datetime, returns the NIFTY quote timeline for the given date.
-   *
-   * @param end_datetime - End datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
-   * @returns Promise resolving to NIFTY quote timeline data
-   */
-  async fetchNiftyQuoteTimeline(
-    end_datetime: string
-  ): Promise<
-    z.infer<
-      typeof v1_developer_groww_schemas.getGrowwNiftyQuoteTimeline.response
-    >["data"]["niftyTimeline"]
-  > {
-    const callback = fetchNiftyQuoteTimeline({
-      developerToken: this.developerToken,
-      apiDomain: this.apiDomain,
-      runId: null,
-      currentTimestamp: "",
-      currentTimezone: "Asia/Kolkata",
-    });
-    return callback(end_datetime);
   }
 
   /**
    * Fetch shortlist for a specific type and datetime.
    *
    * @param queryParams - Query parameters for fetching shortlist
-   * @param queryParams.type - The type of shortlist (e.g., "top-gainers", "top-losers")
+   * @param queryParams.type - The type of shortlist (e.g., "TOP_GAINERS", "VOLUME_SHOCKERS")
    * @param queryParams.datetime - Datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
    * @returns Promise resolving to shortlist data or null
    */
   async fetchShortlist(
-    queryParams: z.infer<typeof v1_developer_lists_schemas.getLists.query>
-  ): Promise<z.infer<typeof v1_developer_lists_schemas.getLists.response>["data"] | null> {
+    queryParams: z.infer<typeof v1_lists_schemas.getLists.query>
+  ): Promise<z.infer<typeof v1_lists_schemas.getLists.response>["data"] | null> {
     const callback = fetchShortlist({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
@@ -213,20 +132,14 @@ export class GanakaClient {
    * over a given period of time.
    *
    * @param queryParams - Query parameters for fetching shortlist persistence
-   * @param queryParams.type - The type of shortlist (e.g., "top-gainers", "top-losers")
+   * @param queryParams.type - The type of shortlist (e.g., "TOP_GAINERS", "VOLUME_SHOCKERS")
    * @param queryParams.start_datetime - Start datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
    * @param queryParams.end_datetime - End datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
    * @returns Promise resolving to shortlist persistence data or null
    */
   async fetchShortlistPersistence(
-    queryParams: z.infer<
-      typeof v1_developer_shortlist_persistence_schemas.getShortlistPersistence.query
-    >
-  ): Promise<
-    z.infer<
-      typeof v1_developer_shortlist_persistence_schemas.getShortlistPersistence.response
-    >["data"] | null
-  > {
+    queryParams: z.infer<typeof v1_lists_schemas.getShortlistPersistence.query>
+  ): Promise<z.infer<typeof v1_lists_schemas.getShortlistPersistence.response>["data"] | null> {
     const callback = fetchShortlistPersistence({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
@@ -238,15 +151,13 @@ export class GanakaClient {
   }
 
   /**
-   * Fetch available dates with timestamps.
+   * Fetch dates with data.
    * Returns which dates have data available, grouped by date with all timestamps for each date.
    *
-   * @returns Promise resolving to available dates data with dates and timestamps
+   * @returns Promise resolving to dates data with dates and timestamps
    */
-  async fetchAvailableDates(): Promise<
-    z.infer<typeof v1_developer_available_dates_schemas.getAvailableDates.response>["data"]
-  > {
-    const callback = fetchAvailableDates({
+  async fetchDates(): Promise<z.infer<typeof v1_dates_schemas.getDates.response>["data"]> {
+    const callback = fetchDates({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
       runId: null,
@@ -262,9 +173,7 @@ export class GanakaClient {
    *
    * @returns Promise resolving to holidays data
    */
-  async fetchHolidays(): Promise<
-    z.infer<typeof v1_developer_holidays_schemas.getHolidays.response>["data"]
-  > {
+  async fetchHolidays(): Promise<z.infer<typeof v1_holidays_schemas.getHolidays.response>["data"]> {
     const callback = fetchHolidays({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,

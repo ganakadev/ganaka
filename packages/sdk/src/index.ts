@@ -1,4 +1,4 @@
-import { growwQuotePayloadSchema, growwQuoteSchema, v1_dashboard_schemas } from "@ganaka/schemas";
+import { growwQuotePayloadSchema, growwQuoteSchema, v1_runs_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -6,12 +6,9 @@ import dotenv from "dotenv";
 import { z } from "zod";
 import { fetchCandles } from "./callbacks/fetchCandles";
 import { fetchQuote } from "./callbacks/fetchQuote";
-import { fetchQuoteTimeline } from "./callbacks/fetchQuoteTimeline";
 import { fetchShortlist } from "./callbacks/fetchShortlist";
 import { fetchShortlistPersistence } from "./callbacks/fetchShortlistPersistence";
-import { fetchNiftyQuote } from "./callbacks/fetchNiftyQuote";
-import { fetchNiftyQuoteTimeline } from "./callbacks/fetchNiftyQuoteTimeline";
-import { fetchAvailableDates } from "./callbacks/fetchAvailableDates";
+import { fetchDates } from "./callbacks/fetchDates";
 import { fetchHolidays } from "./callbacks/fetchHolidays";
 import { placeOrder } from "./callbacks/placeOrder";
 import { ApiClient } from "./utils/apiClient";
@@ -26,41 +23,23 @@ dayjs.extend(timezone);
 export { growwQuotePayloadSchema, growwQuoteSchema };
 export { GanakaClient, type GanakaClientConfig };
 
-export type FetchQuoteTimelineResponse = Awaited<ReturnType<ReturnType<typeof fetchQuoteTimeline>>>;
 export type FetchQuoteResponse = Awaited<ReturnType<ReturnType<typeof fetchQuote>>>;
-export type FetchNiftyQuoteResponse = Awaited<ReturnType<ReturnType<typeof fetchNiftyQuote>>>;
-export type FetchNiftyQuoteTimelineResponse = Awaited<ReturnType<ReturnType<typeof fetchNiftyQuoteTimeline>>>;
 export type FetchCandlesResponse = Awaited<ReturnType<ReturnType<typeof fetchCandles>>>;
 export type FetchShortlistResponse = Awaited<ReturnType<ReturnType<typeof fetchShortlist>>>;
-export type FetchAvailableDatesResponse = Awaited<ReturnType<ReturnType<typeof fetchAvailableDates>>>;
+export type FetchDatesResponse = Awaited<ReturnType<ReturnType<typeof fetchDates>>>;
 export type FetchHolidaysResponse = Awaited<ReturnType<ReturnType<typeof fetchHolidays>>>;
 
 export type fetchCandles = ReturnType<typeof fetchCandles>;
 export type fetchQuote = ReturnType<typeof fetchQuote>;
-export type fetchQuoteTimeline = ReturnType<typeof fetchQuoteTimeline>;
-export type fetchNiftyQuote = ReturnType<typeof fetchNiftyQuote>;
-export type fetchNiftyQuoteTimeline = ReturnType<typeof fetchNiftyQuoteTimeline>;
 export type fetchShortlist = ReturnType<typeof fetchShortlist>;
 export type fetchShortlistPersistence = ReturnType<typeof fetchShortlistPersistence>;
-export type fetchAvailableDates = ReturnType<typeof fetchAvailableDates>;
+export type fetchDates = ReturnType<typeof fetchDates>;
 export type fetchHolidays = ReturnType<typeof fetchHolidays>;
 
 export interface RunContext {
   placeOrder: ReturnType<typeof placeOrder>;
   fetchCandles: ReturnType<typeof fetchCandles>;
   fetchQuote: ReturnType<typeof fetchQuote>;
-  fetchNiftyQuote: ReturnType<typeof fetchNiftyQuote>;
-  /**
-   * Given an end_datetime, returns the NIFTY quote timeline for the given date
-   * 
-   * @param end_datetime - The end datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
-   * @returns The NIFTY quote timeline for the given date
-   */
-  fetchNiftyQuoteTimeline: ReturnType<typeof fetchNiftyQuoteTimeline>;
-  /**
-   * Given a symbol and a end_datetime, returns the quote timeline for the given date
-   */
-  fetchQuoteTimeline: ReturnType<typeof fetchQuoteTimeline>;
   fetchShortlist: ReturnType<typeof fetchShortlist>;
   /**
    * Given a shortlist type and a start and end datetime,
@@ -72,12 +51,12 @@ export interface RunContext {
    */
   fetchShortlistPersistence: ReturnType<typeof fetchShortlistPersistence>;
   /**
-   * Fetch available dates with timestamps.
-   * Returns which dates have data available, grouped by date with all timestamps for each date.
+   * Fetch dates with data.
+   * Returns which dates have data, grouped by date with all timestamps for each date.
    *
-   * @returns Available dates data with dates and timestamps
+   * @returns Dates data with dates and timestamps
    */
-  fetchAvailableDates: ReturnType<typeof fetchAvailableDates>;
+  fetchDates: ReturnType<typeof fetchDates>;
   /**
    * Fetch market holidays.
    * Returns all dates marked as market holidays.
@@ -146,9 +125,7 @@ export async function ganaka<T>({
 
   // Create a new run via API
   let runId: string | null = null;
-  const createRunBody: z.infer<
-    typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.body
-  > = {
+  const createRunBody: z.infer<typeof v1_runs_schemas.createRun.body> = {
     start_datetime: startTime,
     end_datetime: endTime,
     timezone: "Asia/Kolkata",
@@ -157,8 +134,8 @@ export async function ganaka<T>({
   };
   try {
     const createRunResponse = await apiClient.post<
-      z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.createRun.response>
-    >("/v1/dashboard/runs", createRunBody);
+      z.infer<typeof v1_runs_schemas.createRun.response>
+    >("/v1/runs", createRunBody);
 
     if (createRunResponse.data) {
       runId = createRunResponse.data.id;
@@ -200,29 +177,6 @@ export async function ganaka<T>({
             developerToken,
             apiDomain,
             runId,
-            currentTimestamp,
-            currentTimezone: "Asia/Kolkata",
-          }),
-          fetchNiftyQuote: fetchNiftyQuote({
-            developerToken,
-            apiDomain,
-            runId,
-            currentTimestamp,
-            currentTimezone: "Asia/Kolkata",
-          }),
-          fetchNiftyQuoteTimeline: fetchNiftyQuoteTimeline({
-            developerToken,
-            apiDomain,
-            runId,
-            currentTimestamp,
-            currentTimezone: "Asia/Kolkata",
-          }),
-          fetchQuoteTimeline: fetchQuoteTimeline({
-            developerToken,
-            apiDomain,
-            runId,
-            currentTimestamp,
-            currentTimezone: "Asia/Kolkata",
           }),
           fetchShortlist: fetchShortlist({
             developerToken,
@@ -238,7 +192,7 @@ export async function ganaka<T>({
             currentTimestamp,
             currentTimezone: "Asia/Kolkata",
           }),
-          fetchAvailableDates: fetchAvailableDates({
+          fetchDates: fetchDates({
             developerToken,
             apiDomain,
             runId,
@@ -260,11 +214,12 @@ export async function ganaka<T>({
     // Mark the run as completed
     logger.info(`Marking run as completed: ${runId}`);
     try {
-      await apiClient.patch<
-        z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.updateRun.response>
-      >(`/v1/dashboard/runs/${runId}`, {
-        completed: true,
-      });
+      await apiClient.patch<z.infer<typeof v1_runs_schemas.updateRun.response>>(
+        `/v1/runs/${runId}`,
+        {
+          completed: true,
+        }
+      );
     } catch (error) {
       logger.error(`Failed to mark run as completed: ${error}`);
       // Don't throw - we still want to continue with cleanup if needed
@@ -276,9 +231,9 @@ export async function ganaka<T>({
     if (deleteRunAfterCompletion && runId) {
       logger.info(`Deleting run after completion: ${runId}`);
       try {
-        await apiClient.delete<
-          z.infer<typeof v1_dashboard_schemas.v1_dashboard_runs_schemas.deleteRun.response>
-        >(`/v1/dashboard/runs/${runId}`);
+        await apiClient.delete<z.infer<typeof v1_runs_schemas.deleteRun.response>>(
+          `/v1/runs/${runId}`
+        );
       } catch (error) {
         logger.error(`Failed to delete run: ${error}`);
         // Don't throw - cleanup failure shouldn't break the flow

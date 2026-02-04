@@ -100,7 +100,11 @@ export const makeGrowwAPIRequest =
 
         if (isUnauthorized && attempt < maxAttempts) {
           // Invalidate token and retry
-          await tokenManager.invalidateToken(developerCredentials?.developerId);
+          await tokenManager.invalidateToken(
+            developerCredentials?.developerId,
+            developerCredentials?.growwApiKey,
+            developerCredentials?.growwApiSecret
+          );
           continue;
         }
 

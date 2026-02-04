@@ -188,8 +188,7 @@ export const Admin = () => {
             Data Management
           </Title>
           <Text c="dimmed" mb="md">
-            Select dates to delete all recorded data (shortlists, quotes, nifty quotes) for those
-            dates.
+            Select dates to delete all recorded data (shortlists) for those dates.
           </Text>
 
           {getAvailableDatesAPI.isLoading ? (
@@ -239,8 +238,6 @@ export const Admin = () => {
                     </Table.Th>
                     <Table.Th>Date</Table.Th>
                     <Table.Th ta="right">Shortlists</Table.Th>
-                    <Table.Th ta="right">Quotes</Table.Th>
-                    <Table.Th ta="right">Nifty Quotes</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
@@ -254,8 +251,6 @@ export const Admin = () => {
                       </Table.Td>
                       <Table.Td>{dateInfo.date}</Table.Td>
                       <Table.Td ta="right">{dateInfo.shortlistCount}</Table.Td>
-                      <Table.Td ta="right">{dateInfo.quoteCount}</Table.Td>
-                      <Table.Td ta="right">{dateInfo.niftyCount}</Table.Td>
                     </Table.Tr>
                   ))}
                 </Table.Tbody>
