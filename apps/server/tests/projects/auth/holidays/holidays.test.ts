@@ -1,7 +1,5 @@
 import {
-  authenticatedDelete,
   authenticatedGet,
-  authenticatedPost,
   unauthenticatedDelete,
   unauthenticatedGet,
   unauthenticatedPost,
