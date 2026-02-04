@@ -14,6 +14,7 @@ const baseQueryWithAuth = fetchBaseQuery({
     if (token) {
       headers.set("authorization", `Bearer ${token}`);
     }
+    headers.set("x-source", "dashboard");
     return headers;
   },
 });
