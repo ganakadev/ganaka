@@ -8,7 +8,7 @@ import { fetchCandles } from "./callbacks/fetchCandles";
 import { fetchQuote } from "./callbacks/fetchQuote";
 import { fetchShortlist } from "./callbacks/fetchShortlist";
 import { fetchShortlistPersistence } from "./callbacks/fetchShortlistPersistence";
-import { fetchAvailableDates } from "./callbacks/fetchAvailableDates";
+import { fetchDates } from "./callbacks/fetchDates";
 import { fetchHolidays } from "./callbacks/fetchHolidays";
 import { placeOrder } from "./callbacks/placeOrder";
 import { ApiClient } from "./utils/apiClient";
@@ -26,16 +26,14 @@ export { GanakaClient, type GanakaClientConfig };
 export type FetchQuoteResponse = Awaited<ReturnType<ReturnType<typeof fetchQuote>>>;
 export type FetchCandlesResponse = Awaited<ReturnType<ReturnType<typeof fetchCandles>>>;
 export type FetchShortlistResponse = Awaited<ReturnType<ReturnType<typeof fetchShortlist>>>;
-export type FetchAvailableDatesResponse = Awaited<
-  ReturnType<ReturnType<typeof fetchAvailableDates>>
->;
+export type FetchDatesResponse = Awaited<ReturnType<ReturnType<typeof fetchDates>>>;
 export type FetchHolidaysResponse = Awaited<ReturnType<ReturnType<typeof fetchHolidays>>>;
 
 export type fetchCandles = ReturnType<typeof fetchCandles>;
 export type fetchQuote = ReturnType<typeof fetchQuote>;
 export type fetchShortlist = ReturnType<typeof fetchShortlist>;
 export type fetchShortlistPersistence = ReturnType<typeof fetchShortlistPersistence>;
-export type fetchAvailableDates = ReturnType<typeof fetchAvailableDates>;
+export type fetchDates = ReturnType<typeof fetchDates>;
 export type fetchHolidays = ReturnType<typeof fetchHolidays>;
 
 export interface RunContext {
@@ -53,12 +51,12 @@ export interface RunContext {
    */
   fetchShortlistPersistence: ReturnType<typeof fetchShortlistPersistence>;
   /**
-   * Fetch available dates with timestamps.
-   * Returns which dates have data available, grouped by date with all timestamps for each date.
+   * Fetch dates with data.
+   * Returns which dates have data, grouped by date with all timestamps for each date.
    *
-   * @returns Available dates data with dates and timestamps
+   * @returns Dates data with dates and timestamps
    */
-  fetchAvailableDates: ReturnType<typeof fetchAvailableDates>;
+  fetchDates: ReturnType<typeof fetchDates>;
   /**
    * Fetch market holidays.
    * Returns all dates marked as market holidays.
@@ -179,8 +177,6 @@ export async function ganaka<T>({
             developerToken,
             apiDomain,
             runId,
-            currentTimestamp,
-            currentTimezone: "Asia/Kolkata",
           }),
           fetchShortlist: fetchShortlist({
             developerToken,
@@ -196,7 +192,7 @@ export async function ganaka<T>({
             currentTimestamp,
             currentTimezone: "Asia/Kolkata",
           }),
-          fetchAvailableDates: fetchAvailableDates({
+          fetchDates: fetchDates({
             developerToken,
             apiDomain,
             runId,

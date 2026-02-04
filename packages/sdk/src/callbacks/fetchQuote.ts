@@ -14,14 +14,10 @@ export const fetchQuote =
     developerToken,
     apiDomain,
     runId,
-    currentTimestamp,
-    currentTimezone = "Asia/Kolkata",
   }: {
     developerToken: string;
     apiDomain: string;
     runId: string | null;
-    currentTimestamp: string;
-    currentTimezone?: string;
   }) =>
   async (
     params: z.infer<typeof v1_quote_schemas.getGrowwQuote.query>
@@ -42,12 +38,6 @@ export const fetchQuote =
 
       if (runId) {
         headers["X-Run-Id"] = runId;
-      }
-      if (currentTimestamp) {
-        headers["X-Current-Timestamp"] = currentTimestamp;
-      }
-      if (currentTimezone) {
-        headers["X-Current-Timezone"] = currentTimezone;
       }
 
       const response = await axios.get<z.infer<typeof v1_quote_schemas.getGrowwQuote.response>>(

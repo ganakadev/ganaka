@@ -10,7 +10,7 @@ import { fetchCandles } from "./callbacks/fetchCandles";
 import { fetchQuote } from "./callbacks/fetchQuote";
 import { fetchShortlist } from "./callbacks/fetchShortlist";
 import { fetchShortlistPersistence } from "./callbacks/fetchShortlistPersistence";
-import { fetchAvailableDates } from "./callbacks/fetchAvailableDates";
+import { fetchDates } from "./callbacks/fetchDates";
 import { fetchHolidays } from "./callbacks/fetchHolidays";
 
 export interface GanakaClientConfig {
@@ -97,8 +97,6 @@ export class GanakaClient {
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
       runId: null,
-      currentTimestamp: "",
-      currentTimezone: "Asia/Kolkata",
     });
     return callback(params);
   }
@@ -153,13 +151,13 @@ export class GanakaClient {
   }
 
   /**
-   * Fetch available dates with timestamps.
+   * Fetch dates with data.
    * Returns which dates have data available, grouped by date with all timestamps for each date.
    *
-   * @returns Promise resolving to available dates data with dates and timestamps
+   * @returns Promise resolving to dates data with dates and timestamps
    */
-  async fetchAvailableDates(): Promise<z.infer<typeof v1_dates_schemas.getDates.response>["data"]> {
-    const callback = fetchAvailableDates({
+  async fetchDates(): Promise<z.infer<typeof v1_dates_schemas.getDates.response>["data"]> {
+    const callback = fetchDates({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
       runId: null,

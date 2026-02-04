@@ -3,7 +3,7 @@ import axios from "axios";
 import z from "zod";
 import { logger } from "../utils/logger";
 
-export const fetchAvailableDates =
+export const fetchDates =
   ({
     developerToken,
     apiDomain,
