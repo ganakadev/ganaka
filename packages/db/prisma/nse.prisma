@@ -23,7 +23,7 @@ model NseCandle {
     close      Decimal
     volume     BigInt
 
-    instrumentId String
+    instrumentId String   @unique
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
 
