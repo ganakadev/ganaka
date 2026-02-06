@@ -10,6 +10,8 @@ export class TestDataTracker {
   private shortlistSnapshotIds: string[] = [];
   private collectorErrorIds: string[] = [];
   private nseHolidayIds: string[] = [];
+  private nseInstrumentIds: number[] = [];
+  private nseCandleIds: number[] = [];
 
   /**
    * Track a developer ID (excluding admin user)
@@ -51,6 +53,20 @@ export class TestDataTracker {
    */
   trackNseHoliday(id: string): void {
     this.nseHolidayIds.push(id);
+  }
+
+  /**
+   * Track an NSE instrument ID
+   */
+  trackNseInstrument(id: number): void {
+    this.nseInstrumentIds.push(id);
+  }
+
+  /**
+   * Track an NSE candle ID
+   */
+  trackNseCandle(id: number): void {
+    this.nseCandleIds.push(id);
   }
 
   /**
@@ -98,6 +114,20 @@ export class TestDataTracker {
       });
     }
 
+    // Delete NSE candles (they reference instruments)
+    if (this.nseCandleIds.length > 0) {
+      await prisma.nseCandle.deleteMany({
+        where: { id: { in: this.nseCandleIds } },
+      });
+    }
+
+    // Delete NSE instruments (they reference candles)
+    if (this.nseInstrumentIds.length > 0) {
+      await prisma.nseIntrument.deleteMany({
+        where: { id: { in: this.nseInstrumentIds } },
+      });
+    }
+
     // Delete developers (excluding admin user)
     if (this.developerIds.length > 0) {
       await prisma.developer.deleteMany({
@@ -120,5 +150,7 @@ export class TestDataTracker {
     this.shortlistSnapshotIds = [];
     this.collectorErrorIds = [];
     this.nseHolidayIds = [];
+    this.nseInstrumentIds = [];
+    this.nseCandleIds = [];
   }
 }

@@ -180,11 +180,11 @@ export function createCollectorShortlistRequest(
  */
 export function createHistoricalCandlesQuery(
   symbol?: string,
-  interval?: z.infer<typeof v1_candles_schemas.getGrowwHistoricalCandles.query>["interval"],
+  interval?: z.infer<typeof v1_candles_schemas.getDeveloperCandles.query>["interval"],
   startTime?: string,
   endTime?: string,
   timezone?: string
-): Partial<z.infer<typeof v1_candles_schemas.getGrowwHistoricalCandles.query>> {
+): Partial<z.infer<typeof v1_candles_schemas.getDeveloperCandles.query>> {
   return {
     symbol: symbol,
     interval: interval,
@@ -294,9 +294,9 @@ export function createGrowwQuoteQuery(symbol: string): { symbol: string } {
 export function createCandlesQuery(
   symbol?: string,
   date?: string,
-  interval?: z.infer<typeof v1_candles_schemas.getCandles.query>["interval"],
+  interval?: z.infer<typeof v1_candles_schemas.getDashboardCandles.query>["interval"],
   timezone?: string
-): z.infer<typeof v1_candles_schemas.getCandles.query> {
+): z.infer<typeof v1_candles_schemas.getDashboardCandles.query> {
   return {
     symbol: symbol || TEST_SYMBOL,
     date: date || TEST_DATE,
@@ -312,7 +312,7 @@ export function buildQueryString(
   query:
     | Partial<z.infer<typeof v1_lists_schemas.getLists.query>>
     | Partial<z.infer<typeof v1_lists_schemas.getShortlists.query>>
-    | Partial<z.infer<typeof v1_candles_schemas.getCandles.query>>
+    | Partial<z.infer<typeof v1_candles_schemas.getDashboardCandles.query>>
     | Partial<z.infer<typeof v1_runs_schemas.createRun.body>>
     | Partial<z.infer<typeof v1_runs_schemas.createOrder.body>>
     | ReturnType<typeof createGrowwQuoteQuery>

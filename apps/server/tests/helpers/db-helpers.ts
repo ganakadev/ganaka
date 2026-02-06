@@ -482,3 +482,76 @@ export function isEncrypted(value: string | null): boolean {
   const parts = value.split(":");
   return parts.length === 3;
 }
+
+// ==================== NSE Instrument and Candle Helpers ====================
+
+/**
+ * Creates a test NSE instrument in the database
+ */
+export async function createTestInstrument(
+  symbol: string,
+  name: string,
+  tracker: TestDataTracker
+): Promise<{ id: number; symbol: string }> {
+  const instrument = await prisma.nseIntrument.create({
+    data: {
+      symbol: symbol,
+      growwSymbol: `NSE-${symbol}`,
+      name: name,
+    },
+  });
+
+  if (tracker) {
+    tracker.trackNseInstrument(instrument.id);
+  }
+
+  return {
+    id: instrument.id,
+    symbol: instrument.symbol,
+  };
+}
+
+/**
+ * Creates test NSE candles in the database
+ */
+export async function createTestCandles(
+  instrumentId: number,
+  candles: Array<{
+    timestamp: Date | string;
+    open: number | null;
+    high: number | null;
+    low: number | null;
+    close: number | null;
+    volume?: bigint | null;
+  }>,
+  tracker: TestDataTracker
+): Promise<void> {
+  const tz = "Asia/Kolkata";
+  const createdCandles = await Promise.all(
+    candles.map((candle) => {
+      const timestamp =
+        typeof candle.timestamp === "string"
+          ? parseDateTimeInTimezone(candle.timestamp, tz)
+          : candle.timestamp;
+
+      return prisma.nseCandle.create({
+        data: {
+          instrumentId: instrumentId,
+          timestamp: timestamp,
+          open: candle.open !== null && candle.open !== undefined ? new Decimal(candle.open) : null,
+          high: candle.high !== null && candle.high !== undefined ? new Decimal(candle.high) : null,
+          low: candle.low !== null && candle.low !== undefined ? new Decimal(candle.low) : null,
+          close:
+            candle.close !== null && candle.close !== undefined ? new Decimal(candle.close) : null,
+          volume: candle.volume !== null && candle.volume !== undefined ? candle.volume : null,
+        },
+      });
+    })
+  );
+
+  if (tracker) {
+    for (const candle of createdCandles) {
+      tracker.trackNseCandle(candle.id);
+    }
+  }
+}
