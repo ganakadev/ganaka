@@ -172,9 +172,7 @@ exports.Prisma.NseCandleScalarFieldEnum = {
   low: 'low',
   close: 'close',
   volume: 'volume',
-  instrumentId: 'instrumentId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  instrumentId: 'instrumentId'
 };
 
 exports.Prisma.NseHolidayScalarFieldEnum = {

@@ -1,5 +1,5 @@
 model NseIntrument {
-    id          String @id @default(uuid())
+    id          Int    @id @default(autoincrement())
     symbol      String @unique
     growwSymbol String @unique /// NSE-<symbol>
     name        String
@@ -13,19 +13,17 @@ model NseIntrument {
 }
 
 model NseCandle {
-    id String @id @default(uuid())
+    id Int @id @default(autoincrement())
 
     instrument NseIntrument @relation(fields: [instrumentId], references: [id])
     timestamp  DateTime
-    open       Decimal
-    high       Decimal
-    low        Decimal
-    close      Decimal
-    volume     BigInt
+    open       Decimal?
+    high       Decimal?
+    low        Decimal?
+    close      Decimal?
+    volume     BigInt?
 
-    instrumentId String   @unique
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+    instrumentId Int
 
     @@index([instrumentId, timestamp])
     @@map("nse_candles")

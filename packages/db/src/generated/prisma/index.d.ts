@@ -5034,12 +5034,22 @@ export namespace Prisma {
 
   export type AggregateNseIntrument = {
     _count: NseIntrumentCountAggregateOutputType | null
+    _avg: NseIntrumentAvgAggregateOutputType | null
+    _sum: NseIntrumentSumAggregateOutputType | null
     _min: NseIntrumentMinAggregateOutputType | null
     _max: NseIntrumentMaxAggregateOutputType | null
   }
 
+  export type NseIntrumentAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type NseIntrumentSumAggregateOutputType = {
+    id: number | null
+  }
+
   export type NseIntrumentMinAggregateOutputType = {
-    id: string | null
+    id: number | null
     symbol: string | null
     growwSymbol: string | null
     name: string | null
@@ -5048,7 +5058,7 @@ export namespace Prisma {
   }
 
   export type NseIntrumentMaxAggregateOutputType = {
-    id: string | null
+    id: number | null
     symbol: string | null
     growwSymbol: string | null
     name: string | null
@@ -5066,6 +5076,14 @@ export namespace Prisma {
     _all: number
   }
 
+
+  export type NseIntrumentAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type NseIntrumentSumAggregateInputType = {
+    id?: true
+  }
 
   export type NseIntrumentMinAggregateInputType = {
     id?: true
@@ -5133,6 +5151,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: NseIntrumentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: NseIntrumentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: NseIntrumentMinAggregateInputType
@@ -5163,18 +5193,22 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: NseIntrumentCountAggregateInputType | true
+    _avg?: NseIntrumentAvgAggregateInputType
+    _sum?: NseIntrumentSumAggregateInputType
     _min?: NseIntrumentMinAggregateInputType
     _max?: NseIntrumentMaxAggregateInputType
   }
 
   export type NseIntrumentGroupByOutputType = {
-    id: string
+    id: number
     symbol: string
     growwSymbol: string
     name: string
     createdAt: Date
     updatedAt: Date
     _count: NseIntrumentCountAggregateOutputType | null
+    _avg: NseIntrumentAvgAggregateOutputType | null
+    _sum: NseIntrumentSumAggregateOutputType | null
     _min: NseIntrumentMinAggregateOutputType | null
     _max: NseIntrumentMaxAggregateOutputType | null
   }
@@ -5245,7 +5279,7 @@ export namespace Prisma {
       candles: Prisma.$NseCandlePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
-      id: string
+      id: number
       symbol: string
       /**
        * NSE-<symbol>
@@ -5678,7 +5712,7 @@ export namespace Prisma {
    * Fields of the NseIntrument model
    */
   interface NseIntrumentFieldRefs {
-    readonly id: FieldRef<"NseIntrument", 'String'>
+    readonly id: FieldRef<"NseIntrument", 'Int'>
     readonly symbol: FieldRef<"NseIntrument", 'String'>
     readonly growwSymbol: FieldRef<"NseIntrument", 'String'>
     readonly name: FieldRef<"NseIntrument", 'String'>
@@ -6127,45 +6161,45 @@ export namespace Prisma {
   }
 
   export type NseCandleAvgAggregateOutputType = {
+    id: number | null
     open: Decimal | null
     high: Decimal | null
     low: Decimal | null
     close: Decimal | null
     volume: number | null
+    instrumentId: number | null
   }
 
   export type NseCandleSumAggregateOutputType = {
+    id: number | null
     open: Decimal | null
     high: Decimal | null
     low: Decimal | null
     close: Decimal | null
     volume: bigint | null
+    instrumentId: number | null
   }
 
   export type NseCandleMinAggregateOutputType = {
-    id: string | null
+    id: number | null
     timestamp: Date | null
     open: Decimal | null
     high: Decimal | null
     low: Decimal | null
     close: Decimal | null
     volume: bigint | null
-    instrumentId: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
+    instrumentId: number | null
   }
 
   export type NseCandleMaxAggregateOutputType = {
-    id: string | null
+    id: number | null
     timestamp: Date | null
     open: Decimal | null
     high: Decimal | null
     low: Decimal | null
     close: Decimal | null
     volume: bigint | null
-    instrumentId: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
+    instrumentId: number | null
   }
 
   export type NseCandleCountAggregateOutputType = {
@@ -6177,26 +6211,28 @@ export namespace Prisma {
     close: number
     volume: number
     instrumentId: number
-    createdAt: number
-    updatedAt: number
     _all: number
   }
 
 
   export type NseCandleAvgAggregateInputType = {
+    id?: true
     open?: true
     high?: true
     low?: true
     close?: true
     volume?: true
+    instrumentId?: true
   }
 
   export type NseCandleSumAggregateInputType = {
+    id?: true
     open?: true
     high?: true
     low?: true
     close?: true
     volume?: true
+    instrumentId?: true
   }
 
   export type NseCandleMinAggregateInputType = {
@@ -6208,8 +6244,6 @@ export namespace Prisma {
     close?: true
     volume?: true
     instrumentId?: true
-    createdAt?: true
-    updatedAt?: true
   }
 
   export type NseCandleMaxAggregateInputType = {
@@ -6221,8 +6255,6 @@ export namespace Prisma {
     close?: true
     volume?: true
     instrumentId?: true
-    createdAt?: true
-    updatedAt?: true
   }
 
   export type NseCandleCountAggregateInputType = {
@@ -6234,8 +6266,6 @@ export namespace Prisma {
     close?: true
     volume?: true
     instrumentId?: true
-    createdAt?: true
-    updatedAt?: true
     _all?: true
   }
 
@@ -6326,16 +6356,14 @@ export namespace Prisma {
   }
 
   export type NseCandleGroupByOutputType = {
-    id: string
+    id: number
     timestamp: Date
-    open: Decimal
-    high: Decimal
-    low: Decimal
-    close: Decimal
-    volume: bigint
-    instrumentId: string
-    createdAt: Date
-    updatedAt: Date
+    open: Decimal | null
+    high: Decimal | null
+    low: Decimal | null
+    close: Decimal | null
+    volume: bigint | null
+    instrumentId: number
     _count: NseCandleCountAggregateOutputType | null
     _avg: NseCandleAvgAggregateOutputType | null
     _sum: NseCandleSumAggregateOutputType | null
@@ -6366,8 +6394,6 @@ export namespace Prisma {
     close?: boolean
     volume?: boolean
     instrumentId?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
     instrument?: boolean | NseIntrumentDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["nseCandle"]>
 
@@ -6380,8 +6406,6 @@ export namespace Prisma {
     close?: boolean
     volume?: boolean
     instrumentId?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
     instrument?: boolean | NseIntrumentDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["nseCandle"]>
 
@@ -6394,8 +6418,6 @@ export namespace Prisma {
     close?: boolean
     volume?: boolean
     instrumentId?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
     instrument?: boolean | NseIntrumentDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["nseCandle"]>
 
@@ -6408,11 +6430,9 @@ export namespace Prisma {
     close?: boolean
     volume?: boolean
     instrumentId?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
   }
 
-  export type NseCandleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "open" | "high" | "low" | "close" | "volume" | "instrumentId" | "createdAt" | "updatedAt", ExtArgs["result"]["nseCandle"]>
+  export type NseCandleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "open" | "high" | "low" | "close" | "volume" | "instrumentId", ExtArgs["result"]["nseCandle"]>
   export type NseCandleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     instrument?: boolean | NseIntrumentDefaultArgs<ExtArgs>
   }
@@ -6429,16 +6449,14 @@ export namespace Prisma {
       instrument: Prisma.$NseIntrumentPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
-      id: string
+      id: number
       timestamp: Date
-      open: Prisma.Decimal
-      high: Prisma.Decimal
-      low: Prisma.Decimal
-      close: Prisma.Decimal
-      volume: bigint
-      instrumentId: string
-      createdAt: Date
-      updatedAt: Date
+      open: Prisma.Decimal | null
+      high: Prisma.Decimal | null
+      low: Prisma.Decimal | null
+      close: Prisma.Decimal | null
+      volume: bigint | null
+      instrumentId: number
     }, ExtArgs["result"]["nseCandle"]>
     composites: {}
   }
@@ -6863,16 +6881,14 @@ export namespace Prisma {
    * Fields of the NseCandle model
    */
   interface NseCandleFieldRefs {
-    readonly id: FieldRef<"NseCandle", 'String'>
+    readonly id: FieldRef<"NseCandle", 'Int'>
     readonly timestamp: FieldRef<"NseCandle", 'DateTime'>
     readonly open: FieldRef<"NseCandle", 'Decimal'>
     readonly high: FieldRef<"NseCandle", 'Decimal'>
     readonly low: FieldRef<"NseCandle", 'Decimal'>
     readonly close: FieldRef<"NseCandle", 'Decimal'>
     readonly volume: FieldRef<"NseCandle", 'BigInt'>
-    readonly instrumentId: FieldRef<"NseCandle", 'String'>
-    readonly createdAt: FieldRef<"NseCandle", 'DateTime'>
-    readonly updatedAt: FieldRef<"NseCandle", 'DateTime'>
+    readonly instrumentId: FieldRef<"NseCandle", 'Int'>
   }
     
 
@@ -10380,9 +10396,7 @@ export namespace Prisma {
     low: 'low',
     close: 'close',
     volume: 'volume',
-    instrumentId: 'instrumentId',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    instrumentId: 'instrumentId'
   };
 
   export type NseCandleScalarFieldEnum = (typeof NseCandleScalarFieldEnum)[keyof typeof NseCandleScalarFieldEnum]
@@ -10527,6 +10541,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
    * Reference to a field of type 'BigInt'
    */
   export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
@@ -10579,20 +10607,6 @@ export namespace Prisma {
    * Reference to a field of type 'ShortlistScope[]'
    */
   export type ListEnumShortlistScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShortlistScope[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -10837,7 +10851,7 @@ export namespace Prisma {
     AND?: NseIntrumentWhereInput | NseIntrumentWhereInput[]
     OR?: NseIntrumentWhereInput[]
     NOT?: NseIntrumentWhereInput | NseIntrumentWhereInput[]
-    id?: StringFilter<"NseIntrument"> | string
+    id?: IntFilter<"NseIntrument"> | number
     symbol?: StringFilter<"NseIntrument"> | string
     growwSymbol?: StringFilter<"NseIntrument"> | string
     name?: StringFilter<"NseIntrument"> | string
@@ -10857,7 +10871,7 @@ export namespace Prisma {
   }
 
   export type NseIntrumentWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
+    id?: number
     symbol?: string
     growwSymbol?: string
     AND?: NseIntrumentWhereInput | NseIntrumentWhereInput[]
@@ -10877,15 +10891,17 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: NseIntrumentCountOrderByAggregateInput
+    _avg?: NseIntrumentAvgOrderByAggregateInput
     _max?: NseIntrumentMaxOrderByAggregateInput
     _min?: NseIntrumentMinOrderByAggregateInput
+    _sum?: NseIntrumentSumOrderByAggregateInput
   }
 
   export type NseIntrumentScalarWhereWithAggregatesInput = {
     AND?: NseIntrumentScalarWhereWithAggregatesInput | NseIntrumentScalarWhereWithAggregatesInput[]
     OR?: NseIntrumentScalarWhereWithAggregatesInput[]
     NOT?: NseIntrumentScalarWhereWithAggregatesInput | NseIntrumentScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"NseIntrument"> | string
+    id?: IntWithAggregatesFilter<"NseIntrument"> | number
     symbol?: StringWithAggregatesFilter<"NseIntrument"> | string
     growwSymbol?: StringWithAggregatesFilter<"NseIntrument"> | string
     name?: StringWithAggregatesFilter<"NseIntrument"> | string
@@ -10897,61 +10913,53 @@ export namespace Prisma {
     AND?: NseCandleWhereInput | NseCandleWhereInput[]
     OR?: NseCandleWhereInput[]
     NOT?: NseCandleWhereInput | NseCandleWhereInput[]
-    id?: StringFilter<"NseCandle"> | string
+    id?: IntFilter<"NseCandle"> | number
     timestamp?: DateTimeFilter<"NseCandle"> | Date | string
-    open?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    high?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    low?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    close?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    volume?: BigIntFilter<"NseCandle"> | bigint | number
-    instrumentId?: StringFilter<"NseCandle"> | string
-    createdAt?: DateTimeFilter<"NseCandle"> | Date | string
-    updatedAt?: DateTimeFilter<"NseCandle"> | Date | string
+    open?: DecimalNullableFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    high?: DecimalNullableFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    low?: DecimalNullableFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    close?: DecimalNullableFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    volume?: BigIntNullableFilter<"NseCandle"> | bigint | number | null
+    instrumentId?: IntFilter<"NseCandle"> | number
     instrument?: XOR<NseIntrumentScalarRelationFilter, NseIntrumentWhereInput>
   }
 
   export type NseCandleOrderByWithRelationInput = {
     id?: SortOrder
     timestamp?: SortOrder
-    open?: SortOrder
-    high?: SortOrder
-    low?: SortOrder
-    close?: SortOrder
-    volume?: SortOrder
+    open?: SortOrderInput | SortOrder
+    high?: SortOrderInput | SortOrder
+    low?: SortOrderInput | SortOrder
+    close?: SortOrderInput | SortOrder
+    volume?: SortOrderInput | SortOrder
     instrumentId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
     instrument?: NseIntrumentOrderByWithRelationInput
   }
 
   export type NseCandleWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
+    id?: number
     AND?: NseCandleWhereInput | NseCandleWhereInput[]
     OR?: NseCandleWhereInput[]
     NOT?: NseCandleWhereInput | NseCandleWhereInput[]
     timestamp?: DateTimeFilter<"NseCandle"> | Date | string
-    open?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    high?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    low?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    close?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    volume?: BigIntFilter<"NseCandle"> | bigint | number
-    instrumentId?: StringFilter<"NseCandle"> | string
-    createdAt?: DateTimeFilter<"NseCandle"> | Date | string
-    updatedAt?: DateTimeFilter<"NseCandle"> | Date | string
+    open?: DecimalNullableFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    high?: DecimalNullableFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    low?: DecimalNullableFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    close?: DecimalNullableFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    volume?: BigIntNullableFilter<"NseCandle"> | bigint | number | null
+    instrumentId?: IntFilter<"NseCandle"> | number
     instrument?: XOR<NseIntrumentScalarRelationFilter, NseIntrumentWhereInput>
   }, "id">
 
   export type NseCandleOrderByWithAggregationInput = {
     id?: SortOrder
     timestamp?: SortOrder
-    open?: SortOrder
-    high?: SortOrder
-    low?: SortOrder
-    close?: SortOrder
-    volume?: SortOrder
+    open?: SortOrderInput | SortOrder
+    high?: SortOrderInput | SortOrder
+    low?: SortOrderInput | SortOrder
+    close?: SortOrderInput | SortOrder
+    volume?: SortOrderInput | SortOrder
     instrumentId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
     _count?: NseCandleCountOrderByAggregateInput
     _avg?: NseCandleAvgOrderByAggregateInput
     _max?: NseCandleMaxOrderByAggregateInput
@@ -10963,16 +10971,14 @@ export namespace Prisma {
     AND?: NseCandleScalarWhereWithAggregatesInput | NseCandleScalarWhereWithAggregatesInput[]
     OR?: NseCandleScalarWhereWithAggregatesInput[]
     NOT?: NseCandleScalarWhereWithAggregatesInput | NseCandleScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"NseCandle"> | string
+    id?: IntWithAggregatesFilter<"NseCandle"> | number
     timestamp?: DateTimeWithAggregatesFilter<"NseCandle"> | Date | string
-    open?: DecimalWithAggregatesFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    high?: DecimalWithAggregatesFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    low?: DecimalWithAggregatesFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    close?: DecimalWithAggregatesFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    volume?: BigIntWithAggregatesFilter<"NseCandle"> | bigint | number
-    instrumentId?: StringWithAggregatesFilter<"NseCandle"> | string
-    createdAt?: DateTimeWithAggregatesFilter<"NseCandle"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"NseCandle"> | Date | string
+    open?: DecimalNullableWithAggregatesFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    high?: DecimalNullableWithAggregatesFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    low?: DecimalNullableWithAggregatesFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    close?: DecimalNullableWithAggregatesFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    volume?: BigIntNullableWithAggregatesFilter<"NseCandle"> | bigint | number | null
+    instrumentId?: IntWithAggregatesFilter<"NseCandle"> | number
   }
 
   export type NseHolidayWhereInput = {
@@ -11391,7 +11397,6 @@ export namespace Prisma {
   }
 
   export type NseIntrumentCreateInput = {
-    id?: string
     symbol: string
     growwSymbol: string
     name: string
@@ -11401,7 +11406,7 @@ export namespace Prisma {
   }
 
   export type NseIntrumentUncheckedCreateInput = {
-    id?: string
+    id?: number
     symbol: string
     growwSymbol: string
     name: string
@@ -11411,7 +11416,6 @@ export namespace Prisma {
   }
 
   export type NseIntrumentUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
     symbol?: StringFieldUpdateOperationsInput | string
     growwSymbol?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -11421,7 +11425,7 @@ export namespace Prisma {
   }
 
   export type NseIntrumentUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
+    id?: IntFieldUpdateOperationsInput | number
     symbol?: StringFieldUpdateOperationsInput | string
     growwSymbol?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -11431,7 +11435,7 @@ export namespace Prisma {
   }
 
   export type NseIntrumentCreateManyInput = {
-    id?: string
+    id?: number
     symbol: string
     growwSymbol: string
     name: string
@@ -11440,7 +11444,6 @@ export namespace Prisma {
   }
 
   export type NseIntrumentUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
     symbol?: StringFieldUpdateOperationsInput | string
     growwSymbol?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -11449,7 +11452,7 @@ export namespace Prisma {
   }
 
   export type NseIntrumentUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
+    id?: IntFieldUpdateOperationsInput | number
     symbol?: StringFieldUpdateOperationsInput | string
     growwSymbol?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -11458,93 +11461,76 @@ export namespace Prisma {
   }
 
   export type NseCandleCreateInput = {
-    id?: string
     timestamp: Date | string
-    open: Decimal | DecimalJsLike | number | string
-    high: Decimal | DecimalJsLike | number | string
-    low: Decimal | DecimalJsLike | number | string
-    close: Decimal | DecimalJsLike | number | string
-    volume: bigint | number
-    createdAt?: Date | string
-    updatedAt?: Date | string
+    open?: Decimal | DecimalJsLike | number | string | null
+    high?: Decimal | DecimalJsLike | number | string | null
+    low?: Decimal | DecimalJsLike | number | string | null
+    close?: Decimal | DecimalJsLike | number | string | null
+    volume?: bigint | number | null
     instrument: NseIntrumentCreateNestedOneWithoutCandlesInput
   }
 
   export type NseCandleUncheckedCreateInput = {
-    id?: string
+    id?: number
     timestamp: Date | string
-    open: Decimal | DecimalJsLike | number | string
-    high: Decimal | DecimalJsLike | number | string
-    low: Decimal | DecimalJsLike | number | string
-    close: Decimal | DecimalJsLike | number | string
-    volume: bigint | number
-    instrumentId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
+    open?: Decimal | DecimalJsLike | number | string | null
+    high?: Decimal | DecimalJsLike | number | string | null
+    low?: Decimal | DecimalJsLike | number | string | null
+    close?: Decimal | DecimalJsLike | number | string | null
+    volume?: bigint | number | null
+    instrumentId: number
   }
 
   export type NseCandleUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-    open?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    high?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    low?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    close?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    volume?: BigIntFieldUpdateOperationsInput | bigint | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    close?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    volume?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     instrument?: NseIntrumentUpdateOneRequiredWithoutCandlesNestedInput
   }
 
   export type NseCandleUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
+    id?: IntFieldUpdateOperationsInput | number
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-    open?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    high?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    low?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    close?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    volume?: BigIntFieldUpdateOperationsInput | bigint | number
-    instrumentId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    close?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    volume?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    instrumentId?: IntFieldUpdateOperationsInput | number
   }
 
   export type NseCandleCreateManyInput = {
-    id?: string
+    id?: number
     timestamp: Date | string
-    open: Decimal | DecimalJsLike | number | string
-    high: Decimal | DecimalJsLike | number | string
-    low: Decimal | DecimalJsLike | number | string
-    close: Decimal | DecimalJsLike | number | string
-    volume: bigint | number
-    instrumentId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
+    open?: Decimal | DecimalJsLike | number | string | null
+    high?: Decimal | DecimalJsLike | number | string | null
+    low?: Decimal | DecimalJsLike | number | string | null
+    close?: Decimal | DecimalJsLike | number | string | null
+    volume?: bigint | number | null
+    instrumentId: number
   }
 
   export type NseCandleUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-    open?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    high?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    low?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    close?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    volume?: BigIntFieldUpdateOperationsInput | bigint | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    close?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    volume?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   }
 
   export type NseCandleUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
+    id?: IntFieldUpdateOperationsInput | number
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-    open?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    high?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    low?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    close?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    volume?: BigIntFieldUpdateOperationsInput | bigint | number
-    instrumentId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    close?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    volume?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    instrumentId?: IntFieldUpdateOperationsInput | number
   }
 
   export type NseHolidayCreateInput = {
@@ -12022,6 +12008,17 @@ export namespace Prisma {
     _max?: NestedDecimalFilter<$PrismaModel>
   }
 
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
   export type NseCandleListRelationFilter = {
     every?: NseCandleWhereInput
     some?: NseCandleWhereInput
@@ -12039,6 +12036,10 @@ export namespace Prisma {
     name?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type NseIntrumentAvgOrderByAggregateInput = {
+    id?: SortOrder
   }
 
   export type NseIntrumentMaxOrderByAggregateInput = {
@@ -12059,15 +12060,46 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type BigIntFilter<$PrismaModel = never> = {
-    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
-    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+  export type NseIntrumentSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type DecimalNullableFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type BigIntNullableFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
     lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
     lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
     gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
     gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
+    not?: NestedBigIntNullableFilter<$PrismaModel> | bigint | number | null
   }
 
   export type NseIntrumentScalarRelationFilter = {
@@ -12084,16 +12116,16 @@ export namespace Prisma {
     close?: SortOrder
     volume?: SortOrder
     instrumentId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
   export type NseCandleAvgOrderByAggregateInput = {
+    id?: SortOrder
     open?: SortOrder
     high?: SortOrder
     low?: SortOrder
     close?: SortOrder
     volume?: SortOrder
+    instrumentId?: SortOrder
   }
 
   export type NseCandleMaxOrderByAggregateInput = {
@@ -12105,8 +12137,6 @@ export namespace Prisma {
     close?: SortOrder
     volume?: SortOrder
     instrumentId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
   export type NseCandleMinOrderByAggregateInput = {
@@ -12118,32 +12148,48 @@ export namespace Prisma {
     close?: SortOrder
     volume?: SortOrder
     instrumentId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
   export type NseCandleSumOrderByAggregateInput = {
+    id?: SortOrder
     open?: SortOrder
     high?: SortOrder
     low?: SortOrder
     close?: SortOrder
     volume?: SortOrder
+    instrumentId?: SortOrder
   }
 
-  export type BigIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
-    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+  export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedDecimalNullableFilter<$PrismaModel>
+    _sum?: NestedDecimalNullableFilter<$PrismaModel>
+    _min?: NestedDecimalNullableFilter<$PrismaModel>
+    _max?: NestedDecimalNullableFilter<$PrismaModel>
+  }
+
+  export type BigIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
     lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
     lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
     gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
     gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedBigIntFilter<$PrismaModel>
-    _min?: NestedBigIntFilter<$PrismaModel>
-    _max?: NestedBigIntFilter<$PrismaModel>
+    not?: NestedBigIntNullableWithAggregatesFilter<$PrismaModel> | bigint | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedBigIntNullableFilter<$PrismaModel>
+    _min?: NestedBigIntNullableFilter<$PrismaModel>
+    _max?: NestedBigIntNullableFilter<$PrismaModel>
   }
 
   export type NseHolidayCountOrderByAggregateInput = {
@@ -12530,6 +12576,14 @@ export namespace Prisma {
     deleteMany?: NseCandleScalarWhereInput | NseCandleScalarWhereInput[]
   }
 
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type NseCandleUncheckedUpdateManyWithoutInstrumentNestedInput = {
     create?: XOR<NseCandleCreateWithoutInstrumentInput, NseCandleUncheckedCreateWithoutInstrumentInput> | NseCandleCreateWithoutInstrumentInput[] | NseCandleUncheckedCreateWithoutInstrumentInput[]
     connectOrCreate?: NseCandleCreateOrConnectWithoutInstrumentInput | NseCandleCreateOrConnectWithoutInstrumentInput[]
@@ -12550,8 +12604,16 @@ export namespace Prisma {
     connect?: NseIntrumentWhereUniqueInput
   }
 
-  export type BigIntFieldUpdateOperationsInput = {
-    set?: bigint | number
+  export type NullableDecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string | null
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type NullableBigIntFieldUpdateOperationsInput = {
+    set?: bigint | number | null
     increment?: bigint | number
     decrement?: bigint | number
     multiply?: bigint | number
@@ -12723,31 +12785,20 @@ export namespace Prisma {
     _max?: NestedDecimalFilter<$PrismaModel>
   }
 
-  export type NestedBigIntFilter<$PrismaModel = never> = {
-    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
-    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
-    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
-  }
-
-  export type NestedBigIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
-    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
-    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
     _count?: NestedIntFilter<$PrismaModel>
     _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedBigIntFilter<$PrismaModel>
-    _min?: NestedBigIntFilter<$PrismaModel>
-    _max?: NestedBigIntFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type NestedFloatFilter<$PrismaModel = never> = {
@@ -12759,6 +12810,71 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedDecimalNullableFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type NestedBigIntNullableFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntNullableFilter<$PrismaModel> | bigint | number | null
+  }
+
+  export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedDecimalNullableFilter<$PrismaModel>
+    _sum?: NestedDecimalNullableFilter<$PrismaModel>
+    _min?: NestedDecimalNullableFilter<$PrismaModel>
+    _max?: NestedDecimalNullableFilter<$PrismaModel>
+  }
+
+  export type NestedBigIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntNullableWithAggregatesFilter<$PrismaModel> | bigint | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedBigIntNullableFilter<$PrismaModel>
+    _min?: NestedBigIntNullableFilter<$PrismaModel>
+    _max?: NestedBigIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedEnumShortlistTypeFilter<$PrismaModel = never> = {
@@ -13090,27 +13206,22 @@ export namespace Prisma {
   }
 
   export type NseCandleCreateWithoutInstrumentInput = {
-    id?: string
     timestamp: Date | string
-    open: Decimal | DecimalJsLike | number | string
-    high: Decimal | DecimalJsLike | number | string
-    low: Decimal | DecimalJsLike | number | string
-    close: Decimal | DecimalJsLike | number | string
-    volume: bigint | number
-    createdAt?: Date | string
-    updatedAt?: Date | string
+    open?: Decimal | DecimalJsLike | number | string | null
+    high?: Decimal | DecimalJsLike | number | string | null
+    low?: Decimal | DecimalJsLike | number | string | null
+    close?: Decimal | DecimalJsLike | number | string | null
+    volume?: bigint | number | null
   }
 
   export type NseCandleUncheckedCreateWithoutInstrumentInput = {
-    id?: string
+    id?: number
     timestamp: Date | string
-    open: Decimal | DecimalJsLike | number | string
-    high: Decimal | DecimalJsLike | number | string
-    low: Decimal | DecimalJsLike | number | string
-    close: Decimal | DecimalJsLike | number | string
-    volume: bigint | number
-    createdAt?: Date | string
-    updatedAt?: Date | string
+    open?: Decimal | DecimalJsLike | number | string | null
+    high?: Decimal | DecimalJsLike | number | string | null
+    low?: Decimal | DecimalJsLike | number | string | null
+    close?: Decimal | DecimalJsLike | number | string | null
+    volume?: bigint | number | null
   }
 
   export type NseCandleCreateOrConnectWithoutInstrumentInput = {
@@ -13143,20 +13254,17 @@ export namespace Prisma {
     AND?: NseCandleScalarWhereInput | NseCandleScalarWhereInput[]
     OR?: NseCandleScalarWhereInput[]
     NOT?: NseCandleScalarWhereInput | NseCandleScalarWhereInput[]
-    id?: StringFilter<"NseCandle"> | string
+    id?: IntFilter<"NseCandle"> | number
     timestamp?: DateTimeFilter<"NseCandle"> | Date | string
-    open?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    high?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    low?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    close?: DecimalFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string
-    volume?: BigIntFilter<"NseCandle"> | bigint | number
-    instrumentId?: StringFilter<"NseCandle"> | string
-    createdAt?: DateTimeFilter<"NseCandle"> | Date | string
-    updatedAt?: DateTimeFilter<"NseCandle"> | Date | string
+    open?: DecimalNullableFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    high?: DecimalNullableFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    low?: DecimalNullableFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    close?: DecimalNullableFilter<"NseCandle"> | Decimal | DecimalJsLike | number | string | null
+    volume?: BigIntNullableFilter<"NseCandle"> | bigint | number | null
+    instrumentId?: IntFilter<"NseCandle"> | number
   }
 
   export type NseIntrumentCreateWithoutCandlesInput = {
-    id?: string
     symbol: string
     growwSymbol: string
     name: string
@@ -13165,7 +13273,7 @@ export namespace Prisma {
   }
 
   export type NseIntrumentUncheckedCreateWithoutCandlesInput = {
-    id?: string
+    id?: number
     symbol: string
     growwSymbol: string
     name: string
@@ -13190,7 +13298,6 @@ export namespace Prisma {
   }
 
   export type NseIntrumentUpdateWithoutCandlesInput = {
-    id?: StringFieldUpdateOperationsInput | string
     symbol?: StringFieldUpdateOperationsInput | string
     growwSymbol?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -13199,7 +13306,7 @@ export namespace Prisma {
   }
 
   export type NseIntrumentUncheckedUpdateWithoutCandlesInput = {
-    id?: StringFieldUpdateOperationsInput | string
+    id?: IntFieldUpdateOperationsInput | number
     symbol?: StringFieldUpdateOperationsInput | string
     growwSymbol?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -13298,51 +13405,42 @@ export namespace Prisma {
   }
 
   export type NseCandleCreateManyInstrumentInput = {
-    id?: string
+    id?: number
     timestamp: Date | string
-    open: Decimal | DecimalJsLike | number | string
-    high: Decimal | DecimalJsLike | number | string
-    low: Decimal | DecimalJsLike | number | string
-    close: Decimal | DecimalJsLike | number | string
-    volume: bigint | number
-    createdAt?: Date | string
-    updatedAt?: Date | string
+    open?: Decimal | DecimalJsLike | number | string | null
+    high?: Decimal | DecimalJsLike | number | string | null
+    low?: Decimal | DecimalJsLike | number | string | null
+    close?: Decimal | DecimalJsLike | number | string | null
+    volume?: bigint | number | null
   }
 
   export type NseCandleUpdateWithoutInstrumentInput = {
-    id?: StringFieldUpdateOperationsInput | string
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-    open?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    high?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    low?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    close?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    volume?: BigIntFieldUpdateOperationsInput | bigint | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    close?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    volume?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   }
 
   export type NseCandleUncheckedUpdateWithoutInstrumentInput = {
-    id?: StringFieldUpdateOperationsInput | string
+    id?: IntFieldUpdateOperationsInput | number
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-    open?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    high?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    low?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    close?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    volume?: BigIntFieldUpdateOperationsInput | bigint | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    close?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    volume?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   }
 
   export type NseCandleUncheckedUpdateManyWithoutInstrumentInput = {
-    id?: StringFieldUpdateOperationsInput | string
+    id?: IntFieldUpdateOperationsInput | number
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-    open?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    high?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    low?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    close?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    volume?: BigIntFieldUpdateOperationsInput | bigint | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    open?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    high?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    low?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    close?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    volume?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   }
 
 

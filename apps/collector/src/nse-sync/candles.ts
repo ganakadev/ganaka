@@ -10,6 +10,15 @@ import { Decimal } from "@ganaka/db/prisma";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+// Batch size for database inserts to prevent PostgreSQL out-of-memory errors
+const BATCH_SIZE = 500;
+
+// Number of instruments to process before disconnecting Prisma to release memory
+const INSTRUMENTS_BEFORE_DISCONNECT = 25;
+
+// Delay between batches in milliseconds to allow PostgreSQL to release memory
+const BATCH_DELAY_MS = 50;
+
 export interface FetchRequest {
   instrument: NseIntrument;
   startDate: string; // YYYY-MM-DD
@@ -25,7 +34,7 @@ export interface SyncError {
  * Get the latest candle date for an instrument
  * Returns date in YYYY-MM-DD format (IST) or null if no candles exist
  */
-async function getLatestCandleDate(instrumentId: string): Promise<string | null> {
+async function getLatestCandleDate(instrumentId: number): Promise<string | null> {
   const latestCandle = await prisma.nseCandle.findFirst({
     where: {
       instrumentId,
@@ -73,6 +82,17 @@ function splitInto30DayChunks(
 }
 
 /**
+ * Split an array into chunks of specified size
+ */
+function chunkArray<T>(array: T[], chunkSize: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    chunks.push(array.slice(i, i + chunkSize));
+  }
+  return chunks;
+}
+
+/**
  * Determine fetch request for a single instrument
  * Returns FetchRequest or null if no fetch is needed
  */
@@ -113,7 +133,7 @@ async function determineFetchRequestForInstrument(
  * Determine what candles need to be fetched for each instrument
  */
 export async function determineFetchRequests(instruments: NseIntrument[]): Promise<FetchRequest[]> {
-  const recordStartDate = "2026-01-01";
+  const recordStartDate = "2025-11-01";
   const today = dayjs().tz("Asia/Kolkata").format("YYYY-MM-DD");
 
   console.log(`\nDetermining fetch requests for ${instruments.length} instruments...`);
@@ -194,38 +214,71 @@ export async function fetchAndStoreCandles(
             // Parse timestamp from IST string to UTC Date
             const timestamp = dayjs.tz(candle.timestamp, "Asia/Kolkata").utc().toDate();
 
-            if (
-              !timestamp ||
-              !candle.open ||
-              !candle.high ||
-              !candle.low ||
-              !candle.close ||
-              !candle.volume
-            ) {
+            if (!timestamp) {
               return [];
             }
 
             return {
               instrumentId: instrument.id,
               timestamp,
-              open: new Decimal(candle.open.toString()),
-              high: new Decimal(candle.high.toString()),
-              low: new Decimal(candle.low.toString()),
-              close: new Decimal(candle.close.toString()),
-              volume: BigInt(candle.volume),
+              open: candle.open ? new Decimal(candle.open.toString()) : null,
+              high: candle.high ? new Decimal(candle.high.toString()) : null,
+              low: candle.low ? new Decimal(candle.low.toString()) : null,
+              close: candle.close ? new Decimal(candle.close.toString()) : null,
+              volume: candle.volume ? BigInt(candle.volume) : null,
             };
           });
 
-          // Bulk insert with skipDuplicates
-          const result = await prisma.nseCandle.createMany({
-            data: dbCandles,
-            skipDuplicates: true,
-          });
+          // Chunk the candles array if it exceeds batch size
+          const candleChunks = chunkArray(dbCandles, BATCH_SIZE);
+          let chunkInserted = 0;
+          const dateRangeStart = chunk.start;
+          const dateRangeEnd = chunk.end;
 
-          totalInserted += result.count;
+          if (candleChunks.length > 1) {
+            console.log(
+              `  [${i + 1}/${requests.length}] ${instrument.symbol}: Inserting ${dbCandles.length} candles in ${candleChunks.length} batches...`
+            );
+          }
+
+          // Process each chunk sequentially
+          for (let chunkIdx = 0; chunkIdx < candleChunks.length; chunkIdx++) {
+            const candleChunk = candleChunks[chunkIdx];
+            try {
+              const result = await prisma.nseCandle.createMany({
+                data: candleChunk,
+                skipDuplicates: true,
+              });
+
+              chunkInserted += result.count;
+
+              if (candleChunks.length > 1) {
+                console.log(
+                  `    Batch [${chunkIdx + 1}/${candleChunks.length}]: inserted ${result.count} candles`
+                );
+              }
+
+              // Add delay between batches to allow PostgreSQL to release memory
+              if (chunkIdx < candleChunks.length - 1) {
+                await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
+              }
+            } catch (error) {
+              const errorMessage = error instanceof Error ? error.message : String(error);
+              console.error(
+                `    Batch [${chunkIdx + 1}/${candleChunks.length}] failed: ${errorMessage}`
+              );
+              errors.push({
+                symbol: instrument.symbol,
+                error: `Failed to insert batch ${chunkIdx + 1}/${candleChunks.length} for date range ${dateRangeStart} to ${dateRangeEnd}: ${errorMessage}`,
+              });
+              // Continue with next chunk
+            }
+          }
+
+          totalInserted += chunkInserted;
 
           console.log(
-            `  [${i + 1}/${requests.length}] ${instrument.symbol}: Fetched ${candles.length} candles, inserted ${result.count} (${chunk.start} to ${chunk.end})`
+            `  [${i + 1}/${requests.length}] ${instrument.symbol}: Fetched ${candles.length} candles, inserted ${chunkInserted} (${chunk.start} to ${chunk.end})`
           );
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : String(error);
@@ -248,6 +301,19 @@ export async function fetchAndStoreCandles(
         error: errorMessage,
       });
       // Continue with next instrument
+    }
+
+    // Periodically disconnect Prisma to force PostgreSQL to release connection memory
+    // This helps prevent out-of-memory errors during long-running syncs
+    if ((i + 1) % INSTRUMENTS_BEFORE_DISCONNECT === 0) {
+      console.log(`  Disconnecting Prisma after ${i + 1} instruments to release memory...`);
+      try {
+        await prisma.$disconnect();
+        // Prisma will auto-reconnect on the next query
+      } catch (error) {
+        // Ignore disconnect errors - connection may already be closed
+        console.warn(`  Warning: Error during Prisma disconnect: ${error}`);
+      }
     }
   }
 
