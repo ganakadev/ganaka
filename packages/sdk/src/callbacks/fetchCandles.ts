@@ -24,6 +24,17 @@ export const fetchCandles =
     currentTimestamp: string;
     currentTimezone?: string;
   }) =>
+  /**
+   * Fetch historical candles for a symbol.
+   *
+   * @param params - Query parameters for fetching candles
+   * @param params.symbol - The symbol to fetch candles for
+   * @param params.interval - The interval for candles (e.g., "1minute", "5minute", "1day")
+   * @param params.start_datetime - Start datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
+   * @param params.end_datetime - End datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
+   * @param params.ignoreDb - Optional boolean to force fetching from broker instead of database
+   * @returns Promise resolving to candle data
+   */
   async (
     params: z.infer<typeof v1_candles_schemas.getDeveloperCandles.query>
   ): Promise<z.infer<typeof v1_candles_schemas.getDeveloperCandles.response>["data"]> => {
