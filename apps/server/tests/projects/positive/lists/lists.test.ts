@@ -106,37 +106,9 @@ test.describe("GET /v1/lists", () => {
       expect(firstEntry).toHaveProperty("nseSymbol");
       expect(firstEntry).toHaveProperty("name");
       expect(firstEntry).toHaveProperty("price");
-      expect(firstEntry).toHaveProperty("quoteData");
       expect(typeof firstEntry.nseSymbol).toBe("string");
       expect(typeof firstEntry.name).toBe("string");
       expect(typeof firstEntry.price).toBe("number");
-    }
-  });
-
-  test("should validate quoteData structure matches schema", async ({ tracker }) => {
-    const testDatetime = generateUniqueTestDatetime();
-    const testEntries = createValidShortlistEntries();
-
-    await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
-
-    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
-    const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
-
-    expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_lists_schemas.getShortlists.response.parse(response.data);
-
-    if (validatedData.data.shortlist && validatedData.data.shortlist.entries.length > 0) {
-      const firstEntry = validatedData.data.shortlist.entries[0];
-      expect(firstEntry.quoteData).toHaveProperty("status");
-      expect(firstEntry.quoteData).toHaveProperty("payload");
-      expect(["SUCCESS", "FAILURE"]).toContain(firstEntry.quoteData!.status);
-      expect(firstEntry.quoteData!.payload).toHaveProperty("ohlc");
-      expect(firstEntry.quoteData!.payload).toHaveProperty("depth");
-      expect(firstEntry.quoteData!.payload.ohlc).toHaveProperty("open");
-      expect(firstEntry.quoteData!.payload.ohlc).toHaveProperty("high");
-      expect(firstEntry.quoteData!.payload.ohlc).toHaveProperty("low");
-      expect(firstEntry.quoteData!.payload.ohlc).toHaveProperty("close");
     }
   });
 

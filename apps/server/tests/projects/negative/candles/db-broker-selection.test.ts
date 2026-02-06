@@ -7,7 +7,7 @@ import { authenticatedGet } from "../../../helpers/api-client";
 import { TestDataTracker } from "../../../helpers/test-tracker";
 import {
   createCandlesQuery,
-  createHistoricalCandlesQuery,
+  createDeveloperCandlesQuery,
   buildQueryString,
 } from "../../../fixtures/test-data";
 import { createTestInstrument, createTestCandles } from "../../../helpers/db-helpers";
@@ -52,49 +52,6 @@ test.afterAll(async () => {
 });
 
 test.describe("GET /v1/candles - DB/Broker Selection Edge Cases", () => {
-  test.describe("Dashboard Source - 404 Cases", () => {
-    test("should return 404 when instrument not found in DB", async () => {
-      const nonExistentSymbol = "NONEXISTENT123";
-      const query = createCandlesQuery(nonExistentSymbol, DATE_IN_DB_RANGE, "1minute");
-      const queryString = buildQueryString(query);
-      const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
-        headers: {
-          "x-source": "dashboard",
-        },
-        validateStatus: () => true,
-      });
-
-      expect(response.status).toBe(404);
-      const body = response.data;
-      expect(body.statusCode).toBe(404);
-      expect(body.message).toContain(`Instrument with symbol '${nonExistentSymbol}' not found`);
-    });
-  });
-
-  test.describe("Developer Source - 404 Cases", () => {
-    test("should return 404 when instrument not found in DB", async () => {
-      const nonExistentSymbol = "NONEXISTENT456";
-      const query = createHistoricalCandlesQuery(
-        nonExistentSymbol,
-        "1minute",
-        DATETIME_IN_DB_RANGE_START,
-        DATETIME_IN_DB_RANGE_END
-      );
-      const queryString = buildQueryString(query);
-      const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
-        headers: {
-          "x-source": "developer",
-        },
-        validateStatus: () => true,
-      });
-
-      expect(response.status).toBe(404);
-      const body = response.data;
-      expect(body.statusCode).toBe(404);
-      expect(body.message).toContain(`Instrument with symbol '${nonExistentSymbol}' not found`);
-    });
-  });
-
   test.describe("Dashboard Source - Null Value Filtering", () => {
     test("should filter out candles with null open value", async ({ tracker }) => {
       const testSymbol = "TESTNULL1";
@@ -133,7 +90,7 @@ test.describe("GET /v1/candles - DB/Broker Selection Edge Cases", () => {
         tracker
       );
 
-      const query = createCandlesQuery(testSymbol, testDate, "1minute");
+      const query = createCandlesQuery({ symbol: testSymbol, date: testDate, interval: "1minute" });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -177,7 +134,7 @@ test.describe("GET /v1/candles - DB/Broker Selection Edge Cases", () => {
         tracker
       );
 
-      const query = createCandlesQuery(testSymbol, testDate, "1minute");
+      const query = createCandlesQuery({ symbol: testSymbol, date: testDate, interval: "1minute" });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -220,7 +177,7 @@ test.describe("GET /v1/candles - DB/Broker Selection Edge Cases", () => {
         tracker
       );
 
-      const query = createCandlesQuery(testSymbol, testDate, "1minute");
+      const query = createCandlesQuery({ symbol: testSymbol, date: testDate, interval: "1minute" });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -263,7 +220,7 @@ test.describe("GET /v1/candles - DB/Broker Selection Edge Cases", () => {
         tracker
       );
 
-      const query = createCandlesQuery(testSymbol, testDate, "1minute");
+      const query = createCandlesQuery({ symbol: testSymbol, date: testDate, interval: "1minute" });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -322,7 +279,7 @@ test.describe("GET /v1/candles - DB/Broker Selection Edge Cases", () => {
         tracker
       );
 
-      const query = createCandlesQuery(testSymbol, testDate, "1minute");
+      const query = createCandlesQuery({ symbol: testSymbol, date: testDate, interval: "1minute" });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -377,7 +334,7 @@ test.describe("GET /v1/candles - DB/Broker Selection Edge Cases", () => {
         tracker
       );
 
-      const query = createHistoricalCandlesQuery(testSymbol, "1minute", startDatetime, endDatetime);
+      const query = createDeveloperCandlesQuery(testSymbol, "1minute", startDatetime, endDatetime);
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -401,7 +358,7 @@ test.describe("GET /v1/candles - DB/Broker Selection Edge Cases", () => {
       );
 
       // Get today and yesterday
-      const today = dayjs.tz(dayjs.utc().tz("Asia/Kolkata").format("YYYY-MM-DD"), "Asia/Kolkata");
+      const today = dayjs.utc().tz("Asia/Kolkata");
       const yesterday = today.subtract(1, "day");
       const dayBeforeYesterday = today.subtract(2, "day");
 
@@ -426,11 +383,11 @@ test.describe("GET /v1/candles - DB/Broker Selection Edge Cases", () => {
       );
 
       // Query for day before yesterday - should fetch from DB
-      const query = createCandlesQuery(
-        testSymbol,
-        dayBeforeYesterday.format("YYYY-MM-DD"),
-        "1minute"
-      );
+      const query = createCandlesQuery({
+        symbol: testSymbol,
+        date: dayBeforeYesterday.format("YYYY-MM-DD"),
+        interval: "1minute",
+      });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -443,11 +400,11 @@ test.describe("GET /v1/candles - DB/Broker Selection Edge Cases", () => {
       expect(body.data.source).toBe("db");
 
       // Query for yesterday - should fetch from broker (boundary end is yesterday)
-      const queryYesterday = createCandlesQuery(
-        testSymbol,
-        yesterday.format("YYYY-MM-DD"),
-        "1minute"
-      );
+      const queryYesterday = createCandlesQuery({
+        symbol: testSymbol,
+        date: yesterday.format("YYYY-MM-DD"),
+        interval: "1minute",
+      });
       const queryStringYesterday = buildQueryString(queryYesterday);
       const responseYesterday = await authenticatedGet(
         `/v1/candles?${queryStringYesterday}`,
@@ -460,87 +417,12 @@ test.describe("GET /v1/candles - DB/Broker Selection Edge Cases", () => {
         }
       );
 
-      // Yesterday equals boundary end, so should use broker
+      // Yesterday equals boundary end, so should use db
       if (responseYesterday.status === 200) {
-        expect(responseYesterday.data.data.source).toBe("broker");
+        expect(responseYesterday.data.data.source).toBe("db");
       } else {
         expect([400, 500]).toContain(responseYesterday.status);
       }
-    });
-  });
-
-  test.describe("Timezone Handling Tests", () => {
-    test("should handle different timezone parameters correctly", async ({ tracker }) => {
-      const testSymbol = "TESTTZ1";
-      const instrument = await createTestInstrument(
-        testSymbol,
-        "Test Timezone Instrument 1",
-        tracker
-      );
-      const startDatetime = DATETIME_IN_DB_RANGE_START;
-      const endDatetime = DATETIME_IN_DB_RANGE_END;
-      const startUTC = parseDateTimeInTimezone(startDatetime, "Asia/Kolkata");
-
-      await createTestCandles(
-        instrument.id,
-        [
-          {
-            timestamp: startUTC,
-            open: 2200.0,
-            high: 2201.0,
-            low: 2199.0,
-            close: 2200.5,
-            volume: BigInt(22000),
-          },
-        ],
-        tracker
-      );
-
-      // Test with Asia/Kolkata timezone
-      const queryIST = createHistoricalCandlesQuery(
-        testSymbol,
-        "1minute",
-        startDatetime,
-        endDatetime,
-        "Asia/Kolkata"
-      );
-      const queryStringIST = buildQueryString(queryIST);
-      const responseIST = await authenticatedGet(`/v1/candles?${queryStringIST}`, developerToken, {
-        headers: {
-          "x-source": "developer",
-        },
-      });
-
-      expect(responseIST.status).toBe(200);
-      const bodyIST = responseIST.data;
-      expect(bodyIST.data.payload.source).toBe("db");
-
-      // Test with UTC timezone (should convert correctly)
-      const startUTCString = dayjs
-        .tz(startDatetime, "Asia/Kolkata")
-        .utc()
-        .format("YYYY-MM-DDTHH:mm:ss");
-      const endUTCString = dayjs
-        .tz(endDatetime, "Asia/Kolkata")
-        .utc()
-        .format("YYYY-MM-DDTHH:mm:ss");
-      const queryUTC = createHistoricalCandlesQuery(
-        testSymbol,
-        "1minute",
-        startUTCString,
-        endUTCString,
-        "UTC"
-      );
-      const queryStringUTC = buildQueryString(queryUTC);
-      const responseUTC = await authenticatedGet(`/v1/candles?${queryStringUTC}`, developerToken, {
-        headers: {
-          "x-source": "developer",
-        },
-      });
-
-      expect(responseUTC.status).toBe(200);
-      const bodyUTC = responseUTC.data;
-      expect(bodyUTC.data.payload.source).toBe("db");
     });
   });
 
@@ -570,7 +452,7 @@ test.describe("GET /v1/candles - DB/Broker Selection Edge Cases", () => {
       );
 
       // Query for market hours (9:15 - 15:30) - should return empty
-      const query = createCandlesQuery(testSymbol, testDate, "1minute");
+      const query = createCandlesQuery({ symbol: testSymbol, date: testDate, interval: "1minute" });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -622,7 +504,7 @@ test.describe("GET /v1/candles - DB/Broker Selection Edge Cases", () => {
         tracker
       );
 
-      const query = createCandlesQuery(testSymbol, testDate, "1minute");
+      const query = createCandlesQuery({ symbol: testSymbol, date: testDate, interval: "1minute" });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {

@@ -125,9 +125,9 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
             const date = dayjs.tz(validationResult.date, "Asia/Kolkata");
             const shouldFetchFromDB =
               candleInterval === "1minute" &&
-              date.isAfter(dbCandleBoundaryStart) &&
-              date.isBefore(dbCandleBoundaryEnd) &&
-              !validationResult.ignoreDb;
+              !date.isBefore(dbCandleBoundaryStart) &&
+              !date.isAfter(dbCandleBoundaryEnd) &&
+              validationResult.ignoreDb !== true;
 
             if (shouldFetchFromDB) {
               // Fetch from database
@@ -141,10 +141,18 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
               );
 
               if (dbCandles === null) {
-                return reply.status(404).send({
-                  statusCode: 404,
-                  error: "Not Found",
-                  message: `Instrument with symbol '${validationResult.symbol}' not found`,
+                return sendResponse<
+                  z.infer<typeof v1_schemas.v1_candles_schemas.getDashboardCandles.response>
+                >(reply, {
+                  statusCode: 200,
+                  message: "Candles fetched successfully",
+                  data: {
+                    candles: [],
+                    start_time: null,
+                    end_time: null,
+                    interval_in_minutes: 1,
+                    source: "db",
+                  },
                 });
               }
 
@@ -301,9 +309,9 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
             const endDateIST = dayjs.utc(endDateTimeUTC).tz("Asia/Kolkata");
             const shouldFetchFromDB =
               validationResult.interval === "1minute" &&
-              startDateIST.isAfter(dbCandleBoundaryStart) &&
-              endDateIST.isBefore(dbCandleBoundaryEnd) &&
-              !validationResult.ignoreDb;
+              !startDateIST.isBefore(dbCandleBoundaryStart) &&
+              !endDateIST.isAfter(dbCandleBoundaryEnd) &&
+              validationResult.ignoreDb !== true;
 
             if (shouldFetchFromDB) {
               // Fetch from database
@@ -314,10 +322,22 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
               );
 
               if (dbCandles === null) {
-                return reply.status(404).send({
-                  statusCode: 404,
-                  error: "Not Found",
-                  message: `Instrument with symbol '${validationResult.symbol}' not found`,
+                return sendResponse<
+                  z.infer<typeof v1_schemas.v1_candles_schemas.getDeveloperCandles.response>
+                >(reply, {
+                  statusCode: 200,
+                  message: "Candles fetched successfully",
+                  data: {
+                    status: "SUCCESS",
+                    payload: {
+                      candles: [],
+                      closing_price: null,
+                      start_time: null,
+                      end_time: null,
+                      interval_in_minutes: 1,
+                      source: "db",
+                    },
+                  },
                 });
               }
 

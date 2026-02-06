@@ -8,7 +8,7 @@ import { authenticatedGet } from "../../../helpers/api-client";
 import { TestDataTracker } from "../../../helpers/test-tracker";
 import {
   createCandlesQuery,
-  createHistoricalCandlesQuery,
+  createDeveloperCandlesQuery,
   buildQueryString,
   TEST_SYMBOL,
 } from "../../../fixtures/test-data";
@@ -61,7 +61,11 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
   test.describe("Dashboard Source - Date Range Boundaries", () => {
     test("should fetch from broker when date is before boundary start", async () => {
       const dateBeforeBoundary = "2025-10-31";
-      const query = createCandlesQuery(TEST_SYMBOL, dateBeforeBoundary, "1minute");
+      const query = createCandlesQuery({
+        symbol: TEST_SYMBOL,
+        date: dateBeforeBoundary,
+        interval: "1minute",
+      });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -81,7 +85,11 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
     });
 
     test("should fetch from broker when date equals boundary start", async () => {
-      const query = createCandlesQuery(TEST_SYMBOL, DB_BOUNDARY_START, "1minute");
+      const query = createCandlesQuery({
+        symbol: TEST_SYMBOL,
+        date: DB_BOUNDARY_START,
+        interval: "1minute",
+      });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -133,7 +141,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
         tracker
       );
 
-      const query = createCandlesQuery(testSymbol, testDate, "1minute");
+      const query = createCandlesQuery({ symbol: testSymbol, date: testDate, interval: "1minute" });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -150,9 +158,13 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
       expect(body.data.interval_in_minutes).toBe(1);
     });
 
-    test("should fetch from broker when date equals boundary end", async () => {
+    test("should fetch from db when date equals boundary end", async () => {
       const boundaryEndDate = getBoundaryEndDate();
-      const query = createCandlesQuery(TEST_SYMBOL, boundaryEndDate, "1minute");
+      const query = createCandlesQuery({
+        symbol: TEST_SYMBOL,
+        date: boundaryEndDate,
+        interval: "1minute",
+      });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -164,7 +176,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
       // Strict isBefore check means equals should use broker
       if (response.status === 200) {
         const body = response.data;
-        expect(body.data.source).toBe("broker");
+        expect(body.data.source).toBe("db");
       } else {
         expect([400, 500]).toContain(response.status);
       }
@@ -172,7 +184,11 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
 
     test("should fetch from broker when date is after boundary end", async () => {
       const today = dayjs.tz(dayjs.utc().tz("Asia/Kolkata").format("YYYY-MM-DD"), "Asia/Kolkata");
-      const query = createCandlesQuery(TEST_SYMBOL, today.format("YYYY-MM-DD"), "1minute");
+      const query = createCandlesQuery({
+        symbol: TEST_SYMBOL,
+        date: today.format("YYYY-MM-DD"),
+        interval: "1minute",
+      });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -197,7 +213,11 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
       const testSymbol = "TESTDB2";
       await createTestInstrument(testSymbol, "Test DB Instrument 2", tracker);
 
-      const query = createCandlesQuery(testSymbol, DATE_IN_DB_RANGE, "5minute");
+      const query = createCandlesQuery({
+        symbol: testSymbol,
+        date: DATE_IN_DB_RANGE,
+        interval: "5minute",
+      });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -237,7 +257,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
         tracker
       );
 
-      const query = createCandlesQuery(testSymbol, testDate, "1minute");
+      const query = createCandlesQuery({ symbol: testSymbol, date: testDate, interval: "1minute" });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -276,7 +296,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
         tracker
       );
 
-      const query = createCandlesQuery(testSymbol, testDate, "1minute");
+      const query = createCandlesQuery({ symbol: testSymbol, date: testDate, interval: "1minute" });
       const queryWithIgnoreDb = Object.assign({}, query, { ignoreDb: true });
       const queryString = buildQueryString(queryWithIgnoreDb);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
@@ -306,7 +326,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
         instrument.id,
         [
           {
-            timestamp: marketStart.add(0, "minute").toDate(),
+            timestamp: marketStart.toDate(),
             open: 400.0,
             high: 401.0,
             low: 399.0,
@@ -317,9 +337,8 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
         tracker
       );
 
-      const query = createCandlesQuery(testSymbol, testDate, "1minute");
-      const queryWithIgnoreDb = Object.assign({}, query, { ignoreDb: false });
-      const queryString = buildQueryString(queryWithIgnoreDb);
+      const query = createCandlesQuery({ symbol: testSymbol, date: testDate, interval: "1minute" });
+      const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
           "x-source": "dashboard",
@@ -354,7 +373,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
         tracker
       );
 
-      const query = createCandlesQuery(testSymbol, testDate, "1minute");
+      const query = createCandlesQuery({ symbol: testSymbol, date: testDate, interval: "1minute" });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -406,7 +425,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
 
       await createTestCandles(instrument.id, candles, tracker);
 
-      const query = createCandlesQuery(testSymbol, testDate, "1minute");
+      const query = createCandlesQuery({ symbol: testSymbol, date: testDate, interval: "1minute" });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -445,7 +464,11 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
       await createTestInstrument(testSymbol, "Test DB Instrument 8", tracker);
 
       // Query for a date where no candles exist
-      const query = createCandlesQuery(testSymbol, DATE_IN_DB_RANGE, "1minute");
+      const query = createCandlesQuery({
+        symbol: testSymbol,
+        date: DATE_IN_DB_RANGE,
+        interval: "1minute",
+      });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -522,7 +545,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
         tracker
       );
 
-      const query = createCandlesQuery(testSymbol, testDate, "1minute");
+      const query = createCandlesQuery({ symbol: testSymbol, date: testDate, interval: "1minute" });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -544,12 +567,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
     test("should fetch from broker when start_datetime is before boundary start", async () => {
       const startDatetime = "2025-10-31T09:15:00";
       const endDatetime = "2025-10-31T15:30:00";
-      const query = createHistoricalCandlesQuery(
-        TEST_SYMBOL,
-        "1minute",
-        startDatetime,
-        endDatetime
-      );
+      const query = createDeveloperCandlesQuery(TEST_SYMBOL, "1minute", startDatetime, endDatetime);
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -568,15 +586,10 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
       }
     });
 
-    test("should fetch from broker when start_datetime equals boundary start", async () => {
+    test("should fetch from db when start_datetime equals boundary start", async () => {
       const startDatetime = DB_BOUNDARY_START_DATETIME;
       const endDatetime = "2025-11-01T15:30:00";
-      const query = createHistoricalCandlesQuery(
-        TEST_SYMBOL,
-        "1minute",
-        startDatetime,
-        endDatetime
-      );
+      const query = createDeveloperCandlesQuery(TEST_SYMBOL, "1minute", startDatetime, endDatetime);
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -589,7 +602,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
         const validatedData = v1_schemas.v1_candles_schemas.getDeveloperCandles.response.parse(
           response.data
         );
-        expect(validatedData.data.payload.source).toBe("broker");
+        expect(validatedData.data.payload.source).toBe("db");
       } else {
         expect([400, 500]).toContain(response.status);
       }
@@ -620,7 +633,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
         tracker
       );
 
-      const query = createHistoricalCandlesQuery(testSymbol, "1minute", startDatetime, endDatetime);
+      const query = createDeveloperCandlesQuery(testSymbol, "1minute", startDatetime, endDatetime);
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -636,13 +649,13 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
       expect(validatedData.data.payload.interval_in_minutes).toBe(1);
     });
 
-    test("should fetch from broker when end_datetime equals boundary end", async () => {
+    test("should fetch from db when end_datetime equals boundary end", async () => {
       const boundaryEndDatetime = getBoundaryEndDatetime();
       const startDatetime = dayjs
         .tz(boundaryEndDatetime, "Asia/Kolkata")
         .subtract(1, "hour")
         .format("YYYY-MM-DDTHH:mm:ss");
-      const query = createHistoricalCandlesQuery(
+      const query = createDeveloperCandlesQuery(
         TEST_SYMBOL,
         "1minute",
         startDatetime,
@@ -660,7 +673,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
         const validatedData = v1_schemas.v1_candles_schemas.getDeveloperCandles.response.parse(
           response.data
         );
-        expect(validatedData.data.payload.source).toBe("broker");
+        expect(validatedData.data.payload.source).toBe("db");
       } else {
         expect([400, 500]).toContain(response.status);
       }
@@ -670,12 +683,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
       const today = dayjs.tz(dayjs.utc().tz("Asia/Kolkata").format("YYYY-MM-DD"), "Asia/Kolkata");
       const startDatetime = today.subtract(1, "hour").format("YYYY-MM-DDTHH:mm:ss");
       const endDatetime = today.format("YYYY-MM-DDTHH:mm:ss");
-      const query = createHistoricalCandlesQuery(
-        TEST_SYMBOL,
-        "1minute",
-        startDatetime,
-        endDatetime
-      );
+      const query = createDeveloperCandlesQuery(TEST_SYMBOL, "1minute", startDatetime, endDatetime);
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -697,12 +705,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
     test("should fetch from broker when start_datetime is before boundary and end_datetime is within boundary", async () => {
       const startDatetime = "2025-10-31T15:30:00";
       const endDatetime = DATETIME_IN_DB_RANGE_END;
-      const query = createHistoricalCandlesQuery(
-        TEST_SYMBOL,
-        "1minute",
-        startDatetime,
-        endDatetime
-      );
+      const query = createDeveloperCandlesQuery(TEST_SYMBOL, "1minute", startDatetime, endDatetime);
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -725,12 +728,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
       const startDatetime = DATETIME_IN_DB_RANGE_START;
       const today = dayjs.tz(dayjs.utc().tz("Asia/Kolkata").format("YYYY-MM-DD"), "Asia/Kolkata");
       const endDatetime = today.format("YYYY-MM-DDTHH:mm:ss");
-      const query = createHistoricalCandlesQuery(
-        TEST_SYMBOL,
-        "1minute",
-        startDatetime,
-        endDatetime
-      );
+      const query = createDeveloperCandlesQuery(TEST_SYMBOL, "1minute", startDatetime, endDatetime);
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -757,7 +755,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
       const testSymbol = "TESTDEV2";
       await createTestInstrument(testSymbol, "Test Dev Instrument 2", tracker);
 
-      const query = createHistoricalCandlesQuery(
+      const query = createDeveloperCandlesQuery(
         testSymbol,
         "5minute",
         DATETIME_IN_DB_RANGE_START,
@@ -805,7 +803,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
         tracker
       );
 
-      const query = createHistoricalCandlesQuery(testSymbol, "1minute", startDatetime, endDatetime);
+      const query = createDeveloperCandlesQuery(testSymbol, "1minute", startDatetime, endDatetime);
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -847,7 +845,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
         tracker
       );
 
-      const query = createHistoricalCandlesQuery(testSymbol, "1minute", startDatetime, endDatetime);
+      const query = createDeveloperCandlesQuery(testSymbol, "1minute", startDatetime, endDatetime);
       const queryWithIgnoreDb = Object.assign({}, query, { ignoreDb: true });
       const queryString = buildQueryString(queryWithIgnoreDb);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
@@ -891,9 +889,8 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
         tracker
       );
 
-      const query = createHistoricalCandlesQuery(testSymbol, "1minute", startDatetime, endDatetime);
-      const queryWithIgnoreDb = Object.assign({}, query, { ignoreDb: false });
-      const queryString = buildQueryString(queryWithIgnoreDb);
+      const query = createDeveloperCandlesQuery(testSymbol, "1minute", startDatetime, endDatetime);
+      const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
           "x-source": "developer",
@@ -931,7 +928,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
         tracker
       );
 
-      const query = createHistoricalCandlesQuery(testSymbol, "1minute", startDatetime, endDatetime);
+      const query = createDeveloperCandlesQuery(testSymbol, "1minute", startDatetime, endDatetime);
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -978,7 +975,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
 
       await createTestCandles(instrument.id, candles, tracker);
 
-      const query = createHistoricalCandlesQuery(testSymbol, "1minute", startDatetime, endDatetime);
+      const query = createDeveloperCandlesQuery(testSymbol, "1minute", startDatetime, endDatetime);
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {
@@ -1005,7 +1002,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
       const testSymbol = "TESTDEV8";
       await createTestInstrument(testSymbol, "Test Dev Instrument 8", tracker);
 
-      const query = createHistoricalCandlesQuery(
+      const query = createDeveloperCandlesQuery(
         testSymbol,
         "1minute",
         DATETIME_IN_DB_RANGE_START,

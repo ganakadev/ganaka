@@ -20,9 +20,9 @@ export const candlesSchema = z.object({
     candles: z.array(z.array(z.union([z.string(), z.number()]).nullable())),
     source: candleSourceSchema,
     closing_price: z.number().nullable(),
-    start_time: z.string(),
-    end_time: z.string(),
-    interval_in_minutes: z.number(),
+    start_time: z.string().nullable(),
+    end_time: z.string().nullable(),
+    interval_in_minutes: z.number().nullable(),
   }),
 });
 

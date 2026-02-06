@@ -176,14 +176,15 @@ export function createCollectorShortlistRequest(
 }
 
 /**
- * Creates valid historical candles query parameters
+ * Creates valid developer candles query parameters
  */
-export function createHistoricalCandlesQuery(
+export function createDeveloperCandlesQuery(
   symbol?: string,
   interval?: z.infer<typeof v1_candles_schemas.getDeveloperCandles.query>["interval"],
   startTime?: string,
   endTime?: string,
-  timezone?: string
+  timezone?: string,
+  ignoreDb?: boolean
 ): Partial<z.infer<typeof v1_candles_schemas.getDeveloperCandles.query>> {
   return {
     symbol: symbol,
@@ -191,6 +192,7 @@ export function createHistoricalCandlesQuery(
     start_datetime: startTime,
     end_datetime: endTime,
     timezone: timezone,
+    ...(ignoreDb ? { ignoreDb: true } : {}),
   };
 }
 
@@ -291,16 +293,23 @@ export function createGrowwQuoteQuery(symbol: string): { symbol: string } {
 /**
  * Creates valid candles query parameters for dashboard
  */
-export function createCandlesQuery(
-  symbol?: string,
-  date?: string,
-  interval?: z.infer<typeof v1_candles_schemas.getDashboardCandles.query>["interval"],
-  timezone?: string
-): z.infer<typeof v1_candles_schemas.getDashboardCandles.query> {
+export function createCandlesQuery({
+  symbol = TEST_SYMBOL,
+  date = TEST_DATE,
+  interval,
+  ignoreDb = false,
+}: {
+  symbol?: string;
+  date?: string;
+  interval?: z.infer<typeof v1_candles_schemas.getDashboardCandles.query>["interval"];
+  timezone?: string;
+  ignoreDb?: boolean;
+}): z.infer<typeof v1_candles_schemas.getDashboardCandles.query> {
   return {
     symbol: symbol || TEST_SYMBOL,
     date: date || TEST_DATE,
-    ...(interval && { interval }),
+    ...(ignoreDb ? { ignoreDb: true } : {}),
+    ...(interval ? { interval } : {}),
   };
 }
 
