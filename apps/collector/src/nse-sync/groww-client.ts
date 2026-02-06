@@ -28,12 +28,19 @@ interface GrowwCandlesResponse {
  * @param endTime - End time in IST format: YYYY-MM-DDTHH:mm:ss
  * @param maxRetries - Maximum number of retry attempts (default: 5)
  */
-export async function fetchHistoricalCandles(
-  growwSymbol: string,
-  startTime: string,
-  endTime: string,
-  maxRetries: number = 5
-): Promise<GrowwCandle[]> {
+export async function fetchHistoricalCandles({
+  growwSymbol,
+  startTime,
+  endTime,
+  maxRetries = 5,
+  accessToken,
+}: {
+  growwSymbol: string;
+  startTime: string;
+  endTime: string;
+  maxRetries: number;
+  accessToken: string;
+}): Promise<GrowwCandle[]> {
   const url = "https://api.groww.in/v1/historical/candles";
   const params = {
     candle_interval: "1minute",
@@ -48,9 +55,6 @@ export async function fetchHistoricalCandles(
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      // Get access token for authentication
-      const accessToken = await getGrowwToken();
-
       const response = await axios.get<GrowwCandlesResponse>(url, {
         params,
         timeout: 30000, // 30 second timeout

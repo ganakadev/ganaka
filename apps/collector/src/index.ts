@@ -18,7 +18,7 @@ function main() {
 
   // NSE sync cron at 11PM IST on weekdays
   const nseSyncJob = new Cron(
-    "35 12 * * 1-5",
+    "0 23 * * 1-5",
     {
       timezone: "Asia/Kolkata",
     },

@@ -1,11 +1,13 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { promises as fs } from "fs";
 import { prisma } from "../utils/prisma";
 import { acquireGrowwToken } from "../utils/rateLimiter";
 import { fetchHistoricalCandles } from "./groww-client";
 import type { NseIntrument } from "@ganaka/db";
 import { Decimal } from "@ganaka/db/prisma";
+import { getGrowwToken } from "../utils/token-manager";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -166,16 +168,66 @@ export async function determineFetchRequests(instruments: NseIntrument[]): Promi
 }
 
 /**
+ * Format a candle row for CSV export
+ */
+function formatCandleRowForCSV(candle: {
+  instrumentId: number;
+  timestamp: Date;
+  open: Decimal | null;
+  high: Decimal | null;
+  low: Decimal | null;
+  close: Decimal | null;
+  volume: bigint | null;
+}): string {
+  // Format timestamp as ISO 8601 with UTC timezone for PostgreSQL compatibility
+  const timestamp = dayjs.utc(candle.timestamp).toISOString();
+  const open = candle.open ? candle.open.toString() : "";
+  const high = candle.high ? candle.high.toString() : "";
+  const low = candle.low ? candle.low.toString() : "";
+  const close = candle.close ? candle.close.toString() : "";
+  const volume = candle.volume ? candle.volume.toString() : "";
+
+  return `${candle.instrumentId},${timestamp},${open},${high},${low},${close},${volume}`;
+}
+
+/**
+ * Write CSV header if file doesn't exist
+ */
+async function ensureCSVHeader(csvFilePath: string): Promise<void> {
+  try {
+    await fs.access(csvFilePath);
+    // File exists, no need to write header
+  } catch {
+    // File doesn't exist, write header
+    const header = "instrumentId,timestamp,open,high,low,close,volume\n";
+    await fs.appendFile(csvFilePath, header);
+  }
+}
+
+/**
  * Fetch and store candles with rate limiting
  */
 export async function fetchAndStoreCandles(
-  requests: FetchRequest[]
+  requests: FetchRequest[],
+  /**
+   * If csvFilePath is provided, the candles will be written to a CSV file
+   */
+  csvFilePath?: string
 ): Promise<{ fetched: number; inserted: number; errors: SyncError[] }> {
   let totalFetched = 0;
   let totalInserted = 0;
   const errors: SyncError[] = [];
 
-  console.log(`\nProcessing ${requests.length} fetch requests...`);
+  // Initialize CSV file if csvFilePath is provided
+  if (csvFilePath) {
+    await ensureCSVHeader(csvFilePath);
+    console.log(`\nProcessing ${requests.length} fetch requests (CSV mode: ${csvFilePath})...`);
+  } else {
+    console.log(`\nProcessing ${requests.length} fetch requests...`);
+  }
+
+  // Get access token for authentication
+  const accessToken = await getGrowwToken();
 
   for (let i = 0; i < requests.length; i++) {
     const request = requests[i];
@@ -201,7 +253,13 @@ export async function fetchAndStoreCandles(
           await acquireGrowwToken();
 
           // Fetch candles from Groww API
-          const candles = await fetchHistoricalCandles(instrument.growwSymbol, startTime, endTime);
+          const candles = await fetchHistoricalCandles({
+            growwSymbol: instrument.growwSymbol,
+            startTime,
+            endTime,
+            maxRetries: 5,
+            accessToken,
+          });
 
           if (candles.length === 0) {
             continue; // No candles for this period
@@ -235,51 +293,94 @@ export async function fetchAndStoreCandles(
           const dateRangeStart = chunk.start;
           const dateRangeEnd = chunk.end;
 
-          if (candleChunks.length > 1) {
-            console.log(
-              `  [${i + 1}/${requests.length}] ${instrument.symbol}: Inserting ${dbCandles.length} candles in ${candleChunks.length} batches...`
-            );
-          }
-
-          // Process each chunk sequentially
-          for (let chunkIdx = 0; chunkIdx < candleChunks.length; chunkIdx++) {
-            const candleChunk = candleChunks[chunkIdx];
-            try {
-              const result = await prisma.nseCandle.createMany({
-                data: candleChunk,
-                skipDuplicates: true,
-              });
-
-              chunkInserted += result.count;
-
-              if (candleChunks.length > 1) {
-                console.log(
-                  `    Batch [${chunkIdx + 1}/${candleChunks.length}]: inserted ${result.count} candles`
-                );
-              }
-
-              // Add delay between batches to allow PostgreSQL to release memory
-              if (chunkIdx < candleChunks.length - 1) {
-                await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
-              }
-            } catch (error) {
-              const errorMessage = error instanceof Error ? error.message : String(error);
-              console.error(
-                `    Batch [${chunkIdx + 1}/${candleChunks.length}] failed: ${errorMessage}`
+          if (csvFilePath) {
+            // CSV mode: write to file
+            if (candleChunks.length > 1) {
+              console.log(
+                `  [${i + 1}/${requests.length}] ${instrument.symbol}: Writing ${dbCandles.length} candles to CSV in ${candleChunks.length} batches...`
               );
-              errors.push({
-                symbol: instrument.symbol,
-                error: `Failed to insert batch ${chunkIdx + 1}/${candleChunks.length} for date range ${dateRangeStart} to ${dateRangeEnd}: ${errorMessage}`,
-              });
-              // Continue with next chunk
+            }
+
+            // Process each chunk sequentially
+            for (let chunkIdx = 0; chunkIdx < candleChunks.length; chunkIdx++) {
+              const candleChunk = candleChunks[chunkIdx];
+              try {
+                const csvRows = candleChunk.map(formatCandleRowForCSV).join("\n") + "\n";
+                await fs.appendFile(csvFilePath, csvRows);
+
+                chunkInserted += candleChunk.length;
+
+                if (candleChunks.length > 1) {
+                  console.log(
+                    `    Batch [${chunkIdx + 1}/${candleChunks.length}]: wrote ${candleChunk.length} candles`
+                  );
+                }
+              } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                console.error(
+                  `    Batch [${chunkIdx + 1}/${candleChunks.length}] failed: ${errorMessage}`
+                );
+                errors.push({
+                  symbol: instrument.symbol,
+                  error: `Failed to write batch ${chunkIdx + 1}/${candleChunks.length} for date range ${dateRangeStart} to ${dateRangeEnd}: ${errorMessage}`,
+                });
+                // Continue with next chunk
+              }
+            }
+          } else {
+            // Database mode: write to database
+            if (candleChunks.length > 1) {
+              console.log(
+                `  [${i + 1}/${requests.length}] ${instrument.symbol}: Inserting ${dbCandles.length} candles in ${candleChunks.length} batches...`
+              );
+            }
+
+            // Process each chunk sequentially
+            for (let chunkIdx = 0; chunkIdx < candleChunks.length; chunkIdx++) {
+              const candleChunk = candleChunks[chunkIdx];
+              try {
+                const result = await prisma.nseCandle.createMany({
+                  data: candleChunk,
+                  skipDuplicates: true,
+                });
+
+                chunkInserted += result.count;
+
+                if (candleChunks.length > 1) {
+                  console.log(
+                    `    Batch [${chunkIdx + 1}/${candleChunks.length}]: inserted ${result.count} candles`
+                  );
+                }
+
+                // Add delay between batches to allow PostgreSQL to release memory
+                if (chunkIdx < candleChunks.length - 1) {
+                  await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
+                }
+              } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                console.error(
+                  `    Batch [${chunkIdx + 1}/${candleChunks.length}] failed: ${errorMessage}`
+                );
+                errors.push({
+                  symbol: instrument.symbol,
+                  error: `Failed to insert batch ${chunkIdx + 1}/${candleChunks.length} for date range ${dateRangeStart} to ${dateRangeEnd}: ${errorMessage}`,
+                });
+                // Continue with next chunk
+              }
             }
           }
 
           totalInserted += chunkInserted;
 
-          console.log(
-            `  [${i + 1}/${requests.length}] ${instrument.symbol}: Fetched ${candles.length} candles, inserted ${chunkInserted} (${chunk.start} to ${chunk.end})`
-          );
+          if (csvFilePath) {
+            console.log(
+              `  [${i + 1}/${requests.length}] ${instrument.symbol}: Fetched ${candles.length} candles, wrote ${chunkInserted} to CSV (${chunk.start} to ${chunk.end})`
+            );
+          } else {
+            console.log(
+              `  [${i + 1}/${requests.length}] ${instrument.symbol}: Fetched ${candles.length} candles, inserted ${chunkInserted} (${chunk.start} to ${chunk.end})`
+            );
+          }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : String(error);
           console.error(
@@ -305,7 +406,8 @@ export async function fetchAndStoreCandles(
 
     // Periodically disconnect Prisma to force PostgreSQL to release connection memory
     // This helps prevent out-of-memory errors during long-running syncs
-    if ((i + 1) % INSTRUMENTS_BEFORE_DISCONNECT === 0) {
+    // Skip this in CSV mode as we're not using the database
+    if (!csvFilePath && (i + 1) % INSTRUMENTS_BEFORE_DISCONNECT === 0) {
       console.log(`  Disconnecting Prisma after ${i + 1} instruments to release memory...`);
       try {
         await prisma.$disconnect();
