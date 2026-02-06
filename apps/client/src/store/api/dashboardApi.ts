@@ -76,11 +76,11 @@ export const dashboardAPI = createApi({
 
     // Get candles
     getCandles: builder.query<
-      z.infer<typeof v1_candles_schemas.getCandles.response>,
-      z.infer<typeof v1_candles_schemas.getCandles.query>
+      z.infer<typeof v1_candles_schemas.getDashboardCandles.response>,
+      z.infer<typeof v1_candles_schemas.getDashboardCandles.query>
     >({
       query: (params) => {
-        const validatedParams = v1_candles_schemas.getCandles.query.parse(params);
+        const validatedParams = v1_candles_schemas.getDashboardCandles.query.parse(params);
         return {
           url: "/candles",
           method: "GET",
