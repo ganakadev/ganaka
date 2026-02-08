@@ -2,18 +2,18 @@ import { v1_schemas } from "@ganaka/schemas";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { expect, test } from "../../../helpers/test-fixtures";
-import { createDeveloperUser } from "../../../helpers/auth-helpers";
-import { authenticatedGet } from "../../../helpers/api-client";
-import { TestDataTracker } from "../../../helpers/test-tracker";
+import { parseDateTimeInTimezone } from "../../../../src/utils/timezone";
 import {
+  buildQueryString,
   createCandlesQuery,
   createDeveloperCandlesQuery,
-  buildQueryString,
   TEST_SYMBOL,
 } from "../../../fixtures/test-data";
-import { createTestInstrument, createTestCandles } from "../../../helpers/db-helpers";
-import { parseDateTimeInTimezone } from "../../../../src/utils/timezone";
+import { authenticatedGet } from "../../../helpers/api-client";
+import { createDeveloperUser } from "../../../helpers/auth-helpers";
+import { createTestCandles, createTestInstrument } from "../../../helpers/db-helpers";
+import { expect, test } from "../../../helpers/test-fixtures";
+import { TestDataTracker } from "../../../helpers/test-tracker";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -115,7 +115,6 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
       const instrument = await createTestInstrument(testSymbol, "Test DB Instrument 1", tracker);
       const testDate = DATE_IN_DB_RANGE;
       const marketStart = dayjs.tz(`${testDate} 09:15:00`, "Asia/Kolkata");
-      const marketEnd = dayjs.tz(`${testDate} 15:30:00`, "Asia/Kolkata");
 
       // Create some test candles
       await createTestCandles(
@@ -616,7 +615,6 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
       const startDatetime = DATETIME_IN_DB_RANGE_START;
       const endDatetime = DATETIME_IN_DB_RANGE_END;
       const startUTC = parseDateTimeInTimezone(startDatetime, "Asia/Kolkata");
-      const endUTC = parseDateTimeInTimezone(endDatetime, "Asia/Kolkata");
 
       await createTestCandles(
         instrument.id,

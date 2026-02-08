@@ -1,17 +1,17 @@
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { expect, test } from "../../../helpers/test-fixtures";
-import { createDeveloperUser } from "../../../helpers/auth-helpers";
-import { authenticatedGet } from "../../../helpers/api-client";
-import { TestDataTracker } from "../../../helpers/test-tracker";
+import { parseDateTimeInTimezone } from "../../../../src/utils/timezone";
 import {
+  buildQueryString,
   createCandlesQuery,
   createDeveloperCandlesQuery,
-  buildQueryString,
 } from "../../../fixtures/test-data";
-import { createTestInstrument, createTestCandles } from "../../../helpers/db-helpers";
-import { parseDateTimeInTimezone } from "../../../../src/utils/timezone";
+import { authenticatedGet } from "../../../helpers/api-client";
+import { createDeveloperUser } from "../../../helpers/auth-helpers";
+import { createTestCandles, createTestInstrument } from "../../../helpers/db-helpers";
+import { expect, test } from "../../../helpers/test-fixtures";
+import { TestDataTracker } from "../../../helpers/test-tracker";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -20,21 +20,6 @@ dayjs.extend(timezone);
 const DATE_IN_DB_RANGE = "2025-12-01";
 const DATETIME_IN_DB_RANGE_START = "2025-12-01T09:15:00";
 const DATETIME_IN_DB_RANGE_END = "2025-12-01T15:30:00";
-
-// Helper to get boundary end (today - 1 day)
-function getBoundaryEndDate(): string {
-  return dayjs
-    .tz(dayjs.utc().tz("Asia/Kolkata").format("YYYY-MM-DD"), "Asia/Kolkata")
-    .subtract(1, "day")
-    .format("YYYY-MM-DD");
-}
-
-function getBoundaryEndDatetime(): string {
-  return dayjs
-    .tz(dayjs.utc().tz("Asia/Kolkata").format("YYYY-MM-DD"), "Asia/Kolkata")
-    .subtract(1, "day")
-    .format("YYYY-MM-DDTHH:mm:ss");
-}
 
 let developerToken: string;
 let sharedTracker: TestDataTracker;

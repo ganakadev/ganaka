@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { getGrowwToken, invalidateToken } from "../utils/token-manager";
+import { invalidateToken } from "../utils/token-manager";
 
 export interface GrowwCandle {
   timestamp: string; // ISO timestamp string
