@@ -8,8 +8,8 @@ import {
 import { z } from "zod";
 import { fetchCandles } from "./callbacks/fetchCandles";
 import { fetchQuote } from "./callbacks/fetchQuote";
-import { fetchShortlist } from "./callbacks/fetchShortlist";
-import { fetchShortlistPersistence } from "./callbacks/fetchShortlistPersistence";
+import { fetchList } from "./callbacks/fetchShortlist";
+import { fetchListPersistence } from "./callbacks/fetchShortlistPersistence";
 import { fetchDates } from "./callbacks/fetchDates";
 import { fetchHolidays } from "./callbacks/fetchHolidays";
 
@@ -113,7 +113,7 @@ export class GanakaClient {
   async fetchShortlist(
     queryParams: z.infer<typeof v1_lists_schemas.getLists.query>
   ): Promise<z.infer<typeof v1_lists_schemas.getLists.response>["data"] | null> {
-    const callback = fetchShortlist({
+    const callback = fetchList({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
       runId: null,
@@ -138,10 +138,10 @@ export class GanakaClient {
    * @param queryParams.end_datetime - End datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
    * @returns Promise resolving to shortlist persistence data or null
    */
-  async fetchShortlistPersistence(
-    queryParams: z.infer<typeof v1_lists_schemas.getShortlistPersistence.query>
-  ): Promise<z.infer<typeof v1_lists_schemas.getShortlistPersistence.response>["data"] | null> {
-    const callback = fetchShortlistPersistence({
+  async fetchListPersistence(
+    queryParams: z.infer<typeof v1_lists_schemas.getListPersistence.query>
+  ): Promise<z.infer<typeof v1_lists_schemas.getListPersistence.response>["data"] | null> {
+    const callback = fetchListPersistence({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
       runId: null,

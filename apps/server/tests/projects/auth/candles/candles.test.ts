@@ -48,7 +48,7 @@ test.describe("GET /v1/candles", () => {
 
   test.describe("Developer Source", () => {
     test("should return 401 when authorization header is missing", async () => {
-      const query = createDeveloperCandlesQuery();
+      const query = createDeveloperCandlesQuery({});
       const queryString = buildQueryString(query);
       const response = await unauthenticatedGet(`/v1/candles?${queryString}`);
 
@@ -56,7 +56,7 @@ test.describe("GET /v1/candles", () => {
     });
 
     test("should return 401 when invalid token is provided", async () => {
-      const query = createDeveloperCandlesQuery();
+      const query = createDeveloperCandlesQuery({});
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, "invalid-token-12345", {
         validateStatus: () => true,

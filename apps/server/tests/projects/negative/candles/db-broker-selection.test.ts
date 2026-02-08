@@ -319,7 +319,12 @@ test.describe("GET /v1/candles - DB/Broker Selection Edge Cases", () => {
         tracker
       );
 
-      const query = createDeveloperCandlesQuery(testSymbol, "1minute", startDatetime, endDatetime);
+      const query = createDeveloperCandlesQuery({
+        symbol: testSymbol,
+        interval: "1minute",
+        startTime: startDatetime,
+        endTime: endDatetime,
+      });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         headers: {

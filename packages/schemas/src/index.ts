@@ -24,7 +24,7 @@ export {
   v1_groww_credentials_schemas,
   v1_groww_token_schemas,
   v1_holidays_schemas,
-  v1_lists_schemas,
+  v1_shortlists_schemas,
   v1_quote_schemas,
   v1_runs_schemas,
 } from "./v1";

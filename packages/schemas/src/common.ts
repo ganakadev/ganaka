@@ -58,11 +58,10 @@ export const growwQuoteSchema = z.object({
   payload: growwQuotePayloadSchema,
 });
 
-export const shortlistEntrySchema = z.object({
-  nseSymbol: z.string(),
+export const shortlistSchema = z.object({
   name: z.string(),
   price: z.number(),
-  quoteData: growwQuoteSchema.nullable().optional(),
+  nseSymbol: z.string(),
 });
 
 export const shortlistScopeSchema = z.enum(shortlistScopeEnum);
