@@ -4,12 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { dashboardAPI } from "../store/api/dashboardApi";
 import { authLocalStorage } from "../utils/authLocalStorage";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { v1_auth_schemas } from "@ganaka/schemas";
 import { z } from "zod";
 import { useRTKNotifier } from "../utils/hooks/useRTKNotifier";
-
-const signInSchema = z.object({
-  developerToken: z.string().min(1, "Developer key is required"),
-});
 
 export const SignIn = () => {
   // HOOKS
@@ -18,8 +15,8 @@ export const SignIn = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(signInSchema),
+  } = useForm<z.infer<typeof v1_auth_schemas.signIn.body>>({
+    resolver: zodResolver(v1_auth_schemas.signIn.body),
   });
 
   // API

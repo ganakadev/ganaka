@@ -1,7 +1,7 @@
-import type { growwQuoteSchema, shortlistEntrySchema } from "@ganaka/schemas";
+import type { growwQuoteSchema, shortlistSchema } from "@ganaka/schemas";
 import { z } from "zod";
 
-export type ShortlistEntry = z.infer<typeof shortlistEntrySchema>;
+export type ShortlistEntry = z.infer<typeof shortlistSchema>;
 
 // Type for shortlist entry with quote data and buyer control
 export interface ShortlistEntryWithQuote extends ShortlistEntry {
