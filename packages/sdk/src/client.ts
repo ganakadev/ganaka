@@ -1,15 +1,15 @@
 import {
   v1_candles_schemas,
   v1_quote_schemas,
-  v1_lists_schemas,
+  v1_shortlists_schemas,
   v1_dates_schemas,
   v1_holidays_schemas,
 } from "@ganaka/schemas";
 import { z } from "zod";
 import { fetchCandles } from "./callbacks/fetchCandles";
 import { fetchQuote } from "./callbacks/fetchQuote";
-import { fetchList } from "./callbacks/fetchShortlist";
-import { fetchListPersistence } from "./callbacks/fetchShortlistPersistence";
+import { fetchShortlist } from "./callbacks/fetchShortlist";
+import { fetchShortlistPersistence } from "./callbacks/fetchShortlistPersistence";
 import { fetchDates } from "./callbacks/fetchDates";
 import { fetchHolidays } from "./callbacks/fetchHolidays";
 
@@ -111,9 +111,9 @@ export class GanakaClient {
    * @returns Promise resolving to shortlist data or null
    */
   async fetchShortlist(
-    queryParams: z.infer<typeof v1_lists_schemas.getLists.query>
-  ): Promise<z.infer<typeof v1_lists_schemas.getLists.response>["data"] | null> {
-    const callback = fetchList({
+    queryParams: z.infer<typeof v1_shortlists_schemas.getShortlists.query>
+  ): Promise<z.infer<typeof v1_shortlists_schemas.getShortlists.response>["data"] | null> {
+    const callback = fetchShortlist({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
       runId: null,
@@ -138,10 +138,12 @@ export class GanakaClient {
    * @param queryParams.end_datetime - End datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
    * @returns Promise resolving to shortlist persistence data or null
    */
-  async fetchListPersistence(
-    queryParams: z.infer<typeof v1_lists_schemas.getListPersistence.query>
-  ): Promise<z.infer<typeof v1_lists_schemas.getListPersistence.response>["data"] | null> {
-    const callback = fetchListPersistence({
+  async fetchShortlistPersistence(
+    queryParams: z.infer<typeof v1_shortlists_schemas.getShortlistPersistence.query>
+  ): Promise<
+    z.infer<typeof v1_shortlists_schemas.getShortlistPersistence.response>["data"] | null
+  > {
+    const callback = fetchShortlistPersistence({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
       runId: null,
