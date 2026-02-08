@@ -84,7 +84,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
       }
     });
 
-    test("should fetch from broker when date equals boundary start", async () => {
+    test("should fetch from db when date equals boundary start", async () => {
       const query = createCandlesQuery({
         symbol: TEST_SYMBOL,
         date: DB_BOUNDARY_START,
@@ -101,7 +101,7 @@ test.describe("GET /v1/candles - DB/Broker Selection", () => {
       // Strict isAfter check means equals should use broker
       if (response.status === 200) {
         const body = response.data;
-        expect(body.data.source).toBe("broker");
+        expect(body.data.source).toBe("db");
       } else {
         expect([400, 500]).toContain(response.status);
       }

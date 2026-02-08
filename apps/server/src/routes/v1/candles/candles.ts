@@ -5,16 +5,16 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { FastifyPluginAsync } from "fastify";
 import z from "zod";
+import { validateCurrentTimestamp } from "../../../utils/current-timestamp-validator";
 import { formatDateTime } from "../../../utils/date-formatter";
 import { makeGrowwAPIRequest } from "../../../utils/groww-api-request";
+import { prisma } from "../../../utils/prisma";
 import { RedisManager } from "../../../utils/redis";
 import { sendResponse } from "../../../utils/sendResponse";
-import { TokenManager } from "../../../utils/token-manager";
-import { validateRequest } from "../../../utils/validator";
 import { sourceBasedExecute } from "../../../utils/sourceBasedExecute";
 import { parseDateTimeInTimezone } from "../../../utils/timezone";
-import { validateCurrentTimestamp } from "../../../utils/current-timestamp-validator";
-import { prisma } from "../../../utils/prisma";
+import { TokenManager } from "../../../utils/token-manager";
+import { validateRequest } from "../../../utils/validator";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -27,7 +27,9 @@ function getTodayIST(): string {
 }
 
 const dbCandleBoundaryStart = dayjs.tz("2025-11-01 09:15:00", "Asia/Kolkata");
-const dbCandleBoundaryEnd = dayjs.tz(getTodayIST(), "Asia/Kolkata").subtract(1, "day");
+const dbCandleBoundaryEnd = dayjs
+  .tz(`${getTodayIST()} 15:30:00`, "Asia/Kolkata")
+  .subtract(1, "day");
 
 /**
  * Fetch candles from database for a given symbol and time range
@@ -122,11 +124,10 @@ const candlesRoutes: FastifyPluginAsync = async (fastify) => {
             const candleInterval = validationResult.interval || "1minute";
 
             // Check if we should fetch from DB or Groww
-            const date = dayjs.tz(validationResult.date, "Asia/Kolkata");
             const shouldFetchFromDB =
               candleInterval === "1minute" &&
-              !date.isBefore(dbCandleBoundaryStart) &&
-              !date.isAfter(dbCandleBoundaryEnd) &&
+              !marketStart.isBefore(dbCandleBoundaryStart) &&
+              !marketEnd.isAfter(dbCandleBoundaryEnd) &&
               validationResult.ignoreDb !== true;
 
             if (shouldFetchFromDB) {
