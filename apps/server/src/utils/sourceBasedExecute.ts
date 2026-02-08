@@ -5,6 +5,7 @@ import { AtLeastOne } from "../types/common";
 export const sourceBasedExecute = ({
   request,
   sources,
+  reply,
 }: {
   request: FastifyRequest;
   reply: FastifyReply;
@@ -13,17 +14,17 @@ export const sourceBasedExecute = ({
     developer?: () => Promise<ReturnType<typeof sendResponse> | undefined>;
   }>;
 }) => {
-  const source = request.headers["x-source"] as "dashboard" | "developer";
+  const source = (request.headers["x-source"] as "dashboard" | "developer") ?? "developer";
 
   switch (source) {
     case "dashboard": {
-      return sources.dashboard?.() ?? sources.developer?.();
+      return sources.dashboard?.();
     }
     case "developer": {
-      return sources.developer?.() ?? sources.dashboard?.();
+      return sources.developer?.();
     }
     default: {
-      return sources.developer?.() ?? sources.dashboard?.();
+      return reply.badRequest("Invalid source. Please check your request headers.");
     }
   }
 };

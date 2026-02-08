@@ -442,14 +442,6 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
           scope: scope,
         },
       });
-      const quoteSnapshots = await prisma.quoteSnapshot.findMany({
-        where: {
-          timestamp: {
-            gte: selectedDateTimeUTC,
-            lte: dayjs.utc(selectedDateTimeUTC).add(1, "minute").toDate(), // Add 1 minute
-          },
-        },
-      });
 
       if (shortlists.length === 0) {
         return sendResponse<z.infer<typeof v1_schemas.v1_lists_schemas.getShortlists.response>>(
@@ -474,47 +466,37 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
         // Process entries with trade metrics in parallel
         const entriesWithMetrics = await Promise.all(
           shortlistEntries.flatMap(async (entry) => {
-            const quoteSnapshot = quoteSnapshots.find(
-              (quoteSnapshot) => quoteSnapshot.nseSymbol === entry.nseSymbol
-            );
-            const quoteData = quoteSnapshot?.quoteData;
+            // Only calculate trade metrics if both parameters were explicitly provided
+            const tradeMetrics = shouldCalculateMetrics
+              ? await calculateTradeMetrics({
+                  nseSymbol: entry.nseSymbol,
+                  entryPrice: entry.price,
+                  shortlistTimestamp: selectedDateTimeUTC,
+                  takeProfitPercentage,
+                  stopLossPercentage,
+                  growwAPIRequest,
+                })
+              : {};
 
-            if (quoteData) {
-              // Only calculate trade metrics if both parameters were explicitly provided
-              const tradeMetrics = shouldCalculateMetrics
-                ? await calculateTradeMetrics({
-                    nseSymbol: entry.nseSymbol,
-                    entryPrice: entry.price,
-                    shortlistTimestamp: selectedDateTimeUTC,
-                    takeProfitPercentage,
-                    stopLossPercentage,
-                    growwAPIRequest,
-                  })
-                : {};
+            const data: NonNullable<
+              z.infer<
+                typeof v1_schemas.v1_lists_schemas.getShortlists.response
+              >["data"]["shortlist"]
+            >["entries"][number] = {
+              nseSymbol: entry.nseSymbol,
+              name: entry.name,
+              price: entry.price,
+              stopLossHit: tradeMetrics.stopLossHit,
+              timeToStopLossMinutes: tradeMetrics.timeToStopLossMinutes,
+              stopLossTimestamp: tradeMetrics.stopLossTimestamp,
+              targetAchieved: tradeMetrics.targetAchieved,
+              timeToTargetMinutes: tradeMetrics.timeToTargetMinutes,
+              targetTimestamp: tradeMetrics.targetTimestamp,
+              stopLossPrice: tradeMetrics.stopLossPrice,
+              targetPrice: tradeMetrics.targetPrice,
+            };
 
-              const data: NonNullable<
-                z.infer<
-                  typeof v1_schemas.v1_lists_schemas.getShortlists.response
-                >["data"]["shortlist"]
-              >["entries"][number] = {
-                nseSymbol: entry.nseSymbol,
-                name: entry.name,
-                price: entry.price,
-                quoteData: quoteData as unknown as z.infer<typeof growwQuoteSchema>,
-                stopLossHit: tradeMetrics.stopLossHit,
-                timeToStopLossMinutes: tradeMetrics.timeToStopLossMinutes,
-                stopLossTimestamp: tradeMetrics.stopLossTimestamp,
-                targetAchieved: tradeMetrics.targetAchieved,
-                timeToTargetMinutes: tradeMetrics.timeToTargetMinutes,
-                targetTimestamp: tradeMetrics.targetTimestamp,
-                stopLossPrice: tradeMetrics.stopLossPrice,
-                targetPrice: tradeMetrics.targetPrice,
-              };
-
-              return data;
-            }
-
-            return [];
+            return data;
           })
         );
 

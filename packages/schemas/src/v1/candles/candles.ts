@@ -9,27 +9,31 @@ import {
 
 // ==================== Schemas ====================
 
-export const growwHistoricalCandlesSchema = z.object({
+const candleSourceSchema = z.enum(["db", "broker"]);
+
+export const candlesSchema = z.object({
   status: z.enum(["SUCCESS", "FAILURE"]),
   payload: z.object({
     /**
      * [timestamp, open, high, low, close, volume, turnover]
      */
     candles: z.array(z.array(z.union([z.string(), z.number()]).nullable())),
+    source: candleSourceSchema,
     closing_price: z.number().nullable(),
-    start_time: z.string(),
-    end_time: z.string(),
-    interval_in_minutes: z.number(),
+    start_time: z.string().nullable(),
+    end_time: z.string().nullable(),
+    interval_in_minutes: z.number().nullable(),
   }),
 });
 
-// ==================== GET /candles ====================
+// ==================== GET /candles (dashboard) ====================
 // Unified endpoint for both dashboard and developer access
 
-export const getCandles = {
+export const getDashboardCandles = {
   query: z.object({
     symbol: z.string(),
     date: dateFormatSchema,
+    ignoreDb: z.coerce.boolean().optional(),
     interval: z.enum(validCandleIntervals).optional(),
   }),
   response: apiResponseSchema.extend({
@@ -43,6 +47,7 @@ export const getCandles = {
           close: z.number(),
         })
       ),
+      source: candleSourceSchema,
       start_time: z.string().nullable(),
       end_time: z.string().nullable(),
       interval_in_minutes: z.number(),
@@ -50,18 +55,19 @@ export const getCandles = {
   }),
 };
 
-// ==================== GET /candles (historical) ====================
+// ==================== GET /candles (developer) ====================
 // For developer access with datetime range
 
-export const getGrowwHistoricalCandles = {
+export const getDeveloperCandles = {
   query: z.object({
     symbol: z.string(),
     interval: z.enum(validCandleIntervals),
     start_datetime: datetimeFormatSchema,
     end_datetime: datetimeFormatSchema,
+    ignoreDb: z.coerce.boolean().optional(),
     timezone: timezoneSchema.optional(),
   }),
   response: apiResponseSchema.extend({
-    data: growwHistoricalCandlesSchema,
+    data: candlesSchema,
   }),
 };

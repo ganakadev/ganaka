@@ -39,5 +39,8 @@
     "typescript": "^5.3.3",
     "vite": "^5.0.0",
     "vite-plugin-dts": "^3.6.0"
+  },
+  "prisma": {
+    "schema": "./prisma"
   }
 }

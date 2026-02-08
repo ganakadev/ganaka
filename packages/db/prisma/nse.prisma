@@ -1,0 +1,41 @@
+model NseIntrument {
+    id          Int    @id @default(autoincrement())
+    symbol      String @unique
+    growwSymbol String @unique /// NSE-<symbol>
+    name        String
+
+    createdAt DateTime    @default(now())
+    updatedAt DateTime    @updatedAt
+    candles   NseCandle[]
+
+    @@index([symbol, growwSymbol])
+    @@map("nse_instruments")
+}
+
+model NseCandle {
+    id Int @id @default(autoincrement())
+
+    instrument NseIntrument @relation(fields: [instrumentId], references: [id])
+    timestamp  DateTime
+    open       Decimal?
+    high       Decimal?
+    low        Decimal?
+    close      Decimal?
+    volume     BigInt?
+
+    instrumentId Int
+
+    @@index([instrumentId, timestamp])
+    @@map("nse_candles")
+}
+
+model NseHoliday {
+    id   String   @id @default(uuid())
+    date DateTime @unique
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([date])
+    @@map("nse_holidays")
+}

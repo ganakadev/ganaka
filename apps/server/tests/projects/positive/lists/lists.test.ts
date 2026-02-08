@@ -4,12 +4,11 @@ import dayjs from "dayjs";
 import {
   generateUniqueTestDatetime,
   createValidShortlistEntries,
-  createValidGrowwQuotePayload,
   createShortlistsQuery,
   buildQueryString,
 } from "../../../fixtures/test-data";
 import { authenticatedGet } from "../../../helpers/api-client";
-import { createShortlistSnapshot, createQuoteSnapshot } from "../../../helpers/db-helpers";
+import { createShortlistSnapshot } from "../../../helpers/db-helpers";
 import { TestDataTracker } from "../../../helpers/test-tracker";
 import { createDeveloperUser } from "../../../helpers/auth-helpers";
 import timezone from "dayjs/plugin/timezone";
@@ -40,15 +39,9 @@ test.describe("GET /v1/lists", () => {
   test("should return 200 with shortlist data when valid params provided", async ({ tracker }) => {
     const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
-    const testQuoteData = createValidGrowwQuotePayload();
 
     // Create shortlist snapshot
     await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
-
-    // Create quote snapshots for each entry
-    for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
-    }
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
@@ -70,12 +63,8 @@ test.describe("GET /v1/lists", () => {
   }) => {
     const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
-    const testQuoteData = createValidGrowwQuotePayload();
 
     await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
-    for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
-    }
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
@@ -102,12 +91,8 @@ test.describe("GET /v1/lists", () => {
   }) => {
     const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
-    const testQuoteData = createValidGrowwQuotePayload();
 
     await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
-    for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
-    }
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
@@ -121,53 +106,17 @@ test.describe("GET /v1/lists", () => {
       expect(firstEntry).toHaveProperty("nseSymbol");
       expect(firstEntry).toHaveProperty("name");
       expect(firstEntry).toHaveProperty("price");
-      expect(firstEntry).toHaveProperty("quoteData");
       expect(typeof firstEntry.nseSymbol).toBe("string");
       expect(typeof firstEntry.name).toBe("string");
       expect(typeof firstEntry.price).toBe("number");
     }
   });
 
-  test("should validate quoteData structure matches schema", async ({ tracker }) => {
-    const testDatetime = generateUniqueTestDatetime();
-    const testEntries = createValidShortlistEntries();
-    const testQuoteData = createValidGrowwQuotePayload();
-
-    await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
-    for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
-    }
-
-    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
-    const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
-
-    expect(response.status).toBe(200);
-    const validatedData = v1_schemas.v1_lists_schemas.getShortlists.response.parse(response.data);
-
-    if (validatedData.data.shortlist && validatedData.data.shortlist.entries.length > 0) {
-      const firstEntry = validatedData.data.shortlist.entries[0];
-      expect(firstEntry.quoteData).toHaveProperty("status");
-      expect(firstEntry.quoteData).toHaveProperty("payload");
-      expect(["SUCCESS", "FAILURE"]).toContain(firstEntry.quoteData!.status);
-      expect(firstEntry.quoteData!.payload).toHaveProperty("ohlc");
-      expect(firstEntry.quoteData!.payload).toHaveProperty("depth");
-      expect(firstEntry.quoteData!.payload.ohlc).toHaveProperty("open");
-      expect(firstEntry.quoteData!.payload.ohlc).toHaveProperty("high");
-      expect(firstEntry.quoteData!.payload.ohlc).toHaveProperty("low");
-      expect(firstEntry.quoteData!.payload.ohlc).toHaveProperty("close");
-    }
-  });
-
   test("should validate exact timestamp matches requested datetime", async ({ tracker }) => {
     const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
-    const testQuoteData = createValidGrowwQuotePayload();
 
     await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
-    for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
-    }
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
@@ -188,12 +137,8 @@ test.describe("GET /v1/lists", () => {
   test("should validate exact entry values ", async ({ tracker }) => {
     const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
-    const testQuoteData = createValidGrowwQuotePayload();
 
     await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
-    for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
-    }
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
@@ -218,15 +163,9 @@ test.describe("GET /v1/lists", () => {
   }) => {
     const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
-    const testQuoteData = createValidGrowwQuotePayload();
 
     // Create shortlist snapshot
     await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
-
-    // Create quote snapshots for each entry
-    for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
-    }
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = new URLSearchParams({
@@ -260,15 +199,9 @@ test.describe("GET /v1/lists", () => {
   }) => {
     const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
-    const testQuoteData = createValidGrowwQuotePayload();
 
     // Create shortlist snapshot
     await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
-
-    // Create quote snapshots for each entry
-    for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
-    }
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
@@ -298,15 +231,9 @@ test.describe("GET /v1/lists", () => {
   }) => {
     const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
-    const testQuoteData = createValidGrowwQuotePayload();
 
     // Create shortlist snapshot
     await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
-
-    // Create quote snapshots for each entry
-    for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
-    }
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     // Don't include TP/SL params to test defaults
@@ -327,7 +254,6 @@ test.describe("GET /v1/lists", () => {
   test("should filter by scope when specified", async ({ tracker }) => {
     const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
-    const testQuoteData = createValidGrowwQuotePayload();
 
     // Create shortlist snapshots with different scopes
     await createShortlistSnapshot(
@@ -346,11 +272,6 @@ test.describe("GET /v1/lists", () => {
       undefined,
       "FULL"
     );
-
-    // Create quote snapshots for each entry
-    for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
-    }
 
     // Query for TOP_5 scope
     const query = createShortlistsQuery(
@@ -376,7 +297,6 @@ test.describe("GET /v1/lists", () => {
   test("should default to TOP_5 when not specified", async ({ tracker }) => {
     const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
-    const testQuoteData = createValidGrowwQuotePayload();
 
     // Create both TOP_5 and FULL snapshots
     await createShortlistSnapshot(
@@ -395,11 +315,6 @@ test.describe("GET /v1/lists", () => {
       undefined,
       "FULL"
     );
-
-    // Create quote snapshots for each entry
-    for (const entry of testEntries) {
-      await createQuoteSnapshot(entry.nseSymbol, testDatetime, testQuoteData, tracker);
-    }
 
     // Query without scope parameter
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");

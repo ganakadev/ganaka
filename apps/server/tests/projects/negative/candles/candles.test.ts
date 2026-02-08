@@ -7,7 +7,7 @@ import {
   buildQueryString,
   TEST_SYMBOL,
   createCandlesQuery,
-  createHistoricalCandlesQuery,
+  createDeveloperCandlesQuery,
   generateUniqueTestDatetime,
 } from "../../../fixtures/test-data";
 import { authenticatedGet, authenticatedGetWithRunContext } from "../../../helpers/api-client";
@@ -41,7 +41,7 @@ test.describe("GET /v1/candles", () => {
 
   test.describe("Dashboard Source", () => {
     test("should return 400 when symbol is missing", async () => {
-      const query = createCandlesQuery(undefined, CANDLES_TEST_DATE);
+      const query = createCandlesQuery({ date: CANDLES_TEST_DATE });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         validateStatus: () => true,
@@ -51,7 +51,7 @@ test.describe("GET /v1/candles", () => {
     });
 
     test("should return 400 when date is missing", async () => {
-      const query = createCandlesQuery(TEST_SYMBOL, undefined);
+      const query = createCandlesQuery({ symbol: TEST_SYMBOL, date: undefined });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         validateStatus: () => true,
@@ -61,7 +61,7 @@ test.describe("GET /v1/candles", () => {
     });
 
     test("should return 400 when date format is invalid", async () => {
-      const query = createCandlesQuery(TEST_SYMBOL, "invalid-date");
+      const query = createCandlesQuery({ symbol: TEST_SYMBOL, date: "invalid-date" });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         validateStatus: () => true,
@@ -71,7 +71,11 @@ test.describe("GET /v1/candles", () => {
     });
 
     test("should return 400 when interval is invalid enum value", async () => {
-      const query = createCandlesQuery(TEST_SYMBOL, CANDLES_TEST_DATE, "invalid-interval" as any);
+      const query = createCandlesQuery({
+        symbol: TEST_SYMBOL,
+        date: CANDLES_TEST_DATE,
+        interval: "invalid-interval" as any,
+      });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         validateStatus: () => true,
@@ -83,7 +87,7 @@ test.describe("GET /v1/candles", () => {
     test("should handle external API failures gracefully (500)", async () => {
       // Use a date that likely won't have data (far future or invalid symbol)
       const futureDate = "2099-01-01";
-      const query = createCandlesQuery("INVALID_SYMBOL_XYZ", futureDate);
+      const query = createCandlesQuery({ symbol: "INVALID_SYMBOL_XYZ", date: futureDate });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         validateStatus: () => true,
@@ -96,7 +100,7 @@ test.describe("GET /v1/candles", () => {
 
   test.describe("Developer Source", () => {
     test("should return 400 when symbol is missing", async () => {
-      const query = createHistoricalCandlesQuery();
+      const query = createDeveloperCandlesQuery();
       const queryWithoutSymbol = {
         interval: query.interval,
         start_datetime: query.start_datetime,
@@ -112,7 +116,7 @@ test.describe("GET /v1/candles", () => {
     });
 
     test("should return 400 when interval is missing", async () => {
-      const query = createHistoricalCandlesQuery();
+      const query = createDeveloperCandlesQuery();
       const queryWithoutInterval = {
         symbol: query.symbol,
         start_datetime: query.start_datetime,
@@ -128,8 +132,8 @@ test.describe("GET /v1/candles", () => {
     });
 
     test("should return 400 when start_datetime is missing", async () => {
-      const query = createHistoricalCandlesQuery();
-      const queryWithoutStartTime = createHistoricalCandlesQuery(
+      const query = createDeveloperCandlesQuery();
+      const queryWithoutStartTime = createDeveloperCandlesQuery(
         query.symbol,
         query.interval,
         undefined,
@@ -145,8 +149,8 @@ test.describe("GET /v1/candles", () => {
     });
 
     test("should return 400 when end_datetime is missing", async () => {
-      const query = createHistoricalCandlesQuery();
-      const queryWithoutEndTime = createHistoricalCandlesQuery(
+      const query = createDeveloperCandlesQuery();
+      const queryWithoutEndTime = createDeveloperCandlesQuery(
         query.symbol,
         query.interval,
         query.start_datetime,
@@ -162,7 +166,7 @@ test.describe("GET /v1/candles", () => {
     });
 
     test("should return 400 when interval is invalid", async () => {
-      const query = createHistoricalCandlesQuery();
+      const query = createDeveloperCandlesQuery();
       const queryWithInvalidInterval = {
         symbol: query.symbol,
         start_datetime: query.start_datetime,
@@ -192,12 +196,7 @@ test.describe("GET /v1/candles", () => {
         tracker
       );
 
-      const query = createHistoricalCandlesQuery(
-        TEST_SYMBOL,
-        "5minute",
-        startDatetime,
-        endDatetime
-      );
+      const query = createDeveloperCandlesQuery(TEST_SYMBOL, "5minute", startDatetime, endDatetime);
       const queryString = buildQueryString(query);
       const response = await authenticatedGetWithRunContext(
         `/v1/candles?${queryString}`,
@@ -229,12 +228,7 @@ test.describe("GET /v1/candles", () => {
         tracker
       );
 
-      const query = createHistoricalCandlesQuery(
-        TEST_SYMBOL,
-        "5minute",
-        startDatetime,
-        endDatetime
-      );
+      const query = createDeveloperCandlesQuery(TEST_SYMBOL, "5minute", startDatetime, endDatetime);
       const queryString = buildQueryString(query);
       const response = await authenticatedGetWithRunContext(
         `/v1/candles?${queryString}`,
