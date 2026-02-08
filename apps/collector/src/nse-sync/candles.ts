@@ -181,11 +181,11 @@ function formatCandleRowForCSV(candle: {
 }): string {
   // Format timestamp as ISO 8601 with UTC timezone for PostgreSQL compatibility
   const timestamp = dayjs.utc(candle.timestamp).toISOString();
-  const open = candle.open ? candle.open.toString() : "";
-  const high = candle.high ? candle.high.toString() : "";
-  const low = candle.low ? candle.low.toString() : "";
-  const close = candle.close ? candle.close.toString() : "";
-  const volume = candle.volume ? candle.volume.toString() : "";
+  const open = candle.open != null ? candle.open.toString() : "";
+  const high = candle.high != null ? candle.high.toString() : "";
+  const low = candle.low != null ? candle.low.toString() : "";
+  const close = candle.close != null ? candle.close.toString() : "";
+  const volume = candle.volume != null ? candle.volume.toString() : "";
 
   return `${candle.instrumentId},${timestamp},${open},${high},${low},${close},${volume}`;
 }
@@ -279,11 +279,11 @@ export async function fetchAndStoreCandles(
             return {
               instrumentId: instrument.id,
               timestamp,
-              open: candle.open ? new Decimal(candle.open.toString()) : null,
-              high: candle.high ? new Decimal(candle.high.toString()) : null,
-              low: candle.low ? new Decimal(candle.low.toString()) : null,
-              close: candle.close ? new Decimal(candle.close.toString()) : null,
-              volume: candle.volume ? BigInt(candle.volume) : null,
+              open: candle.open != null ? new Decimal(candle.open.toString()) : null,
+              high: candle.high != null ? new Decimal(candle.high.toString()) : null,
+              low: candle.low != null ? new Decimal(candle.low.toString()) : null,
+              close: candle.close != null ? new Decimal(candle.close.toString()) : null,
+              volume: candle.volume != null ? BigInt(candle.volume) : null,
             };
           });
 

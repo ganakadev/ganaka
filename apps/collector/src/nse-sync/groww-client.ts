@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { invalidateToken } from "../utils/token-manager";
+import { getGrowwToken, invalidateToken } from "../utils/token-manager";
 
 export interface GrowwCandle {
   timestamp: string; // ISO timestamp string
@@ -52,6 +52,7 @@ export async function fetchHistoricalCandles({
   };
 
   let lastError: unknown;
+  let currentToken = accessToken;
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
@@ -59,7 +60,7 @@ export async function fetchHistoricalCandles({
         params,
         timeout: 30000, // 30 second timeout
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${currentToken}`,
           "User-Agent": "PostmanRuntime/7.32.3",
           "Accept-Encoding": "gzip, deflate, br",
           Accept: "application/json",
@@ -97,6 +98,7 @@ export async function fetchHistoricalCandles({
             `Unauthorized for ${growwSymbol}, invalidating token and retrying (attempt ${attempt}/${maxRetries})`
           );
           invalidateToken();
+          currentToken = await getGrowwToken();
           continue; // Retry with new token
         }
 
