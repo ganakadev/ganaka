@@ -17,5 +17,10 @@
   "dependencies": {
     "dotenv": "^17.2.3",
     "env-cmd": "^11.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@hookform/resolvers>zod": "^4.3.2"
+    }
   }
 }
