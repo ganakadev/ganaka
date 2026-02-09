@@ -8,7 +8,8 @@
     "prepare:release": "./scripts/prepare-for-release.sh",
     "prepare:local-run": "./scripts/prepare-for-local-run.sh",
     "test:server": "pnpm --filter @ganaka/server test",
-    "clean:node_modules": "find . -name 'node_modules' -type d -prune -exec rm -rf {} + && find . -name 'dist' -type d -prune -exec rm -rf {} +"
+    "clean:node_modules": "find . -name 'node_modules' -type d -prune -exec rm -rf {} + && find . -name 'dist' -type d -prune -exec rm -rf {} +",
+    "project-check": "pnpm run clean:node_modules && pnpm install &&  pnpm run prepare:ci"
   },
   "devDependencies": {
     "typescript": "^5.3.3"
