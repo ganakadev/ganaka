@@ -1,6 +1,6 @@
 import { ShortlistSnapshot } from "@ganaka/db";
 import { ShortlistScope, ShortlistType } from "@ganaka/db/prisma";
-import { growwQuoteSchema, shortlistItemSchema, v1_schemas } from "@ganaka/schemas";
+import { shortlistItemSchema, v1_schemas } from "@ganaka/schemas";
 import axios, { AxiosResponse } from "axios";
 import * as cheerio from "cheerio";
 import dayjs from "dayjs";
