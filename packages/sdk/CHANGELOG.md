@@ -1,3 +1,32 @@
+## [@ganaka/sdk v1.11.0](https://www.npmjs.com/package/@ganaka/sdk)
+
+Published to npm
+
+
+
+### Bug Fixes
+
+* **api:** update candle query schemas in dashboard API ([c5ecdb5](https://github.com/ganakadev/ganaka/commit/c5ecdb5b54b9c1d64b93e189edc6fb153811eabb))
+* **candles:** handle null values in candle data formatting ([1fbaea2](https://github.com/ganakadev/ganaka/commit/1fbaea2c7696da13ce336a629562c6065357e49a))
+* **candles:** update boundary date logic and test assertions ([d875d17](https://github.com/ganakadev/ganaka/commit/d875d1785222f334a52bd191e335b76788500da1))
+
+
+### Features
+
+* **candles:** enhance candle fetching logic and schema updates ([7b108b2](https://github.com/ganakadev/ganaka/commit/7b108b27044cc06caf40c56cfe896b69de7e8c5c))
+* **candles:** refine candle fetching logic and schema updates ([31509e4](https://github.com/ganakadev/ganaka/commit/31509e41385c5bd479fd5971237cb7e61653f18f))
+* **candles:** update candle fetching logic to use developer schemas ([f01974e](https://github.com/ganakadev/ganaka/commit/f01974e1b75ba6159012d82c0eafe8fd8b78fa70))
+* **collector:** enhance candle fetching and CSV export functionality ([e033770](https://github.com/ganakadev/ganaka/commit/e0337705a5e383dc6daa0feda4cfee87ceadda86))
+* **collector:** integrate CSV parsing and NSE sync functionality ([6c4b398](https://github.com/ganakadev/ganaka/commit/6c4b39890fa2ccc6b5645a19532c5ebf7f092661))
+* **database:** add growwSymbol field to NseIntrument model ([214ee56](https://github.com/ganakadev/ganaka/commit/214ee56956181d572459e37269fe3011a56ecedd))
+* **database:** add new Prisma models and update schema ([d57c49c](https://github.com/ganakadev/ganaka/commit/d57c49c1378d75e899d856be4a65b58180b0a22a))
+* **database:** add NSE instrument and candle tables to Prisma schema ([aa3fbc3](https://github.com/ganakadev/ganaka/commit/aa3fbc3f1ce5c47facb7321efcc30978fcc43157))
+* **database:** update NseCandle and NseIntrument models for improved data handling ([eac4787](https://github.com/ganakadev/ganaka/commit/eac47872344ed3e15f05ee50be62d6c897b79e41))
+* **database:** update NseIntrument model and migration for growwSymbol index ([a2a6642](https://github.com/ganakadev/ganaka/commit/a2a6642ccd835aba1fe2f83444fd8e9e124e5ca1))
+* **database:** update NseIntrument model with growwSymbol field ([11bf000](https://github.com/ganakadev/ganaka/commit/11bf00092657cbd9c8d893f4fbe61e363964e897))
+* **sdk:** Add support for  ignoreDb for fetching candles ([c46035b](https://github.com/ganakadev/ganaka/commit/c46035baaab7dcee6d6e5ca142aa4dd080872932))
+* **tests:** add comprehensive tests for candle fetching logic and database interactions ([3b6cb23](https://github.com/ganakadev/ganaka/commit/3b6cb235a84ceaa84526fe3ee1a46702806a0466))
+
 ## [@ganaka/sdk v1.10.2](https://www.npmjs.com/package/@ganaka/sdk)
 
 Published to npm
