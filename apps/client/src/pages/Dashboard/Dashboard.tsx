@@ -30,8 +30,6 @@ export const Dashboard = () => {
       datetime: formatDateTimeForAPI(selectedDate),
       timezone: "Asia/Kolkata",
       type: activeTab || "TOP_GAINERS",
-      takeProfitPercentage,
-      stopLossPercentage,
     },
     {
       skip: !selectedDate || !activeTab,
@@ -41,17 +39,6 @@ export const Dashboard = () => {
     requestName: "Get Shortlists",
     error: getShortlistsAPI.error,
   });
-
-  // Transform shortlist data
-  const shortlist = getShortlistsAPI.data?.data.shortlist
-    ? {
-        id: getShortlistsAPI.data.data.shortlist.id,
-        timestamp: new Date(getShortlistsAPI.data.data.shortlist.timestamp), // API returns UTC string, Date constructor handles it correctly
-        shortlistType: getShortlistsAPI.data.data.shortlist.shortlistType,
-        entries: getShortlistsAPI.data.data.shortlist.entries,
-      }
-    : null;
-
 
   const handleRowClick = (entry: ShortlistEntryWithQuote) => {
     setSelectedEntry(entry);
@@ -100,7 +87,7 @@ export const Dashboard = () => {
           <div className="w-full">
             {activeTab === "TOP_GAINERS" && (
               <ShortlistTable
-                shortlist={shortlist?.entries || []}
+                shortlist={[]}
                 loading={getShortlistsAPI.isLoading}
                 onRowClick={handleRowClick}
                 selectedDate={selectedDate}
@@ -109,7 +96,7 @@ export const Dashboard = () => {
 
             {activeTab === "VOLUME_SHOCKERS" && (
               <ShortlistTable
-                shortlist={shortlist?.entries || []}
+                shortlist={[]}
                 onRowClick={handleRowClick}
                 loading={getShortlistsAPI.isLoading}
                 selectedDate={selectedDate}

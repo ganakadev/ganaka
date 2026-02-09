@@ -2,9 +2,9 @@
 import { faker } from "@faker-js/faker";
 import {
   growwQuoteSchema,
-  shortlistEntrySchema,
+  shortlistItemSchema,
   v1_candles_schemas,
-  v1_lists_schemas,
+  v1_shortlists_schemas,
   v1_runs_schemas,
 } from "@ganaka/schemas";
 import type { z } from "zod";
@@ -141,7 +141,7 @@ export function generateUniqueTestDate(baseDate = "2025-12-26"): string {
 /**
  * Creates valid shortlist entries array matching listSchema[]
  */
-export function createValidShortlistEntries(): z.infer<typeof shortlistEntrySchema>[] {
+export function createValidShortlistEntries(): z.infer<typeof shortlistItemSchema>[] {
   return [
     { name: "Reliance Industries Ltd", price: 2500.0, nseSymbol: "RELIANCE" },
     { name: "Tata Consultancy Services", price: 3500.0, nseSymbol: "TCS" },
@@ -154,7 +154,7 @@ export function createValidShortlistEntries(): z.infer<typeof shortlistEntrySche
 /**
  * Creates shortlist snapshot test data matching listSchema[]
  */
-export function createShortlistSnapshotTestData(): z.infer<(typeof shortlistEntrySchema)[]>[] {
+export function createShortlistSnapshotTestData(): z.infer<(typeof shortlistItemSchema)[]>[] {
   return createValidShortlistEntries();
 }
 
@@ -163,8 +163,8 @@ export function createShortlistSnapshotTestData(): z.infer<(typeof shortlistEntr
  */
 export function createCollectorShortlistRequest(
   shortlistType: "TOP_GAINERS" | "VOLUME_SHOCKERS" = "TOP_GAINERS",
-  entries?: z.infer<typeof shortlistEntrySchema>[]
-): z.infer<typeof v1_lists_schemas.createShortlistSnapshot.body> {
+  entries?: z.infer<typeof shortlistItemSchema>[]
+): z.infer<typeof v1_shortlists_schemas.createShortlistSnapshot.body> {
   return {
     data: {
       timestamp: TEST_DATETIME,
@@ -200,15 +200,14 @@ export function createDeveloperCandlesQuery(
  * Creates valid lists query parameters
  */
 export function createListsQuery(
-  type?: z.infer<typeof v1_lists_schemas.getLists.query>["type"],
+  type?: z.infer<typeof v1_shortlists_schemas.getShortlists.query>["type"],
   datetime?: string,
-  timezone?: string,
   scope?: "FULL" | "TOP_5"
-): z.infer<typeof v1_lists_schemas.getLists.query> {
+): z.infer<typeof v1_shortlists_schemas.getShortlists.query> {
   return {
-    type: type || ("top-gainers" as z.infer<typeof v1_lists_schemas.getLists.query>["type"]),
-    timezone: timezone || "Asia/Kolkata",
-    ...(datetime && { datetime }),
+    type:
+      type || ("top-gainers" as z.infer<typeof v1_shortlists_schemas.getShortlists.query>["type"]),
+    datetime: datetime || TEST_DATETIME,
     ...(scope && { scope }),
   };
 }
@@ -261,7 +260,7 @@ export function createShortlistsQuery(
   takeProfitPercentage?: number,
   stopLossPercentage?: number,
   scope?: "FULL" | "TOP_5"
-): z.infer<typeof v1_lists_schemas.getShortlists.query> {
+): z.infer<typeof v1_shortlists_schemas.getShortlists.query> {
   const result: any = {
     datetime: datetime || TEST_DATETIME,
     timezone: timezone || "Asia/Kolkata",
@@ -319,8 +318,8 @@ export function createCandlesQuery({
  */
 export function buildQueryString(
   query:
-    | Partial<z.infer<typeof v1_lists_schemas.getLists.query>>
-    | Partial<z.infer<typeof v1_lists_schemas.getShortlists.query>>
+    | Partial<z.infer<typeof v1_shortlists_schemas.getListsScrap.query>>
+    | Partial<z.infer<typeof v1_shortlists_schemas.getShortlists.query>>
     | Partial<z.infer<typeof v1_candles_schemas.getDashboardCandles.query>>
     | Partial<z.infer<typeof v1_runs_schemas.createRun.body>>
     | Partial<z.infer<typeof v1_runs_schemas.createOrder.body>>

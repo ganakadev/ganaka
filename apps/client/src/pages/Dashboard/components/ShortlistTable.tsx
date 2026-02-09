@@ -1,30 +1,29 @@
-import { Skeleton, Table, Text } from "@mantine/core";
+import type { shortlistItemSchema } from "@ganaka/schemas";
+import { Skeleton, Table } from "@mantine/core";
+import { times } from "lodash";
 import { z } from "zod";
 import type { ShortlistEntryWithQuote } from "../../../types";
-import { times } from "lodash";
-import type { v1_lists_schemas } from "@ganaka/schemas";
 
 export const ShortlistTable = ({
   shortlist,
-  onRowClick,
   loading,
   selectedDate,
 }: {
-  shortlist: z.infer<typeof v1_lists_schemas.shortlistEntryWithMetricsSchema>[] | null;
+  shortlist: z.infer<typeof shortlistItemSchema>[] | null;
   onRowClick: (entry: ShortlistEntryWithQuote) => void;
   loading: boolean;
   selectedDate: Date | null;
 }) => {
   // Helper function to format time
-  const formatTime = (minutes?: number): string => {
-    if (minutes === undefined || minutes === null) return "N/A";
-    if (minutes < 60) {
-      return `${minutes} min`;
-    }
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return mins > 0 ? `${hours} hr ${mins} min` : `${hours} hr`;
-  };
+  // const formatTime = (minutes?: number): string => {
+  //   if (minutes === undefined || minutes === null) return "N/A";
+  //   if (minutes < 60) {
+  //     return `${minutes} min`;
+  //   }
+  //   const hours = Math.floor(minutes / 60);
+  //   const mins = minutes % 60;
+  //   return mins > 0 ? `${hours} hr ${mins} min` : `${hours} hr`;
+  // };
 
   // DRAW
   return (
@@ -82,16 +81,16 @@ export const ShortlistTable = ({
               <Table.Tr
                 key={`${entry.nseSymbol}-${index}`}
                 className="cursor-pointer"
-                onClick={() => {
-                  if (entry.quoteData) {
-                    onRowClick({
-                      name: entry.name,
-                      nseSymbol: entry.nseSymbol,
-                      price: entry.price,
-                      quoteData: entry.quoteData,
-                    });
-                  }
-                }}
+                // onClick={() => {
+                //   if (entry.quoteData) {
+                //     onRowClick({
+                //       name: entry.name,
+                //       nseSymbol: entry.nseSymbol,
+                //       price: entry.price,
+                //       quoteData: entry.quoteData,
+                //     });
+                //   }
+                // }}
               >
                 <Table.Td className="w-[35%]">
                   <span className="font-medium">{entry.name}</span>
@@ -109,7 +108,7 @@ export const ShortlistTable = ({
                   </span>
                 </Table.Td>
                 <Table.Td className="text-right w-[12%]">
-                  {entry.targetPrice !== undefined ? (
+                  {/* {entry.targetPrice !== undefined ? (
                     <span className="text-sm">
                       ₹
                       {entry.targetPrice.toLocaleString("en-IN", {
@@ -119,10 +118,10 @@ export const ShortlistTable = ({
                     </span>
                   ) : (
                     <span className="text-sm text-gray-500">-</span>
-                  )}
+                  )} */}
                 </Table.Td>
                 <Table.Td className="w-[26%]">
-                  {entry.stopLossHit === true ? (
+                  {/* {entry.stopLossHit === true ? (
                     <div className="flex flex-col gap-1">
                       <Text size="sm" fw={600} c="red">
                         ✗ Stop Loss Hit in {formatTime(entry.timeToStopLossMinutes)}
@@ -144,7 +143,7 @@ export const ShortlistTable = ({
                     <Text size="sm" c="dimmed">
                       N/A
                     </Text>
-                  )}
+                  )} */}
                 </Table.Td>
               </Table.Tr>
             ))
