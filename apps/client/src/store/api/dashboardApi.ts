@@ -66,7 +66,7 @@ export const dashboardAPI = createApi({
         // Validate query params using Zod schema
         const validatedParams = v1_shortlists_schemas.getShortlists.query.parse(params);
         return {
-          url: "/lists",
+          url: "/shortlists",
           method: "GET",
           params: validatedParams,
         };

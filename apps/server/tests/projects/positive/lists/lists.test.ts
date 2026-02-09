@@ -35,7 +35,7 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/lists", () => {
+test.describe("GET /v1/shortlists", () => {
   test("should return 200 with shortlist data when valid params provided", async ({ tracker }) => {
     const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
@@ -45,7 +45,7 @@ test.describe("GET /v1/lists", () => {
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -68,7 +68,7 @@ test.describe("GET /v1/lists", () => {
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_schemas.v1_shortlists_schemas.getShortlists.response.parse(
@@ -98,7 +98,7 @@ test.describe("GET /v1/lists", () => {
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_schemas.v1_shortlists_schemas.getShortlists.response.parse(
@@ -124,7 +124,7 @@ test.describe("GET /v1/lists", () => {
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_schemas.v1_shortlists_schemas.getShortlists.response.parse(
@@ -148,7 +148,7 @@ test.describe("GET /v1/lists", () => {
 
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const validatedData = v1_schemas.v1_shortlists_schemas.getShortlists.response.parse(
@@ -182,7 +182,7 @@ test.describe("GET /v1/lists", () => {
       stopLossPercentage: "1.5",
     }).toString();
 
-    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -214,7 +214,7 @@ test.describe("GET /v1/lists", () => {
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
 
-    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -247,7 +247,7 @@ test.describe("GET /v1/lists", () => {
     // Don't include TP/SL params to test defaults
     const queryString = buildQueryString(query);
 
-    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -291,7 +291,7 @@ test.describe("GET /v1/lists", () => {
       "TOP_5"
     );
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
@@ -327,7 +327,7 @@ test.describe("GET /v1/lists", () => {
     // Query without scope parameter
     const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/lists?${queryString}`, developerToken);
+    const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;

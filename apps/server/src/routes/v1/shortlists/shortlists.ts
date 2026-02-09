@@ -171,7 +171,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
   const tokenManager = new TokenManager(redisManager.redis, fastify);
   const growwAPIRequest = makeGrowwAPIRequest(fastify, tokenManager);
 
-  // ==================== GET /v1/lists ====================
+  // ==================== GET /v1/shortlists ====================
   fastify.get("/", async (request, reply) => {
     try {
       // Check if trade metrics parameters were explicitly provided in the query
@@ -256,7 +256,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.internalServerError(errorMessage);
     }
   });
-  // ==================== POST /v1/lists ====================
+  // ==================== POST /v1/shortlists ====================
   fastify.post("/", async (request, reply) => {
     const validationResult = validateRequest(
       request.body,
@@ -302,7 +302,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.internalServerError(errorMessage);
     }
   });
-  // ==================== GET /v1/lists/scrap ====================
+  // ==================== GET /v1/shortlists/scrap ====================
   fastify.get("/scrap", async (request, reply) => {
     const validationResult = validateRequest(
       request.query,
@@ -451,7 +451,7 @@ const shortlistsRoutes: FastifyPluginAsync = async (fastify) => {
       }
     );
   });
-  // ==================== GET /v1/lists/persistence ====================
+  // ==================== GET /v1/shortlists/persistence ====================
   fastify.get("/persistence", async (request, reply) => {
     const validationResult = validateRequest(
       request.query,

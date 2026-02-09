@@ -51,7 +51,7 @@ export const fetchShortlist =
 
       const response = await axios.get<
         z.infer<typeof v1_shortlists_schemas.getShortlists.response>
-      >(`${apiDomain}/v1/lists`, {
+      >(`${apiDomain}/v1/shortlists`, {
         params: validatedParams,
         headers,
       });
