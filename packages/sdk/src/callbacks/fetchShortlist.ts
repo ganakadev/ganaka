@@ -1,4 +1,4 @@
-import { v1_lists_schemas } from "@ganaka/schemas";
+import { v1_shortlists_schemas } from "@ganaka/schemas";
 import axios from "axios";
 import z from "zod";
 import dayjs from "dayjs";
@@ -24,8 +24,8 @@ export const fetchShortlist =
     currentTimezone?: string;
   }) =>
   async (
-    queryParams: z.infer<typeof v1_lists_schemas.getLists.query>
-  ): Promise<z.infer<typeof v1_lists_schemas.getLists.response>["data"] | null> => {
+    queryParams: z.infer<typeof v1_shortlists_schemas.getShortlists.query>
+  ): Promise<z.infer<typeof v1_shortlists_schemas.getShortlists.response>["data"] | null> => {
     if (!developerToken) {
       throw new Error(
         "Developer token not found. Please set DEVELOPER_TOKEN environment variable."
@@ -33,7 +33,7 @@ export const fetchShortlist =
     }
 
     try {
-      const validatedParams = v1_lists_schemas.getLists.query.parse(queryParams);
+      const validatedParams = v1_shortlists_schemas.getShortlists.query.parse(queryParams);
 
       const headers: Record<string, string> = {
         Authorization: `Bearer ${developerToken}`,
@@ -49,13 +49,12 @@ export const fetchShortlist =
         headers["X-Current-Timezone"] = currentTimezone;
       }
 
-      const response = await axios.get<z.infer<typeof v1_lists_schemas.getLists.response>>(
-        `${apiDomain}/v1/lists`,
-        {
-          params: validatedParams,
-          headers,
-        }
-      );
+      const response = await axios.get<
+        z.infer<typeof v1_shortlists_schemas.getShortlists.response>
+      >(`${apiDomain}/v1/shortlists`, {
+        params: validatedParams,
+        headers,
+      });
 
       return response.data.data;
     } catch (error) {

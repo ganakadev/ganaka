@@ -1,7 +1,7 @@
 import {
   v1_candles_schemas,
   v1_quote_schemas,
-  v1_lists_schemas,
+  v1_shortlists_schemas,
   v1_dates_schemas,
   v1_holidays_schemas,
 } from "@ganaka/schemas";
@@ -67,11 +67,12 @@ export class GanakaClient {
    * @param params.interval - The interval for candles (e.g., "1minute", "5minute", "1day")
    * @param params.start_datetime - Start datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
    * @param params.end_datetime - End datetime in IST string format (YYYY-MM-DDTHH:mm:ss)
+   * @param params.ignoreDb - Optional boolean to force fetching from broker instead of database
    * @returns Promise resolving to candle data
    */
   async fetchCandles(
-    params: z.infer<typeof v1_candles_schemas.getGrowwHistoricalCandles.query>
-  ): Promise<z.infer<typeof v1_candles_schemas.getGrowwHistoricalCandles.response>["data"]> {
+    params: z.infer<typeof v1_candles_schemas.getDeveloperCandles.query>
+  ): Promise<z.infer<typeof v1_candles_schemas.getDeveloperCandles.response>["data"]> {
     const callback = fetchCandles({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
@@ -110,8 +111,8 @@ export class GanakaClient {
    * @returns Promise resolving to shortlist data or null
    */
   async fetchShortlist(
-    queryParams: z.infer<typeof v1_lists_schemas.getLists.query>
-  ): Promise<z.infer<typeof v1_lists_schemas.getLists.response>["data"] | null> {
+    queryParams: z.infer<typeof v1_shortlists_schemas.getShortlists.query>
+  ): Promise<z.infer<typeof v1_shortlists_schemas.getShortlists.response>["data"] | null> {
     const callback = fetchShortlist({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,
@@ -138,8 +139,10 @@ export class GanakaClient {
    * @returns Promise resolving to shortlist persistence data or null
    */
   async fetchShortlistPersistence(
-    queryParams: z.infer<typeof v1_lists_schemas.getShortlistPersistence.query>
-  ): Promise<z.infer<typeof v1_lists_schemas.getShortlistPersistence.response>["data"] | null> {
+    queryParams: z.infer<typeof v1_shortlists_schemas.getShortlistPersistence.query>
+  ): Promise<
+    z.infer<typeof v1_shortlists_schemas.getShortlistPersistence.response>["data"] | null
+  > {
     const callback = fetchShortlistPersistence({
       developerToken: this.developerToken,
       apiDomain: this.apiDomain,

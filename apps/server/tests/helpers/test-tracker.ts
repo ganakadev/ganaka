@@ -7,11 +7,11 @@ export class TestDataTracker {
   private developerIds: string[] = [];
   private runIds: string[] = [];
   private orderIds: string[] = [];
-  private quoteSnapshotIds: string[] = [];
   private shortlistSnapshotIds: string[] = [];
-  private niftyQuoteIds: string[] = [];
   private collectorErrorIds: string[] = [];
   private nseHolidayIds: string[] = [];
+  private nseInstrumentIds: number[] = [];
+  private nseCandleIds: number[] = [];
 
   /**
    * Track a developer ID (excluding admin user)
@@ -35,24 +35,10 @@ export class TestDataTracker {
   }
 
   /**
-   * Track a quote snapshot ID
-   */
-  trackQuoteSnapshot(id: string): void {
-    this.quoteSnapshotIds.push(id);
-  }
-
-  /**
    * Track a shortlist snapshot ID
    */
   trackShortlistSnapshot(id: string): void {
     this.shortlistSnapshotIds.push(id);
-  }
-
-  /**
-   * Track a nifty quote ID
-   */
-  trackNiftyQuote(id: string): void {
-    this.niftyQuoteIds.push(id);
   }
 
   /**
@@ -67,6 +53,20 @@ export class TestDataTracker {
    */
   trackNseHoliday(id: string): void {
     this.nseHolidayIds.push(id);
+  }
+
+  /**
+   * Track an NSE instrument ID
+   */
+  trackNseInstrument(id: number): void {
+    this.nseInstrumentIds.push(id);
+  }
+
+  /**
+   * Track an NSE candle ID
+   */
+  trackNseCandle(id: number): void {
+    this.nseCandleIds.push(id);
   }
 
   /**
@@ -93,24 +93,10 @@ export class TestDataTracker {
       });
     }
 
-    // Delete quote snapshots
-    if (this.quoteSnapshotIds.length > 0) {
-      await prisma.quoteSnapshot.deleteMany({
-        where: { id: { in: this.quoteSnapshotIds } },
-      });
-    }
-
     // Delete shortlist snapshots
     if (this.shortlistSnapshotIds.length > 0) {
       await prisma.shortlistSnapshot.deleteMany({
         where: { id: { in: this.shortlistSnapshotIds } },
-      });
-    }
-
-    // Delete nifty quotes
-    if (this.niftyQuoteIds.length > 0) {
-      await prisma.niftyQuote.deleteMany({
-        where: { id: { in: this.niftyQuoteIds } },
       });
     }
 
@@ -125,6 +111,20 @@ export class TestDataTracker {
     if (this.nseHolidayIds.length > 0) {
       await prisma.nseHoliday.deleteMany({
         where: { id: { in: this.nseHolidayIds } },
+      });
+    }
+
+    // Delete NSE candles (they reference instruments)
+    if (this.nseCandleIds.length > 0) {
+      await prisma.nseCandle.deleteMany({
+        where: { id: { in: this.nseCandleIds } },
+      });
+    }
+
+    // Delete NSE instruments (they reference candles)
+    if (this.nseInstrumentIds.length > 0) {
+      await prisma.nseIntrument.deleteMany({
+        where: { id: { in: this.nseInstrumentIds } },
       });
     }
 
@@ -147,10 +147,10 @@ export class TestDataTracker {
     this.developerIds = [];
     this.runIds = [];
     this.orderIds = [];
-    this.quoteSnapshotIds = [];
     this.shortlistSnapshotIds = [];
-    this.niftyQuoteIds = [];
     this.collectorErrorIds = [];
     this.nseHolidayIds = [];
+    this.nseInstrumentIds = [];
+    this.nseCandleIds = [];
   }
 }

@@ -169,7 +169,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     const response = await unauthenticatedPost(`/v1/runs/${run.id}/orders`, orderData);
 
     expect(response.status).toBe(401);
@@ -183,7 +183,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     const response = await authenticatedPost(
       `/v1/runs/${run.id}/orders`,
       "invalid-token-12345",

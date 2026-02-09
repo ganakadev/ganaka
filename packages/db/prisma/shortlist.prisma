@@ -1,0 +1,23 @@
+model ShortlistSnapshot {
+  id            String         @id @default(uuid())
+  timestamp     DateTime
+  shortlistType ShortlistType
+  entries       Json // Array of shortlist items with nseSymbol, name, price
+  scope         ShortlistScope @default(TOP_5) // we store both the entire shortlist as well as the top 5 which are quote fetched
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt
+
+  @@index([timestamp])
+  @@map("shortlist_snapshots")
+}
+
+enum ShortlistType {
+  TOP_GAINERS
+  VOLUME_SHOCKERS
+}
+
+enum ShortlistScope {
+  FULL
+  TOP_5
+}

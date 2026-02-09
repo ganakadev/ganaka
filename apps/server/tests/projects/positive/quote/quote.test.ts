@@ -4,7 +4,6 @@ import utc from "dayjs/plugin/utc";
 import { expect, test } from "../../../helpers/test-fixtures";
 import { parseDateTimeInTimezone } from "../../../../src/utils/timezone";
 import {
-  createValidGrowwQuotePayload,
   generateUniqueTestDatetime,
   TEST_SYMBOL,
   createGrowwQuoteQuery,
@@ -12,7 +11,7 @@ import {
 } from "../../../fixtures/test-data";
 import { authenticatedGet, authenticatedGetWithRunContext } from "../../../helpers/api-client";
 import { createDeveloperUser } from "../../../helpers/auth-helpers";
-import { createQuoteSnapshot, createRun } from "../../../helpers/db-helpers";
+import { createRun } from "../../../helpers/db-helpers";
 import { TestDataTracker } from "../../../helpers/test-tracker";
 import { v1_schemas } from "@ganaka/schemas";
 
@@ -40,10 +39,6 @@ test.describe("GET /v1/quote", () => {
   test("should return snapshot data when valid datetime and symbol are provided", async ({
     tracker,
   }) => {
-    const testQuoteData = createValidGrowwQuotePayload();
-    const testDatetime = generateUniqueTestDatetime();
-    await createQuoteSnapshot(TEST_SYMBOL, testDatetime, testQuoteData, tracker);
-
     const query = createGrowwQuoteQuery(TEST_SYMBOL);
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/quote?${queryString}`, developerToken);
@@ -79,7 +74,6 @@ test.describe("GET /v1/quote", () => {
   }) => {
     const testDatetime = generateUniqueTestDatetime();
     const testSymbol = TEST_SYMBOL;
-    await createQuoteSnapshot(testSymbol, testDatetime, createValidGrowwQuotePayload(), tracker);
 
     // Create a run and set currentTimestamp to 1 hour after testDatetime
     const currentTimestamp = parseDateTimeInTimezone(testDatetime, "Asia/Kolkata");
@@ -102,9 +96,7 @@ test.describe("GET /v1/quote", () => {
   });
 
   test("should allow request without headers (backward compatibility)", async ({ tracker }) => {
-    const testDatetime = generateUniqueTestDatetime();
     const testSymbol = TEST_SYMBOL;
-    await createQuoteSnapshot(testSymbol, testDatetime, createValidGrowwQuotePayload(), tracker);
 
     const query = createGrowwQuoteQuery(testSymbol);
     const queryString = buildQueryString(query);

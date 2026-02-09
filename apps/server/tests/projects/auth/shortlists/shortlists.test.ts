@@ -25,22 +25,26 @@ test.afterAll(async () => {
   }
 });
 
-test.describe("GET /v1/lists", () => {
+test.describe("GET /v1/shortlists", () => {
   test.describe("Dashboard Source", () => {
     test("should return 401 when authorization header is missing", async () => {
-      const query = createShortlistsQuery();
+      const query = createShortlistsQuery({});
       const queryString = buildQueryString(query);
-      const response = await unauthenticatedGet(`/v1/lists?${queryString}`);
+      const response = await unauthenticatedGet(`/v1/shortlists?${queryString}`);
 
       expect(response.status).toBe(401);
     });
 
     test("should return 401 when invalid token is provided", async () => {
-      const query = createShortlistsQuery();
+      const query = createShortlistsQuery({});
       const queryString = buildQueryString(query);
-      const response = await authenticatedGet(`/v1/lists?${queryString}`, "invalid-token-12345", {
-        validateStatus: () => true,
-      });
+      const response = await authenticatedGet(
+        `/v1/shortlists?${queryString}`,
+        "invalid-token-12345",
+        {
+          validateStatus: () => true,
+        }
+      );
 
       expect(response.status).toBe(401);
     });
@@ -48,19 +52,23 @@ test.describe("GET /v1/lists", () => {
 
   test.describe("Developer Source", () => {
     test("should return 401 when authorization header is missing", async () => {
-      const query = createListsQuery("TOP_GAINERS");
+      const query = createListsQuery({ type: "TOP_GAINERS" });
       const queryString = buildQueryString(query);
-      const response = await unauthenticatedGet(`/v1/lists?${queryString}`);
+      const response = await unauthenticatedGet(`/v1/shortlists?${queryString}`);
 
       expect(response.status).toBe(401);
     });
 
     test("should return 401 when invalid token is provided", async () => {
-      const query = createListsQuery("TOP_GAINERS");
+      const query = createListsQuery({ type: "TOP_GAINERS" });
       const queryString = buildQueryString(query);
-      const response = await authenticatedGet(`/v1/lists?${queryString}`, "invalid-token-12345", {
-        validateStatus: () => true,
-      });
+      const response = await authenticatedGet(
+        `/v1/shortlists?${queryString}`,
+        "invalid-token-12345",
+        {
+          validateStatus: () => true,
+        }
+      );
 
       expect(response.status).toBe(401);
     });

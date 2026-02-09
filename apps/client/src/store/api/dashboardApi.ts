@@ -3,7 +3,7 @@ import {
   v1_auth_schemas,
   v1_candles_schemas,
   v1_dates_schemas,
-  v1_lists_schemas,
+  v1_shortlists_schemas,
   v1_runs_schemas,
   v1_groww_credentials_schemas,
 } from "@ganaka/schemas";
@@ -59,14 +59,14 @@ export const dashboardAPI = createApi({
 
     // Get shortlists
     getShortlists: builder.query<
-      z.infer<typeof v1_lists_schemas.getShortlists.response>,
-      z.infer<typeof v1_lists_schemas.getShortlists.query>
+      z.infer<typeof v1_shortlists_schemas.getShortlists.response>,
+      z.infer<typeof v1_shortlists_schemas.getShortlists.query>
     >({
       query: (params) => {
         // Validate query params using Zod schema
-        const validatedParams = v1_lists_schemas.getShortlists.query.parse(params);
+        const validatedParams = v1_shortlists_schemas.getShortlists.query.parse(params);
         return {
-          url: "/lists",
+          url: "/shortlists",
           method: "GET",
           params: validatedParams,
         };
@@ -76,11 +76,11 @@ export const dashboardAPI = createApi({
 
     // Get candles
     getCandles: builder.query<
-      z.infer<typeof v1_candles_schemas.getCandles.response>,
-      z.infer<typeof v1_candles_schemas.getCandles.query>
+      z.infer<typeof v1_candles_schemas.getDashboardCandles.response>,
+      z.infer<typeof v1_candles_schemas.getDashboardCandles.query>
     >({
       query: (params) => {
-        const validatedParams = v1_candles_schemas.getCandles.query.parse(params);
+        const validatedParams = v1_candles_schemas.getDashboardCandles.query.parse(params);
         return {
           url: "/candles",
           method: "GET",

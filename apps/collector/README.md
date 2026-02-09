@@ -57,8 +57,6 @@ pnpm start
 ## Database Schema
 
 - **ShortlistSnapshot**: Stores shortlist data (top-gainers and volume-shockers)
-- **QuoteSnapshot**: Stores quote data for each symbol
-- **NiftybankQuote**: Stores NIFTYBANK quote data for trend analysis
 
 All tables use JSON fields to store complete API responses for maximum flexibility.
 

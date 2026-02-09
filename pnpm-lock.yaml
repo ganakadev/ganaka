@@ -88,8 +88,8 @@ importers:
         specifier: ^4.1.18
         version: 4.1.18
       zod:
-        specifier: ^4.3.2
-        version: 4.3.2
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@eslint/js':
         specifier: ^9.39.1
@@ -154,6 +154,12 @@ importers:
       croner:
         specifier: 9.1.0
         version: 9.1.0
+      csv:
+        specifier: ^6.4.1
+        version: 6.4.1
+      csv-parse:
+        specifier: ^6.1.0
+        version: 6.1.0
       dayjs:
         specifier: ^1.11.10
         version: 1.11.19
@@ -163,12 +169,15 @@ importers:
       ioredis:
         specifier: ^5.8.2
         version: 5.8.2
+      limiter:
+        specifier: ^3.0.0
+        version: 3.0.0
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
       zod:
-        specifier: ^4.2.1
-        version: 4.2.1
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@types/lodash':
         specifier: ^4.17.21
@@ -222,8 +231,8 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       zod:
-        specifier: ^4.1.13
-        version: 4.2.0
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@faker-js/faker':
         specifier: ^9.3.0
@@ -312,8 +321,8 @@ importers:
         specifier: ^3.6.0
         version: 3.9.1(@types/node@20.19.27)(rollup@4.53.4)(typescript@5.9.3)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sugarss@5.0.1(postcss@8.5.6)))
       zod:
-        specifier: ^4.1.11
-        version: 4.2.0
+        specifier: ^4.3.6
+        version: 4.3.6
 
   packages/sdk:
     dependencies:
@@ -339,8 +348,8 @@ importers:
         specifier: ^13.1.3
         version: 13.1.3
       zod:
-        specifier: ^4.2.1
-        version: 4.2.1
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@ganaka/schemas':
         specifier: workspace:*
@@ -418,8 +427,8 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       zod:
-        specifier: ^4.3.2
-        version: 4.3.2
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@types/lodash':
         specifier: ^4.17.21
@@ -2116,10 +2125,23 @@ packages:
   csstype@3.2.3:
     resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
 
+  csv-generate@4.5.0:
+    resolution: {integrity: sha512-aQr/vmOKyBSBHNwYhAoXw1+kUsPnMSwmYgpNoo36rIXoG1ecWILnvPGZeQ6oUjzrWknZAD3+jfpqYOBAl4x15A==}
+
+  csv-parse@6.1.0:
+    resolution: {integrity: sha512-CEE+jwpgLn+MmtCpVcPtiCZpVtB6Z2OKPTr34pycYYoL7sxdOkXDdQ4lRiw6ioC0q6BLqhc6cKweCVvral8yhw==}
+
   csv-parser@3.2.0:
     resolution: {integrity: sha512-fgKbp+AJbn1h2dcAHKIdKNSSjfp43BZZykXsCjzALjKy80VXQNHPFJ6T9Afwdzoj24aMkq8GwDS7KGcDPpejrA==}
     engines: {node: '>= 10'}
     hasBin: true
+
+  csv-stringify@6.6.0:
+    resolution: {integrity: sha512-YW32lKOmIBgbxtu3g5SaiqWNwa/9ISQt2EcgOq0+RAIFufFp9is6tqNnKahqE5kuKvrnYAzs28r+s6pXJR8Vcw==}
+
+  csv@6.4.1:
+    resolution: {integrity: sha512-ajGosmTGnTwYyGl8STqZDu7R6LkDf3xL39XiOmliV/GufQeVUxHzTKIm4NOBCwmEuujK7B6isxs4Uqt9GcRCvA==}
+    engines: {node: '>= 0.1.90'}
 
   d3-array@3.2.4:
     resolution: {integrity: sha512-tdQAmyA18i4J7wprpYq8ClcxZy3SC31QMeByyCFyRt7BVHdREQZ5lpzoe5mFEYZUWe+oq8HBvk9JjpibyEV4Jg==}
@@ -3086,6 +3108,9 @@ packages:
 
   lightweight-charts@5.0.9:
     resolution: {integrity: sha512-8oQIis8jfZVfSwz8j9Z5x3O79dIRTkEYI9UY7DKtE4O3ZxlHjMK3L0+4nOVOOFq4FHI/oSIzz1RHeNImCk6/Jg==}
+
+  limiter@3.0.0:
+    resolution: {integrity: sha512-hev7DuXojsTFl2YwyzUJMDnZ/qBDd3yZQLSH3aD4tdL1cqfc3TMnoecEJtWFaQFdErZsKoFMBTxF/FBSkgDbEg==}
 
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
@@ -4085,6 +4110,9 @@ packages:
   stream-shift@1.0.3:
     resolution: {integrity: sha512-76ORR0DO1o1hlKwTbi/DM3EXWGf3ZJYO8cXX5RJwnul2DEg2oyoZyjLNoQM8WsvZiFKCRfC1O0J7iCvie3RZmQ==}
 
+  stream-transform@3.4.0:
+    resolution: {integrity: sha512-QO3OGhKyeIV8p6eRQdG+W6WounFw519zk690hHCNfhgfP9bylVS+NTXsuBc7n+RsGn31UgFPGrWYIgoAbArKEw==}
+
   string-argv@0.3.2:
     resolution: {integrity: sha512-aqD2Q0144Z+/RqG52NeHEkZauTAUWJO8c6yTftGJKO3Tja5tUgIfmIl6kExvhtxSDP7fXB6DvzkfMpCd/F3G+Q==}
     engines: {node: '>=0.6.19'}
@@ -4688,14 +4716,8 @@ packages:
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
 
-  zod@4.2.0:
-    resolution: {integrity: sha512-Bd5fw9wlIhtqCCxotZgdTOMwGm1a0u75wARVEY9HMs1X17trvA/lMi4+MGK5EUfYkXVTbX8UDiDKW4OgzHVUZw==}
-
-  zod@4.2.1:
-    resolution: {integrity: sha512-0wZ1IRqGGhMP76gLqz8EyfBXKk0J2qo2+H3fi4mcUP/KtTocoX08nmIAHl1Z2kJIZbZee8KOpBCSNPRgauucjw==}
-
-  zod@4.3.2:
-    resolution: {integrity: sha512-b8L8yn4rIVfiXyHAmnr52/ZEpDumlT0bmxiq3Ws1ybrinhflGpt12Hvv54kYnEsGPRs6o/Ka3/ppA2OWY21IVg==}
+  zod@4.3.6:
+    resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
 
 snapshots:
 
@@ -6384,7 +6406,20 @@ snapshots:
 
   csstype@3.2.3: {}
 
+  csv-generate@4.5.0: {}
+
+  csv-parse@6.1.0: {}
+
   csv-parser@3.2.0: {}
+
+  csv-stringify@6.6.0: {}
+
+  csv@6.4.1:
+    dependencies:
+      csv-generate: 4.5.0
+      csv-parse: 6.1.0
+      csv-stringify: 6.6.0
+      stream-transform: 3.4.0
 
   d3-array@3.2.4:
     dependencies:
@@ -6670,8 +6705,8 @@ snapshots:
       '@babel/parser': 7.28.5
       eslint: 9.39.2(jiti@2.6.1)
       hermes-parser: 0.25.1
-      zod: 4.3.2
-      zod-validation-error: 4.0.2(zod@4.3.2)
+      zod: 4.3.6
+      zod-validation-error: 4.0.2(zod@4.3.6)
     transitivePeerDependencies:
       - supports-color
 
@@ -7356,6 +7391,8 @@ snapshots:
   lightweight-charts@5.0.9:
     dependencies:
       fancy-canvas: 2.1.0
+
+  limiter@3.0.0: {}
 
   lines-and-columns@1.2.4: {}
 
@@ -8295,6 +8332,8 @@ snapshots:
 
   stream-shift@1.0.3: {}
 
+  stream-transform@3.4.0: {}
+
   string-argv@0.3.2: {}
 
   string-width@4.2.3:
@@ -8830,12 +8869,8 @@ snapshots:
     optionalDependencies:
       commander: 9.5.0
 
-  zod-validation-error@4.0.2(zod@4.3.2):
+  zod-validation-error@4.0.2(zod@4.3.6):
     dependencies:
-      zod: 4.3.2
+      zod: 4.3.6
 
-  zod@4.2.0: {}
-
-  zod@4.2.1: {}
-
-  zod@4.3.2: {}
+  zod@4.3.6: {}

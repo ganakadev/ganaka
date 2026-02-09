@@ -121,34 +121,6 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.ShortlistSnapshotScalarFieldEnum = {
-  id: 'id',
-  timestamp: 'timestamp',
-  shortlistType: 'shortlistType',
-  entries: 'entries',
-  scope: 'scope',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.QuoteSnapshotScalarFieldEnum = {
-  id: 'id',
-  timestamp: 'timestamp',
-  nseSymbol: 'nseSymbol',
-  quoteData: 'quoteData',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.NiftyQuoteScalarFieldEnum = {
-  id: 'id',
-  timestamp: 'timestamp',
-  quoteData: 'quoteData',
-  dayChangePerc: 'dayChangePerc',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.DeveloperScalarFieldEnum = {
   id: 'id',
   username: 'username',
@@ -183,19 +155,49 @@ exports.Prisma.OrderScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.NseIntrumentScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  growwSymbol: 'growwSymbol',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NseCandleScalarFieldEnum = {
+  id: 'id',
+  timestamp: 'timestamp',
+  open: 'open',
+  high: 'high',
+  low: 'low',
+  close: 'close',
+  volume: 'volume',
+  instrumentId: 'instrumentId'
+};
+
+exports.Prisma.NseHolidayScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ShortlistSnapshotScalarFieldEnum = {
+  id: 'id',
+  timestamp: 'timestamp',
+  shortlistType: 'shortlistType',
+  entries: 'entries',
+  scope: 'scope',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.CollectorErrorScalarFieldEnum = {
   id: 'id',
   timestamp: 'timestamp',
   errorMessage: 'errorMessage',
   errorStack: 'errorStack',
   errorContext: 'errorContext',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.NseHolidayScalarFieldEnum = {
-  id: 'id',
-  date: 'date',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -219,15 +221,15 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
-};
-
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
 };
 exports.ShortlistType = exports.$Enums.ShortlistType = {
   TOP_GAINERS: 'TOP_GAINERS',
@@ -240,14 +242,14 @@ exports.ShortlistScope = exports.$Enums.ShortlistScope = {
 };
 
 exports.Prisma.ModelName = {
-  ShortlistSnapshot: 'ShortlistSnapshot',
-  QuoteSnapshot: 'QuoteSnapshot',
-  NiftyQuote: 'NiftyQuote',
   Developer: 'Developer',
   Run: 'Run',
   Order: 'Order',
-  CollectorError: 'CollectorError',
-  NseHoliday: 'NseHoliday'
+  NseIntrument: 'NseIntrument',
+  NseCandle: 'NseCandle',
+  NseHoliday: 'NseHoliday',
+  ShortlistSnapshot: 'ShortlistSnapshot',
+  CollectorError: 'CollectorError'
 };
 
 /**

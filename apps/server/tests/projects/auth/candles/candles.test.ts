@@ -4,7 +4,7 @@ import { expect, test } from "../../../helpers/test-fixtures";
 import { TestDataTracker } from "../../../helpers/test-tracker";
 import {
   createCandlesQuery,
-  createHistoricalCandlesQuery,
+  createDeveloperCandlesQuery,
   buildQueryString,
 } from "../../../fixtures/test-data";
 
@@ -28,7 +28,7 @@ test.afterAll(async () => {
 test.describe("GET /v1/candles", () => {
   test.describe("Dashboard Source", () => {
     test("should return 401 when authorization header is missing", async () => {
-      const query = createCandlesQuery();
+      const query = createCandlesQuery({});
       const queryString = buildQueryString(query);
       const response = await unauthenticatedGet(`/v1/candles?${queryString}`);
 
@@ -36,7 +36,7 @@ test.describe("GET /v1/candles", () => {
     });
 
     test("should return 401 when invalid token is provided", async () => {
-      const query = createCandlesQuery();
+      const query = createCandlesQuery({});
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, "invalid-token-12345", {
         validateStatus: () => true,
@@ -48,7 +48,7 @@ test.describe("GET /v1/candles", () => {
 
   test.describe("Developer Source", () => {
     test("should return 401 when authorization header is missing", async () => {
-      const query = createHistoricalCandlesQuery();
+      const query = createDeveloperCandlesQuery({});
       const queryString = buildQueryString(query);
       const response = await unauthenticatedGet(`/v1/candles?${queryString}`);
 
@@ -56,7 +56,7 @@ test.describe("GET /v1/candles", () => {
     });
 
     test("should return 401 when invalid token is provided", async () => {
-      const query = createHistoricalCandlesQuery();
+      const query = createDeveloperCandlesQuery({});
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, "invalid-token-12345", {
         validateStatus: () => true,

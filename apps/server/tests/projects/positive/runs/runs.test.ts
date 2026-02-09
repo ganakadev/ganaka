@@ -495,7 +495,7 @@ test.describe("GET /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     await createOrder(
       run.id,
       orderData.nseSymbol,
@@ -525,7 +525,7 @@ test.describe("GET /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     await createOrder(
       run.id,
       orderData.nseSymbol,
@@ -563,7 +563,7 @@ test.describe("GET /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     await createOrder(
       run.id,
       orderData.nseSymbol,
@@ -599,8 +599,20 @@ test.describe("GET /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData1 = createOrderTestData(TEST_SYMBOL, 2500, 2400, 2600, "2025-12-26T10:00:00Z");
-    const orderData2 = createOrderTestData(TEST_SYMBOL, 2500, 2400, 2600, "2025-12-26T11:00:00Z");
+    const orderData1 = createOrderTestData({
+      nseSymbol: TEST_SYMBOL,
+      entryPrice: 2500,
+      stopLossPrice: 2400,
+      takeProfitPrice: 2600,
+      timestamp: "2025-12-26T10:00:00Z",
+    });
+    const orderData2 = createOrderTestData({
+      nseSymbol: TEST_SYMBOL,
+      entryPrice: 2500,
+      stopLossPrice: 2400,
+      takeProfitPrice: 2600,
+      timestamp: "2025-12-26T11:00:00Z",
+    });
 
     await createOrder(
       run.id,
@@ -643,7 +655,7 @@ test.describe("GET /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     await createOrder(
       run.id,
       orderData.nseSymbol,
@@ -676,7 +688,7 @@ test.describe("GET /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     await createOrder(
       run.id,
       orderData.nseSymbol,
@@ -712,7 +724,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     const response = await authenticatedPost(
       `/v1/runs/${run.id}/orders`,
       developerToken,
@@ -740,7 +752,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     const response = await authenticatedPost(
       `/v1/runs/${run.id}/orders`,
       developerToken,
@@ -766,7 +778,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     const response = await authenticatedPost(
       `/v1/runs/${run.id}/orders`,
       developerToken,
@@ -788,7 +800,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     const response = await authenticatedPost(
       `/v1/runs/${run.id}/orders`,
       developerToken,
