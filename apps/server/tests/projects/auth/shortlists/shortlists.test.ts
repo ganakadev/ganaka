@@ -28,7 +28,7 @@ test.afterAll(async () => {
 test.describe("GET /v1/shortlists", () => {
   test.describe("Dashboard Source", () => {
     test("should return 401 when authorization header is missing", async () => {
-      const query = createShortlistsQuery();
+      const query = createShortlistsQuery({});
       const queryString = buildQueryString(query);
       const response = await unauthenticatedGet(`/v1/shortlists?${queryString}`);
 
@@ -36,7 +36,7 @@ test.describe("GET /v1/shortlists", () => {
     });
 
     test("should return 401 when invalid token is provided", async () => {
-      const query = createShortlistsQuery();
+      const query = createShortlistsQuery({});
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(
         `/v1/shortlists?${queryString}`,
@@ -52,7 +52,7 @@ test.describe("GET /v1/shortlists", () => {
 
   test.describe("Developer Source", () => {
     test("should return 401 when authorization header is missing", async () => {
-      const query = createListsQuery("TOP_GAINERS");
+      const query = createListsQuery({ type: "TOP_GAINERS" });
       const queryString = buildQueryString(query);
       const response = await unauthenticatedGet(`/v1/shortlists?${queryString}`);
 
@@ -60,7 +60,7 @@ test.describe("GET /v1/shortlists", () => {
     });
 
     test("should return 401 when invalid token is provided", async () => {
-      const query = createListsQuery("TOP_GAINERS");
+      const query = createListsQuery({ type: "TOP_GAINERS" });
       const queryString = buildQueryString(query);
       const response = await authenticatedGet(
         `/v1/shortlists?${queryString}`,

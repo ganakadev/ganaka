@@ -28,7 +28,7 @@ test.afterAll(async () => {
 
 test.describe("GET /v1/shortlists", () => {
   test("should return 400 when date is missing", async () => {
-    const query = createListsQuery("TOP_GAINERS", undefined);
+    const query = createListsQuery({ type: "TOP_GAINERS", datetime: undefined });
     // @ts-ignore
     delete query.datetime;
     const queryString = buildQueryString(query);
@@ -40,7 +40,7 @@ test.describe("GET /v1/shortlists", () => {
   });
 
   test("should return 400 when type is missing", async () => {
-    const query = createListsQuery(undefined, TEST_DATETIME);
+    const query = createListsQuery({ type: undefined, datetime: TEST_DATETIME });
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken, {
       validateStatus: () => true,
@@ -50,7 +50,7 @@ test.describe("GET /v1/shortlists", () => {
   });
 
   test("should return 400 when date format is invalid", async () => {
-    const query = createShortlistsQuery("invalid-date", "TOP_GAINERS");
+    const query = createShortlistsQuery({ datetime: "invalid-date", type: "TOP_GAINERS" });
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken, {
       validateStatus: () => true,
@@ -60,7 +60,7 @@ test.describe("GET /v1/shortlists", () => {
   });
 
   test("should return 400 when type is invalid enum value", async () => {
-    const query = createShortlistsQuery(TEST_DATETIME, "invalid-type" as any);
+    const query = createShortlistsQuery({ datetime: TEST_DATETIME, type: "invalid-type" as any });
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken, {
       validateStatus: () => true,
@@ -70,7 +70,7 @@ test.describe("GET /v1/shortlists", () => {
   });
 
   test("should return 400 when scope is invalid", async () => {
-    const query = createShortlistsQuery();
+    const query = createShortlistsQuery({});
     const queryString = buildQueryString({
       ...query,
       scope: "INVALID_SCOPE" as any,

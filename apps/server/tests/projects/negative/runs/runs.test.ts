@@ -230,7 +230,7 @@ test.describe("GET /v1/runs/:runId/orders", () => {
 
 test.describe("POST /v1/runs/:runId/orders", () => {
   test("should return 404 when runId is invalid UUID", async () => {
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     const response = await authenticatedPost(
       "/v1/runs/invalid-id/orders",
       developerToken,
@@ -243,7 +243,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
 
   test("should return 404 when run does not exist", async () => {
     const fakeId = generateTestUUID();
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     const response = await authenticatedPost(
       `/v1/runs/${fakeId}/orders`,
       developerToken,
@@ -262,7 +262,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     const response = await authenticatedPost(
       `/v1/runs/${run.id}/orders`,
       developerToken,
@@ -281,7 +281,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     const orderDataWithoutSymbol = {
       entryPrice: orderData.entryPrice,
       stopLossPrice: orderData.stopLossPrice,
@@ -306,7 +306,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     const orderDataWithoutEntryPrice = {
       nseSymbol: orderData.nseSymbol,
       stopLossPrice: orderData.stopLossPrice,
@@ -331,7 +331,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     const orderDataWithoutStopLoss = {
       nseSymbol: orderData.nseSymbol,
       entryPrice: orderData.entryPrice,
@@ -356,7 +356,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     const orderDataWithoutTakeProfit = {
       nseSymbol: orderData.nseSymbol,
       entryPrice: orderData.entryPrice,
@@ -381,7 +381,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     const orderDataWithoutTimestamp = {
       nseSymbol: orderData.nseSymbol,
       entryPrice: orderData.entryPrice,
@@ -406,7 +406,7 @@ test.describe("POST /v1/runs/:runId/orders", () => {
       tracker,
       "Asia/Kolkata"
     );
-    const orderData = createOrderTestData();
+    const orderData = createOrderTestData({});
     const orderDataWithInvalidDatetime = {
       nseSymbol: orderData.nseSymbol,
       entryPrice: orderData.entryPrice,

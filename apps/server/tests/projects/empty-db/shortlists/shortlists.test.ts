@@ -24,7 +24,7 @@ test.afterAll(async () => {
 test.describe("GET /v1/shortlists", () => {
   test("should return null data when snapshot is not found", async () => {
     const futureDatetime = "2099-01-01T10:30:00";
-    const query = createListsQuery("TOP_GAINERS", futureDatetime);
+    const query = createListsQuery({ type: "TOP_GAINERS", datetime: futureDatetime });
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 

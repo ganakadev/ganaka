@@ -43,7 +43,7 @@ test.describe("GET /v1/shortlists", () => {
     // Create shortlist snapshot
     await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
 
-    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
+    const query = createShortlistsQuery({ datetime: testDatetime, type: "TOP_GAINERS" });
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
@@ -51,11 +51,13 @@ test.describe("GET /v1/shortlists", () => {
     const body = response.data;
     expect(body.statusCode).toBe(200);
     expect(body.message).toBe("Shortlist fetched successfully");
-    expect(body.data.shortlist).not.toBeNull();
+    expect(Array.isArray(body.data)).toBe(true);
+    expect(body.data.length).toBeGreaterThan(0);
 
     // Validate response matches schema
     const validatedData = v1_schemas.v1_shortlists_schemas.getShortlists.response.parse(body);
     expect(validatedData.data).not.toBeNull();
+    expect(Array.isArray(validatedData.data)).toBe(true);
   });
 
   test("should validate shortlist structure (id, timestamp, shortlistType, entries)", async ({
@@ -66,7 +68,7 @@ test.describe("GET /v1/shortlists", () => {
 
     await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
 
-    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
+    const query = createShortlistsQuery({ datetime: testDatetime, type: "TOP_GAINERS" });
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
@@ -75,17 +77,21 @@ test.describe("GET /v1/shortlists", () => {
       response.data
     );
 
-    // if (validatedData.data.shortlist) {
-    //   expect(validatedData.data.shortlist).toHaveProperty("id");
-    //   expect(validatedData.data.shortlist).toHaveProperty("timestamp");
-    //   expect(validatedData.data.shortlist).toHaveProperty("shortlistType");
-    //   expect(validatedData.data.shortlist).toHaveProperty("entries");
-    //   expect(typeof validatedData.data.shortlist.id).toBe("string");
-    //   expect(["TOP_GAINERS", "VOLUME_SHOCKERS"]).toContain(
-    //     validatedData.data.shortlist.shortlistType
-    //   );
-    //   expect(Array.isArray(validatedData.data.shortlist.entries)).toBe(true);
-    // }
+    expect(validatedData.data).not.toBeNull();
+    expect(Array.isArray(validatedData.data)).toBe(true);
+    if (validatedData.data) {
+      expect(validatedData.data.length).toBeGreaterThan(0);
+    }
+
+    if (validatedData.data && validatedData.data.length > 0) {
+      const firstEntry = validatedData.data[0];
+      expect(firstEntry).toHaveProperty("nseSymbol");
+      expect(firstEntry).toHaveProperty("name");
+      expect(firstEntry).toHaveProperty("price");
+      expect(typeof firstEntry.nseSymbol).toBe("string");
+      expect(typeof firstEntry.name).toBe("string");
+      expect(typeof firstEntry.price).toBe("number");
+    }
   });
 
   test("should validate entries structure (nseSymbol, name, price, quoteData)", async ({
@@ -96,7 +102,7 @@ test.describe("GET /v1/shortlists", () => {
 
     await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
 
-    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
+    const query = createShortlistsQuery({ datetime: testDatetime, type: "TOP_GAINERS" });
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
@@ -105,15 +111,15 @@ test.describe("GET /v1/shortlists", () => {
       response.data
     );
 
-    // if (validatedData.data.shortlist && validatedData.data.shortlist.entries.length > 0) {
-    //   const firstEntry = validatedData.data.shortlist.entries[0];
-    //   expect(firstEntry).toHaveProperty("nseSymbol");
-    //   expect(firstEntry).toHaveProperty("name");
-    //   expect(firstEntry).toHaveProperty("price");
-    //   expect(typeof firstEntry.nseSymbol).toBe("string");
-    //   expect(typeof firstEntry.name).toBe("string");
-    //   expect(typeof firstEntry.price).toBe("number");
-    // }
+    if (validatedData.data && validatedData.data.length > 0) {
+      const firstEntry = validatedData.data[0];
+      expect(firstEntry).toHaveProperty("nseSymbol");
+      expect(firstEntry).toHaveProperty("name");
+      expect(firstEntry).toHaveProperty("price");
+      expect(typeof firstEntry.nseSymbol).toBe("string");
+      expect(typeof firstEntry.name).toBe("string");
+      expect(typeof firstEntry.price).toBe("number");
+    }
   });
 
   test("should validate exact timestamp matches requested datetime", async ({ tracker }) => {
@@ -122,7 +128,7 @@ test.describe("GET /v1/shortlists", () => {
 
     await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
 
-    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
+    const query = createShortlistsQuery({ datetime: testDatetime, type: "TOP_GAINERS" });
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
@@ -131,13 +137,13 @@ test.describe("GET /v1/shortlists", () => {
       response.data
     );
 
-    // if (validatedData.data.shortlist) {
-    //   // Validate timestamp is within 1 second of requested datetime
-    //   const requestedTime = dayjs.tz(testDatetime, "Asia/Kolkata").utc().toDate().getTime();
-    //   const returnedTime = dayjs.utc(validatedData.data.shortlist.timestamp).toDate().getTime();
-    //   const timeDiff = Math.abs(returnedTime - requestedTime);
-    //   expect(timeDiff).toBeLessThan(1000); // Within 1 seconds
-    // }
+    // Since timestamp is no longer returned in the response, validate that entries
+    // are returned for the requested datetime (indirect validation that snapshot exists)
+    expect(validatedData.data).not.toBeNull();
+    if (validatedData.data) {
+      expect(Array.isArray(validatedData.data)).toBe(true);
+      expect(validatedData.data.length).toBeGreaterThan(0);
+    }
   });
 
   test("should validate exact entry values ", async ({ tracker }) => {
@@ -146,7 +152,7 @@ test.describe("GET /v1/shortlists", () => {
 
     await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
 
-    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
+    const query = createShortlistsQuery({ datetime: testDatetime, type: "TOP_GAINERS" });
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
@@ -155,15 +161,16 @@ test.describe("GET /v1/shortlists", () => {
       response.data
     );
 
-    // if (validatedData.data.shortlist && validatedData.data.shortlist.entries.length > 0) {
-    //   const firstEntry = validatedData.data.shortlist.entries[0];
-    //   expect(firstEntry).toHaveProperty("nseSymbol");
-    //   expect(firstEntry).toHaveProperty("name");
-    //   expect(firstEntry).toHaveProperty("price");
-    //   expect(firstEntry.nseSymbol).toBe("RELIANCE");
-    //   expect(firstEntry.name).toBe("Reliance Industries Ltd");
-    //   expect(firstEntry.price).toBe(2500);
-    // }
+    if (validatedData.data && validatedData.data.length > 0) {
+      const firstEntry = validatedData.data[0];
+      const expectedFirstEntry = testEntries[0];
+      expect(firstEntry).toHaveProperty("nseSymbol");
+      expect(firstEntry).toHaveProperty("name");
+      expect(firstEntry).toHaveProperty("price");
+      expect(firstEntry.nseSymbol).toBe(expectedFirstEntry.nseSymbol);
+      expect(firstEntry.name).toBe(expectedFirstEntry.name);
+      expect(firstEntry.price).toBe(expectedFirstEntry.price);
+    }
   });
 
   test("should filter by scope when specified", async ({ tracker }) => {
@@ -189,17 +196,20 @@ test.describe("GET /v1/shortlists", () => {
     );
 
     // Query for TOP_5 scope
-    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS", undefined, "TOP_5");
+    const query = createShortlistsQuery({
+      datetime: testDatetime,
+      type: "TOP_GAINERS",
+      timezone: undefined,
+      scope: "TOP_5",
+    });
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
     expect(body.statusCode).toBe(200);
-    expect(body.data.shortlist).not.toBeNull();
-    if (body.data.shortlist) {
-      expect(body.data.shortlist.entries.length).toBe(testEntries.length);
-    }
+    expect(Array.isArray(body.data)).toBe(true);
+    expect(body.data.length).toBe(testEntries.length);
   });
 
   test("should default to TOP_5 when not specified", async ({ tracker }) => {
@@ -225,14 +235,15 @@ test.describe("GET /v1/shortlists", () => {
     );
 
     // Query without scope parameter
-    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
+    const query = createShortlistsQuery({ datetime: testDatetime, type: "TOP_GAINERS" });
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 
     expect(response.status).toBe(200);
     const body = response.data;
     expect(body.statusCode).toBe(200);
-    expect(body.data.shortlist).not.toBeNull();
+    expect(Array.isArray(body.data)).toBe(true);
+    expect(body.data.length).toBeGreaterThan(0);
     // Should return TOP_5 by default
   });
 });

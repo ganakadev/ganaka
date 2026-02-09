@@ -100,7 +100,7 @@ test.describe("GET /v1/candles", () => {
 
   test.describe("Developer Source", () => {
     test("should return 400 when symbol is missing", async () => {
-      const query = createDeveloperCandlesQuery();
+      const query = createDeveloperCandlesQuery({});
       const queryWithoutSymbol = {
         interval: query.interval,
         start_datetime: query.start_datetime,
@@ -116,7 +116,7 @@ test.describe("GET /v1/candles", () => {
     });
 
     test("should return 400 when interval is missing", async () => {
-      const query = createDeveloperCandlesQuery();
+      const query = createDeveloperCandlesQuery({});
       const queryWithoutInterval = {
         symbol: query.symbol,
         start_datetime: query.start_datetime,
@@ -132,14 +132,14 @@ test.describe("GET /v1/candles", () => {
     });
 
     test("should return 400 when start_datetime is missing", async () => {
-      const query = createDeveloperCandlesQuery();
-      const queryWithoutStartTime = createDeveloperCandlesQuery(
-        query.symbol,
-        query.interval,
-        undefined,
-        query.end_datetime,
-        query.timezone
-      );
+      const query = createDeveloperCandlesQuery({});
+      const queryWithoutStartTime = createDeveloperCandlesQuery({
+        symbol: query.symbol,
+        interval: query.interval,
+        startTime: undefined,
+        endTime: query.end_datetime,
+        timezone: query.timezone,
+      });
       const queryString = buildQueryString(queryWithoutStartTime);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         validateStatus: () => true,
@@ -149,14 +149,14 @@ test.describe("GET /v1/candles", () => {
     });
 
     test("should return 400 when end_datetime is missing", async () => {
-      const query = createDeveloperCandlesQuery();
-      const queryWithoutEndTime = createDeveloperCandlesQuery(
-        query.symbol,
-        query.interval,
-        query.start_datetime,
-        undefined,
-        query.timezone
-      );
+      const query = createDeveloperCandlesQuery({});
+      const queryWithoutEndTime = createDeveloperCandlesQuery({
+        symbol: query.symbol,
+        interval: query.interval,
+        startTime: query.start_datetime,
+        endTime: undefined,
+        timezone: query.timezone,
+      });
       const queryString = buildQueryString(queryWithoutEndTime);
       const response = await authenticatedGet(`/v1/candles?${queryString}`, developerToken, {
         validateStatus: () => true,
@@ -166,7 +166,7 @@ test.describe("GET /v1/candles", () => {
     });
 
     test("should return 400 when interval is invalid", async () => {
-      const query = createDeveloperCandlesQuery();
+      const query = createDeveloperCandlesQuery({});
       const queryWithInvalidInterval = {
         symbol: query.symbol,
         start_datetime: query.start_datetime,
@@ -196,7 +196,12 @@ test.describe("GET /v1/candles", () => {
         tracker
       );
 
-      const query = createDeveloperCandlesQuery(TEST_SYMBOL, "5minute", startDatetime, endDatetime);
+      const query = createDeveloperCandlesQuery({
+        symbol: TEST_SYMBOL,
+        interval: "5minute",
+        startTime: startDatetime,
+        endTime: endDatetime,
+      });
       const queryString = buildQueryString(query);
       const response = await authenticatedGetWithRunContext(
         `/v1/candles?${queryString}`,
@@ -228,7 +233,12 @@ test.describe("GET /v1/candles", () => {
         tracker
       );
 
-      const query = createDeveloperCandlesQuery(TEST_SYMBOL, "5minute", startDatetime, endDatetime);
+      const query = createDeveloperCandlesQuery({
+        symbol: TEST_SYMBOL,
+        interval: "5minute",
+        startTime: startDatetime,
+        endTime: endDatetime,
+      });
       const queryString = buildQueryString(query);
       const response = await authenticatedGetWithRunContext(
         `/v1/candles?${queryString}`,
