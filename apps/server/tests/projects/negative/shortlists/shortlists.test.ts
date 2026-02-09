@@ -29,6 +29,8 @@ test.afterAll(async () => {
 test.describe("GET /v1/shortlists", () => {
   test("should return 400 when date is missing", async () => {
     const query = createListsQuery("TOP_GAINERS", undefined);
+    // @ts-ignore
+    delete query.datetime;
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken, {
       validateStatus: () => true,
@@ -60,36 +62,6 @@ test.describe("GET /v1/shortlists", () => {
   test("should return 400 when type is invalid enum value", async () => {
     const query = createShortlistsQuery(TEST_DATETIME, "invalid-type" as any);
     const queryString = buildQueryString(query);
-    const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken, {
-      validateStatus: () => true,
-    });
-
-    expect(response.status).toBe(400);
-  });
-
-  test("should return 400 when takeProfitPercentage is invalid (negative)", async () => {
-    const query = createShortlistsQuery();
-    const queryString = new URLSearchParams({
-      ...query,
-      takeProfitPercentage: "-1",
-      stopLossPercentage: "1.5",
-    }).toString();
-
-    const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken, {
-      validateStatus: () => true,
-    });
-
-    expect(response.status).toBe(400);
-  });
-
-  test("should return 400 when stopLossPercentage is invalid (greater than 100)", async () => {
-    const query = createShortlistsQuery();
-    const queryString = new URLSearchParams({
-      ...query,
-      takeProfitPercentage: "2",
-      stopLossPercentage: "150",
-    }).toString();
-
     const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken, {
       validateStatus: () => true,
     });

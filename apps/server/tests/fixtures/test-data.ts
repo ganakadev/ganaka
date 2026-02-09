@@ -257,23 +257,13 @@ export function createShortlistsQuery(
   datetime?: string,
   type?: "TOP_GAINERS" | "VOLUME_SHOCKERS",
   timezone?: string,
-  takeProfitPercentage?: number,
-  stopLossPercentage?: number,
   scope?: "FULL" | "TOP_5"
 ): z.infer<typeof v1_shortlists_schemas.getShortlists.query> {
-  const result: any = {
+  const result: z.infer<typeof v1_shortlists_schemas.getShortlists.query> = {
     datetime: datetime || TEST_DATETIME,
     timezone: timezone || "Asia/Kolkata",
     type: type || "TOP_GAINERS",
   };
-
-  if (takeProfitPercentage !== undefined) {
-    result.takeProfitPercentage = takeProfitPercentage;
-  }
-
-  if (stopLossPercentage !== undefined) {
-    result.stopLossPercentage = stopLossPercentage;
-  }
 
   if (scope !== undefined) {
     result.scope = scope;

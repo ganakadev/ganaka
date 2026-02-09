@@ -32,6 +32,6 @@ test.describe("GET /v1/shortlists", () => {
     const body = response.data;
     expect(body.statusCode).toBe(200);
     expect(body.message).toBe("Shortlist snapshot not found");
-    expect(body.data.shortlist).toBeNull();
+    expect(body.data).toBeNull();
   });
 });

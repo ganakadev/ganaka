@@ -166,99 +166,6 @@ test.describe("GET /v1/shortlists", () => {
     // }
   });
 
-  test("should return 200 with trade metrics when takeProfitPercentage and stopLossPercentage provided", async ({
-    tracker,
-  }) => {
-    const testDatetime = generateUniqueTestDatetime();
-    const testEntries = createValidShortlistEntries();
-
-    // Create shortlist snapshot
-    await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
-
-    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
-    const queryString = new URLSearchParams({
-      ...query,
-      takeProfitPercentage: "2",
-      stopLossPercentage: "1.5",
-    }).toString();
-
-    const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
-
-    expect(response.status).toBe(200);
-    const body = response.data;
-    expect(body.statusCode).toBe(200);
-    expect(body.message).toBe("Shortlist fetched successfully");
-    expect(body.data.shortlist).not.toBeNull();
-
-    // Validate response matches schema
-    const validatedData = v1_schemas.v1_shortlists_schemas.getShortlists.response.parse(body);
-    // expect(validatedData.data.shortlist).not.toBeNull();
-
-    // // Check that trade metrics are included
-    // const firstEntry = validatedData.data.shortlist!.entries[0];
-    // expect(firstEntry).toHaveProperty("targetPrice");
-    // expect(firstEntry).toHaveProperty("stopLossPrice");
-    // expect(firstEntry).toHaveProperty("targetAchieved");
-    // expect(firstEntry).toHaveProperty("stopLossHit");
-  });
-
-  test("should return 200 without trade metrics when takeProfitPercentage and stopLossPercentage not provided", async ({
-    tracker,
-  }) => {
-    const testDatetime = generateUniqueTestDatetime();
-    const testEntries = createValidShortlistEntries();
-
-    // Create shortlist snapshot
-    await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
-
-    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
-    const queryString = buildQueryString(query);
-
-    const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
-
-    expect(response.status).toBe(200);
-    const body = response.data;
-    expect(body.statusCode).toBe(200);
-    expect(body.message).toBe("Shortlist fetched successfully");
-    expect(body.data.shortlist).not.toBeNull();
-
-    // Validate response matches schema
-    const validatedData = v1_schemas.v1_shortlists_schemas.getShortlists.response.parse(body);
-    // expect(validatedData.data.shortlist).not.toBeNull();
-
-    // // Check that trade metrics are not included (should be undefined)
-    // const firstEntry = validatedData.data.shortlist!.entries[0];
-    // expect(firstEntry.targetPrice).toBeUndefined();
-    // expect(firstEntry.stopLossPrice).toBeUndefined();
-    // expect(firstEntry.targetAchieved).toBeUndefined();
-    // expect(firstEntry.stopLossHit).toBeUndefined();
-  });
-
-  test("should use default values when takeProfitPercentage and stopLossPercentage not provided", async ({
-    tracker,
-  }) => {
-    const testDatetime = generateUniqueTestDatetime();
-    const testEntries = createValidShortlistEntries();
-
-    // Create shortlist snapshot
-    await createShortlistSnapshot("TOP_GAINERS", testDatetime, testEntries, tracker);
-
-    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS");
-    // Don't include TP/SL params to test defaults
-    const queryString = buildQueryString(query);
-
-    const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
-
-    expect(response.status).toBe(200);
-    const body = response.data;
-
-    // Validate response matches schema
-    const validatedData = v1_schemas.v1_shortlists_schemas.getShortlists.response.parse(body);
-
-    // Should work without explicit TP/SL params (defaults are used internally)
-    // expect(validatedData.data.shortlist).not.toBeNull();
-  });
-
   test("should filter by scope when specified", async ({ tracker }) => {
     const testDatetime = generateUniqueTestDatetime();
     const testEntries = createValidShortlistEntries();
@@ -282,14 +189,7 @@ test.describe("GET /v1/shortlists", () => {
     );
 
     // Query for TOP_5 scope
-    const query = createShortlistsQuery(
-      testDatetime,
-      "TOP_GAINERS",
-      undefined,
-      undefined,
-      undefined,
-      "TOP_5"
-    );
+    const query = createShortlistsQuery(testDatetime, "TOP_GAINERS", undefined, "TOP_5");
     const queryString = buildQueryString(query);
     const response = await authenticatedGet(`/v1/shortlists?${queryString}`, developerToken);
 

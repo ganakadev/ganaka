@@ -1,4 +1,5 @@
 ---
+description: 
 alwaysApply: true
 ---
 
@@ -14,6 +15,8 @@ Do not use spread operators (`...`) except for conditional spreads. Conditional 
 
 Do not destructure any objects. Access object properties using object.property every time.
 
-Do not use Date() or dayJs() in server at any cost. The server can be running at any location and it should not parse any date or datetime passed to it as its local time.
+Do not use "Date()" or "dayJs()" in server at any cost. The server can be running at any location and it should not parse any date or datetime passed to it as its local time. 
 
 Use dayjs for all date operations including parsing, validating, formatting, etc.
+
+All functions should always use named parameters.
