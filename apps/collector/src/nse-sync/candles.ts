@@ -21,6 +21,9 @@ const INSTRUMENTS_BEFORE_DISCONNECT = 25;
 // Delay between batches in milliseconds to allow PostgreSQL to release memory
 const BATCH_DELAY_MS = 50;
 
+// Batch size for determining fetch requests to prevent Node.js heap exhaustion
+const DETERMINE_FETCH_BATCH_SIZE = 50;
+
 export interface FetchRequest {
   instrument: NseIntrument;
   startDate: string; // YYYY-MM-DD
@@ -95,6 +98,26 @@ function chunkArray<T>(array: T[], chunkSize: number): T[][] {
 }
 
 /**
+ * Log memory usage for monitoring
+ */
+function logMemoryUsage(label: string): void {
+  const usage = process.memoryUsage();
+  const heapUsedMB = Math.round(usage.heapUsed / 1024 / 1024);
+  const heapTotalMB = Math.round(usage.heapTotal / 1024 / 1024);
+  const heapUsedPercent = Math.round((usage.heapUsed / usage.heapTotal) * 100);
+  console.log(
+    `${label}: Heap Used: ${heapUsedMB}MB / ${heapTotalMB}MB (${heapUsedPercent}%)`
+  );
+
+  // Warn if memory usage exceeds 80% of heap
+  if (heapUsedPercent > 80) {
+    console.warn(
+      `⚠️  High memory usage detected (${heapUsedPercent}%). Consider reducing batch size or increasing Node.js heap limit.`
+    );
+  }
+}
+
+/**
  * Determine fetch request for a single instrument
  * Returns FetchRequest or null if no fetch is needed
  */
@@ -139,31 +162,58 @@ export async function determineFetchRequests(instruments: NseIntrument[]): Promi
   const today = dayjs().tz("Asia/Kolkata").format("YYYY-MM-DD");
 
   console.log(`\nDetermining fetch requests for ${instruments.length} instruments...`);
+  logMemoryUsage("Before determining fetch requests");
 
-  // Process all instruments in parallel
-  const results = await Promise.allSettled(
-    instruments.map(async (instrument) => {
-      try {
-        return await determineFetchRequestForInstrument(instrument, recordStartDate, today);
-      } catch (error) {
-        console.error(`Error determining fetch request for ${instrument.symbol}:`, error);
-        // Return null to indicate this instrument should be skipped
-        return null;
-      }
-    })
-  );
-
-  // Process results and build requests array
+  // Split instruments into batches to prevent memory exhaustion
+  const instrumentBatches = chunkArray(instruments, DETERMINE_FETCH_BATCH_SIZE);
+  const totalBatches = instrumentBatches.length;
   const requests: FetchRequest[] = [];
-  for (const result of results) {
-    if (result.status === "fulfilled" && result.value !== null) {
-      requests.push(result.value);
-    } else if (result.status === "rejected") {
-      // Log rejection errors (though they should be caught in the try-catch above)
-      console.error("Unexpected rejection in determineFetchRequests:", result.reason);
+
+  try {
+    // Process each batch sequentially, with parallel processing within each batch
+    for (let batchIdx = 0; batchIdx < instrumentBatches.length; batchIdx++) {
+      const batch = instrumentBatches[batchIdx];
+      const batchNumber = batchIdx + 1;
+
+      console.log(
+        `Processing batch ${batchNumber}/${totalBatches} (${batch.length} instruments)...`
+      );
+
+      // Process instruments in this batch in parallel
+      const batchResults = await Promise.allSettled(
+        batch.map(async (instrument) => {
+          try {
+            return await determineFetchRequestForInstrument(instrument, recordStartDate, today);
+          } catch (error) {
+            console.error(`Error determining fetch request for ${instrument.symbol}:`, error);
+            // Return null to indicate this instrument should be skipped
+            return null;
+          }
+        })
+      );
+
+      // Process batch results and add to requests array
+      for (const result of batchResults) {
+        if (result.status === "fulfilled" && result.value !== null) {
+          requests.push(result.value);
+        } else if (result.status === "rejected") {
+          // Log rejection errors (though they should be caught in the try-catch above)
+          console.error("Unexpected rejection in determineFetchRequests:", result.reason);
+        }
+      }
+
+      // Log memory usage after each batch
+      logMemoryUsage(`After batch ${batchNumber}/${totalBatches}`);
     }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error during batch processing in determineFetchRequests:", errorMessage);
+    logMemoryUsage("Error state - memory usage");
+    // Re-throw to allow caller to handle the error
+    throw error;
   }
 
+  logMemoryUsage("After determining all fetch requests");
   return requests;
 }
 
