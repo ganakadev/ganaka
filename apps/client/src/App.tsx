@@ -3,6 +3,7 @@ import { Dashboard } from "./pages/Dashboard/Dashboard";
 import { SignIn } from "./pages/SignIn";
 import { Admin } from "./pages/Admin/Admin";
 import { Settings } from "./pages/Settings/Settings";
+import { StrategyBuilder } from "./pages/StrategyBuilder/StrategyBuilder";
 import { authLocalStorage } from "./utils/authLocalStorage";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -62,6 +63,14 @@ export const App = () => {
           element={
             <ProtectedRoute>
               <Settings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/strategy-builder"
+          element={
+            <ProtectedRoute>
+              <StrategyBuilder />
             </ProtectedRoute>
           }
         />

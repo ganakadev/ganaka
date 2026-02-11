@@ -234,7 +234,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/rraj/ganaka/packages/db/src/generated/prisma",
+      "value": "/Users/rraj/ganaka/.claude/worktrees/happy-diffie/packages/db/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -248,7 +248,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/rraj/ganaka/packages/db/prisma/schema.prisma",
+    "sourceFilePath": "/Users/rraj/ganaka/.claude/worktrees/happy-diffie/packages/db/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
